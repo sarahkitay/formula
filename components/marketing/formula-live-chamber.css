@@ -1,0 +1,195 @@
+/* Live Formula chamber: grid, grain, calm breathing — scoped to .formula-live-chamber */
+
+.formula-live-chamber {
+  --flc-volt: var(--color-formula-volt, #dcff00);
+  --flc-volt-dim: color-mix(in srgb, var(--flc-volt) 35%, transparent);
+  --flc-line: color-mix(in srgb, var(--color-formula-frost, #c8d4d0) 22%, transparent);
+}
+
+.formula-live-chamber__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--flc-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--flc-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0;
+  transition: opacity 2.2s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.formula-live-chamber__grid.is-on {
+  opacity: 1;
+}
+
+.formula-live-chamber__grain {
+  position: absolute;
+  inset: -20%;
+  opacity: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  animation: flc-grain-drift 14s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.formula-live-chamber__grain.is-settled {
+  opacity: 0.45;
+  transition: opacity 2s ease-out;
+}
+
+@keyframes flc-grain-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-4%, -3%);
+  }
+}
+
+.formula-live-chamber--settled {
+  animation: flc-chamber-breathe 5.5s ease-in-out infinite;
+}
+
+@keyframes flc-chamber-breathe {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--flc-volt) 8%, transparent),
+      0 0 40px -18px color-mix(in srgb, var(--flc-volt) 12%, transparent);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--flc-volt) 14%, transparent),
+      0 0 52px -14px color-mix(in srgb, var(--flc-volt) 18%, transparent);
+  }
+}
+
+/* Pillar motif micro-animations */
+@keyframes flc-velocity-dot {
+  0% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(14px);
+    opacity: 0.5;
+  }
+}
+
+.flc-motif-velocity .flc-dot {
+  animation: flc-velocity-dot 2.2s ease-in-out infinite;
+}
+
+@keyframes flc-agility-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.flc-motif-agility path {
+  animation: flc-agility-pulse 2.8s ease-in-out infinite;
+}
+
+.flc-motif-agility path:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+@keyframes flc-node-select {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  33% {
+    opacity: 1;
+  }
+  66% {
+    opacity: 0.35;
+  }
+}
+
+.flc-motif-decision circle:nth-child(1) {
+  animation: flc-node-select 3.6s ease-in-out infinite;
+}
+.flc-motif-decision circle:nth-child(2) {
+  animation: flc-node-select 3.6s ease-in-out infinite 0.4s;
+}
+.flc-motif-decision circle:nth-child(3) {
+  animation: flc-node-select 3.6s ease-in-out infinite 0.8s;
+}
+
+@keyframes flc-cal-tick {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.flc-motif-technical line {
+  animation: flc-cal-tick 2s ease-in-out infinite;
+}
+.flc-motif-technical line:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.flc-motif-technical line:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes flc-arc-shift {
+  0%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.4;
+  }
+  50% {
+    stroke-dashoffset: 6;
+    opacity: 0.9;
+  }
+}
+
+.flc-motif-game path {
+  stroke-dasharray: 32 4;
+  animation: flc-arc-shift 4s ease-in-out infinite;
+}
+
+@keyframes flc-consistency-steady {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.flc-motif-consistency path {
+  animation: flc-consistency-steady 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .formula-live-chamber__grain,
+  .formula-live-chamber--settled,
+  .flc-motif-velocity .flc-dot,
+  .flc-motif-agility path,
+  .flc-motif-decision circle,
+  .flc-motif-technical line,
+  .flc-motif-game path,
+  .flc-motif-consistency path {
+    animation: none !important;
+  }
+
+  .formula-live-chamber__grid {
+    transition: none;
+    opacity: 0.35;
+  }
+
+}

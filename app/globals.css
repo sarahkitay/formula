@@ -1,26 +1,683 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Formula Soccer Center: Scientific Blueprint (paper + ink)
+ * Canvas #ffffff · ink #1a1a1a · Pitch #005700 · Volt #f4fe00 (accents only)
+ */
 
 :root {
+  color-scheme: light;
+
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+
+  --primary: #005700;
+  --primary-foreground: #ffffff;
+
+  --secondary: #ffffff;
+  --secondary-foreground: #1a1a1a;
+
+  --muted: #efefef;
+  --muted-foreground: #737373;
+
+  --accent: rgba(0, 87, 0, 0.08);
+  --accent-foreground: #005700;
+
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+
+  --border: rgb(26 26 26 / 0.1);
+  --input: rgb(26 26 26 / 0.12);
+  --ring: #005700;
+
+  --chart-1: #005700;
+  --chart-2: #f4fe00;
+  --chart-3: #166534;
+  --chart-4: #525252;
+  --chart-5: #a3a3a3;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #005700;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f4f4;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: rgb(26 26 26 / 0.1);
+  --sidebar-ring: #005700;
+
+  --elevated: #f5f5f5;
+  --surface: #ffffff;
+  --text-secondary: #404040;
+  --text-muted: #737373;
+  --border-bright: rgb(0 87 0 / 0.35);
+
+  --success: #005700;
+  --warning: #ca8a04;
+  --error: #b91c1c;
+  --info: #166534;
+
+  /* Legacy name: volt highlight */
+  --accent-blue: #f4fe00;
+
+  --live-signal: #f4fe00;
+  --live-signal-soft: rgba(244, 254, 0, 0.2);
+
+  /* Blueprint: square corners */
+  --radius-shell: 0;
+  --radius-panel: 0;
+  --radius-card: 0;
+  --radius-control: 0;
+
+  --ease-premium: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --inset-highlight: inset 0 1px 0 rgb(255 255 255 / 0.95);
+  --shadow-depth-val: 0 1px 0 rgb(26 26 26 / 0.06);
+  --shadow-depth-lg-val: 0 1px 0 rgb(26 26 26 / 0.08), 0 8px 24px rgb(26 26 26 / 0.06);
+  --shadow-card-hover-val: 0 0 0 1px rgb(26 26 26 / 0.12), 0 4px 12px rgb(26 26 26 / 0.06);
+}
+
+/*
+ * Login + member portals: same green/grey canvas as marketing (see `.marketing-site`).
+ * `.marketing-site` is unchanged; portals use `.portal-brand-surface` for the gradient shell.
+ */
+.portal-brand-surface {
+  --formula-base: var(--color-formula-base);
+  --formula-deep: var(--color-formula-deep);
+  --formula-paper: var(--color-formula-paper);
+  --formula-frost: var(--color-formula-frost);
+  --formula-mist: var(--color-formula-mist);
+  --formula-volt: var(--color-formula-volt);
+  background: linear-gradient(180deg, var(--formula-deep) 0%, var(--formula-base) 38%, #1a1d1c 100%);
+  color: var(--formula-paper);
+}
+
+/* Admin + Coach + Parent: surfaces tuned to sit on `portal-brand-surface` (not flat #0a) */
+.admin-os,
+.coach-os,
+.parent-os {
+  --background: rgb(30 38 36 / 0.92);
+  --foreground: var(--color-formula-paper);
+  --card: rgb(36 54 51 / 0.72);
+  --card-foreground: #fafafa;
+  --popover: rgb(32 40 38 / 0.96);
+  --popover-foreground: #fafafa;
+  --muted: rgb(26 35 33 / 0.95);
+  --muted-foreground: var(--color-formula-mist);
+  --border: rgb(205 225 225 / 0.12);
+  --input: rgb(255 255 255 / 0.1);
+  --ring: var(--color-formula-volt);
+  --elevated: rgb(32 42 40 / 0.9);
+  --surface: rgb(28 36 34 / 0.85);
+  --text-secondary: var(--color-formula-frost);
+  --text-muted: var(--color-formula-mist);
+  --border-bright: rgb(220 255 0 / 0.28);
+}
+
+/* Dark OS canvas: h1 stays paper-bright on the green/grey gradient. */
+.admin-os h1,
+.coach-os h1,
+.parent-os h1 {
+  color: #ffffff;
+}
+
+.admin-os .lab-scrollbar::-webkit-scrollbar-thumb,
+.coach-os .lab-scrollbar::-webkit-scrollbar-thumb,
+.parent-os .lab-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(205 225 225 / 0.18);
+}
+
+.admin-os .stat-module,
+.admin-os .stat-module--signal,
+.coach-os .stat-module,
+.coach-os .stat-module--signal,
+.parent-os .stat-module,
+.parent-os .stat-module--signal {
+  background: #111111 !important;
+  border-color: rgb(255 255 255 / 0.1) !important;
+  box-shadow: none !important;
+}
+
+.admin-os .stat-module::before,
+.admin-os .stat-module--signal::before,
+.coach-os .stat-module::before,
+.coach-os .stat-module--signal::before,
+.parent-os .stat-module::before,
+.parent-os .stat-module--signal::before {
+  opacity: 0.12;
+}
+
+.admin-os .panel-technical,
+.coach-os .panel-technical,
+.parent-os .panel-technical {
+  background: #111111;
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: none;
+}
+
+.dark {
+  color-scheme: light;
 }
 
 @theme inline {
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-shell: 0;
+  --radius-panel: 0;
+  --radius-card: 0;
+  --radius-card-lg: 0;
+  --radius-control: 0;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-elevated: var(--elevated);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--elevated);
+  --color-border-bright: var(--border-bright);
+  --color-accent-blue: var(--accent-blue);
+  --color-text-primary: var(--foreground);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, 'SFMono-Regular', monospace;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.75rem;
+  --text-4xl: 2.125rem;
+
+  --shadow-depth: var(--shadow-depth-val);
+  --shadow-depth-lg: var(--shadow-depth-lg-val);
+  --shadow-glow-accent: 0 0 28px rgb(220 255 0 / 0.14);
+
+  /* Formula brand (Style 2 deck) - use on marketing + accent surfaces */
+  --color-formula-base: #232323;
+  --color-formula-deep: #243633;
+  --color-formula-paper: #f6f9f7;
+  --color-formula-frost: #cde1e1;
+  --color-formula-mist: #b6babe;
+  --color-formula-olive: #68685a;
+  --color-formula-volt: #dcff00;
+  --shadow-glow-accent-sm: 0 0 18px rgb(244 254 0 / 0.22);
+  --shadow-glow-blue: 0 0 24px rgb(0 87 0 / 0.35);
+  --shadow-inset-highlight: var(--inset-highlight);
+  --shadow-card-hover: var(--shadow-card-hover-val);
+
+  --ease-premium: var(--ease-premium);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  *,
+  *::before,
+  *::after {
+  box-sizing: border-box;
+  border-color: var(--border);
+  }
+
+  * {
+  @apply outline-ring/40;
+  }
+
+  html,
+  body {
+  height: 100%;
+  }
+
+  body {
+  @apply text-foreground antialiased;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+  }
+
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [type='button']:not(:disabled),
+  [type='submit']:not(:disabled),
+  [type='reset']:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type='checkbox']:not(:disabled),
+  input[type='radio']:not(:disabled) {
+  @apply cursor-pointer;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+  @apply font-semibold tracking-tight text-text-primary;
+  }
+
+  h1 {
+  @apply text-2xl tracking-tighter md:text-3xl;
+  }
+
+  h2 {
+  @apply text-xl tracking-tight md:text-2xl;
+  }
+
+  h3 {
+  @apply text-lg tracking-tight md:text-xl;
+  }
+
+  :focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+  border-radius: 0;
+  }
+
+  ::selection {
+  background-color: rgb(0 87 0 / 0.18);
+  color: var(--foreground);
+  }
+
+  ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+  background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+  background: rgb(26 26 26 / 0.15);
+  border-radius: 0;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+  background: rgb(26 26 26 / 0.25);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .app-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+  .app-container {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  }
+  }
+
+  @media (min-width: 1024px) {
+  .app-container {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  max-width: 1280px;
+  }
+  }
+
+  .stat-module {
+  border-radius: var(--radius-card);
+  border: 1px solid rgb(26 26 26 / 0.1);
+  background: #ffffff;
+  box-shadow: var(--inset-highlight), var(--shadow-depth-val);
+  overflow: hidden;
+  }
+
+  /* Live / hero tile: stronger border only; corner wash comes from StatCard ::after (same geometry as siblings). */
+  .stat-module--signal {
+  border-color: rgb(0 87 0 / 0.38);
+  background: #ffffff;
+  box-shadow: var(--inset-highlight), var(--shadow-depth-val);
+  overflow: hidden;
+  }
+
+  .panel-technical {
+  border-radius: var(--radius-panel);
+  background: #ffffff;
+  border: 1px solid rgb(26 26 26 / 0.1);
+  box-shadow: var(--shadow-depth-val);
+  }
+
+  .topbar-glass {
+  border-bottom: 1px solid rgb(26 26 26 / 0.1);
+  background: rgb(255 255 255 / 0.92);
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9);
+  }
+
+  .shadow-lab {
+  box-shadow: 4px 4px 0 0 rgb(0 0 0 / 1);
+  }
+
+  .shadow-lab-hover:hover {
+  box-shadow: 5px 5px 0 0 rgb(0 0 0 / 1);
+  }
+
+  .lab-scrollbar {
+  scrollbar-gutter: stable;
+  }
+
+  .lab-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  }
+
+  .lab-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(26 26 26 / 0.18);
+  border-radius: 0;
+  }
+
+  .card-premium {
+  @apply p-6 text-card-foreground;
+  border-radius: var(--radius-panel);
+  background: #ffffff;
+  border: 1px solid rgb(26 26 26 / 0.1);
+  box-shadow: var(--shadow-depth-val);
+  }
+
+  .glass-card {
+  border-radius: var(--radius-panel);
+  border: 1px solid rgb(26 26 26 / 0.1);
+  background: rgb(255 255 255 / 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-depth-val);
+  }
+
+  .accent-line {
+  @apply border-l-[3px] border-primary pl-3;
+  }
+
+  .label-technical {
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  }
+
+  .card-surface {
+  border-radius: var(--radius-panel);
+  background: #ffffff;
+  border: 1px solid rgb(26 26 26 / 0.1);
+  box-shadow: var(--shadow-depth-val);
+  }
+
+  .card-surface-sm {
+  border-radius: var(--radius-card);
+  background: #ffffff;
+  border: 1px solid rgb(26 26 26 / 0.1);
+  box-shadow: var(--shadow-depth-val);
+  }
+
+  .card-interactive {
+  transition:
+  box-shadow 180ms var(--ease-premium),
+  border-color 180ms var(--ease-premium),
+  transform 180ms var(--ease-premium);
+  }
+
+  @media (hover: hover) {
+  .card-interactive-hover:hover {
+  box-shadow: var(--inset-highlight), var(--shadow-card-hover-val);
+  transform: translateY(-1px);
+  }
+  }
+
+  .shell-sidebar {
+  display: none;
+  }
+
+  .animate-scanner-pulse {
+  animation: scanner-pulse 2.4s var(--ease-premium) infinite;
+  }
+
+  .formula-boot-char {
+  display: inline-block;
+  opacity: 0;
+  animation: formula-boot-char 0.075s var(--ease-premium) forwards;
+  }
+
+  .formula-boot-out {
+  animation: formula-boot-out 0.28s var(--ease-premium) forwards;
+  }
+}
+
+@keyframes formula-boot-char {
+  from {
+  opacity: 0;
+  transform: translateY(4px);
+  }
+  to {
+  opacity: 1;
+  transform: translateY(0);
+  }
+}
+
+@keyframes formula-boot-out {
+  to {
+  opacity: 0;
+  visibility: hidden;
+  }
+}
+
+@keyframes scanner-pulse {
+  0%,
+  100% {
+  box-shadow:
+  0 0 0 1px rgb(0 87 0 / 0.2),
+  var(--inset-highlight),
+  var(--shadow-depth-val);
+  }
+  50% {
+  box-shadow:
+  0 0 0 1px rgb(244 254 0 / 0.45),
+  var(--inset-highlight),
+  var(--shadow-depth-val);
+  }
+}
+
+/* Public marketing site - lab / HUD (Style 2: architectural, restrained volt) */
+.marketing-site {
+  --marketing-volt: var(--color-formula-volt);
+  --formula-base: var(--color-formula-base);
+  --formula-deep: var(--color-formula-deep);
+  --formula-paper: var(--color-formula-paper);
+  --formula-frost: var(--color-formula-frost);
+  --formula-mist: var(--color-formula-mist);
+  --formula-olive: var(--color-formula-olive);
+  --formula-volt: var(--color-formula-volt);
+  background: linear-gradient(180deg, var(--formula-deep) 0%, var(--formula-base) 38%, #1a1d1c 100%);
+  color: var(--formula-paper);
+}
+
+.marketing-glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Full-bleed seam between homepage sections: hairline + centered volt marker */
+.marketing-section-divider {
+  position: relative;
+  height: 1px;
+  width: 100%;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-formula-frost) 22%, transparent), transparent);
+}
+.marketing-section-divider::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  translate: -50% -50%;
+  border-radius: 9999px;
+  background: var(--color-formula-volt);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--color-formula-volt) 40%, transparent);
+}
+
+.marketing-hud-edge {
+  opacity: 0.9;
+}
+
+.marketing-hero-char {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: marketing-hero-char 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes marketing-hero-char {
+  to {
+  opacity: 1;
+  transform: translateY(0);
+  }
+}
+
+.marketing-field-dashanim {
+  stroke-dasharray: 5 18;
+  animation: marketing-field-dash 42s linear infinite;
+}
+
+.marketing-field-dashanim-slow {
+  stroke-dasharray: 3 24;
+  animation: marketing-field-dash 64s linear infinite reverse;
+}
+
+@keyframes marketing-field-dash {
+  to {
+  stroke-dashoffset: -420;
+  }
+}
+
+/* Marketing inner pages - readable technical prose */
+.prose-marketing {
+  color: color-mix(in srgb, var(--color-formula-frost) 72%, var(--color-formula-mist));
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.prose-marketing > * + * {
+  margin-top: 1.1rem;
+}
+
+.prose-marketing h2 {
+  margin-top: 2.25rem;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-formula-paper) 92%, var(--color-formula-frost));
+}
+
+.prose-marketing h2:first-child {
+  margin-top: 0;
+}
+
+.prose-marketing h3 {
+  margin-top: 1.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-formula-paper);
+}
+
+.prose-marketing ul {
+  margin-top: 0.75rem;
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose-marketing ul li {
+  position: relative;
+  padding-left: 1.1rem;
+}
+
+.prose-marketing ul li + li {
+  margin-top: 0.5rem;
+}
+
+.prose-marketing ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-formula-volt) 42%, transparent);
+}
+
+.prose-marketing strong {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-formula-paper) 88%, var(--color-formula-frost));
+}
+
+.prose-marketing a {
+  color: color-mix(in srgb, var(--color-formula-volt) 88%, var(--color-formula-paper));
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-formula-volt) 28%, transparent);
+}
+
+.prose-marketing a:hover {
+  border-bottom-color: color-mix(in srgb, var(--color-formula-volt) 52%, transparent);
+}
+
+.prose-marketing .not-prose {
+  margin-top: 0;
 }
