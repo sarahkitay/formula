@@ -49,6 +49,6 @@ export const HOME_ANCHORS: { label: string; href: string }[] = [
   { label: 'Programs', href: '#programs' },
   { label: 'Ecosystem', href: '#ecosystem' },
   { label: 'Highlights', href: '#highlights' },
-  { label: 'Trust', href: '#trust' },
+  { label: 'Trust', href: `${MARKETING_HREF.facility}#trust` },
   { label: 'Convert', href: '#convert' },
 ]

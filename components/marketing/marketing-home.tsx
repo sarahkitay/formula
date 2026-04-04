@@ -10,7 +10,6 @@ import { HomeTeamworkSection } from '@/components/marketing/home-teamwork-sectio
 import { MarketingHero } from '@/components/marketing/marketing-hero'
 import { HomeFacilityTour } from '@/components/marketing/home-facility-tour'
 import { StartHereSection } from '@/components/marketing/start-here-section'
-import { TrustLayer } from '@/components/marketing/trust-layer'
 import { MarketingTextReveal } from '@/components/marketing/marketing-text-reveal'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
@@ -127,9 +126,6 @@ export function MarketingHome() {
 
       <SectionDivider />
       <HomeHighlights />
-
-      <SectionDivider />
-      <TrustLayer />
 
       <SectionDivider />
       <ConversionPathways />

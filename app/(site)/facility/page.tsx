@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MarketingInnerPage, SectionLabel } from '@/components/marketing/marketing-inner'
 import { PublicFacilityMap } from '@/components/marketing/public-facility-map'
+import { TrustLayer } from '@/components/marketing/trust-layer'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
 export const metadata: Metadata = {
@@ -50,6 +51,9 @@ export default function FacilityPage() {
   </Link>
   </p>
   </div>
+
+  <div className="marketing-section-divider" aria-hidden />
+  <TrustLayer />
   </>
   )
 }

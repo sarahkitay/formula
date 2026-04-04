@@ -43,8 +43,8 @@ export function MarketingHero() {
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/18 to-transparent" />
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pt-24 pb-12 max-lg:gap-6 max-lg:pb-[min(44vh,18rem)] lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
-        <div className="relative z-20 flex min-w-0 flex-1 flex-col lg:max-w-[min(100%,28rem)] xl:max-w-[min(100%,32rem)]">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pt-24 pb-12 max-lg:gap-8 max-lg:pb-14 lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
+        <div className="relative z-20 flex min-w-0 flex-col max-lg:flex-none lg:flex-1 lg:max-w-[min(100%,28rem)] xl:max-w-[min(100%,32rem)]">
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-formula-mist [text-shadow:0_1px_18px_rgba(0,0,0,0.45)]">
             Formula Soccer Center
           </p>
@@ -89,9 +89,9 @@ export function MarketingHero() {
 
         <div
           id="field-3d"
-          className="flex w-full shrink-0 flex-col items-center justify-center border-t border-formula-frost/10 bg-formula-deep/20 py-6 max-lg:pointer-events-auto max-lg:absolute max-lg:inset-x-0 max-lg:top-[22dvh] max-lg:z-10 max-lg:w-full max-lg:border-0 max-lg:bg-transparent max-lg:px-0 max-lg:pb-10 max-lg:pt-0 lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:max-w-[min(520px,46%)] lg:flex-1 lg:border-l lg:border-t-0 lg:bg-formula-deep/12 lg:py-5 lg:pl-6 xl:max-w-[min(560px,44%)]"
+          className="relative z-10 flex w-full shrink-0 flex-col items-center justify-center border-t border-formula-frost/10 bg-formula-deep/20 py-6 max-lg:pointer-events-auto max-lg:w-full max-lg:border-t max-lg:border-formula-frost/10 max-lg:bg-formula-deep/[0.12] max-lg:px-0 max-lg:pb-6 max-lg:pt-2 lg:z-auto lg:max-w-[min(520px,46%)] lg:flex-1 lg:border-l lg:border-t-0 lg:bg-formula-deep/12 lg:py-5 lg:pl-6 xl:max-w-[min(560px,44%)]"
         >
-          <div className="w-full max-w-[min(100%,720px)] origin-center scale-[0.88] max-lg:translate-y-4 sm:scale-[0.92] md:max-lg:scale-[0.96] lg:max-w-none lg:translate-y-0 lg:scale-[0.9] xl:scale-[0.96]">
+          <div className="w-full max-w-[min(100%,720px)] origin-center scale-[0.88] max-lg:translate-y-0 sm:scale-[0.92] md:max-lg:scale-[0.96] lg:max-w-none lg:scale-[0.9] xl:scale-[0.96]">
             <HomeField3DHero />
           </div>
           <motion.p
