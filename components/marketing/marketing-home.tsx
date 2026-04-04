@@ -8,7 +8,6 @@ import { HomeSpeedTrackSection } from '@/components/marketing/home-speed-track-s
 import { HomeFieldsFormulaSection } from '@/components/marketing/home-fields-formula-section'
 import { HomeTeamworkSection } from '@/components/marketing/home-teamwork-section'
 import { MarketingHero } from '@/components/marketing/marketing-hero'
-import { PublicFacilityMap } from '@/components/marketing/public-facility-map'
 import { HomeFacilityTour } from '@/components/marketing/home-facility-tour'
 import { StartHereSection } from '@/components/marketing/start-here-section'
 import { MarketingTextReveal } from '@/components/marketing/marketing-text-reveal'
@@ -57,15 +56,13 @@ export function MarketingHome() {
                   </h2>
                   <p className="mt-5 text-[15px] leading-relaxed text-formula-frost/85">{SITE_VOICE.programDesign}</p>
                 </MarketingTextReveal>
-                <div className="mt-5 max-w-3xl">
-                  <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">Floor plan · select a zone</p>
-                  <p className="mt-1 max-w-2xl text-[13px] leading-snug text-formula-frost/80">
-                    Tap a zone: fields, speed, specialized stations - how each layer supports training + application.
-                  </p>
-                  <div className="mt-2">
-                    <PublicFacilityMap compact />
-                  </div>
-                </div>
+                <p className="mt-6 max-w-2xl text-[13px] leading-snug text-formula-frost/75">
+                  Explore the interactive floor plan on the{' '}
+                  <Link href={MARKETING_HREF.facility} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
+                    Facility
+                  </Link>{' '}
+                  page.
+                </p>
               </div>
             </ScrollFadeIn>
             <ScrollFadeIn>

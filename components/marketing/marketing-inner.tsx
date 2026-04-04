@@ -1,9 +1,24 @@
-import type { ReactNode } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import Link from 'next/link'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
 import { MembershipWaitlistCapture } from '@/components/marketing/membership-waitlist-capture'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
+import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
+import { cn } from '@/lib/utils'
+
+/** Renders a title string; `<br>`, `<br/>`, `<br />` become line breaks (React escapes raw HTML in strings). */
+function marketingTitleContent(title: string | ReactNode): ReactNode {
+  if (typeof title !== 'string') return title
+  const parts = title.split(/<\s*br\s*\/?\s*>/gi)
+  if (parts.length === 1) return title
+  return parts.map((segment, i) => (
+    <Fragment key={i}>
+      {i > 0 ? <br /> : null}
+      {segment}
+    </Fragment>
+  ))
+}
 
 export function SectionLabel({ children }: { children: ReactNode }) {
   return <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">{children}</p>
@@ -20,7 +35,7 @@ export function MarketingInnerPage({
   /** Renders above eyebrow/title — e.g. hero offer. */
   prepend?: ReactNode
   eyebrow: string
-  title: string
+  title: string | ReactNode
   intro?: string
   children: ReactNode
   wide?: boolean
@@ -30,7 +45,9 @@ export function MarketingInnerPage({
       {prepend}
       <ScrollFadeIn>
         <SectionLabel>{eyebrow}</SectionLabel>
-        <h1 className="mt-4 font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-semibold leading-tight tracking-tight text-formula-paper">{title}</h1>
+        <h1 className={cn(marketingDisplayH1ClassName, 'mt-4')}>
+          {marketingTitleContent(title)}
+        </h1>
         {intro ? <p className="mt-6 max-w-[62ch] text-[15px] leading-relaxed text-formula-frost/85">{intro}</p> : null}
         <div className="prose-marketing mt-12">{children}</div>
       </ScrollFadeIn>

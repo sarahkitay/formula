@@ -178,9 +178,9 @@ export function HomeFacilityTour() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px)] bg-[length:44px_44px] opacity-[0.22]" />
       <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-gradient-to-t from-formula-deep/50 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-4 px-5 pb-8 pt-6 md:gap-5 md:px-8 md:pb-10 md:pt-8 lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-3 px-5 pb-5 pt-4 md:gap-3.5 md:px-8 md:pb-6 md:pt-5 lg:px-10">
         <ScrollFadeIn>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
           <div className="max-w-xl shrink-0">
             <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-formula-mist md:text-[11px] md:tracking-[0.34em]">
               {SITE.facilityName}
@@ -214,9 +214,9 @@ export function HomeFacilityTour() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: 'easeOut' }}
-          className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-xl border border-formula-frost/12 bg-formula-deep/65 shadow-[0_16px_40px_rgba(0,0,0,0.3)] md:rounded-[1.2rem]"
+          className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-lg border border-formula-frost/12 bg-formula-deep/65 shadow-[0_12px_32px_rgba(0,0,0,0.28)] md:rounded-xl"
         >
-          <div className="border-b border-white/[0.06] px-2.5 py-1.5 md:px-3 md:py-2">
+          <div className="border-b border-white/[0.06] px-2 py-1 md:px-2.5 md:py-1.5">
             <p className="font-mono text-[9px] font-medium uppercase tracking-[0.22em] text-formula-olive md:text-[10px]">
               Floor plan · select a zone
             </p>
@@ -235,10 +235,10 @@ export function HomeFacilityTour() {
           />
         </motion.div>
 
-        <div className="relative z-10 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-start lg:gap-5">
-          <div className="rounded-xl border border-white/12 bg-black/38 px-3 py-3 backdrop-blur-md md:rounded-[1.2rem] md:px-4 md:py-3.5">
-            <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">Zones</p>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-3 md:grid-cols-4">
+        <div className="relative z-10 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
+          <div className="rounded-lg border border-white/12 bg-black/38 px-2.5 py-2 backdrop-blur-md md:rounded-xl md:px-3 md:py-2.5">
+            <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">Zones</p>
+            <div className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 sm:grid-cols-3 md:grid-cols-4">
               {tourStops.map(stop => (
                 <TourDot
                   key={stop.id}
@@ -260,10 +260,10 @@ export function HomeFacilityTour() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3 }}
-              className="rounded-xl border border-white/12 bg-black/48 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.25)] backdrop-blur-md md:rounded-[1.35rem] md:p-5"
+              className="rounded-lg border border-white/12 bg-black/48 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.22)] backdrop-blur-md md:rounded-xl md:p-4"
             >
               <p className="text-[10px] uppercase tracking-[0.24em] text-white/45 md:text-[11px] md:tracking-[0.28em]">Zone detail</p>
-              <h3 className="mt-1.5 text-lg font-semibold leading-tight tracking-[-0.03em] text-white md:text-xl">
+              <h3 className="mt-1 text-base font-semibold leading-tight tracking-[-0.03em] text-white md:text-lg">
                 {active.name}
               </h3>
               {detailSubline ? (
@@ -271,10 +271,10 @@ export function HomeFacilityTour() {
                   {detailSubline}
                 </p>
               ) : null}
-              <p className="mt-2 text-[13px] leading-snug text-white/72 md:mt-3 md:text-sm md:leading-6">{active.description}</p>
+              <p className="mt-1.5 text-[13px] leading-snug text-white/72 md:mt-2 md:text-sm md:leading-relaxed">{active.description}</p>
               <Link
                 href={MARKETING_HREF.facility}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/16 bg-white/8 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/14 md:mt-5 md:gap-2 md:px-4 md:py-2 md:text-sm"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/16 bg-white/8 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/14 md:mt-4 md:gap-2 md:px-3.5 md:py-1.5 md:text-sm"
               >
                 Facility map
                 <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />

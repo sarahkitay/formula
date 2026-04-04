@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
+import { PublicFacilityMap } from '@/components/marketing/public-facility-map'
 import { TrustLayer } from '@/components/marketing/trust-layer'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
@@ -33,6 +34,20 @@ export default function FacilityPage() {
   </p>
   </MarketingInnerPage>
 
+  <section className="border-t border-formula-frost/10 bg-formula-deep/50" aria-label="Interactive facility floor plan">
+    <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-16">
+      <div className="not-prose max-w-3xl">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">Floor plan · select a zone</p>
+        <p className="mt-2 max-w-2xl text-[13px] leading-snug text-formula-frost/80 md:text-[14px] md:leading-relaxed">
+          Tap a zone: fields, speed, specialized stations — how each layer supports training and application.
+        </p>
+      </div>
+      <div className="not-prose mt-6">
+        <PublicFacilityMap />
+      </div>
+    </div>
+  </section>
+
   <div className="mx-auto max-w-[1200px] border-t border-formula-frost/10 px-6 py-8 text-center">
     <Link
       href={MARKETING_HREF.rentals}
@@ -40,13 +55,6 @@ export default function FacilityPage() {
     >
       Rental & package inquiries →
     </Link>
-    <p className="mx-auto mt-3 max-w-md text-[12px] leading-relaxed text-formula-mist">
-      Explore the interactive floor plan on the{' '}
-      <Link href={MARKETING_HREF.home} className="text-formula-frost underline-offset-4 hover:text-formula-paper hover:underline">
-        homepage
-      </Link>{' '}
-      under Training.
-    </p>
   </div>
 
   <div className="marketing-section-divider" aria-hidden />

@@ -5,14 +5,15 @@ import Link from 'next/link'
 import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { MEDIA_SCRIM_BOTTOM, MEDIA_SCRIM_TOP } from '@/lib/marketing/media-scrims'
+import { cn } from '@/lib/utils'
 
 const VIDEO_SRC = '/IMG_6200_1.mp4'
 
-const overlayTitleClass =
-  'font-mono text-[clamp(2rem,6vw,3.25rem)] font-semibold leading-[1.02] tracking-tight text-formula-paper'
+const overlaySubtitleClass =
+  'font-mono text-[clamp(0.7rem,2vw,0.8125rem)] font-semibold uppercase leading-snug tracking-[0.2em] text-formula-paper/95'
 
 /**
- * Homepage: full-bleed Speed Court video with short left-aligned copy (cinematic beat, not a spec sheet).
+ * Homepage: full-bleed Speed Court video — same overlay panel treatment as Speed Track (`MediaOverlayTextPanel`).
  */
 export function HomeSpeedCourtSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -52,25 +53,29 @@ export function HomeSpeedCourtSection() {
         <div className={MEDIA_SCRIM_TOP} aria-hidden />
         <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />
 
-        <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-14 md:px-10 md:pb-20">
-          <MediaOverlayTextPanel variant="bare" className="max-w-[34rem]">
-            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/70">
-              Cognitive layer
-            </p>
-            <h3 id="home-speed-court-title" className={`mt-3 ${overlayTitleClass}`}>
-              Speed Court
-            </h3>
-            <p className="mt-5 max-w-[28rem] text-[15px] leading-[1.65] text-formula-paper/85">
-              Decision speed is a soccer skill. Reaction time, scanning, and choice density under constraint: the overload
-              moments that decide whether a player influences the game or just occupies space.
-            </p>
-            <Link
-              href={MARKETING_HREF.facility}
-              className="mt-8 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt opacity-80 transition-opacity hover:opacity-100"
-            >
-              See it on the facility map →
-            </Link>
-          </MediaOverlayTextPanel>
+        <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 md:pt-32">
+          <div className="mx-auto w-full max-w-[1200px]">
+            <MediaOverlayTextPanel className="mr-auto w-full max-w-[min(100%,52rem)]">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/90">Cognitive layer</p>
+              <h2
+                id="home-speed-court-title"
+                className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]"
+              >
+                Speed Court
+              </h2>
+              <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>Reaction · scan · choose under pressure</p>
+              <p className="mt-5 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
+                Decision speed is a soccer skill. Reaction time, scanning, and choice density under constraint: the overload moments that decide whether a
+                player influences the game or just occupies space.
+              </p>
+              <Link
+                href={MARKETING_HREF.facility}
+                className="mt-8 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
+              >
+                See it on the facility map →
+              </Link>
+            </MediaOverlayTextPanel>
+          </div>
         </div>
       </div>
     </section>

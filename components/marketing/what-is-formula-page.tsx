@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { FormulaPositioningBackground } from '@/components/marketing/formula-positioning-background'
+import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { cn } from '@/lib/utils'
 
 /** Same modules as current copy; titles match `<strong>` labels on the live page. */
 const COMBINES = [
@@ -50,7 +52,7 @@ export function WhatIsFormulaPageContent() {
           <div className="mx-auto grid max-w-7xl gap-16 px-6 pb-20 pt-24 md:pb-24 md:pt-28 lg:grid-cols-[1.15fr_0.85fr] lg:px-10 lg:pb-32 lg:pt-32">
             <div className="max-w-4xl">
               <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Positioning</div>
-              <h1 className="max-w-5xl font-mono text-[clamp(3.25rem,8vw,6.2rem)] leading-[0.96] tracking-[-0.04em] text-[#edf1ec]">
+              <h1 className={cn(marketingDisplayH1ClassName, 'max-w-5xl')}>
                 Club-complementary.
                 <br />
                 Built for the next tier.

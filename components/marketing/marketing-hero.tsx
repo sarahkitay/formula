@@ -6,8 +6,10 @@ import { AmbientGeometry } from '@/components/marketing/ambient-geometry'
 import { FieldAmbient } from '@/components/marketing/field-ambient'
 import { HomeField3DHero } from '@/components/marketing/home-field-3d/home-field-3d-hero'
 import { MembershipWaitlistCapture } from '@/components/marketing/membership-waitlist-capture'
+import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
+import { cn } from '@/lib/utils'
 
 const WORD = 'FORMULA'
 
@@ -50,10 +52,7 @@ export function MarketingHero() {
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-formula-mist [text-shadow:0_1px_18px_rgba(0,0,0,0.45)]">
             Formula Soccer Center
           </p>
-          <h1
-            className="mt-4 font-mono text-[clamp(2.5rem,9vw,5rem)] font-semibold leading-[0.92] tracking-[-0.02em] text-formula-paper [text-shadow:0_4px_36px_rgba(0,0,0,0.55),0_2px_12px_rgba(0,0,0,0.4)]"
-            aria-label={WORD}
-          >
+          <h1 className={cn(marketingDisplayH1ClassName, 'mt-4')} aria-label={WORD}>
             <span aria-hidden="true">
               {WORD.split('').map((ch, i) =>
                 ch === 'O' ? (
