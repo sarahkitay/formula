@@ -8,6 +8,7 @@ import { HomeSpeedTrackSection } from '@/components/marketing/home-speed-track-s
 import { HomeFieldsFormulaSection } from '@/components/marketing/home-fields-formula-section'
 import { HomeTeamworkSection } from '@/components/marketing/home-teamwork-section'
 import { MarketingHero } from '@/components/marketing/marketing-hero'
+import { PublicFacilityMap } from '@/components/marketing/public-facility-map'
 import { HomeFacilityTour } from '@/components/marketing/home-facility-tour'
 import { StartHereSection } from '@/components/marketing/start-here-section'
 import { MarketingTextReveal } from '@/components/marketing/marketing-text-reveal'
@@ -54,9 +55,18 @@ export function MarketingHome() {
                 </h2>
                 <p className="mt-5 text-[15px] leading-relaxed text-formula-frost/85">{SITE_VOICE.programDesign}</p>
               </MarketingTextReveal>
+              <div className="mt-5 max-w-3xl">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">Interactive plan</p>
+                <p className="mt-1 max-w-2xl text-[13px] leading-snug text-formula-frost/80">
+                  Tap a zone: fields, speed, specialized stations - how each layer supports training + application.
+                </p>
+                <div className="mt-2">
+                  <PublicFacilityMap compact />
+                </div>
+              </div>
               <Link
                 href={MARKETING_HREF.clinics}
-                className="mt-8 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt hover:opacity-90"
+                className="mt-6 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt hover:opacity-90"
               >
                 Clinics & programs →
               </Link>

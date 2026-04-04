@@ -1,10 +1,12 @@
-/** `public.players` */
+/** `public.players` — base row; optional relation embeds when selected via Supabase join */
 export type PlayerRow = {
   id: string
   first_name: string | null
   last_name: string | null
   age_group: string | null
   created_at?: string | null
+  player_programs?: { status: string; programs: { name: string | null }[] | null }[] | null
+  assessments?: { summary: string | null; completed_at: string | null }[] | null
 }
 
 /** `public.parent_players` row with embedded player (Supabase FK embed). */
