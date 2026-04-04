@@ -27,25 +27,27 @@ export function YouthMembershipPackageHero() {
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-formula-volt">
                 Session package · Available now
               </p>
-              <div className="mt-6 flex flex-wrap items-end gap-6 md:gap-10">
-                <div>
-                  <p className="font-mono text-[clamp(3.25rem,10vw,4.5rem)] font-semibold leading-[0.92] tracking-[-0.03em] text-formula-paper">
-                    {SESSION_PACKAGE_10.sessions}
-                  </p>
-                  <p className="mt-1 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-formula-mist">
-                    sessions
-                  </p>
-                </div>
-                <div className="h-px w-full min-w-[2rem] max-w-[4rem] shrink-0 self-center bg-gradient-to-r from-formula-volt/50 to-transparent md:h-16 md:w-px md:bg-gradient-to-b" />
-                <div>
-                  <p className="font-mono text-[clamp(2.5rem,7vw,3.5rem)] font-semibold leading-none tracking-tight text-formula-paper">
+              <div className="mt-6 flex flex-wrap items-start gap-x-5 gap-y-4 md:gap-x-8">
+                <div className="flex min-w-0 items-start gap-4 md:gap-6">
+                  <div className="flex flex-col items-start">
+                    <p className="font-mono text-[clamp(3rem,8vw,4rem)] font-bold leading-none tracking-[-0.03em] text-formula-paper tabular-nums">
+                      {SESSION_PACKAGE_10.sessions}
+                    </p>
+                    <p className="mt-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-formula-mist">
+                      sessions
+                    </p>
+                  </div>
+                  <div
+                    className="mt-1 hidden h-[clamp(2.75rem,7vw,3.75rem)] w-px shrink-0 bg-gradient-to-b from-formula-volt/55 to-transparent md:block"
+                    aria-hidden
+                  />
+                  <p className="font-mono text-[clamp(3rem,8vw,4rem)] font-bold leading-none tracking-[-0.03em] text-formula-paper tabular-nums">
                     ${SESSION_PACKAGE_10.priceUsd}
                   </p>
-                  <p className="mt-2 max-w-[36ch] text-[15px] leading-relaxed text-formula-frost/88">
-                    {SESSION_PACKAGE_10.summary} Pay securely online, or purchase through your assessment or at the desk — we&apos;ll confirm scheduling and
-                    cadence.
-                  </p>
                 </div>
+                <p className="min-w-0 max-w-none flex-1 basis-[min(100%,18rem)] text-[15px] leading-relaxed text-formula-frost/88 md:pt-1 lg:max-w-[42ch]">
+                  {SESSION_PACKAGE_10.purchaseNote}
+                </p>
               </div>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <CheckoutLaunchButton checkoutType="package-10" label="Buy package" />

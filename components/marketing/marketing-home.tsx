@@ -56,7 +56,7 @@ export function MarketingHome() {
                 <p className="mt-5 text-[15px] leading-relaxed text-formula-frost/85">{SITE_VOICE.programDesign}</p>
               </MarketingTextReveal>
               <div className="mt-5 max-w-3xl">
-                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">Interactive plan</p>
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">Floor plan · select a zone</p>
                 <p className="mt-1 max-w-2xl text-[13px] leading-snug text-formula-frost/80">
                   Tap a zone: fields, speed, specialized stations - how each layer supports training + application.
                 </p>
@@ -64,12 +64,6 @@ export function MarketingHome() {
                   <PublicFacilityMap compact />
                 </div>
               </div>
-              <Link
-                href={MARKETING_HREF.clinics}
-                className="mt-6 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt hover:opacity-90"
-              >
-                Clinics & programs →
-              </Link>
             </div>
             <ul className="space-y-0 border border-formula-frost/10 bg-formula-paper/[0.02] font-mono text-[11px] uppercase tracking-[0.12em] text-formula-mist">
               {(
@@ -92,6 +86,9 @@ export function MarketingHome() {
           </div>
         </div>
       </section>
+
+      <SectionDivider />
+      <HomeFacilityTour />
 
       <SectionDivider />
       <section id="ecosystem" className="relative mx-auto max-w-[1200px] px-6 py-24 md:py-32">
@@ -139,9 +136,6 @@ export function MarketingHome() {
 
       <SectionDivider />
       <ConversionPathways />
-
-      <SectionDivider />
-      <HomeFacilityTour />
 
       <SectionDivider />
       <StartHereSection />

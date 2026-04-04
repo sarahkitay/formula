@@ -15,7 +15,7 @@ export default function FacilityPage() {
   <>
   <MarketingInnerPage
   eyebrow="Facility"
-  title="Performance building - not a rental hall."
+  title="Performance building <br> not a rental hall."
   intro="Integrated system: protected field inventory, purposeful stations, disciplined transitions. Random space = random training."
   wide
   >

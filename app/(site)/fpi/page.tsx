@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { FpiPillarsInteractive } from '@/components/marketing/fpi-pillars-interactive'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
 import { FormulaLiveChamber } from '@/components/marketing/formula-live-chamber'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
@@ -10,32 +11,42 @@ export const metadata: Metadata = {
     'How Formula measures performance: speed, agility, decisions, technique, and application - weighted by age, tested on advanced protocols, advanced over time with reassessment.',
 }
 
-const PILLARS: [string, string][] = [
-  [
-    'Speed & explosiveness',
-    'Acceleration, top speed where appropriate, and repeatability - captured with timing-based protocols and game-relevant distances.',
-  ],
-  [
-    'Agility & change of direction',
-    'Braking, re-acceleration, and multi-directional mobility that show up in duels and tight spaces.',
-  ],
-  [
-    'Decision-making & cognitive tempo',
-    'Scanning, choice speed, and risk discipline under constraint - the bridge between “busy” and effective.',
-  ],
-  ['Technical execution', 'First touch, distribution, duels - repeatability as pressure rises.'],
-  ['Game application', 'Transfer into constrained games and circuit scenarios - execution vs live defense.'],
-  [
-    'Consistency & coachability',
-    'Attendance rhythm, training intent, adaptability - what makes coaching stick week to week.',
-  ],
-]
+const PILLARS = [
+  {
+    title: 'Speed & explosiveness',
+    description:
+      'Acceleration, top speed where appropriate, and repeatability - captured with timing-based protocols and game-relevant distances.',
+  },
+  {
+    title: 'Agility & change of direction',
+    description:
+      'Braking, re-acceleration, and multi-directional mobility that show up in duels and tight spaces.',
+  },
+  {
+    title: 'Decision-making & cognitive tempo',
+    description:
+      'Scanning, choice speed, and risk discipline under constraint - the bridge between "busy" and effective.',
+  },
+  {
+    title: 'Technical execution',
+    description: 'First touch, distribution, duels - repeatability as pressure rises.',
+  },
+  {
+    title: 'Game application',
+    description: 'Transfer into constrained games and circuit scenarios - execution vs live defense.',
+  },
+  {
+    title: 'Consistency & coachability',
+    description:
+      'Attendance rhythm, training intent, adaptability - what makes coaching stick week to week.',
+  },
+] as const
 
 export default function TheFormulaPage() {
   return (
     <MarketingInnerPage
       eyebrow="The Formula"
-      title="How we score performance - and how you move up."
+      title="How we score performance <br> and how you move up."
       intro="The Formula is our internal performance model: a weighted blend of speed, agility, decision-making, technique, application, and consistency. It is measured, not guessed - through standardized testing, facility-grade capture where equipped, and professional coaching judgment. Below, the model wakes like an instrument being tuned: inputs, weights, composite, calm."
       wide
     >
@@ -106,14 +117,10 @@ export default function TheFormulaPage() {
       </div>
 
       <h2>The six pillars (detail)</h2>
-      <p>Six dimensions describe the full player. Together they feed the weighted composite described above.</p>
-      <ul>
-        {PILLARS.map(([title, body]) => (
-          <li key={title}>
-            <strong>{title}.</strong> {body}
-          </li>
-        ))}
-      </ul>
+      <FpiPillarsInteractive
+        intro="Six dimensions describe the full player. Together they feed the weighted composite described above."
+        pillars={PILLARS}
+      />
 
       <h2>Reporting & families</h2>
       <p>

@@ -605,6 +605,28 @@
   }
 }
 
+/* FPI / Formula page — pillar bars rise on load */
+@keyframes fpi-pillar-rise {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.fpi-pillar-bar {
+  transform-origin: bottom center;
+  animation: fpi-pillar-rise 0.88s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fpi-pillar-bar {
+    animation: none;
+    transform: scaleY(1);
+  }
+}
+
 /* Marketing inner pages - readable technical prose */
 .prose-marketing {
   color: color-mix(in srgb, var(--color-formula-frost) 72%, var(--color-formula-mist));

@@ -90,7 +90,7 @@ function TourHotspot({
     >
       <span
         className={cn(
-          'pointer-events-none absolute inset-x-0 top-2 text-center font-mono text-[9px] uppercase leading-tight tracking-[0.26em] sm:text-[10px] sm:tracking-[0.3em]',
+          'pointer-events-none absolute inset-x-0 top-1.5 text-center font-mono text-[7px] uppercase leading-tight tracking-[0.18em] sm:top-2 sm:text-[8px] sm:tracking-[0.22em] md:text-[9px]',
           stop.id === 'footbot' && 'text-white/92',
           stop.id === 'support-cluster' && 'text-zinc-800/90',
           stop.id !== 'footbot' && stop.id !== 'support-cluster' && 'text-white/88'
@@ -101,7 +101,7 @@ function TourHotspot({
       {stop.subCaption ? (
         <span
           className={cn(
-            'pointer-events-none absolute inset-x-0 top-7 text-center font-mono text-[8px] uppercase tracking-[0.24em] sm:top-8 sm:text-[9px] sm:tracking-[0.26em]',
+            'pointer-events-none absolute inset-x-0 top-5 text-center font-mono text-[6px] uppercase tracking-[0.2em] sm:top-7 sm:text-[7px] sm:tracking-[0.22em] md:top-8 md:text-[8px]',
             stop.id === 'support-cluster' ? 'text-zinc-700/85' : 'text-white/50'
           )}
         >
@@ -122,10 +122,14 @@ function TourDot({
   onClick: (id: PublicFacilityZoneId) => void
 }) {
   return (
-    <button type="button" onClick={() => onClick(stop.id)} className="group flex items-center gap-3 text-left">
+    <button
+      type="button"
+      onClick={() => onClick(stop.id)}
+      className="group flex min-w-0 max-w-full items-center gap-2.5 text-left"
+    >
       <span
         className={cn(
-          'relative flex h-3.5 w-3.5 items-center justify-center rounded-full border transition-all duration-300',
+          'relative shrink-0 flex h-3 w-3 items-center justify-center rounded-full border transition-all duration-300',
           active ? 'border-white bg-white' : 'border-white/40 bg-transparent'
         )}
       >
@@ -133,7 +137,7 @@ function TourDot({
       </span>
       <span
         className={cn(
-          'text-sm transition-colors duration-300',
+          'min-w-0 text-left text-[12px] leading-snug transition-colors duration-300 sm:text-[13px]',
           active ? 'text-white' : 'text-white/60 group-hover:text-white/85'
         )}
       >
@@ -161,6 +165,8 @@ export function HomeFacilityTour() {
   }, [autoPlay, tourStops])
 
   const active = useMemo(() => tourStops.find(s => s.id === activeId) ?? tourStops[0]!, [activeId, tourStops])
+  const activeZone = useMemo(() => FACILITY_ZONES.find(z => z.id === active.id), [active.id])
+  const detailSubline = activeZone?.sub ?? active.eyebrow
 
   return (
     <section
@@ -171,15 +177,17 @@ export function HomeFacilityTour() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px)] bg-[length:44px_44px] opacity-[0.22]" />
       <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-gradient-to-t from-formula-deep/50 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-8 px-5 pb-12 pt-10 md:gap-10 md:px-8 md:pb-14 md:pt-12 lg:px-10">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="max-w-[480px] shrink-0">
-            <p className="text-[11px] font-medium uppercase tracking-[0.34em] text-formula-mist">{SITE.facilityName}</p>
-            <h2 className="mt-3 max-w-[16ch] text-[clamp(2.2rem,5vw,3.75rem)] font-semibold leading-[0.92] tracking-[-0.05em] text-formula-paper">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-4 px-5 pb-8 pt-6 md:gap-5 md:px-8 md:pb-10 md:pt-8 lg:px-10">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+          <div className="max-w-xl shrink-0">
+            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-formula-mist md:text-[11px] md:tracking-[0.34em]">
+              {SITE.facilityName}
+            </p>
+            <h2 className="mt-2 text-[clamp(1.65rem,4.2vw,2.75rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-formula-paper md:mt-2.5">
               Tour the facility before you step inside.
             </h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-formula-frost/80">
-              This isometric view follows the floor plan layout; zone copy matches the interactive map on the{' '}
+            <p className="mt-2 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-3 md:text-sm md:leading-relaxed">
+              Floor plan layout (left stack → center field → performance + support → Field 2 / Footbot). Same zones as the{' '}
               <Link href={MARKETING_HREF.facility} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
                 Facility
               </Link>{' '}
@@ -187,11 +195,11 @@ export function HomeFacilityTour() {
             </p>
           </div>
 
-          <div className="flex shrink-0 rounded-full border border-formula-frost/15 bg-formula-paper/[0.06] p-1 shadow-[0_12px_35px_rgba(0,0,0,0.25)] backdrop-blur-md sm:mt-1">
+          <div className="flex shrink-0 rounded-full border border-formula-frost/15 bg-formula-paper/[0.06] p-1 shadow-[0_12px_35px_rgba(0,0,0,0.25)] backdrop-blur-md">
             <button
               type="button"
               onClick={() => setAutoPlay(v => !v)}
-              className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-formula-frost/90 transition hover:bg-formula-paper/[0.08]"
+              className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-formula-frost/90 transition hover:bg-formula-paper/[0.08] md:px-4 md:py-2 md:text-sm"
             >
               {autoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               {autoPlay ? 'Pause tour' : 'Play tour'}
@@ -203,11 +211,16 @@ export function HomeFacilityTour() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: 'easeOut' }}
-          className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-[1.35rem] border border-formula-frost/12 bg-formula-deep/65 shadow-[0_24px_60px_rgba(0,0,0,0.35)]"
+          className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-xl border border-formula-frost/12 bg-formula-deep/65 shadow-[0_16px_40px_rgba(0,0,0,0.3)] md:rounded-[1.2rem]"
         >
-          <p className="sr-only">
-            Click a zone on the map or choose a stop below. The selected area is highlighted on the floor plan.
-          </p>
+          <div className="border-b border-white/[0.06] px-3 py-2 md:px-4 md:py-2.5">
+            <p className="font-mono text-[9px] font-medium uppercase tracking-[0.22em] text-formula-olive md:text-[10px]">
+              Floor plan · select a zone
+            </p>
+            <p className="sr-only">
+              Click a zone on the map or choose a stop below. The selected area is highlighted on the floor plan.
+            </p>
+          </div>
           <FacilityTourStaticFloor
             hotspots={
               <>
@@ -219,41 +232,49 @@ export function HomeFacilityTour() {
           />
         </motion.div>
 
-        <div className="relative z-10 grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">
-          <div className="flex max-h-[200px] flex-wrap content-start items-center gap-x-6 gap-y-3 overflow-y-auto rounded-[1.4rem] border border-white/12 bg-black/38 px-5 py-4 backdrop-blur-md md:max-h-none md:overflow-visible">
-            {tourStops.map(stop => (
-              <TourDot
-                key={stop.id}
-                stop={stop}
-                active={stop.id === activeId}
-                onClick={id => {
-                  setAutoPlay(false)
-                  setActiveId(id)
-                }}
-              />
-            ))}
+        <div className="relative z-10 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,360px)] lg:items-start lg:gap-5">
+          <div className="rounded-xl border border-white/12 bg-black/38 px-3 py-3 backdrop-blur-md md:rounded-[1.2rem] md:px-4 md:py-3.5">
+            <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">Zones</p>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-3 md:grid-cols-4">
+              {tourStops.map(stop => (
+                <TourDot
+                  key={stop.id}
+                  stop={stop}
+                  active={stop.id === activeId}
+                  onClick={id => {
+                    setAutoPlay(false)
+                    setActiveId(id)
+                  }}
+                />
+              ))}
+            </div>
           </div>
 
           <AnimatePresence mode="wait">
             <motion.div
               key={active.id}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35 }}
-              className="rounded-[1.6rem] border border-white/12 bg-black/48 p-5 shadow-[0_30px_70px_rgba(0,0,0,0.28)] backdrop-blur-md"
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3 }}
+              className="rounded-xl border border-white/12 bg-black/48 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.25)] backdrop-blur-md md:rounded-[1.35rem] md:p-5"
             >
-              <p className="text-[11px] uppercase tracking-[0.28em] text-white/45">{active.eyebrow}</p>
-              <h3 className="mt-2 text-[clamp(1.5rem,2.4vw,2.4rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-white">
+              <p className="text-[10px] uppercase tracking-[0.24em] text-white/45 md:text-[11px] md:tracking-[0.28em]">Zone detail</p>
+              <h3 className="mt-1.5 text-lg font-semibold leading-tight tracking-[-0.03em] text-white md:text-xl">
                 {active.name}
               </h3>
-              <p className="mt-3 max-w-[38ch] text-sm leading-6 text-white/72">{active.description}</p>
+              {detailSubline ? (
+                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-formula-volt/80 md:tracking-[0.22em]">
+                  {detailSubline}
+                </p>
+              ) : null}
+              <p className="mt-2 text-[13px] leading-snug text-white/72 md:mt-3 md:text-sm md:leading-6">{active.description}</p>
               <Link
                 href={MARKETING_HREF.facility}
-                className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/16 bg-white/8 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/14"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/16 bg-white/8 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/14 md:mt-5 md:gap-2 md:px-4 md:py-2 md:text-sm"
               >
-                Open facility map
-                <ChevronRight className="h-4 w-4" />
+                Facility map
+                <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
               </Link>
             </motion.div>
           </AnimatePresence>
