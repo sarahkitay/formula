@@ -35,7 +35,7 @@ export function stableInt(seed: string, lo: number, hi: number): number {
 /** Stable roster / capacity key for admin views (one logical bookable block). */
 export function getAdminBlockKey(slot: ScheduleSlot): string | null {
   if (slot.youthBlockId) return slot.youthBlockId
-  if (slot.kind === 'preschool' && slot.assetId === 'match-arena') {
+  if (slot.kind === 'preschool' && slot.assetId === 'performance-center') {
   return `preschool-${slot.dayIndex}`
   }
   if (slot.kind === 'open_gym' && slot.assetId === 'gym') {
@@ -48,9 +48,9 @@ function isAnchorSlot(slot: ScheduleSlot): boolean {
   const key = getAdminBlockKey(slot)
   if (!key) return false
   if (slot.kind === 'open_gym') return slot.assetId === 'gym'
-  if (slot.kind === 'preschool') return slot.assetId === 'match-arena'
+  if (slot.kind === 'preschool') return slot.assetId === 'performance-center'
   if (slot.youthBlockId?.startsWith('gym-')) return slot.assetId === 'gym'
-  return slot.assetId === 'match-arena' && slot.stationIndex == null
+  return slot.assetId === 'performance-center' && slot.stationIndex == null
 }
 
 /** One representative slot per bookable block for the week (roster / weekly tab). */

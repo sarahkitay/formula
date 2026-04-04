@@ -9,13 +9,13 @@ function hashEnrollment(seed: string): number {
 }
 
 /**
- * One bookable row per youth block (Match Arena anchor only, system-generated roster).
+ * One bookable row per youth block (Performance Center anchor only, system-generated roster).
  */
 export function getBookableYouthSlots(week: GeneratedWeek, band: ScheduleAgeBand | null): BookableYouthSlot[] {
   if (!band) return []
   const anchors = week.slots.filter(
     (s): s is ScheduleSlot & { youthBlockId: string } =>
-      s.assetId === 'match-arena' &&
+      s.assetId === 'performance-center' &&
       !!s.youthBlockId &&
       scheduleSlotMatchesChildBand(s, band, ['youth_training'])
   )

@@ -23,6 +23,8 @@ type TourStop = {
   top: string
   width: string
   height: string
+  /** Second line under caps label (e.g. Application layer) */
+  subCaption?: string
 }
 
 function tourPct(value: string) {
@@ -55,6 +57,7 @@ function buildTourStops(): TourStop[] {
       top: entry.top,
       width: entry.width,
       height: entry.height,
+      subCaption: zone.sub,
     }
   })
 }
@@ -89,15 +92,20 @@ function TourHotspot({
         className={cn(
           'pointer-events-none absolute inset-x-0 top-2 text-center font-mono text-[9px] uppercase leading-tight tracking-[0.26em] sm:text-[10px] sm:tracking-[0.3em]',
           stop.id === 'footbot' && 'text-white/92',
-          (stop.id === 'gym' || stop.id === 'speed-court') && 'text-black/80',
-          stop.id !== 'footbot' && stop.id !== 'gym' && stop.id !== 'speed-court' && 'text-white/88'
+          stop.id === 'support-cluster' && 'text-zinc-800/90',
+          stop.id !== 'footbot' && stop.id !== 'support-cluster' && 'text-white/88'
         )}
       >
         {stop.label}
       </span>
-      {stop.id === 'match-arena' ? (
-        <span className="pointer-events-none absolute inset-x-0 top-7 text-center font-mono text-[8px] uppercase tracking-[0.24em] text-white/50 sm:top-8 sm:text-[9px] sm:tracking-[0.26em]">
-          Proving Ground
+      {stop.subCaption ? (
+        <span
+          className={cn(
+            'pointer-events-none absolute inset-x-0 top-7 text-center font-mono text-[8px] uppercase tracking-[0.24em] sm:top-8 sm:text-[9px] sm:tracking-[0.26em]',
+            stop.id === 'support-cluster' ? 'text-zinc-700/85' : 'text-white/50'
+          )}
+        >
+          {stop.subCaption}
         </span>
       ) : null}
     </motion.button>
@@ -138,7 +146,7 @@ function TourDot({
 export function HomeFacilityTour() {
   const tourStops = useMemo(() => buildTourStops(), [])
   const hotspotsOrdered = useMemo(() => sortStopsForHitOrder(tourStops), [tourStops])
-  const [activeId, setActiveId] = useState<PublicFacilityZoneId>('match-arena')
+  const [activeId, setActiveId] = useState<PublicFacilityZoneId>('field-1')
   const [autoPlay, setAutoPlay] = useState(true)
 
   useEffect(() => {

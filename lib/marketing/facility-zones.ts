@@ -1,144 +1,174 @@
-/** Shared facility plan metadata (matches interactive SVG on /facility). */
+/**
+ * Canonical public facility zones — single source for /facility map, homepage tour,
+ * and isometric hotspot geometry (same % as `FacilityTourStaticFloor`).
+ */
 
 export type PublicFacilityZoneId =
   | 'field-1'
   | 'field-2'
   | 'field-3'
-  | 'match-arena'
+  | 'performance-center'
   | 'speed-track'
-  | 'double-speed'
-  | 'speed-court'
+  | 'double-speed-court'
   | 'footbot'
-  | 'gym'
-  | 'flex-room'
-  | 'party-room'
+  | 'support-cluster'
+
+export type FacilityEmphasis = 'primary' | 'support'
+
+export type FacilityZoneTour = {
+  label: string
+  sublabel: string
+  left: string
+  top: string
+  width: string
+  height: string
+}
 
 export type FacilityZone = {
   id: PublicFacilityZoneId
   label: string
   sub?: string
-  /** SVG viewBox 0 0 1000 520 */
-  x: number
-  y: number
-  w: number
-  h: number
+  /** Name in `grid-template-areas` for `PublicFacilityMap` */
+  gridArea: string
   copy: string
+  emphasis: FacilityEmphasis
+  tour: FacilityZoneTour
 }
 
+/**
+ * Spatial reading order; `FACILITY_TOUR_LAYOUT` is derived from this array.
+ * Grid areas (4×3):
+ *   f3  f1  perf  f2
+ *   ds  f1  perf  fb
+ *   st  f1  sup   fb
+ */
 export const FACILITY_ZONES: FacilityZone[] = [
-  {
-    id: 'field-1',
-    label: 'Field 1',
-    x: 24,
-    y: 80,
-    w: 200,
-    h: 120,
-    copy: 'Match-grade surface for block training, small-sided work, and controlled repetition.',
-  },
-  {
-    id: 'field-2',
-    label: 'Field 2',
-    x: 232,
-    y: 80,
-    w: 200,
-    h: 120,
-    copy: 'Parallel lane for age-tiered sessions and capacity-balanced programming.',
-  },
   {
     id: 'field-3',
     label: 'Field 3',
-    x: 440,
-    y: 80,
-    w: 200,
-    h: 120,
+    gridArea: 'f3',
+    emphasis: 'primary',
     copy: 'Technical emphasis and high-touch coaching ratios during peak windows.',
+    tour: {
+      label: 'FIELD 3',
+      sublabel: 'Court lanes',
+      left: '3.5%',
+      top: '5%',
+      width: '12.5%',
+      height: '20%',
+    },
   },
   {
-    id: 'match-arena',
-    label: 'Match Arena',
-    sub: 'Proving ground',
-    x: 648,
-    y: 80,
-    w: 328,
-    h: 120,
-    copy: 'Where training translates: constrained game scenarios, tempo discipline, and competitive application.',
+    id: 'double-speed-court',
+    label: 'Double Speed Court',
+    gridArea: 'ds',
+    emphasis: 'primary',
+    copy: 'Lateral change-of-direction and repeatability under structured constraints.',
+    tour: {
+      label: 'DOUBLE SPEED COURT',
+      sublabel: 'Drill bays',
+      left: '3.5%',
+      top: '27%',
+      width: '12.5%',
+      height: '24%',
+    },
   },
   {
     id: 'speed-track',
     label: 'Speed Track',
-    x: 24,
-    y: 216,
-    w: 952,
-    h: 72,
-    copy: 'Linear acceleration and mechanical efficiency - metered, not chaotic.',
+    gridArea: 'st',
+    emphasis: 'primary',
+    copy: 'Linear acceleration and mechanical efficiency — metered, not chaotic.',
+    tour: {
+      label: 'SPEED TRACK',
+      sublabel: 'Sprint lane',
+      left: '3.5%',
+      top: '53%',
+      width: '12.5%',
+      height: '40%',
+    },
   },
   {
-    id: 'double-speed',
-    label: 'Double Speed Court',
-    x: 24,
-    y: 304,
-    w: 470,
-    h: 100,
-    copy: 'Lateral change-of-direction and repeatability under structured constraints.',
+    id: 'field-1',
+    label: 'Field 1',
+    gridArea: 'f1',
+    emphasis: 'primary',
+    copy: 'Match-grade surface for block training, small-sided work, and controlled repetition.',
+    tour: {
+      label: 'FIELD 1',
+      sublabel: 'Center pitch',
+      left: '17%',
+      top: '5%',
+      width: '33%',
+      height: '88%',
+    },
   },
   {
-    id: 'speed-court',
-    label: 'Speed Court',
-    x: 506,
-    y: 304,
-    w: 470,
-    h: 100,
-    copy: 'Cognitive speed and decision density - scan habits tied to movement outcomes.',
+    id: 'performance-center',
+    label: 'Performance Center',
+    sub: 'Application layer',
+    gridArea: 'perf',
+    emphasis: 'primary',
+    copy:
+      'Where training translates: constrained game scenarios, tempo discipline, and competitive application.',
+    tour: {
+      label: 'PERFORMANCE CENTER',
+      sublabel: 'Application layer',
+      left: '51.5%',
+      top: '5%',
+      width: '17%',
+      height: '47%',
+    },
+  },
+  {
+    id: 'support-cluster',
+    label: 'Support',
+    sub: 'Gym · flex · party',
+    gridArea: 'sup',
+    emphasis: 'support',
+    copy:
+      'Gym, flex room, party hosting, and program-adjacent support — important operationally, secondary on this map to core training assets.',
+    tour: {
+      label: 'SUPPORT',
+      sublabel: 'Gym · flex · party',
+      left: '51.5%',
+      top: '54%',
+      width: '17%',
+      height: '39%',
+    },
+  },
+  {
+    id: 'field-2',
+    label: 'Field 2',
+    gridArea: 'f2',
+    emphasis: 'primary',
+    copy: 'Parallel lane for age-tiered sessions and capacity-balanced programming.',
+    tour: {
+      label: 'FIELD 2',
+      sublabel: 'Main pitch',
+      left: '70%',
+      top: '5%',
+      width: '27%',
+      height: '40%',
+    },
   },
   {
     id: 'footbot',
     label: 'Footbot',
-    x: 24,
-    y: 420,
-    w: 220,
-    h: 88,
+    gridArea: 'fb',
+    emphasis: 'primary',
     copy: 'Precision touch and distribution reps with measurable volume and consistency.',
-  },
-  {
-    id: 'gym',
-    label: 'Gym',
-    x: 252,
-    y: 420,
-    w: 220,
-    h: 88,
-    copy: 'Strength and resilience primitives that protect the athlete and unlock capacity.',
-  },
-  {
-    id: 'flex-room',
-    label: 'Flex Room',
-    x: 480,
-    y: 420,
-    w: 220,
-    h: 88,
-    copy: 'Recovery, movement prep, and micro-session overflow without compromising floor integrity.',
-  },
-  {
-    id: 'party-room',
-    label: 'Party Room',
-    x: 708,
-    y: 420,
-    w: 268,
-    h: 88,
-    copy: 'Program-adjacent events with the same operational discipline as training blocks.',
+    tour: {
+      label: 'FOOTBOT',
+      sublabel: 'Tech zone',
+      left: '70%',
+      top: '47%',
+      width: '27%',
+      height: '46%',
+    },
   },
 ]
 
-const VB_W = 1000
-const VB_H = 520
-const INSET_PCT = 2.3
-const USABLE = 100 - 2 * INSET_PCT
-
-/** Map SVG plan coords to % inside an inset frame (legacy helper; homepage tour uses `FACILITY_TOUR_LAYOUT`). */
-export function facilitySvgRectToTourPercent(rect: Pick<FacilityZone, 'x' | 'y' | 'w' | 'h'>) {
-  return {
-    x: INSET_PCT + (rect.x / VB_W) * USABLE,
-    y: INSET_PCT + (rect.y / VB_H) * USABLE,
-    w: (rect.w / VB_W) * USABLE,
-    h: (rect.h / VB_H) * USABLE,
-  }
-}
+export const FACILITY_ZONES_BY_ID: Record<PublicFacilityZoneId, FacilityZone> = Object.fromEntries(
+  FACILITY_ZONES.map(z => [z.id, z])
+) as Record<PublicFacilityZoneId, FacilityZone>

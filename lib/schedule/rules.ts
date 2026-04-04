@@ -12,7 +12,7 @@ export const PROGRAM_UI: Record<
     text: '#ffffff',
   },
   preschool: {
-    key: 'Pre-school (Match Arena)',
+    key: 'Pre-school (Performance Center)',
     bg: 'rgb(21 128 61 / 0.88)',
     border: 'rgb(22 101 52)',
     text: '#ffffff',

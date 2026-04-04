@@ -28,7 +28,7 @@ const myPlayers = mockPlayers.filter(p => PARENT_PLAYER_IDS.includes(p.id))
 
 /** Training-floor rows only: parents never book fields or party room from this view */
 const PARENT_SCHEDULE_ASSETS = [
-  'match-arena',
+  'performance-center',
   'speed-track',
   'double-speed-court',
   'speed-court',

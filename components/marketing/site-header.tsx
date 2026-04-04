@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
-import { HEADER_MAIN, HEADER_MORE, HOME_ANCHORS } from '@/lib/marketing/nav'
+import { HEADER_MAIN, HOME_ANCHORS } from '@/lib/marketing/nav'
 
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -36,25 +36,6 @@ export function SiteHeader() {
                 {item.label}
               </NavLink>
             ))}
-            <details className="group relative">
-              <summary className="cursor-pointer list-none font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-formula-mist marker:text-transparent hover:text-formula-paper [&::-webkit-details-marker]:hidden">
-                More
-              </summary>
-              <div className="absolute left-0 top-full z-50 mt-2 w-[min(100vw-2rem,280px)] border border-formula-frost/12 bg-formula-base/95 p-2 py-3 shadow-2xl backdrop-blur-xl">
-                <ul className="flex flex-col gap-1">
-                  {HEADER_MORE.map(item => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className="block rounded-sm px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist hover:bg-formula-paper/[0.05] hover:text-formula-paper"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </details>
           </nav>
 
           <Link

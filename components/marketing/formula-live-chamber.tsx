@@ -21,8 +21,16 @@ const PILLARS: {
   { id: 'consistency', label: 'Consistency', motif: 'consistency', weightLetter: 'k', mathLetter: 'K', settleWeight: '0.16' },
 ]
 
-function Motif({ kind, active }: { kind: (typeof PILLARS)[number]['motif']; active: boolean }) {
-  const o = active ? 1 : 0.2
+function Motif({
+  kind,
+  active,
+  accent,
+}: {
+  kind: (typeof PILLARS)[number]['motif']
+  active: boolean
+  accent?: boolean
+}) {
+  const o = active ? (accent ? 1 : 0.92) : 0.2
   const stroke = 'currentColor'
   const classFor = {
     velocity: 'flc-motif-velocity text-formula-volt',
@@ -34,7 +42,11 @@ function Motif({ kind, active }: { kind: (typeof PILLARS)[number]['motif']; acti
   }[kind]
 
   return (
-    <div className={cn('h-8 w-10 shrink-0', classFor)} style={{ opacity: o }} aria-hidden>
+    <div
+      className={cn('h-8 w-10 shrink-0', classFor, accent && active && 'drop-shadow-[0_0_10px_rgba(220,255,0,0.12)]')}
+      style={{ opacity: o }}
+      aria-hidden
+    >
       {kind === 'velocity' && (
         <svg viewBox="0 0 40 32" className="h-full w-full" fill="none">
           <line x1="4" y1="16" x2="32" y2="16" stroke={stroke} strokeWidth="1" opacity="0.35" />
@@ -88,18 +100,31 @@ function PillarRow({
   visible,
   streamsLive,
   flicker,
+  side,
+  accent,
 }: {
   pillar: (typeof PILLARS)[number]
   index: number
   visible: boolean
   streamsLive: boolean
   flicker: boolean
+  side: 'left' | 'right'
+  accent: boolean
 }) {
   const display = flicker && streamsLive ? `${(0.1 + (index * 0.03) % 0.09).toFixed(2)}` : pillar.settleWeight
+  const towardCenter = side === 'left'
+  const lineOrigin = towardCenter ? 'origin-left' : 'origin-right'
+  const lineGradient = towardCenter
+    ? 'bg-gradient-to-r from-[rgba(220,255,0,0.32)] to-transparent'
+    : 'bg-gradient-to-l from-[rgba(220,255,0,0.32)] to-transparent'
 
   return (
     <motion.div
-      className="flex items-center gap-3 border-b border-formula-frost/[0.06] pb-3 last:border-b-0 lg:border-b-0 lg:pb-0"
+      className={cn(
+        'flex items-center gap-2.5 pb-2.5 last:pb-0 lg:gap-3 lg:pb-2',
+        side === 'right' && 'flex-row-reverse',
+        accent && visible && 'flc-pillar--accent -mx-1 px-1 py-1 lg:-mx-2 lg:px-2'
+      )}
       initial={false}
       animate={{
         opacity: visible ? 1 : 0,
@@ -107,22 +132,38 @@ function PillarRow({
       }}
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
     >
-      <Motif kind={pillar.motif} active={visible} />
-      <div className="min-w-0 flex-1">
-        <span className="font-mono text-[13px] font-medium tracking-tight text-formula-volt md:text-sm">{pillar.label}</span>
+      <Motif kind={pillar.motif} active={visible} accent={accent && visible} />
+      <div className={cn('min-w-0 flex-1', side === 'right' && 'text-right')}>
+        <span
+          className={cn(
+            'font-mono text-[13px] tracking-tight md:text-sm',
+            accent && visible
+              ? 'font-semibold text-formula-paper'
+              : 'font-medium text-formula-volt'
+          )}
+        >
+          {pillar.label}
+        </span>
         {streamsLive ? (
           <motion.span
-            className="ml-2 inline-block font-mono text-[10px] tabular-nums tracking-tight text-formula-frost/65"
+            className={cn(
+              'ml-2 inline-block font-mono text-[10px] tabular-nums tracking-tight text-formula-frost/42',
+              side === 'right' && 'ml-0 mr-2'
+            )}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            w<sub className="text-formula-mist">{pillar.weightLetter}</sub>≈{display}
+            w<sub className="text-formula-mist/70">{pillar.weightLetter}</sub>≈{display}
           </motion.span>
         ) : null}
       </div>
       <motion.div
-        className="hidden h-px max-w-[3.5rem] flex-1 origin-left bg-gradient-to-r from-formula-volt/35 to-transparent lg:block"
+        className={cn(
+          'hidden h-[1px] max-w-[4.5rem] flex-1 lg:block',
+          lineOrigin,
+          lineGradient
+        )}
         initial={false}
         animate={{ scaleX: streamsLive && visible ? 1 : 0 }}
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
@@ -186,7 +227,8 @@ export function FormulaLiveChamber() {
     }
   }, [reduce])
 
-  const perimeterClass = 'font-mono text-[9px] uppercase tracking-[0.28em] text-formula-frost/35 transition-opacity duration-[1.4s]'
+  const perimeterClass =
+    'font-mono text-[8px] uppercase tracking-[0.26em] text-formula-frost/22 transition-opacity duration-[1.4s]'
 
   return (
     <section
@@ -244,10 +286,10 @@ export function FormulaLiveChamber() {
       </div>
 
       <div className="relative z-10">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-formula-mist">Living model</p>
+        <p className="font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-frost/32">Living model</p>
         <h2
           id="formula-live-chamber-heading"
-          className="mt-3 max-w-[22ch] font-mono text-lg font-semibold leading-snug tracking-tight text-formula-paper md:text-xl"
+          className="mt-4 max-w-[26ch] font-mono text-xl font-semibold leading-snug tracking-tight text-formula-paper md:max-w-[30ch] md:text-2xl"
         >
           The Formula is not a slogan. It is revealed as a living weighted system.
         </h2>
@@ -256,20 +298,37 @@ export function FormulaLiveChamber() {
           representative.
         </p>
 
-        <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-stretch lg:gap-6">
-          <div className="flex flex-1 flex-col gap-4 lg:gap-5">
-            {PILLARS.slice(0, 3).map((p, i) => (
-              <PillarRow key={p.id} pillar={p} index={i} visible={pillarCount > i} streamsLive={streamsLive} flicker={flicker} />
-            ))}
+        <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-stretch lg:gap-5 xl:gap-7">
+          <div className="flex flex-1 flex-col">
+            <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.28em] text-formula-frost/28">Inputs</p>
+            <div className="flex flex-col gap-1 lg:gap-0.5">
+              {PILLARS.slice(0, 3).map((p, i) => (
+                <PillarRow
+                  key={p.id}
+                  pillar={p}
+                  index={i}
+                  visible={pillarCount > i}
+                  streamsLive={streamsLive}
+                  flicker={flicker}
+                  side="left"
+                  accent={p.id === 'decision'}
+                />
+              ))}
+            </div>
           </div>
 
-          <div className="flex shrink-0 flex-col justify-center lg:w-[min(280px,28vw)]">
-            <div className="relative rounded-sm border border-formula-frost/[0.08] bg-formula-base/30 px-4 py-5">
-              <svg className="pointer-events-none absolute inset-2 h-[calc(100%-1rem)] w-[calc(100%-1rem)] opacity-[0.12]" aria-hidden>
+          <div className="flex shrink-0 flex-col justify-center lg:w-[min(300px,30vw)]">
+            <div
+              className="relative rounded-md border border-white/[0.08] px-5 py-6"
+              style={{ background: 'rgba(0,0,0,0.25)' }}
+            >
+              <svg className="pointer-events-none absolute inset-2 h-[calc(100%-1rem)] w-[calc(100%-1rem)] opacity-[0.05]" aria-hidden>
                 <line x1="50%" y1="8" x2="50%" y2="92%" stroke="currentColor" className="text-formula-frost" strokeWidth="0.5" strokeDasharray="2 3" />
                 <line x1="8" y1="50%" x2="calc(100% - 8px)" y2="50%" stroke="currentColor" className="text-formula-frost" strokeWidth="0.5" strokeDasharray="2 3" />
               </svg>
-              <p className="relative text-center font-mono text-[9px] uppercase tracking-[0.2em] text-formula-frost/50">Convergence</p>
+              <p className="relative text-center font-mono text-[8px] uppercase tracking-[0.22em] text-formula-frost/38">
+                Convergence
+              </p>
               <div className="relative mt-4 h-2 w-full overflow-hidden rounded-sm bg-formula-paper/[0.06]">
                 <motion.div
                   className="h-full rounded-sm bg-gradient-to-r from-formula-volt/25 via-formula-volt/55 to-formula-volt/35"
@@ -279,12 +338,19 @@ export function FormulaLiveChamber() {
                 />
               </div>
               <motion.div
-                className="relative mt-5 text-center"
+                className="relative mt-6 text-center"
                 initial={false}
                 animate={{ opacity: perfVisible ? 1 : 0, y: perfVisible ? 0 : 6 }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span className="font-mono text-[clamp(1.15rem,3.5vw,1.5rem)] font-semibold tracking-tight text-formula-paper">Performance</span>
+                <span
+                  className="font-mono text-[clamp(1.35rem,4vw,1.8rem)] font-semibold tracking-[-0.04em] text-formula-paper"
+                  style={{
+                    textShadow: '0 0 36px rgba(220, 255, 0, 0.08), 0 1px 0 rgba(0,0,0,0.35)',
+                  }}
+                >
+                  Performance
+                </span>
               </motion.div>
               <motion.div
                 className="relative mt-3 min-h-[2.5rem] text-center font-mono text-[11px] leading-relaxed tracking-tight text-formula-frost/75"
@@ -311,30 +377,39 @@ export function FormulaLiveChamber() {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col gap-4 lg:gap-5">
-            {PILLARS.slice(3, 6).map((p, i) => (
-              <PillarRow
-                key={p.id}
-                pillar={p}
-                index={i + 3}
-                visible={pillarCount > i + 3}
-                streamsLive={streamsLive}
-                flicker={flicker}
-              />
-            ))}
+          <div className="flex flex-1 flex-col">
+            <p className="mb-3 text-right font-mono text-[9px] uppercase tracking-[0.28em] text-formula-frost/28">Application</p>
+            <div className="flex flex-col gap-1 lg:gap-0.5">
+              {PILLARS.slice(3, 6).map((p, i) => (
+                <PillarRow
+                  key={p.id}
+                  pillar={p}
+                  index={i + 3}
+                  visible={pillarCount > i + 3}
+                  streamsLive={streamsLive}
+                  flicker={flicker}
+                  side="right"
+                  accent={false}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
         <motion.div
-          className="relative mt-10 max-w-3xl border-t border-formula-frost/[0.08] pt-8 text-sm leading-relaxed text-formula-mist"
+          className="relative mt-10 max-w-xl border-t border-formula-frost/[0.08] pt-8"
           initial={false}
           animate={{ opacity: philosophyOn ? 1 : 0, y: philosophyOn ? 0 : 10 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p>
-            In practice we compute a <strong className="font-medium text-formula-paper">weighted composite</strong>, not a simple sum: each domain is scored
-            from structured testing and observation, then combined through age-specific weights so the same athlete is evaluated fairly for their stage of
-            development.
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-formula-paper/92">
+            Weighted composite
+          </p>
+          <p className="mt-3 text-[14px] leading-relaxed text-formula-frost/72">
+            Each domain is scored independently, then combined using age-specific weights.
+          </p>
+          <p className="mt-4 font-mono text-[12px] leading-snug tracking-tight text-formula-frost/52">
+            Not a sum. A system.
           </p>
         </motion.div>
       </div>

@@ -120,20 +120,17 @@ export function AdminFacilityMap({ assets, selectedId, onSelect }: AdminFacility
           OPERATIONS_GRID // LIVE
         </text>
 
-        <Zone id="field-1" x={24} y={80} w={200} h={120} label="Field 1" />
-        <Zone id="field-2" x={232} y={80} w={200} h={120} label="Field 2" />
-        <Zone id="field-3" x={440} y={80} w={200} h={120} label="Field 3" />
-        <Zone id="match-arena" x={648} y={80} w={328} h={120} label="Match Arena" />
+        <Zone id="field-3" x={20} y={56} w={130} h={120} label="Field 3" />
+        <Zone id="double-speed-court" x={20} y={184} w={130} h={140} label="Dbl Spd" />
+        <Zone id="speed-track" x={20} y={332} w={130} h={160} label="Spd Track" />
 
-        <Zone id="speed-track" x={24} y={216} w={952} h={72} label="Speed Track" />
+        <Zone id="field-1" x={160} y={56} w={380} h={436} label="Field 1" />
 
-        <Zone id="double-speed" x={24} y={304} w={470} h={100} label="Double Speed Courts" />
-        <Zone id="speed-court" x={506} y={304} w={470} h={100} label="Speed Court" />
+        <Zone id="performance-center" x={548} y={56} w={215} h={230} label="Perf Ctr" />
+        <Zone id="support-cluster" x={548} y={292} w={215} h={200} label="Support" />
 
-        <Zone id="footbot" x={24} y={420} w={220} h={88} label="Footbot" />
-        <Zone id="gym" x={252} y={420} w={220} h={88} label="Gym" />
-        <Zone id="flex-room" x={480} y={420} w={220} h={88} label="Flex Room" />
-        <Zone id="party-room" x={708} y={420} w={268} h={88} label="Party Room" />
+        <Zone id="field-2" x={773} y={56} w={207} h={200} label="Field 2" />
+        <Zone id="footbot" x={773} y={264} w={207} h={228} label="Footbot" />
       </svg>
     </div>
   )

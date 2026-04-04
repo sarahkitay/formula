@@ -9,17 +9,31 @@
 .formula-live-chamber__grid {
   position: absolute;
   inset: 0;
+  --flc-line-weak: color-mix(in srgb, var(--color-formula-frost, #c8d4d0) 10%, transparent);
   background-image:
-    linear-gradient(to right, var(--flc-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--flc-line) 1px, transparent 1px);
+    linear-gradient(to right, var(--flc-line-weak) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--flc-line-weak) 1px, transparent 1px);
   background-size: 28px 28px;
   opacity: 0;
   transition: opacity 2.2s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
+  /* Softer in the middle so content reads first; slightly stronger at edges */
+  mask-image: radial-gradient(ellipse 68% 75% at 50% 48%, black 0%, black 42%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 68% 75% at 50% 48%, black 0%, black 42%, transparent 78%);
 }
 
 .formula-live-chamber__grid.is-on {
-  opacity: 1;
+  opacity: 0.36;
+  animation: flc-grid-shift 90s linear infinite;
+}
+
+@keyframes flc-grid-shift {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 28px 20px, 20px 28px;
+  }
 }
 
 .formula-live-chamber__grain {
@@ -189,7 +203,35 @@
 
   .formula-live-chamber__grid {
     transition: none;
-    opacity: 0.35;
+    opacity: 0.22;
+    animation: none;
   }
 
+}
+
+/* Active pillar (e.g. decision-making): alive, not decorative */
+@keyframes flc-accent-glow {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flc-volt) 18%, transparent);
+  }
+  50% {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flc-volt) 32%, transparent);
+  }
+}
+
+.flc-pillar--accent {
+  border-radius: 2px;
+  animation: flc-accent-glow 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flc-pillar--accent {
+    animation: none;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flc-volt) 22%, transparent);
+  }
+
+  .formula-live-chamber__grid.is-on {
+    animation: none;
+  }
 }

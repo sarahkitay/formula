@@ -5,7 +5,7 @@ export const SCHEDULE_ASSETS: ScheduleAsset[] = [
   { id: 'field-1', label: 'Field 1', category: 'field', allowsYouthTraining: false },
   { id: 'field-2', label: 'Field 2', category: 'field', allowsYouthTraining: false },
   { id: 'field-3', label: 'Field 3', category: 'field', allowsYouthTraining: false },
-  { id: 'match-arena', label: 'Match Arena', category: 'training', allowsYouthTraining: true },
+  { id: 'performance-center', label: 'Performance Center', category: 'training', allowsYouthTraining: true },
   { id: 'speed-track', label: 'Speed Track', category: 'training', allowsYouthTraining: true },
   { id: 'double-speed-court', label: 'Double Speed Court', category: 'training', allowsYouthTraining: true },
   { id: 'speed-court', label: 'Speed Court', category: 'training', allowsYouthTraining: true },

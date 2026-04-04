@@ -61,11 +61,11 @@ function isWeekend(d: DayIndex): boolean {
   return d === 0 || d === 6
 }
 
-/** Mon–Fri preschool on Match Arena */
+/** Mon–Fri preschool on Performance Center */
 function pushPreschool(slots: ScheduleSlot[], day: DayIndex) {
   if (!isWeekday(day)) return
   add(slots, {
-    assetId: 'match-arena',
+    assetId: 'performance-center',
     dayIndex: day,
     startMinute: 9 * 60,
     endMinute: 11 * 60,
@@ -75,7 +75,7 @@ function pushPreschool(slots: ScheduleSlot[], day: DayIndex) {
   })
 }
 
-/** Youth rotation: Match Arena hub + 4 active stations (no idle station) */
+/** Youth rotation: Performance Center hub + 4 active stations (no idle station) */
 function pushYouthDay(slots: ScheduleSlot[], day: DayIndex) {
   const blocks = getYouthBlocksForDay(day)
   blocks.forEach((b, idx) => {
@@ -84,7 +84,7 @@ function pushYouthDay(slots: ScheduleSlot[], day: DayIndex) {
       'Rot A: S1→S2 · B: S2→S1 · C: S3→S4 · D: S4→S3 · 20 athletes / 4×5'
 
     add(slots, {
-      assetId: 'match-arena',
+      assetId: 'performance-center',
       dayIndex: day,
       startMinute: b.startMinute,
       endMinute: b.endMinute,

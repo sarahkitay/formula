@@ -1,6 +1,14 @@
 /**
  * Published public pricing and fee notes. Adjust here when rates change; amounts are operational defaults until finance confirms.
  */
+/** Prepaid session package (public). Monthly membership tiers are paused until launched. */
+export const SESSION_PACKAGE_10 = {
+  sessions: 10,
+  priceUsd: 300,
+  label: '10-session package',
+  summary: '10 sessions for $300 — our current package offering.',
+} as const
+
 export const FORMULA_SKILLS_CHECK = {
   name: 'Formula Skills Check',
   priceUsd: 200,
