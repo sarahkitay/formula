@@ -60,7 +60,7 @@ export function HomeSpeedCourtSection() {
               Speed Court
             </h3>
             <p className="mt-5 max-w-[28rem] text-[15px] leading-[1.65] text-formula-paper/85">
-              Decision speed is a soccer skill. Reaction time, scanning, and choice density under constraint — the overload
+              Decision speed is a soccer skill. Reaction time, scanning, and choice density under constraint: the overload
               moments that decide whether a player influences the game or just occupies space.
             </p>
             <Link

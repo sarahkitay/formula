@@ -1,7 +1,7 @@
 import type { PublicFacilityZoneId } from '@/lib/marketing/facility-zones'
 
 /**
- * Hit areas and labels for the homepage facility tour — % positions inside the 1240×930 transform plane
+ * Hit areas and labels for the homepage facility tour (% positions inside the 1240×930 transform plane)
  * (matches `FacilityTourStaticFloor` geometry).
  */
 export type FacilityTourLayoutEntry = {

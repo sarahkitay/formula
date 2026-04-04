@@ -13,7 +13,7 @@ type MediaOverlayTextPanelProps = {
 /**
  * Copy card over full-bleed media: stays hidden until intersecting viewport, then fades in so photo/video stays visible first.
  *
- * Do not paste `<Image alt="…">` or `aria-label` text as visible body copy here — `aria-hidden` on a child does **not** hide it on screen, only from assistive tech.
+ * Do not paste `<Image alt="…">` or `aria-label` text as visible body copy here. `aria-hidden` on a child does **not** hide it on screen, only from assistive tech.
  */
 export function MediaOverlayTextPanel({ children, className }: MediaOverlayTextPanelProps) {
   const { ref, visible } = useFadeInOnView<HTMLDivElement>()

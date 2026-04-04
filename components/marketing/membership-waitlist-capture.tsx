@@ -66,12 +66,12 @@ export function MembershipWaitlistCapture({
           return
         }
         setStatus('success')
-        setMessage("You're on the list — we'll be in touch.")
+        setMessage("You're on the list. We'll be in touch.")
         setEmail('')
         setName('')
       } catch {
         setStatus('error')
-        setMessage('Network error — try again.')
+        setMessage('Network error. Try again.')
       }
     },
     [email, name, hp, source]

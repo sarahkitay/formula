@@ -5,7 +5,7 @@ import { MARKETING_HREF } from '@/lib/marketing/nav'
 const FIELDS_PHOTO_SRC = '/8E3A3278.jpg'
 
 /**
- * Homepage: match-grade fields — 50/50 photo + copy (md+). No full-bleed essay on the image.
+ * Homepage: match-grade fields, 50/50 photo + copy (md+). No full-bleed essay on the image.
  * Alt text stays on `<Image>` only (never duplicated as body copy).
  */
 export function HomeFieldsFormulaSection() {
@@ -40,13 +40,13 @@ export function HomeFieldsFormulaSection() {
           </h2>
 
           <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">
-            Multiple lanes and enclosed surfaces keep technical work tight and traffic controlled — netting, buffers, and zoned turf so every session stays
+            Multiple lanes and enclosed surfaces keep technical work tight and traffic controlled: netting, buffers, and zoned turf so every session stays
             legible.
           </p>
 
           <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">
             <strong className="font-medium text-formula-paper">The Formula</strong> connects that infrastructure to progress: age-weighted pillars, honest
-            baselines, and reassessment so we train the limiter — speed, decisions, technique, or application — not guesswork.
+            baselines, and reassessment so we train the limiter (speed, decisions, technique, or application), not guesswork.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">

@@ -51,7 +51,7 @@ export function MarketingHome() {
               <SectionLabel>Training</SectionLabel>
               <MarketingTextReveal>
                 <h2 className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]">
-                  Precision, technique, and game intelligence — for every level.
+                  Precision, technique, and game intelligence for every level.
                 </h2>
                 <p className="mt-5 text-[15px] leading-relaxed text-formula-frost/85">{SITE_VOICE.programDesign}</p>
               </MarketingTextReveal>

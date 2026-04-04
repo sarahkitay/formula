@@ -75,7 +75,7 @@ function TourHotspot({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: stop.delay * 0.06 }}
       onClick={() => onClick(stop.id)}
-      aria-label={`${stop.name} — ${stop.label}`}
+      aria-label={`${stop.name}: ${stop.label}`}
       aria-pressed={active}
       className={cn(
         'absolute z-40 cursor-pointer border text-left transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-formula-volt/60',

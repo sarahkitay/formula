@@ -1,4 +1,4 @@
-/* Live Formula chamber: grid, grain, calm breathing — scoped to .formula-live-chamber */
+/* Live Formula chamber: grid, grain, calm breathing. Scoped to .formula-live-chamber */
 
 .formula-live-chamber {
   --flc-volt: var(--color-formula-volt, #dcff00);

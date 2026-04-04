@@ -10,7 +10,7 @@ const FACILITY_PHOTO_SRC = '/8E3A2988.jpg'
 
 /**
  * Homepage facility intro: 50/50 photo + copy on md+, stacked on mobile.
- * No overlay panel — long-form detail belongs on /facility.
+ * No overlay panel. Long-form detail belongs on /facility.
  */
 export function HomeFacilitySection() {
   return (

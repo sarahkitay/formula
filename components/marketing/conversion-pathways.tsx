@@ -20,7 +20,7 @@ const PATHS: PathItem[] = [
   },
   {
     label: 'Join membership waitlist',
-    line: 'Controlled density — we’ll email you when a spot opens.',
+    line: 'Controlled density. We’ll email you when a spot opens.',
     tier: 'default',
     waitlist: true,
   },

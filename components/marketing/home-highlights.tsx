@@ -18,7 +18,7 @@ const HIGHLIGHTS: {
   tier: HighlightTier
   band: GridBand
   cta: string
-  /** lg grid placement — bento rhythm (first row asymmetric). */
+  /** lg grid placement: bento rhythm (first row asymmetric). */
   layoutClass: string
 }[] = [
   {
@@ -34,7 +34,7 @@ const HIGHLIGHTS: {
   {
     label: 'The Formula',
     line: 'Baseline + reassess. Parent-clear signal.',
-    more: 'Weighted index — progression families can read.',
+    more: 'Weighted index. Progression families can read.',
     href: MARKETING_HREF.fpi,
     tier: 'emphasis',
     band: 'tier1',
@@ -44,7 +44,7 @@ const HIGHLIGHTS: {
   {
     label: 'Friday Youth Game Circuit',
     line: 'Balanced teams. Structured games.',
-    more: 'No standings theater — real minutes, real roles.',
+    more: 'No standings theater: real minutes, real roles.',
     href: MARKETING_HREF.fridayCircuit,
     tier: 'emphasis',
     band: 'tier1',
@@ -54,7 +54,7 @@ const HIGHLIGHTS: {
   {
     label: 'Clinics',
     line: 'Small groups. High reps. Members-first.',
-    more: 'Scarce labs — Formula-informed coaching.',
+    more: 'Scarce labs. Formula-informed coaching.',
     href: MARKETING_HREF.clinics,
     tier: 'default',
     band: 'mid',
@@ -63,8 +63,8 @@ const HIGHLIGHTS: {
   },
   {
     label: 'Camps',
-    line: 'Structured days — full facility.',
-    more: 'Summer + holidays — not daycare soccer.',
+    line: 'Structured days. Full facility.',
+    more: 'Summer + holidays, not daycare soccer.',
     href: MARKETING_HREF.camps,
     tier: 'default',
     band: 'mid',
@@ -74,7 +74,7 @@ const HIGHLIGHTS: {
   {
     label: 'Adult programming',
     line: 'Pickup + leagues. Controlled floor.',
-    more: 'Respectful intensity — seasonal rhythm.',
+    more: 'Respectful intensity. Seasonal rhythm.',
     href: MARKETING_HREF.adults,
     tier: 'default',
     band: 'mid',
@@ -84,7 +84,7 @@ const HIGHLIGHTS: {
   {
     label: 'Rentals',
     line: 'Premium inventory. Real cycles.',
-    more: 'Clubs · teams · private — synced to how you operate.',
+    more: 'Clubs · teams · private, synced to how you operate.',
     href: MARKETING_HREF.rentals,
     tier: 'quiet',
     band: 'tier2',
@@ -104,7 +104,7 @@ const HIGHLIGHTS: {
   {
     label: 'Assessments',
     line: 'Skills check · placement · honest bar.',
-    more: 'Formula Skills Check — expectations you can trust.',
+    more: 'Formula Skills Check. Expectations you can trust.',
     href: MARKETING_HREF.assessment,
     tier: 'quiet',
     band: 'tier2',

@@ -7,17 +7,18 @@ import { Eye, EyeOff } from 'lucide-react'
 import { LoginFormulaBallBackground } from '@/components/auth/login-formula-ball-background'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { loadProfileForUser } from '@/lib/auth/load-profile'
+import { getPortalRoute } from '@/lib/getPortalRoute'
+import { supabase } from '@/lib/supabase'
 import { SITE } from '@/lib/site-config'
+import { cn } from '@/lib/utils'
 
 type StaffRole = 'admin' | 'coach'
 
-const staffRoleConfig: Record<StaffRole, { label: string; href: string }> = {
-  admin: { label: 'Admin / Front Desk', href: '/admin/dashboard' },
-  coach: { label: 'Coach', href: '/coach/dashboard' },
+const staffRoleConfig: Record<StaffRole, { label: string }> = {
+  admin: { label: 'Admin / Front Desk' },
+  coach: { label: 'Coach' },
 }
-
-const PARENT_HREF = '/parent/dashboard'
 
 const rolePillActive =
   'border-formula-volt/55 bg-formula-volt/[0.14] text-formula-volt shadow-[inset_0_0_0_1px_rgb(220_255_0_/_0.2)]'
@@ -36,6 +37,7 @@ export function LoginPageClient() {
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   useEffect(() => {
     const q = searchParams.get('role')
@@ -48,14 +50,63 @@ export function LoginPageClient() {
     if (q === 'parent') {
       setPortal('parent')
     }
+    const err = searchParams.get('error')
+    if (err === 'role') {
+      setFormError('Use the portal that matches your account type.')
+    }
   }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormError(null)
     setLoading(true)
-    await new Promise(r => setTimeout(r, 500))
-    const href = portal === 'parent' ? PARENT_HREF : staffRoleConfig[staffRole].href
-    router.push(href)
+
+    const { error: signErr } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    })
+
+    if (signErr) {
+      setFormError(signErr.message)
+      setLoading(false)
+      return
+    }
+
+    const {
+      data: { user },
+      error: userErr,
+    } = await supabase.auth.getUser()
+
+    if (userErr || !user) {
+      setFormError(userErr?.message ?? 'Could not read session.')
+      setLoading(false)
+      return
+    }
+
+    const { profile, error: profileErr } = await loadProfileForUser(user.id)
+
+    if (profile) {
+      console.log(profile)
+    }
+
+    if (profileErr || !profile) {
+      setFormError(profileErr?.message ?? 'No profile row for this user. Create one in Supabase `profiles` with matching `id`.')
+      await supabase.auth.signOut()
+      setLoading(false)
+      return
+    }
+
+    const next = getPortalRoute(profile.role)
+    if (next === '/login') {
+      setFormError(`Unknown role “${profile.role}”. Set role to parent, staff, coach, or admin.`)
+      await supabase.auth.signOut()
+      setLoading(false)
+      return
+    }
+
+    setLoading(false)
+    router.push(next)
+    router.refresh()
   }
 
   const signInLabel =
@@ -92,14 +143,14 @@ export function LoginPageClient() {
               <>
                 <h2 className="text-xl font-semibold text-formula-paper">Parent portal</h2>
                 <p className="mt-2 text-sm leading-relaxed text-formula-mist">
-                  Sign in with your guardian account to manage schedules, payments, and progress.
+                  Sign in with your guardian account. You’ll be routed by your profile role.
                 </p>
               </>
             ) : (
               <>
                 <h2 className="text-xl font-semibold text-formula-paper">Staff sign-in</h2>
                 <div className="mt-5 space-y-1.5">
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-formula-mist">Portal</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-formula-mist">Shortcut label (routing uses your profile)</p>
                   <div className="grid grid-cols-2 gap-2.5">
                     {(Object.entries(staffRoleConfig) as [StaffRole, (typeof staffRoleConfig)[StaffRole]][]).map(
                       ([r, meta]) => (
@@ -131,6 +182,7 @@ export function LoginPageClient() {
             )}
 
             <form onSubmit={handleLogin} className="mt-6 space-y-4">
+              {formError ? <p className="text-sm text-red-300/90">{formError}</p> : null}
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-formula-frost/95">Email</label>
                 <input
@@ -139,6 +191,7 @@ export function LoginPageClient() {
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   autoComplete="email"
+                  required
                   className="h-12 w-full rounded-md border border-formula-frost/15 bg-formula-paper/[0.06] px-4 text-[15px] text-formula-paper placeholder:text-formula-mist/80 transition-colors focus:border-formula-volt/45 focus:bg-formula-paper/[0.09] focus:outline-none"
                 />
               </div>
@@ -152,6 +205,7 @@ export function LoginPageClient() {
                     onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
                     autoComplete="current-password"
+                    required
                     className="h-12 w-full rounded-md border border-formula-frost/15 bg-formula-paper/[0.06] px-4 pr-11 text-[15px] text-formula-paper placeholder:text-formula-mist/80 transition-colors focus:border-formula-volt/45 focus:bg-formula-paper/[0.09] focus:outline-none"
                   />
                   <button
@@ -178,7 +232,7 @@ export function LoginPageClient() {
             <p className="mt-5 text-center text-sm text-formula-mist">
               Forgot your password?{' '}
               <Link
-                href="#"
+                href="/forgot-password"
                 className="font-medium text-formula-paper underline-offset-4 transition-colors hover:text-formula-volt hover:underline"
               >
                 Reset it

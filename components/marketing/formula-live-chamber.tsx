@@ -132,7 +132,7 @@ function PillarRow({
 }
 
 /**
- * Full-bleed emotional centerpiece for /fpi: weighted model as a calm, awakening instrument — not a slogan.
+ * Full-bleed emotional centerpiece for /fpi: weighted model as a calm, awakening instrument, not a slogan.
  */
 export function FormulaLiveChamber() {
   const reduce = useReducedMotion() === true

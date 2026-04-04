@@ -43,11 +43,13 @@ export function MarketingHero() {
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/18 to-transparent" />
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pb-12 pt-24 lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
-        <div className="flex min-w-0 flex-1 flex-col lg:max-w-[min(100%,28rem)] xl:max-w-[min(100%,32rem)]">
-          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-formula-mist">Formula Soccer Center</p>
+      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pt-24 pb-12 max-lg:gap-6 max-lg:pb-[min(44vh,18rem)] lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
+        <div className="relative z-20 flex min-w-0 flex-1 flex-col lg:max-w-[min(100%,28rem)] xl:max-w-[min(100%,32rem)]">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-formula-mist [text-shadow:0_1px_18px_rgba(0,0,0,0.45)]">
+            Formula Soccer Center
+          </p>
           <h1
-            className="mt-4 font-mono text-[clamp(2.5rem,9vw,5rem)] font-semibold leading-[0.92] tracking-[-0.02em] text-formula-paper"
+            className="mt-4 font-mono text-[clamp(2.5rem,9vw,5rem)] font-semibold leading-[0.92] tracking-[-0.02em] text-formula-paper [text-shadow:0_4px_36px_rgba(0,0,0,0.55),0_2px_12px_rgba(0,0,0,0.4)]"
             aria-label={WORD}
           >
             <span aria-hidden="true">
@@ -62,13 +64,13 @@ export function MarketingHero() {
               )}
             </span>
           </h1>
-          <p className="mt-4 max-w-[38rem] font-mono text-[clamp(1.05rem,2.8vw,1.5rem)] font-semibold leading-snug tracking-[0.04em] text-formula-paper">
+          <p className="mt-4 max-w-[38rem] font-mono text-[clamp(1.05rem,2.8vw,1.5rem)] font-semibold leading-snug tracking-[0.04em] text-formula-paper [text-shadow:0_2px_24px_rgba(0,0,0,0.5)]">
             {SITE_VOICE.heroHeadline}
           </p>
-          <p className="mt-3 font-mono text-[10px] font-medium uppercase tracking-[0.26em] text-formula-frost/88">
+          <p className="mt-3 font-mono text-[10px] font-medium uppercase tracking-[0.26em] text-formula-frost/88 [text-shadow:0_1px_16px_rgba(0,0,0,0.45)]">
             {SITE_VOICE.heroProtocolLine}
           </p>
-          <p className="mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-formula-mist">
+          <p className="mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-formula-mist [text-shadow:0_1px_14px_rgba(0,0,0,0.4)]">
             {SITE_VOICE.heroAudienceLine}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -87,18 +89,18 @@ export function MarketingHero() {
 
         <div
           id="field-3d"
-          className="flex w-full shrink-0 flex-col items-center justify-center border-t border-formula-frost/10 bg-formula-deep/20 py-6 lg:max-w-[min(520px,46%)] lg:flex-1 lg:border-l lg:border-t-0 lg:bg-formula-deep/12 lg:py-5 lg:pl-6 xl:max-w-[min(560px,44%)]"
+          className="flex w-full shrink-0 flex-col items-center justify-center border-t border-formula-frost/10 bg-formula-deep/20 py-6 max-lg:pointer-events-auto max-lg:absolute max-lg:inset-x-0 max-lg:top-[22dvh] max-lg:z-10 max-lg:w-full max-lg:border-0 max-lg:bg-transparent max-lg:px-0 max-lg:pb-10 max-lg:pt-0 lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:max-w-[min(520px,46%)] lg:flex-1 lg:border-l lg:border-t-0 lg:bg-formula-deep/12 lg:py-5 lg:pl-6 xl:max-w-[min(560px,44%)]"
         >
-          <div className="w-full max-w-[min(100%,640px)] origin-center scale-[0.7] sm:scale-[0.78] md:scale-[0.84] lg:max-w-none lg:scale-[0.9] xl:scale-[0.96]">
+          <div className="w-full max-w-[min(100%,720px)] origin-center scale-[0.88] max-lg:translate-y-4 sm:scale-[0.92] md:max-lg:scale-[0.96] lg:max-w-none lg:translate-y-0 lg:scale-[0.9] xl:scale-[0.96]">
             <HomeField3DHero />
           </div>
           <motion.p
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.5 }}
-            className="mt-1 max-w-[16rem] text-center font-mono text-[9px] uppercase tracking-[0.28em] text-formula-mist lg:mt-2"
+            className="relative z-20 mt-2 max-w-[16rem] text-center font-mono text-[9px] uppercase tracking-[0.28em] text-formula-mist [text-shadow:0_1px_12px_rgba(0,0,0,0.55)] lg:mt-2"
           >
-            Move pointer or drag — tilt the field
+            Move pointer or drag to tilt the field
           </motion.p>
         </div>
       </div>

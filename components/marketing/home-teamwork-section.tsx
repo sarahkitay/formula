@@ -5,7 +5,7 @@ import { MARKETING_HREF } from '@/lib/marketing/nav'
 const TEAMWORK_PHOTO_SRC = '/8E3A3155.jpg'
 
 /**
- * Homepage: teamwork — 50/50 photo + copy (md+). Alt text belongs on `<Image>` only; never duplicate it as body copy
+ * Homepage: teamwork, 50/50 photo + copy (md+). Alt text belongs on `<Image>` only; never duplicate it as body copy
  * (`aria-hidden` does not hide text visually).
  */
 export function HomeTeamworkSection() {
@@ -40,13 +40,13 @@ export function HomeTeamworkSection() {
           </h2>
 
           <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">
-            Soccer is relational: pressure, support, and honest competition in the same room. Formula is built so athletes share real standards — coaches, peers,
-            and programmed space — not anonymous open gyms.
+            Soccer is relational: pressure, support, and honest competition in the same room. Formula is built so athletes share real standards among coaches,
+            peers, and programmed space, not anonymous open gyms.
           </p>
 
           <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">
-            When operations stay disciplined — on-time blocks, protected ratios, coaching that holds — the room levels up together. Clearer progress tomorrow
-            starts with better habits today.
+            When operations stay disciplined with on-time blocks, protected ratios, and coaching that holds, the room levels up together. Clearer progress
+            tomorrow starts with better habits today.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
