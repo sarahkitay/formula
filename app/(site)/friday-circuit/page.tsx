@@ -41,7 +41,7 @@ export default function FridayCircuitPage() {
   Aligned to attendance, readiness, coach nomination - application only works when athletes can sustain it safely.
   </p>
   <p>
-  Start with <Link href={MARKETING_HREF.assessment}>assessment</Link> and <Link href={MARKETING_HREF.youthMembership}>membership</Link>. Parents can coordinate through the{' '}
+  Start with <Link href={MARKETING_HREF.bookAssessmentPortal}>assessment booking</Link> and <Link href={MARKETING_HREF.youthMembership}>membership</Link>. Parents can coordinate through the{' '}
   <Link href="/login?role=parent">parent portal</Link>.
   </p>
   </MarketingInnerPage>

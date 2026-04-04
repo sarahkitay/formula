@@ -140,7 +140,7 @@ export default function AssessmentPage() {
       </p>
 
       <CtaRow
-        primary={{ label: 'Book assessment', checkoutType: 'assessment' }}
+        primary={{ label: 'Book assessment', href: MARKETING_HREF.bookAssessmentPortal }}
         secondary={{ label: 'Youth membership pricing', href: MARKETING_HREF.youthMembership }}
       />
       <p className="not-prose mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">

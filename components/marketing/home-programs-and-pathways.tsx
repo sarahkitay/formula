@@ -203,7 +203,7 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
       <ScrollFadeIn className="not-prose mt-8">
         <p className="font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-formula-olive">Start with</p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
-          <Link href={MARKETING_HREF.assessment} className={primaryAssessmentClass}>
+          <Link href={MARKETING_HREF.bookAssessmentPortal} className={primaryAssessmentClass}>
             Book assessment
           </Link>
           <MembershipWaitlistCapture

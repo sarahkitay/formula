@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CheckoutSuccessPortalModal } from './checkout-success-portal-modal'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
 export const metadata: Metadata = {
@@ -10,9 +11,9 @@ export const metadata: Metadata = {
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>
+  searchParams: Promise<{ session_id?: string; next?: string }>
 }) {
-  const { session_id: sessionId } = await searchParams
+  const { session_id: sessionId, next: nextStep } = await searchParams
 
   return (
     <article className="mx-auto max-w-lg px-6 pb-24 pt-28 md:pb-32 md:pt-32">
@@ -40,7 +41,17 @@ export default async function CheckoutSuccessPage({
         >
           Membership
         </Link>
+        {nextStep === 'portal-assessment' ? (
+          <Link
+            href="/parent/bookings#upcoming-bookings"
+            className="inline-flex h-11 items-center border border-formula-frost/14 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/22"
+          >
+            Portal · Schedule
+          </Link>
+        ) : null}
       </div>
+
+      <CheckoutSuccessPortalModal nextStep={nextStep} />
     </article>
   )
 }

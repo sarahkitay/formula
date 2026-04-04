@@ -153,7 +153,8 @@ export default function ClinicsPage() {
 
   <p>
   Pair with <Link href={MARKETING_HREF.camps}>camps</Link> for immersion weeks, or anchor year-round progression with{' '}
-  <Link href={MARKETING_HREF.youthMembership}>youth membership</Link>. New athletes: <Link href={MARKETING_HREF.assessment}>assessment</Link>.
+  <Link href={MARKETING_HREF.youthMembership}>youth membership</Link>. New athletes:{' '}
+  <Link href={MARKETING_HREF.bookAssessmentPortal}>book assessment</Link>.
   </p>
 
   <CtaRow

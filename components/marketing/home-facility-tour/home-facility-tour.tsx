@@ -178,44 +178,46 @@ export function HomeFacilityTour() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px)] bg-[length:44px_44px] opacity-[0.22]" />
       <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-gradient-to-t from-formula-deep/50 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-3 px-5 pb-5 pt-4 md:gap-3.5 md:px-8 md:pb-6 md:pt-5 lg:px-10">
-        <ScrollFadeIn>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
-          <div className="max-w-xl shrink-0">
-            <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-formula-mist md:text-[11px] md:tracking-[0.34em]">
-              {SITE.facilityName}
-            </p>
-            <h2 className="mt-2 text-[clamp(1.65rem,4.2vw,2.75rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-formula-paper md:mt-2.5">
-              Tour the facility before you step inside.
-            </h2>
-            <p className="mt-2 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-3 md:text-sm md:leading-relaxed">
-              Floor plan layout (left stack → center field → performance + support → Field 2 / Footbot). Same zones as the{' '}
-              <Link href={MARKETING_HREF.facility} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
-                Facility
-              </Link>{' '}
-              page.
-            </p>
-          </div>
-
-          <div className="flex shrink-0 rounded-full border border-formula-frost/15 bg-formula-paper/[0.06] p-1 shadow-[0_12px_35px_rgba(0,0,0,0.25)] backdrop-blur-md">
-            <button
-              type="button"
-              onClick={() => setAutoPlay(v => !v)}
-              className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-formula-frost/90 transition hover:bg-formula-paper/[0.08] md:px-4 md:py-2 md:text-sm"
-            >
-              {autoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              {autoPlay ? 'Pause tour' : 'Play tour'}
-            </button>
-          </div>
-        </div>
-        </ScrollFadeIn>
-
+      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-2 px-5 pb-4 pt-4 md:gap-2 md:px-8 md:pb-5 md:pt-5 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: 'easeOut' }}
           className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-lg border border-formula-frost/12 bg-formula-deep/65 shadow-[0_12px_32px_rgba(0,0,0,0.28)] md:rounded-xl"
         >
+          <ScrollFadeIn>
+            <div className="border-b border-white/[0.06] px-3 pb-3 pt-3 md:px-4 md:pb-3.5 md:pt-3.5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+                <div className="max-w-xl shrink-0">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-formula-mist md:text-[11px] md:tracking-[0.34em]">
+                    {SITE.facilityName}
+                  </p>
+                  <h2 className="mt-2 text-[clamp(1.65rem,4.2vw,2.75rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-formula-paper md:mt-2.5">
+                    Tour the facility before you step inside.
+                  </h2>
+                  <p className="mt-2 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-3 md:text-sm md:leading-relaxed">
+                    Floor plan layout (left stack → center field → performance + support → Field 2 / Footbot). Same zones as the{' '}
+                    <Link href={MARKETING_HREF.facility} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
+                      Facility
+                    </Link>{' '}
+                    page.
+                  </p>
+                </div>
+
+                <div className="flex shrink-0 rounded-full border border-formula-frost/15 bg-formula-paper/[0.06] p-1 shadow-[0_12px_35px_rgba(0,0,0,0.25)] backdrop-blur-md">
+                  <button
+                    type="button"
+                    onClick={() => setAutoPlay(v => !v)}
+                    className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-formula-frost/90 transition hover:bg-formula-paper/[0.08] md:px-4 md:py-2 md:text-sm"
+                  >
+                    {autoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    {autoPlay ? 'Pause tour' : 'Play tour'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ScrollFadeIn>
+
           <div className="border-b border-white/[0.06] px-2 py-1 md:px-2.5 md:py-1.5">
             <p className="font-mono text-[9px] font-medium uppercase tracking-[0.22em] text-formula-olive md:text-[10px]">
               Floor plan · select a zone
@@ -235,7 +237,7 @@ export function HomeFacilityTour() {
           />
         </motion.div>
 
-        <div className="relative z-10 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
+        <div className="relative z-10 grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
           <div className="rounded-lg border border-white/12 bg-black/38 px-2.5 py-2 backdrop-blur-md md:rounded-xl md:px-3 md:py-2.5">
             <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">Zones</p>
             <div className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 sm:grid-cols-3 md:grid-cols-4">

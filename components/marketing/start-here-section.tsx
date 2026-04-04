@@ -53,7 +53,7 @@ export function StartHereSection() {
         </p>
         <div className="mt-8">
           <Link
-            href={MARKETING_HREF.assessment}
+            href={MARKETING_HREF.bookAssessmentPortal}
             className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-8 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black no-underline hover:brightness-105"
           >
             Book assessment

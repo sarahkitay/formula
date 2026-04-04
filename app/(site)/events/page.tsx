@@ -29,7 +29,7 @@ const CARDS: { title: string; line: string; href: string }[] = [
   {
   title: 'Assessment bookings',
   line: 'Youth entry standard - baseline + honest expectations.',
-  href: MARKETING_HREF.assessment,
+  href: MARKETING_HREF.bookAssessmentPortal,
   },
 ]
 

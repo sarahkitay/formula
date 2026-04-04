@@ -144,7 +144,7 @@ export function WhatIsFormulaPageContent() {
             </div>
             <div className="flex flex-wrap gap-4">
               <Link
-                href={MARKETING_HREF.assessment}
+                href={MARKETING_HREF.bookAssessmentPortal}
                 className="inline-flex border border-formula-volt bg-formula-volt px-7 py-4 font-mono text-[11px] font-semibold uppercase tracking-[0.26em] text-[#0a0d0c] transition hover:brightness-95"
               >
                 Book Assessment

@@ -44,7 +44,7 @@ export function MarketingFooter() {
   Elevate your game - top-tier programs, cutting-edge tech, elite facilities. Club-complementary, not a replacement.
   </p>
   <Link
-  href={MARKETING_HREF.assessment}
+  href={MARKETING_HREF.bookAssessmentPortal}
   className="mt-8 inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-base hover:brightness-105"
   >
   Book assessment

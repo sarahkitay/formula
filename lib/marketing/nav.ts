@@ -16,6 +16,8 @@ export const MARKETING_HREF = {
   footbot: '/events/footbot',
   tournaments: '/events/tournaments',
   assessment: '/assessment',
+  /** Parent portal: account gate + slot + Stripe for Skills Check */
+  bookAssessmentPortal: '/parent/book-assessment',
 } as const
 
 export type MarketingHref = (typeof MARKETING_HREF)[keyof typeof MARKETING_HREF]

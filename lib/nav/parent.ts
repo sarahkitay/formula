@@ -17,6 +17,13 @@ export const parentNav: NavItem[] = [
   gridStatus: 'active',
   },
   {
+  label: 'Book assessment',
+  href: '/parent/book-assessment',
+  icon: 'CalendarClock',
+  description: 'Portal account · pick slot · pay',
+  gridStatus: 'neutral',
+  },
+  {
   label: 'Progress',
   href: '/parent/progress',
   icon: 'TrendingUp',

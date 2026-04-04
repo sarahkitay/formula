@@ -11,9 +11,13 @@ type Props = {
   checkoutType: CheckoutType
   label: string
   className?: string
+  /** Allowed server values — extends Stripe success URL for post-checkout UX (e.g. portal assessment). */
+  successNext?: 'portal-assessment'
+  /** Merged into Stripe session metadata (string values only; server sanitizes). */
+  metadata?: Record<string, string>
 }
 
-export function CheckoutLaunchButton({ checkoutType, label, className }: Props) {
+export function CheckoutLaunchButton({ checkoutType, label, className, successNext, metadata }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -24,7 +28,11 @@ export function CheckoutLaunchButton({ checkoutType, label, className }: Props) 
       const res = await fetch('/api/checkout/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: checkoutType }),
+        body: JSON.stringify({
+          type: checkoutType,
+          ...(successNext ? { successNext } : {}),
+          ...(metadata && Object.keys(metadata).length > 0 ? { metadata } : {}),
+        }),
       })
       const data = (await res.json()) as { url?: string; error?: string }
       if (!res.ok) {

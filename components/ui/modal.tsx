@@ -19,9 +19,25 @@ export interface ModalProps {
   size?: keyof typeof sizeStyles
   children: React.ReactNode
   className?: string
+  /** When false, backdrop clicks do not dismiss (e.g. required account gate). */
+  closeOnBackdrop?: boolean
+  /** When false, no header/footer close control. */
+  showCloseButton?: boolean
+  /** When false, Escape does not dismiss. */
+  closeOnEscape?: boolean
 }
 
-export function Modal({ open, onClose, title, size = 'md', children, className }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  size = 'md',
+  children,
+  className,
+  closeOnBackdrop = true,
+  showCloseButton = true,
+  closeOnEscape = true,
+}: ModalProps) {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
@@ -41,11 +57,11 @@ export function Modal({ open, onClose, title, size = 'md', children, className }
 
   React.useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape' && closeOnEscape) onClose()
     }
     if (open) document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [open, onClose])
+  }, [open, onClose, closeOnEscape])
 
   if (!mounted || !open) return null
 
@@ -53,7 +69,7 @@ export function Modal({ open, onClose, title, size = 'md', children, className }
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-black/75 backdrop-blur-md"
-        onClick={onClose}
+        onClick={closeOnBackdrop ? onClose : undefined}
         aria-hidden="true"
       />
 
@@ -68,19 +84,23 @@ export function Modal({ open, onClose, title, size = 'md', children, className }
         {title && (
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <h2 className="text-md font-semibold text-text-primary">{title}</h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-xl text-text-muted transition-colors duration-200 hover:bg-muted hover:text-text-primary"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            {showCloseButton ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-text-muted transition-colors duration-200 hover:bg-muted hover:text-text-primary"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : (
+              <span className="w-8" aria-hidden />
+            )}
           </div>
         )}
 
         <div className={cn(!title && 'pt-4', 'max-h-[80vh] overflow-y-auto')}>
-          {!title && (
+          {!title && showCloseButton ? (
             <button
               type="button"
               onClick={onClose}
@@ -89,7 +109,7 @@ export function Modal({ open, onClose, title, size = 'md', children, className }
             >
               <X className="h-4 w-4" />
             </button>
-          )}
+          ) : null}
           {children}
         </div>
       </div>

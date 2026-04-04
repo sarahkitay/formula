@@ -105,7 +105,8 @@ export default function RentalsPage() {
   <FieldRentalAgreementForm />
 
   <p>
-  See the <Link href={MARKETING_HREF.facility}>facility & asset model</Link>. Youth families start with <Link href={MARKETING_HREF.assessment}>assessment</Link>; hosted weekends live in{' '}
+  See the <Link href={MARKETING_HREF.facility}>facility & asset model</Link>. Youth families start with{' '}
+  <Link href={MARKETING_HREF.bookAssessmentPortal}>assessment booking</Link>; hosted weekends live in{' '}
   <Link href={MARKETING_HREF.tournaments}>tournaments</Link> and <Link href={MARKETING_HREF.events}>events</Link>.
   </p>
 

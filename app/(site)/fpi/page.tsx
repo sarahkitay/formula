@@ -139,7 +139,7 @@ export default function TheFormulaPage() {
       </p>
 
       <CtaRow
-        primary={{ label: 'Book assessment', checkoutType: 'assessment' }}
+        primary={{ label: 'Book assessment', href: MARKETING_HREF.bookAssessmentPortal }}
         secondary={{ label: 'Clinics', href: MARKETING_HREF.clinics }}
       />
     </MarketingInnerPage>

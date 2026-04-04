@@ -76,7 +76,7 @@ export function MarketingHero() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              href={MARKETING_HREF.assessment}
+              href={MARKETING_HREF.bookAssessmentPortal}
               className="inline-flex h-11 items-center border border-formula-volt/50 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-base transition-[filter] duration-300 hover:brightness-105"
             >
               Book assessment

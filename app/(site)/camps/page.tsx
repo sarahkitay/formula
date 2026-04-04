@@ -190,7 +190,7 @@ export default function CampsPage() {
 
   <CtaRow
   primary={{ label: 'Register for camp', href: '/login?role=parent' }}
-  secondary={{ label: 'Book assessment', href: MARKETING_HREF.assessment }}
+  secondary={{ label: 'Book assessment', href: MARKETING_HREF.bookAssessmentPortal }}
   />
   </MarketingInnerPage>
   )

@@ -66,7 +66,7 @@ export function HomeTeamworkSection() {
 
             <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
               <Link
-                href={MARKETING_HREF.assessment}
+                href={MARKETING_HREF.bookAssessmentPortal}
                 className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
               >
                 Book an assessment →

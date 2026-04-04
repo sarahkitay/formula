@@ -404,7 +404,7 @@ export default function ParentBookingsPage() {
   </div>
 
   {/* Right: upcoming bookings */}
-  <div className="space-y-4">
+  <div id="upcoming-bookings" className="scroll-mt-24 space-y-4">
   <SectionHeader title="Upcoming Bookings" />
   {myBookings.length === 0 ? (
   <EmptyState icon={<BookOpen />} title="No bookings yet" compact />

@@ -51,11 +51,12 @@ export function YouthMembershipPackageHero() {
               </div>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <CheckoutLaunchButton checkoutType="package-10" label="Buy package" />
-                <CheckoutLaunchButton
-                  checkoutType="assessment"
-                  label="Book assessment"
-                  className="border border-black/25"
-                />
+                <Link
+                  href={MARKETING_HREF.bookAssessmentPortal}
+                  className="inline-flex h-11 items-center justify-center border border-black/25 bg-formula-volt/[0.14] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt shadow-[inset_0_0_0_1px_rgb(220_255_0_/_0.08)] transition-[filter,background-color] hover:bg-formula-volt/[0.2] hover:brightness-105"
+                >
+                  Book assessment
+                </Link>
                 <Link
                   href={MARKETING_HREF.clinics}
                   className="inline-flex h-11 items-center border border-formula-frost/18 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/28"

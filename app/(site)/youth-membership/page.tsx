@@ -75,7 +75,7 @@ export default function YouthMembershipPage() {
       </div>
 
       <p className="not-prose mt-10 text-[15px] leading-relaxed text-formula-frost/85">
-        Next: <Link href={MARKETING_HREF.assessment}>Book assessment</Link> ·{' '}
+        Next: <Link href={MARKETING_HREF.bookAssessmentPortal}>Book assessment</Link> ·{' '}
         <Link href={MARKETING_HREF.fpi}>The Formula</Link> · <Link href={MARKETING_HREF.facility}>Facility</Link>
       </p>
 
