@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { AmbientGeometry } from '@/components/marketing/ambient-geometry'
 import { FieldAmbient } from '@/components/marketing/field-ambient'
@@ -34,6 +34,8 @@ function HexLetterO({ index }: { index: number }) {
 }
 
 export function MarketingHero() {
+  const reduceMotion = useReducedMotion()
+
   return (
     <section className="relative flex min-h-[100dvh] flex-col overflow-x-hidden">
       <FieldAmbient />
@@ -95,9 +97,10 @@ export function MarketingHero() {
             <HomeField3DHero />
           </div>
           <motion.p
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1, duration: 0.5 }}
+            initial={reduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 28 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.4, margin: '0px 0px -8% 0px' }}
+            transition={{ duration: 0.65, delay: reduceMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-20 mt-2 max-w-[16rem] text-center font-mono text-[9px] uppercase tracking-[0.28em] text-formula-mist [text-shadow:0_1px_12px_rgba(0,0,0,0.55)] lg:mt-2"
           >
             Move pointer or drag to tilt the field

@@ -2,14 +2,15 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { MembershipWaitlistCapture } from '@/components/marketing/membership-waitlist-capture'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { MarketingTextReveal } from '@/components/marketing/marketing-text-reveal'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { cn } from '@/lib/utils'
 
 type HighlightTier = 'anchor' | 'emphasis' | 'default' | 'quiet'
 type GridBand = 'tier1' | 'mid' | 'tier2'
 
-/** Order: anchor → spine → application → programs → economics → asset → entry. Lines trimmed ~30%; `more` shows on hover. */
 const HIGHLIGHTS: {
   label: string
   line: string
@@ -18,7 +19,6 @@ const HIGHLIGHTS: {
   tier: HighlightTier
   band: GridBand
   cta: string
-  /** lg grid placement: bento rhythm (first row asymmetric). */
   layoutClass: string
 }[] = [
   {
@@ -113,6 +113,27 @@ const HIGHLIGHTS: {
   },
 ]
 
+const SECONDARY_PATHS: { label: string; line: string; href: string; tier: 'default' | 'quiet' }[] = [
+  {
+    label: 'Register for camp',
+    line: 'Full facility. Structured days - summer + holidays.',
+    href: MARKETING_HREF.camps,
+    tier: 'default',
+  },
+  {
+    label: 'Rental inquiry',
+    line: 'Clubs · teams · private - premium inventory rules.',
+    href: MARKETING_HREF.rentals,
+    tier: 'quiet',
+  },
+  {
+    label: 'Register for adult programming',
+    line: 'Pickup + leagues. Controlled floor. Seasonal.',
+    href: MARKETING_HREF.adults,
+    tier: 'default',
+  },
+]
+
 const listVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -122,11 +143,10 @@ const listVariants = {
 }
 
 const rowVariants = {
-  hidden: { opacity: 0, y: 14 },
+  hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
   },
 }
 
@@ -143,17 +163,62 @@ function highlightCtaClass(tier: HighlightTier) {
   }
 }
 
-export function HomeHighlights({ id = 'highlights' }: { id?: string }) {
+function pathLabelClass(tier: 'default' | 'quiet') {
+  switch (tier) {
+    case 'quiet':
+      return 'inline-block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-formula-mist/60 underline decoration-formula-frost/25 underline-offset-[5px] transition-colors group-hover:text-formula-frost/75 group-hover:decoration-formula-frost/40'
+    default:
+      return 'inline-block font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt/95 transition-opacity group-hover:opacity-100'
+  }
+}
+
+const primaryAssessmentClass =
+  'inline-flex h-11 shrink-0 items-center border border-formula-volt/45 bg-formula-volt/[0.14] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt shadow-[inset_0_0_0_1px_rgb(220_255_0_/_0.08)] transition-[filter,background-color] hover:bg-formula-volt/[0.2] hover:brightness-105'
+
+const primaryWaitlistTriggerClass =
+  'inline-flex h-11 shrink-0 items-center border border-formula-frost/18 bg-formula-paper/[0.05] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper transition-colors hover:border-formula-frost/28'
+
+const primaryClinicClass =
+  'inline-flex h-11 shrink-0 items-center border border-formula-frost/12 bg-transparent px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist transition-colors hover:border-formula-frost/22 hover:text-formula-paper'
+
+/**
+ * Homepage: programs bento + primary CTAs (assessment, waitlist, clinics) + secondary path cards in one section.
+ */
+export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: string }) {
   return (
     <section id={id} className="mx-auto max-w-[1200px] px-6 py-24 md:py-32">
-      <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">Programs & assets</p>
-      <MarketingTextReveal>
-        <h2 className="mt-4 max-w-[20ch] font-mono text-xl font-medium leading-snug tracking-tight text-formula-paper sm:max-w-[24ch] md:text-[1.35rem]">
+      <ScrollFadeIn>
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">Programs & assets</p>
+        <h2 className="mt-4 max-w-[22ch] font-mono text-xl font-medium leading-snug tracking-tight text-formula-paper sm:max-w-[28ch] md:text-[1.35rem]">
           One stack for every level
         </h2>
-      </MarketingTextReveal>
+        <MarketingTextReveal>
+          <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-formula-frost/85">
+            Pick your door: explore the full stack, then take one clear next step — assessment, waitlist, or clinic registration below; camps, rentals, and
+            adults under <span className="text-formula-paper/90">More ways in</span>.
+          </p>
+        </MarketingTextReveal>
+      </ScrollFadeIn>
+
+      <ScrollFadeIn className="not-prose mt-8">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-formula-olive">Start with</p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <Link href={MARKETING_HREF.assessment} className={primaryAssessmentClass}>
+            Book assessment
+          </Link>
+          <MembershipWaitlistCapture
+            source="programs-pathways"
+            label="Membership waitlist →"
+            buttonClassName={primaryWaitlistTriggerClass}
+          />
+          <Link href={MARKETING_HREF.clinics} className={primaryClinicClass}>
+            Clinic registration →
+          </Link>
+        </div>
+      </ScrollFadeIn>
+
       <motion.ul
-        className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-px sm:bg-formula-frost/10 lg:grid-cols-6 lg:gap-4 lg:bg-transparent"
+        className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-px sm:bg-formula-frost/10 lg:grid-cols-6 lg:gap-4 lg:bg-transparent"
         variants={listVariants}
         initial="hidden"
         whileInView="show"
@@ -202,6 +267,39 @@ export function HomeHighlights({ id = 'highlights' }: { id?: string }) {
           </motion.li>
         ))}
       </motion.ul>
+
+      <ScrollFadeIn className="not-prose mt-14">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">More ways in</p>
+        <h3 className="mt-3 max-w-2xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl">
+          Camps · rentals · adult programming
+        </h3>
+        <ul className="mt-8 grid gap-px bg-formula-frost/10 sm:grid-cols-2 lg:grid-cols-3">
+          {SECONDARY_PATHS.map(item => (
+            <li
+              key={item.label}
+              className={cn(
+                'marketing-glass bg-formula-base/80 p-6 transition-colors md:p-7',
+                item.tier === 'quiet' && 'bg-formula-base/[0.65] hover:bg-formula-deep/35'
+              )}
+            >
+              <Link href={item.href} className="group block no-underline">
+                <span className={pathLabelClass(item.tier)}>
+                  {item.label}
+                  {item.tier === 'quiet' ? ' →' : ' →'}
+                </span>
+                <p
+                  className={cn(
+                    'mt-4 text-sm leading-relaxed',
+                    item.tier === 'quiet' ? 'text-formula-mist/70' : 'text-formula-mist'
+                  )}
+                >
+                  {item.line}
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </ScrollFadeIn>
     </section>
   )
 }

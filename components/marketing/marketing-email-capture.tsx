@@ -1,47 +1,22 @@
 'use client'
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useId, useState } from 'react'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { cn } from '@/lib/utils'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
-export function MembershipWaitlistCapture({
-  buttonClassName,
-  label = 'Membership waitlist',
-  source,
-}: {
-  buttonClassName: string
-  label?: string
-  /** Analytics / webhook: hero | start-here | pathways | programs-pathways | youth-membership */
-  source: string
-}) {
-  const [open, setOpen] = useState(false)
+/**
+ * Inline email capture before the closing “Start here” band — posts to `/api/waitlist` with source tagging.
+ */
+export function MarketingEmailCapture() {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [hp, setHp] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [message, setMessage] = useState('')
-  const rootRef = useRef<HTMLDivElement>(null)
   const emailId = useId()
   const nameId = useId()
-
-  useEffect(() => {
-    if (!open) return
-    const onDoc = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
-  }, [open])
-
-  useEffect(() => {
-    if (!open) {
-      setStatus('idle')
-      setMessage('')
-    }
-  }, [open])
 
   const submit = useCallback(
     async (e: React.FormEvent) => {
@@ -56,7 +31,7 @@ export function MembershipWaitlistCapture({
           body: JSON.stringify({
             email,
             name: name.trim() || undefined,
-            source,
+            source: 'homepage-email',
           }),
         })
         const data = (await res.json()) as { ok?: boolean; error?: string }
@@ -74,36 +49,34 @@ export function MembershipWaitlistCapture({
         setMessage('Network error. Try again.')
       }
     },
-    [email, name, hp, source]
+    [email, name, hp]
   )
 
   return (
-    <div ref={rootRef} className="relative inline-block text-left">
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={`waitlist-panel-${source}`}
-        onClick={() => setOpen(o => !o)}
-        className={buttonClassName}
-      >
-        {label}
-      </button>
+    <section
+      className="border-t border-formula-frost/10 bg-formula-deep/30 py-14 md:py-16"
+      aria-labelledby="marketing-email-capture-heading"
+    >
+      <div className="mx-auto max-w-[1200px] px-6">
+        <ScrollFadeIn>
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-olive">Email</p>
+          <h2
+            id="marketing-email-capture-heading"
+            className="mt-3 max-w-xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl"
+          >
+            Get Formula updates
+          </h2>
+          <p className="mt-2 max-w-[46ch] text-[14px] leading-relaxed text-formula-frost/80">
+            Openings, programs, and facility notes — low volume, no spam.
+          </p>
 
-      {open ? (
-        <div
-          id={`waitlist-panel-${source}`}
-          role="region"
-          aria-label="Membership waitlist signup"
-          className="absolute left-1/2 top-[calc(100%+0.5rem)] z-50 w-[min(calc(100vw-2rem),22rem)] -translate-x-1/2 border border-formula-frost/18 bg-formula-deep/95 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-md"
-        >
           {status === 'success' ? (
-            <p className="font-sans text-sm leading-relaxed text-formula-frost/90">{message}</p>
+            <p className="mt-6 text-sm leading-relaxed text-formula-frost/90" role="status">
+              {message}
+            </p>
           ) : (
-            <form onSubmit={submit} className="space-y-3">
-              <p className="font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-formula-mist">
-                Join the waitlist
-              </p>
-              <div>
+            <form onSubmit={submit} className="mt-6 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+              <div className="min-w-0 flex-1 sm:min-w-[200px]">
                 <label htmlFor={emailId} className="sr-only">
                   Email
                 </label>
@@ -119,9 +92,9 @@ export function MembershipWaitlistCapture({
                   className="w-full border border-formula-frost/14 bg-formula-base/80 px-3 py-2.5 font-sans text-sm text-formula-paper placeholder:text-formula-mist/50 focus:border-formula-volt/40 focus:outline-none focus:ring-1 focus:ring-formula-volt/30"
                 />
               </div>
-              <div>
+              <div className="min-w-0 flex-1 sm:min-w-[180px]">
                 <label htmlFor={nameId} className="sr-only">
-                  Parent or guardian name (optional)
+                  Name (optional)
                 </label>
                 <input
                   id={nameId}
@@ -141,24 +114,24 @@ export function MembershipWaitlistCapture({
                 autoComplete="off"
                 value={hp}
                 onChange={e => setHp(e.target.value)}
-                className="absolute h-0 w-0 opacity-0"
+                className="sr-only"
                 aria-hidden
               />
-              {status === 'error' ? <p className="text-sm text-red-300/90">{message}</p> : null}
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full border border-formula-volt/45 bg-formula-volt/[0.15] py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt transition-colors hover:bg-formula-volt/[0.22] disabled:opacity-50"
+                className={cn(
+                  'h-11 shrink-0 border border-formula-volt/45 bg-formula-volt/[0.14] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt transition-colors hover:bg-formula-volt/[0.22] disabled:opacity-50',
+                  'sm:w-auto sm:self-end'
+                )}
               >
-                {status === 'loading' ? 'Sending…' : 'Request spot'}
+                {status === 'loading' ? 'Sending…' : 'Subscribe'}
               </button>
-              <p className="font-sans text-[11px] leading-snug text-formula-mist/70">
-                We’ll email you when capacity opens. No parent portal required yet.
-              </p>
+              {status === 'error' ? <p className="w-full text-sm text-red-300/90 sm:order-last">{message}</p> : null}
             </form>
           )}
-        </div>
-      ) : null}
-    </div>
+        </ScrollFadeIn>
+      </div>
+    </section>
   )
 }

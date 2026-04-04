@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
 import { MembershipWaitlistCapture } from '@/components/marketing/membership-waitlist-capture'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
 export function SectionLabel({ children }: { children: ReactNode }) {
@@ -27,10 +28,12 @@ export function MarketingInnerPage({
   return (
     <article className={`mx-auto px-6 pb-24 pt-28 md:pb-32 md:pt-32 ${wide ? 'max-w-[1100px]' : 'max-w-[720px]'}`}>
       {prepend}
-      <SectionLabel>{eyebrow}</SectionLabel>
-      <h1 className="mt-4 font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-semibold leading-tight tracking-tight text-formula-paper">{title}</h1>
-      {intro ? <p className="mt-6 max-w-[62ch] text-[15px] leading-relaxed text-formula-frost/85">{intro}</p> : null}
-      <div className="prose-marketing mt-12">{children}</div>
+      <ScrollFadeIn>
+        <SectionLabel>{eyebrow}</SectionLabel>
+        <h1 className="mt-4 font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-semibold leading-tight tracking-tight text-formula-paper">{title}</h1>
+        {intro ? <p className="mt-6 max-w-[62ch] text-[15px] leading-relaxed text-formula-frost/85">{intro}</p> : null}
+        <div className="prose-marketing mt-12">{children}</div>
+      </ScrollFadeIn>
     </article>
   )
 }

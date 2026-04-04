@@ -1,4 +1,4 @@
-import { MarketingTextReveal } from '@/components/marketing/marketing-text-reveal'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 
 const ITEMS: { title: string; body: string }[] = [
   {
@@ -31,15 +31,14 @@ export function TrustLayer({ id = 'trust' }: { id?: string }) {
   return (
   <section id={id} className="bg-formula-deep/35 py-24 md:py-32">
   <div className="mx-auto max-w-[1200px] px-6">
+  <ScrollFadeIn>
   <div className="flex items-center gap-2.5">
   <span className="h-[0.625rem] w-px shrink-0 bg-formula-volt/90" aria-hidden />
   <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">Trust</p>
   </div>
-  <MarketingTextReveal>
   <h2 className="mt-4 font-mono text-2xl font-semibold leading-tight tracking-tight text-formula-paper md:text-[1.65rem]">
-  Elite facility. Pro standards. Weekly proof.
+    Elite facility. Pro standards. Weekly proof.
   </h2>
-  </MarketingTextReveal>
   <ul className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
   {ITEMS.map(item => (
   <li key={item.title} className="border border-formula-frost/10 bg-formula-base/60 p-6">
@@ -48,6 +47,7 @@ export function TrustLayer({ id = 'trust' }: { id?: string }) {
   </li>
   ))}
   </ul>
+  </ScrollFadeIn>
   </div>
   </section>
   )

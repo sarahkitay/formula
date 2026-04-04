@@ -4,8 +4,8 @@ import type { ReactNode } from 'react'
 import { useFadeInOnView } from '@/lib/use-fade-in-on-view'
 import { cn } from '@/lib/utils'
 
-/** Scroll-triggered opacity fade for marketing headings + lead copy (respects `prefers-reduced-motion` via hook). */
-export function MarketingTextReveal({ children, className }: { children: ReactNode; className?: string }) {
+/** Scroll-triggered opacity fade (respects `prefers-reduced-motion` via hook). */
+export function ScrollFadeIn({ children, className }: { children: ReactNode; className?: string }) {
   const { ref, visible } = useFadeInOnView<HTMLDivElement>()
 
   return (

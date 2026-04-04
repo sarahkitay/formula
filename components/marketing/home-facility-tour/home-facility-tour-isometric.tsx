@@ -18,7 +18,7 @@ function TourFieldPitch() {
  */
 export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
   return (
-    <div className="relative flex min-h-[min(280px,42vh)] w-full items-center justify-center overflow-x-auto overflow-y-visible py-3 md:min-h-[min(340px,46vh)] md:py-4 lg:min-h-[min(400px,50vh)] lg:py-5">
+    <div className="relative flex min-h-[min(280px,42vh)] w-full items-center justify-center overflow-x-auto overflow-y-visible py-1.5 md:min-h-[min(340px,46vh)] md:py-2 lg:min-h-[min(400px,50vh)] lg:py-2.5">
       <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-center max-md:[transform:perspective(1800px)_rotateX(60deg)_rotateZ(-30deg)_scale(0.36)] md:max-lg:[transform:perspective(1800px)_rotateX(60deg)_rotateZ(-30deg)_scale(0.5)] lg:[transform:perspective(1800px)_rotateX(60deg)_rotateZ(-30deg)_scale(0.66)]">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute inset-[2%] bg-formula-base shadow-2xl" />

@@ -11,6 +11,7 @@ import { SITE } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 import { FacilityTourStaticFloor } from '@/components/marketing/home-facility-tour/home-facility-tour-isometric'
 import { facilityZoneEyebrow } from '@/components/marketing/home-facility-tour/zone-eyebrow'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 
 type TourStop = {
   id: PublicFacilityZoneId
@@ -178,6 +179,7 @@ export function HomeFacilityTour() {
       <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-gradient-to-t from-formula-deep/50 to-transparent" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-4 px-5 pb-8 pt-6 md:gap-5 md:px-8 md:pb-10 md:pt-8 lg:px-10">
+        <ScrollFadeIn>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <div className="max-w-xl shrink-0">
             <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-formula-mist md:text-[11px] md:tracking-[0.34em]">
@@ -206,6 +208,7 @@ export function HomeFacilityTour() {
             </button>
           </div>
         </div>
+        </ScrollFadeIn>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -213,7 +216,7 @@ export function HomeFacilityTour() {
           transition={{ duration: 0.75, ease: 'easeOut' }}
           className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-xl border border-formula-frost/12 bg-formula-deep/65 shadow-[0_16px_40px_rgba(0,0,0,0.3)] md:rounded-[1.2rem]"
         >
-          <div className="border-b border-white/[0.06] px-3 py-2 md:px-4 md:py-2.5">
+          <div className="border-b border-white/[0.06] px-2.5 py-1.5 md:px-3 md:py-2">
             <p className="font-mono text-[9px] font-medium uppercase tracking-[0.22em] text-formula-olive md:text-[10px]">
               Floor plan · select a zone
             </p>

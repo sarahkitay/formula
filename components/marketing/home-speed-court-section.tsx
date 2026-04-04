@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { MEDIA_SCRIM_BOTTOM, MEDIA_SCRIM_TOP } from '@/lib/marketing/media-scrims'
 
@@ -52,7 +53,7 @@ export function HomeSpeedCourtSection() {
         <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />
 
         <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-14 md:px-10 md:pb-20">
-          <div className="max-w-[34rem]">
+          <MediaOverlayTextPanel variant="bare" className="max-w-[34rem]">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/70">
               Cognitive layer
             </p>
@@ -69,7 +70,7 @@ export function HomeSpeedCourtSection() {
             >
               See it on the facility map →
             </Link>
-          </div>
+          </MediaOverlayTextPanel>
         </div>
       </div>
     </section>

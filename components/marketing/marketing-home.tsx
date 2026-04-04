@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { ConversionPathways } from '@/components/marketing/conversion-pathways'
-import { HomeHighlights } from '@/components/marketing/home-highlights'
+import { HomeProgramsAndPathways } from '@/components/marketing/home-programs-and-pathways'
+import { MarketingEmailCapture } from '@/components/marketing/marketing-email-capture'
 import { HomeFacilitySection } from '@/components/marketing/home-facility-section'
 import { HomeSpeedCourtSection } from '@/components/marketing/home-speed-court-section'
 import { HomeSpeedTrackSection } from '@/components/marketing/home-speed-track-section'
@@ -12,6 +12,7 @@ import { PublicFacilityMap } from '@/components/marketing/public-facility-map'
 import { HomeFacilityTour } from '@/components/marketing/home-facility-tour'
 import { StartHereSection } from '@/components/marketing/start-here-section'
 import { MarketingTextReveal } from '@/components/marketing/marketing-text-reveal'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
 
@@ -47,24 +48,27 @@ export function MarketingHome() {
       <section id="programs" className="bg-formula-deep">
         <div className="relative mx-auto max-w-[1200px] px-6 pb-8 pt-20 md:pb-12 md:pt-28">
           <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
-            <div>
-              <SectionLabel>Training</SectionLabel>
-              <MarketingTextReveal>
-                <h2 className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]">
-                  Precision, technique, and game intelligence for every level.
-                </h2>
-                <p className="mt-5 text-[15px] leading-relaxed text-formula-frost/85">{SITE_VOICE.programDesign}</p>
-              </MarketingTextReveal>
-              <div className="mt-5 max-w-3xl">
-                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">Floor plan · select a zone</p>
-                <p className="mt-1 max-w-2xl text-[13px] leading-snug text-formula-frost/80">
-                  Tap a zone: fields, speed, specialized stations - how each layer supports training + application.
-                </p>
-                <div className="mt-2">
-                  <PublicFacilityMap compact />
+            <ScrollFadeIn>
+              <div>
+                <SectionLabel>Training</SectionLabel>
+                <MarketingTextReveal>
+                  <h2 className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]">
+                    Precision, technique, and game intelligence for every level.
+                  </h2>
+                  <p className="mt-5 text-[15px] leading-relaxed text-formula-frost/85">{SITE_VOICE.programDesign}</p>
+                </MarketingTextReveal>
+                <div className="mt-5 max-w-3xl">
+                  <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">Floor plan · select a zone</p>
+                  <p className="mt-1 max-w-2xl text-[13px] leading-snug text-formula-frost/80">
+                    Tap a zone: fields, speed, specialized stations - how each layer supports training + application.
+                  </p>
+                  <div className="mt-2">
+                    <PublicFacilityMap compact />
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollFadeIn>
+            <ScrollFadeIn>
             <ul className="space-y-0 border border-formula-frost/10 bg-formula-paper/[0.02] font-mono text-[11px] uppercase tracking-[0.12em] text-formula-mist">
               {(
                 [
@@ -83,6 +87,7 @@ export function MarketingHome() {
                 </li>
               ))}
             </ul>
+            </ScrollFadeIn>
           </div>
         </div>
       </section>
@@ -93,6 +98,7 @@ export function MarketingHome() {
       <SectionDivider />
       <section id="ecosystem" className="relative mx-auto max-w-[1200px] px-6 py-24 md:py-32">
         <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+          <ScrollFadeIn>
           <div>
             <SectionLabel>How we operate</SectionLabel>
             <MarketingTextReveal>
@@ -112,6 +118,8 @@ export function MarketingHome() {
               What Formula is →
             </Link>
           </div>
+          </ScrollFadeIn>
+          <ScrollFadeIn>
           <ul className="space-y-0 border border-formula-frost/10 bg-formula-paper/[0.02] font-mono text-[11px] uppercase tracking-[0.12em] text-formula-mist">
             {[
               ['01', 'Structured', 'Published blocks. Clean transitions. Sessions run as designed.'],
@@ -128,14 +136,15 @@ export function MarketingHome() {
               </li>
             ))}
           </ul>
+          </ScrollFadeIn>
         </div>
       </section>
 
       <SectionDivider />
-      <HomeHighlights />
+      <HomeProgramsAndPathways />
 
       <SectionDivider />
-      <ConversionPathways />
+      <MarketingEmailCapture />
 
       <SectionDivider />
       <StartHereSection />
