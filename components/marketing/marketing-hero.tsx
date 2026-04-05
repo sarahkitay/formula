@@ -47,7 +47,7 @@ export function MarketingHero() {
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/18 to-transparent" />
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pt-24 pb-12 max-lg:gap-4 max-lg:pb-14 max-sm:gap-3 lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pb-12 pt-24 max-lg:gap-4 max-lg:pb-14 max-sm:gap-3 max-sm:pt-32 sm:pt-24 lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
         <div className="relative z-20 flex min-w-0 flex-col max-lg:flex-none max-lg:pt-3 lg:flex-1 lg:max-w-[min(100%,28rem)] lg:pt-0 xl:max-w-[min(100%,32rem)]">
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-formula-mist [text-shadow:0_1px_18px_rgba(0,0,0,0.45)]">
             Formula Soccer Center
