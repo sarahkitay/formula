@@ -76,7 +76,7 @@ export function HomeField3DHero() {
       role="img"
       aria-label="Interactive preview of the indoor field: move your pointer or drag to tilt the view"
     >
-      <div className="home-field-3d__stage mx-auto w-full max-w-[min(100%,680px)] px-1 pt-3 pb-4 max-sm:ml-0 max-sm:mr-auto md:px-2 md:pt-6 md:pb-6 lg:max-w-[min(100%,760px)]">
+      <div className="home-field-3d__stage mx-auto w-full max-w-[min(100%,680px)] px-1 pt-3 pb-4 max-sm:ml-0 max-sm:mr-auto max-sm:pt-2 max-sm:pb-3 md:px-2 md:py-6 lg:max-w-[min(100%,760px)]">
         <div className="container act">
           <div ref={tiltRef} className="i act">
             <div className="cont">

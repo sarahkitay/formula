@@ -71,12 +71,9 @@ export function HomeTeamworkSection() {
               >
                 Book an assessment →
               </Link>
-              <Link
-                href={MARKETING_HREF.youthMembership}
-                className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/80 transition-colors hover:text-formula-volt"
-              >
-                Youth membership →
-              </Link>
+              <span className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/55">
+                Memberships coming soon
+              </span>
             </div>
           </ScrollFadeIn>
         </div>

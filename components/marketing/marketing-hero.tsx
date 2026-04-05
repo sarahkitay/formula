@@ -47,8 +47,8 @@ export function MarketingHero() {
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/18 to-transparent" />
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pt-24 pb-12 max-lg:gap-6 max-lg:pb-14 lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
-        <div className="relative z-20 flex min-w-0 flex-col max-lg:flex-none lg:flex-1 lg:max-w-[min(100%,28rem)] xl:max-w-[min(100%,32rem)]">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pt-24 pb-12 max-lg:gap-4 max-lg:pb-14 max-sm:gap-3 lg:flex-row lg:items-center lg:gap-10 lg:pb-16 lg:pt-20 xl:gap-12">
+        <div className="relative z-20 flex min-w-0 flex-col max-lg:flex-none max-lg:pt-3 lg:flex-1 lg:max-w-[min(100%,28rem)] lg:pt-0 xl:max-w-[min(100%,32rem)]">
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-formula-mist [text-shadow:0_1px_18px_rgba(0,0,0,0.45)]">
             Formula Soccer Center
           </p>
@@ -74,15 +74,22 @@ export function MarketingHero() {
           <p className="mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-formula-mist [text-shadow:0_1px_14px_rgba(0,0,0,0.4)]">
             {SITE_VOICE.heroAudienceLine}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <Link
               href={MARKETING_HREF.bookAssessmentPortal}
-              className="inline-flex h-11 items-center border border-formula-volt/50 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-base transition-[filter] duration-300 hover:brightness-105"
+              className="inline-flex h-11 w-fit items-center border border-formula-volt/50 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-base transition-[filter] duration-300 hover:brightness-105"
             >
               Book assessment
             </Link>
+            <Link
+              href={MARKETING_HREF.youthMembership}
+              className="inline-flex h-11 w-fit items-center border border-formula-paper/35 bg-transparent px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] transition-colors duration-300 hover:border-formula-volt/45 hover:bg-formula-paper/[0.06] hover:text-formula-paper"
+            >
+              Purchase a package
+            </Link>
             <MembershipWaitlistCapture
               source="hero"
+              label="Memberships coming soon"
               buttonClassName="inline-flex h-11 items-center border border-formula-paper/35 bg-transparent px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] transition-colors duration-300 hover:border-formula-volt/45 hover:bg-formula-paper/[0.06] hover:text-formula-paper"
             />
           </div>
@@ -90,7 +97,7 @@ export function MarketingHero() {
 
         <div
           id="field-3d"
-          className="relative z-10 flex w-full shrink-0 flex-col items-center justify-center border-t border-formula-frost/10 bg-formula-deep/20 py-6 max-lg:pointer-events-auto max-lg:w-full max-lg:border-t max-lg:border-formula-frost/10 max-lg:bg-formula-deep/[0.12] max-lg:px-0 max-lg:pb-6 max-lg:pt-2 max-sm:items-start max-sm:pt-1 lg:z-auto lg:max-w-[min(520px,46%)] lg:flex-1 lg:items-center lg:border-l lg:border-t-0 lg:bg-formula-deep/12 lg:py-5 lg:pl-6 xl:max-w-[min(560px,44%)]"
+          className="relative z-10 flex w-full shrink-0 flex-col items-center justify-center border-t border-formula-frost/10 bg-formula-deep/20 py-6 max-lg:pointer-events-auto max-lg:w-full max-lg:border-t max-lg:border-formula-frost/10 max-lg:bg-formula-deep/[0.12] max-lg:px-0 max-lg:pb-5 max-lg:pt-0 max-sm:items-start max-sm:pb-4 max-sm:pt-0 lg:z-auto lg:max-w-[min(520px,46%)] lg:flex-1 lg:items-center lg:border-l lg:border-t-0 lg:bg-formula-deep/12 lg:py-5 lg:pl-6 xl:max-w-[min(560px,44%)]"
         >
           <div className="w-full max-w-[min(100%,720px)] max-lg:translate-y-0 scale-[0.44] max-sm:origin-left max-sm:translate-x-[min(2.25rem,12vw)] sm:translate-x-0 sm:origin-center sm:scale-[0.92] md:max-lg:scale-[0.96] lg:max-w-none lg:scale-[0.9] xl:scale-[0.96]">
             <HomeField3DHero />

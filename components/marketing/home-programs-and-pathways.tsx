@@ -28,7 +28,7 @@ const HIGHLIGHTS: {
     href: MARKETING_HREF.youthMembership,
     tier: 'anchor',
     band: 'tier1',
-    cta: 'Start with membership →',
+    cta: 'Memberships coming soon',
     layoutClass: 'lg:col-span-4 lg:row-span-2 lg:min-h-[min(17rem,42vh)]',
   },
   {
@@ -206,9 +206,12 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
           <Link href={MARKETING_HREF.bookAssessmentPortal} className={primaryAssessmentClass}>
             Book assessment
           </Link>
+          <Link href={MARKETING_HREF.youthMembership} className={primaryWaitlistTriggerClass}>
+            Purchase a package
+          </Link>
           <MembershipWaitlistCapture
             source="programs-pathways"
-            label="Membership waitlist →"
+            label="Memberships coming soon"
             buttonClassName={primaryWaitlistTriggerClass}
           />
           <Link href={MARKETING_HREF.clinics} className={primaryClinicClass}>

@@ -51,12 +51,18 @@ export function StartHereSection() {
           </Link>{' '}
           above, plus email updates before this section.
         </p>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-col items-center gap-2.5 sm:gap-3">
           <Link
             href={MARKETING_HREF.bookAssessmentPortal}
             className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-8 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black no-underline hover:brightness-105"
           >
             Book assessment
+          </Link>
+          <Link
+            href={MARKETING_HREF.youthMembership}
+            className="inline-flex h-11 items-center border border-formula-paper/25 bg-transparent px-8 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper no-underline transition-colors hover:border-formula-volt/40 hover:text-formula-volt"
+          >
+            Purchase a package
           </Link>
         </div>
       </div>
