@@ -24,11 +24,6 @@ export const metadata: Metadata = {
   },
   description:
     'Elevate your game - Formula Soccer Center: elite training programs, cutting-edge technology, structured development and premium facilities.',
-  icons: {
-    icon: [{ url: '/formula-logo.png', type: 'image/png' }],
-    shortcut: '/formula-logo.png',
-    apple: '/formula-logo.png',
-  },
 }
 
 export default function RootLayout({
