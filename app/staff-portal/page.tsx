@@ -257,7 +257,7 @@ export default function StaffPortalHubPage() {
                   : null
 
                 const activeProgramName =
-                  embedOne<ProgramRow>(activeProgram?.programs)?.name ?? '—'
+                  embedOne<ProgramRow>(activeProgram?.programs)?.name ?? 'N/A'
 
                 const completedAssessments = Array.isArray(pl.assessments)
                   ? pl.assessments.filter((assessment) => assessment.completed_at)
@@ -289,14 +289,14 @@ export default function StaffPortalHubPage() {
                       <div>
                         <p className="font-medium text-formula-paper">{name}</p>
                         <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
-                          Age group · {pl.age_group ?? '—'}
+                          Age group · {pl.age_group ?? 'N/A'}
                         </p>
                       </div>
 
                       <div className="text-right text-sm text-formula-frost/75">
                         <p>Program · {activeProgramName}</p>
                         <p className="mt-1">Assessments · {completedAssessments.length}</p>
-                        <p className="mt-1">Latest · {latestAssessmentDate ?? '—'}</p>
+                        <p className="mt-1">Latest · {latestAssessmentDate ?? 'N/A'}</p>
                       </div>
                     </div>
 

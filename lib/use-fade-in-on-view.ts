@@ -20,9 +20,11 @@ export function useFadeInOnView<T extends HTMLElement>() {
 
     const obs = new IntersectionObserver(
       entries => {
+        // Use isIntersecting (any overlap). A high threshold on a very tall target (e.g. whole article)
+        // never reaches 20% visible on mobile, which previously left marketing pages stuck at opacity-0.
         if (entries.some(e => e.isIntersecting)) setVisible(true)
       },
-      { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.2 }
+      { root: null, rootMargin: '80px 0px 12% 0px', threshold: 0 }
     )
     obs.observe(el)
     return () => obs.disconnect()

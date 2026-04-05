@@ -230,7 +230,7 @@ export default function ParentPortalHubPage() {
                     null
                   : null
 
-                const activeProgramName = embedOne<ProgramRow>(activeProgram?.programs)?.name ?? '—'
+                const activeProgramName = embedOne<ProgramRow>(activeProgram?.programs)?.name ?? 'N/A'
 
                 const latestAssessment = Array.isArray(player?.assessments)
                   ? [...player.assessments]
@@ -247,7 +247,7 @@ export default function ParentPortalHubPage() {
                   : null
 
                 const latestAssessmentLabel = !latestAssessment
-                  ? '—'
+                  ? 'N/A'
                   : [
                       latestAssessment.completed_at
                         ? formatAssessmentDate(latestAssessment.completed_at)
@@ -255,7 +255,7 @@ export default function ParentPortalHubPage() {
                       latestAssessment.summary?.trim() || null,
                     ]
                       .filter(Boolean)
-                      .join(' · ') || '—'
+                      .join(' · ') || 'N/A'
 
                 return (
                   <li
@@ -269,7 +269,7 @@ export default function ParentPortalHubPage() {
                         <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
                           Age group
                         </dt>
-                        <dd>{player?.age_group ?? '—'}</dd>
+                        <dd>{player?.age_group ?? 'N/A'}</dd>
                       </div>
 
                       <div className="flex gap-2">
@@ -283,7 +283,7 @@ export default function ParentPortalHubPage() {
                         <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
                           Latest assessment
                         </dt>
-                        <dd>{latestAssessmentLabel ?? '—'}</dd>
+                        <dd>{latestAssessmentLabel ?? 'N/A'}</dd>
                       </div>
                     </dl>
                   </li>

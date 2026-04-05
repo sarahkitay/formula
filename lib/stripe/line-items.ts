@@ -3,7 +3,7 @@ import { FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10 } from '@/lib/marketing/public
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
 /**
- * Line items for Checkout — amounts come from published pricing constants only (never from the client).
+ * Line items for Checkout. Amounts come from published pricing constants only (never from the client).
  */
 export function lineItemsForCheckoutType(type: CheckoutType): Stripe.Checkout.SessionCreateParams.LineItem[] {
   if (type === 'assessment') {

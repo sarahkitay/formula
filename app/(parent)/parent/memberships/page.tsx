@@ -17,10 +17,10 @@ export default function ParentMembershipsPage() {
       <div className="space-y-10">
         <PageHeader
           title="Membership"
-          subtitle="Session packages and membership options — recurring plans are not live in the app yet."
+          subtitle="Session packages and membership options. Recurring plans are not live in the app yet."
         />
 
-        {/* Session package — premium hero */}
+        {/* Session package / premium hero */}
         <div className="relative overflow-hidden rounded-2xl border border-border-bright/25 bg-gradient-to-br from-elevated via-surface to-surface-raised shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.06)]">
           <div
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_100%_0%,color-mix(in_srgb,var(--color-primary)_12%,transparent),transparent_55%)] opacity-90"
@@ -45,7 +45,7 @@ export default function ParentMembershipsPage() {
                   ${SESSION_PACKAGE_10.priceUsd}
                 </p>
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-text-secondary">
-                  {SESSION_PACKAGE_10.summary} Purchase and scheduling are handled at the front desk or during your assessment — not in this portal yet.
+                  {SESSION_PACKAGE_10.summary} Purchase and scheduling are handled at the front desk or during your assessment, not in this portal yet.
                 </p>
               </div>
             </div>
@@ -72,7 +72,7 @@ export default function ParentMembershipsPage() {
           </div>
         </div>
 
-        {/* Monthly memberships — coming soon */}
+        {/* Monthly memberships / coming soon */}
         <div className="rounded-2xl border border-border bg-surface p-6 md:flex md:items-center md:justify-between md:gap-8 md:p-8">
           <div className="min-w-0">
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
@@ -114,7 +114,7 @@ export default function ParentMembershipsPage() {
                       {player.firstName} {player.lastName}
                     </p>
                     <p className="mt-2 text-sm text-text-secondary">
-                      No active membership on file. The {SESSION_PACKAGE_10.sessions}-session package (${SESSION_PACKAGE_10.priceUsd}) is our current offer — ask
+                      No active membership on file. The {SESSION_PACKAGE_10.sessions}-session package (${SESSION_PACKAGE_10.priceUsd}) is our current offer. Ask
                       staff at your next visit or assessment to purchase or redeem sessions.
                     </p>
                   </div>

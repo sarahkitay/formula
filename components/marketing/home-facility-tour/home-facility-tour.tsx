@@ -75,17 +75,18 @@ function TourHotspot({
   return (
     <motion.button
       type="button"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay: stop.delay * 0.06 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay: stop.delay * 0.035, ease: [0.25, 0.1, 0.25, 1] }}
+      whileTap={{ scale: 0.992 }}
       onClick={() => onClick(stop.id)}
       aria-label={`${stop.name}: ${stop.label}`}
       aria-pressed={active}
       className={cn(
-        'absolute z-40 cursor-pointer border text-left transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-formula-volt/60',
+        'absolute z-40 cursor-pointer border text-left transition-[border-color,background-color] duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-formula-volt/60 md:duration-300',
         active
-          ? 'border-white/40 bg-white/[0.05]'
-          : 'border-transparent hover:border-white/30 hover:bg-white/[0.04]'
+          ? 'border-white/35 bg-white/[0.04]'
+          : 'border-transparent hover:border-white/22 hover:bg-white/[0.03] active:border-white/28'
       )}
       style={{ left: stop.left, top: stop.top, width: stop.width, height: stop.height }}
     >
@@ -130,7 +131,7 @@ function TourDot({
     >
       <span
         className={cn(
-          'relative shrink-0 flex h-3 w-3 items-center justify-center rounded-full border transition-all duration-300',
+          'relative shrink-0 flex h-3 w-3 items-center justify-center rounded-full border transition-[border-color,background-color] duration-200 md:duration-300',
           active ? 'border-white bg-white' : 'border-white/40 bg-transparent'
         )}
       >
@@ -161,7 +162,7 @@ export function HomeFacilityTour() {
         const index = tourStops.findIndex(s => s.id === current)
         return tourStops[(index + 1) % tourStops.length]!.id
       })
-    }, 3200)
+    }, 3800)
     return () => clearInterval(interval)
   }, [autoPlay, tourStops])
 
@@ -178,24 +179,24 @@ export function HomeFacilityTour() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px)] bg-[length:44px_44px] opacity-[0.22]" />
       <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-gradient-to-t from-formula-deep/50 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-2 px-5 pb-4 pt-4 md:gap-2 md:px-8 md:pb-5 md:pt-5 lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-1.5 px-4 pb-3 pt-2 md:gap-2 md:px-8 md:pb-4 md:pt-3 lg:px-10">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: 'easeOut' }}
+          transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
           className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-lg border border-formula-frost/12 bg-formula-deep/65 shadow-[0_12px_32px_rgba(0,0,0,0.28)] md:rounded-xl"
         >
           <ScrollFadeIn>
-            <div className="border-b border-white/[0.06] px-3 pb-3 pt-3 md:px-4 md:pb-3.5 md:pt-3.5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+            <div className="border-b border-white/[0.06] px-3 pb-2 pt-2 md:px-4 md:pb-2.5 md:pt-2.5">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <div className="max-w-xl shrink-0">
                   <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-formula-mist md:text-[11px] md:tracking-[0.34em]">
                     {SITE.facilityName}
                   </p>
-                  <h2 className="mt-2 text-[clamp(1.65rem,4.2vw,2.75rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-formula-paper md:mt-2.5">
+                  <h2 className="mt-1.5 text-[clamp(1.5rem,3.8vw,2.5rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-formula-paper md:mt-2">
                     Tour the facility before you step inside.
                   </h2>
-                  <p className="mt-2 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-3 md:text-sm md:leading-relaxed">
+                  <p className="mt-1.5 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-2 md:text-sm md:leading-relaxed">
                     Floor plan layout (left stack → center field → performance + support → Field 2 / Footbot). Same zones as the{' '}
                     <Link href={MARKETING_HREF.facility} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
                       Facility
@@ -218,12 +219,15 @@ export function HomeFacilityTour() {
             </div>
           </ScrollFadeIn>
 
-          <div className="border-b border-white/[0.06] px-2 py-1 md:px-2.5 md:py-1.5">
-            <p className="font-mono text-[9px] font-medium uppercase tracking-[0.22em] text-formula-olive md:text-[10px]">
+          <div className="border-b border-white/[0.06] px-2 py-0.5 md:px-2.5 md:py-1">
+            <p className="font-mono text-[9px] font-medium uppercase leading-tight tracking-[0.22em] text-formula-olive md:text-[10px]">
               Floor plan · select a zone
             </p>
+            <p className="mt-0.5 font-mono text-[8px] font-medium uppercase leading-snug tracking-[0.2em] text-formula-frost/50 md:hidden">
+              Tap a zone to move the tour
+            </p>
             <p className="sr-only">
-              Click a zone on the map or choose a stop below. The selected area is highlighted on the floor plan.
+              Click or tap a zone on the map or choose a stop below. The selected area is highlighted on the floor plan.
             </p>
           </div>
           <FacilityTourStaticFloor
@@ -237,7 +241,7 @@ export function HomeFacilityTour() {
           />
         </motion.div>
 
-        <div className="relative z-10 grid gap-2.5 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
+        <div className="relative z-10 grid gap-2 pb-1 md:gap-2.5 md:pb-0 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
           <div className="rounded-lg border border-white/12 bg-black/38 px-2.5 py-2 backdrop-blur-md md:rounded-xl md:px-3 md:py-2.5">
             <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">Zones</p>
             <div className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 sm:grid-cols-3 md:grid-cols-4">
@@ -258,10 +262,10 @@ export function HomeFacilityTour() {
           <AnimatePresence mode="wait">
             <motion.div
               key={active.id}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, y: -3 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
               className="rounded-lg border border-white/12 bg-black/48 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.22)] backdrop-blur-md md:rounded-xl md:p-4"
             >
               <p className="text-[10px] uppercase tracking-[0.24em] text-white/45 md:text-[11px] md:tracking-[0.28em]">Zone detail</p>

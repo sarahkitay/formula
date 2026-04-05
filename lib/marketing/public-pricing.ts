@@ -6,10 +6,10 @@ export const SESSION_PACKAGE_10 = {
   sessions: 10,
   priceUsd: 300,
   label: '10-session package',
-  summary: '10 sessions for $300 — our current package offering.',
+  summary: '10 sessions for $300: our current package offering.',
   /** Hero / inline layouts where the numerals are shown separately */
   purchaseNote:
-    'Our current package offering. Pay securely online, or purchase through your assessment or at the desk — we\'ll confirm scheduling and cadence.',
+    'Our current package offering. Pay securely online, or purchase through your assessment or at the desk; we\'ll confirm scheduling and cadence.',
 } as const
 
 export const FORMULA_SKILLS_CHECK = {

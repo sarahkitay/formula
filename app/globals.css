@@ -605,7 +605,7 @@
   }
 }
 
-/* FPI / Formula page — pillar bars rise on load */
+/* FPI / Formula page: pillar bars rise on load */
 @keyframes fpi-pillar-rise {
   from {
     transform: scaleY(0);
@@ -700,6 +700,8 @@
   border-bottom-color: color-mix(in srgb, var(--color-formula-volt) 52%, transparent);
 }
 
-.prose-marketing .not-prose {
+/* Nested not-prose only (e.g. inside a list item). Direct-child callouts use `my-*` / `mt-*` utilities. */
+.prose-marketing li .not-prose,
+.prose-marketing p .not-prose {
   margin-top: 0;
 }

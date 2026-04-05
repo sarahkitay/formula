@@ -1,7 +1,7 @@
 -- Completed Stripe Checkout sessions (written from webhook only; use service role).
 -- Run in Supabase SQL editor after enabling Stripe webhook to this project.
 --
--- Inserts use lib/stripe/record-purchase.ts — column names must match exactly.
+-- Inserts use lib/stripe/record-purchase.ts; column names must match exactly.
 
 create table if not exists public.stripe_purchases (
   id uuid primary key default gen_random_uuid(),

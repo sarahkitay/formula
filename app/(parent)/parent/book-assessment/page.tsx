@@ -140,7 +140,7 @@ export default function ParentBookAssessmentPage() {
                 placeholder="At least 8 characters"
               />
               <p className="text-[11px] text-text-muted">
-                Demo gate only — replace with your auth provider (e.g. Supabase) in production.
+                Demo gate only. Replace with your auth provider (e.g. Supabase) in production.
               </p>
             </div>
             {accountError ? <p className="text-sm text-amber-400">{accountError}</p> : null}

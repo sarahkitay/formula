@@ -1,5 +1,5 @@
 /**
- * Canonical public facility zones — single source for /facility map, homepage tour,
+ * Canonical public facility zones: single source for /facility map, homepage tour,
  * and isometric hotspot geometry (same % as `FacilityTourStaticFloor`).
  */
 
@@ -78,7 +78,7 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: 'Speed Track',
     gridArea: 'st',
     emphasis: 'primary',
-    copy: 'Linear acceleration and mechanical efficiency — metered, not chaotic.',
+    copy: 'Linear acceleration and mechanical efficiency: metered, not chaotic.',
     tour: {
       label: 'SPEED TRACK',
       sublabel: 'Sprint lane',
@@ -127,7 +127,7 @@ export const FACILITY_ZONES: FacilityZone[] = [
     gridArea: 'sup',
     emphasis: 'support',
     copy:
-      'Gym, flex room, party hosting, and program-adjacent support — important operationally, secondary on this map to core training assets.',
+      'Gym, flex room, party hosting, and program-adjacent support: important operationally, secondary on this map to core training assets.',
     tour: {
       label: 'SUPPORT',
       sublabel: 'Gym · flex · party',

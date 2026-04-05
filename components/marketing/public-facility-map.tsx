@@ -43,7 +43,7 @@ export function PublicFacilityMap({ compact = false }: { compact?: boolean }) {
             gridTemplateRows: 'minmax(2.5rem,1fr) minmax(2.5rem,1fr) minmax(3rem,1.2fr)',
           }}
           role="group"
-          aria-label="Facility floor plan — select a zone"
+          aria-label="Facility floor plan. Select a zone"
         >
           {FACILITY_ZONES.map(z => {
             const sel = selected === z.id

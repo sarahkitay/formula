@@ -39,7 +39,7 @@ export default function FacilityPage() {
       <div className="not-prose max-w-3xl">
         <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">Floor plan · select a zone</p>
         <p className="mt-2 max-w-2xl text-[13px] leading-snug text-formula-frost/80 md:text-[14px] md:leading-relaxed">
-          Tap a zone: fields, speed, specialized stations — how each layer supports training and application.
+          Tap a zone: fields, speed, specialized stations, and how each layer supports training and application.
         </p>
       </div>
       <div className="not-prose mt-6">

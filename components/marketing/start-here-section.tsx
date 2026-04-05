@@ -49,7 +49,7 @@ export function StartHereSection() {
           <Link href="#programs-pathways" className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
             Programs & assets
           </Link>{' '}
-          above — plus email updates before this section.
+          above, plus email updates before this section.
         </p>
         <div className="mt-8">
           <Link

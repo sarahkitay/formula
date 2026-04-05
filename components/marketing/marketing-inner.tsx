@@ -32,7 +32,7 @@ export function MarketingInnerPage({
   children,
   wide = false,
 }: {
-  /** Renders above eyebrow/title — e.g. hero offer. */
+  /** Renders above eyebrow/title (e.g. hero offer). */
   prepend?: ReactNode
   eyebrow: string
   title: string | ReactNode

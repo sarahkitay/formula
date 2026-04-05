@@ -1,4 +1,4 @@
-/** `public.players` — base row; optional relation embeds when selected via Supabase join */
+/** `public.players`: base row; optional relation embeds when selected via Supabase join */
 export type PlayerRow = {
   id: string
   first_name: string | null

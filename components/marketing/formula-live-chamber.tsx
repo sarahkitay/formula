@@ -202,6 +202,24 @@ export function FormulaLiveChamber() {
       return
     }
 
+    const narrow =
+      typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches
+    if (narrow) {
+      const id = window.setTimeout(() => {
+        setGridOn(true)
+        setPerimeterOn(true)
+        setPillarCount(6)
+        setStreamsLive(true)
+        setFlicker(false)
+        setCompositeLive(true)
+        setPerfVisible(true)
+        setShowMath(false)
+        setPhilosophyOn(true)
+        setSettled(true)
+      }, 380)
+      return () => window.clearTimeout(id)
+    }
+
     const ids: ReturnType<typeof setTimeout>[] = []
     const q = (fn: () => void, ms: number) => {
       ids.push(setTimeout(fn, ms))
@@ -233,7 +251,7 @@ export function FormulaLiveChamber() {
   return (
     <section
       className={cn(
-        'formula-live-chamber not-prose relative my-12 overflow-hidden border border-formula-frost/12 bg-formula-deep/40 px-5 py-10 md:px-10 md:py-14',
+        'formula-live-chamber not-prose relative my-8 overflow-hidden border border-formula-frost/12 bg-formula-deep/40 px-4 py-7 md:my-12 md:px-10 md:py-14',
         settled && 'formula-live-chamber--settled'
       )}
       aria-labelledby="formula-live-chamber-heading"
@@ -298,7 +316,7 @@ export function FormulaLiveChamber() {
           representative.
         </p>
 
-        <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-stretch lg:gap-5 xl:gap-7">
+        <div className="mt-6 flex flex-col gap-6 md:mt-10 md:gap-10 lg:flex-row lg:items-stretch lg:gap-5 xl:gap-7">
           <div className="flex flex-1 flex-col">
             <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.28em] text-formula-frost/28">Inputs</p>
             <div className="flex flex-col gap-1 lg:gap-0.5">

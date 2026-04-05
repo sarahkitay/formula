@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 /**
- * Inline email capture before the closing “Start here” band — posts to `/api/waitlist` with source tagging.
+ * Site-wide email capture directly above the marketing footer; posts to `/api/waitlist` with source tagging.
  */
 export function MarketingEmailCapture() {
   const [email, setEmail] = useState('')
@@ -67,7 +67,7 @@ export function MarketingEmailCapture() {
             Get Formula updates
           </h2>
           <p className="mt-2 max-w-[46ch] text-[14px] leading-relaxed text-formula-frost/80">
-            Openings, programs, and facility notes — low volume, no spam.
+            Openings, programs, and facility notes. Low volume, no spam.
           </p>
 
           {status === 'success' ? (

@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { HomeProgramsAndPathways } from '@/components/marketing/home-programs-and-pathways'
-import { MarketingEmailCapture } from '@/components/marketing/marketing-email-capture'
 import { HomeFacilitySection } from '@/components/marketing/home-facility-section'
 import { HomeSpeedCourtSection } from '@/components/marketing/home-speed-court-section'
 import { HomeSpeedTrackSection } from '@/components/marketing/home-speed-track-section'
@@ -139,9 +138,6 @@ export function MarketingHome() {
 
       <SectionDivider />
       <HomeProgramsAndPathways />
-
-      <SectionDivider />
-      <MarketingEmailCapture />
 
       <SectionDivider />
       <StartHereSection />

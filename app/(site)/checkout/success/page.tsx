@@ -18,9 +18,9 @@ export default async function CheckoutSuccessPage({
   return (
     <article className="mx-auto max-w-lg px-6 pb-24 pt-28 md:pb-32 md:pt-32">
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-formula-mist">Checkout</p>
-      <h1 className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper">Thanks — payment submitted</h1>
+      <h1 className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper">Thanks. Payment submitted</h1>
       <p className="mt-4 text-[15px] leading-relaxed text-formula-frost/85">
-        Stripe is processing your payment. Fulfillment (scheduling, session credits, portal updates) is confirmed via our systems — not only this page. If
+        Stripe is processing your payment. Fulfillment (scheduling, session credits, portal updates) is confirmed via our systems, not only this page. If
         anything looks off, contact the front desk with your receipt email.
       </p>
       {sessionId ? (

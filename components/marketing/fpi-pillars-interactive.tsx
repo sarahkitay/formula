@@ -44,7 +44,7 @@ export function FpiPillarsInteractive({ intro, pillars }: { intro: string; pilla
                 type="button"
                 onClick={() => onPillarClick(i)}
                 className={cn(
-                  'group flex h-full min-h-[200px] w-full flex-col rounded-sm border border-white/[0.08] bg-formula-deep/40 p-3 text-left transition-[border-color,background-color,box-shadow] duration-300',
+                  'group flex h-full min-h-[150px] w-full flex-col rounded-sm border border-white/[0.08] bg-formula-deep/40 p-3 text-left transition-[border-color,background-color,box-shadow] duration-300 sm:min-h-[180px]',
                   'focus:outline-none focus-visible:ring-2 focus-visible:ring-formula-volt/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-formula-deep)]',
                   'md:min-h-[300px] md:p-4',
                   open && 'border-formula-volt/30 bg-formula-deep/55 shadow-[inset_0_0_0_1px_rgb(220_255_0_/_.08)]',

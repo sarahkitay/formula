@@ -15,7 +15,7 @@ export function CheckoutSuccessPortalModal({ nextStep }: { nextStep?: string }) 
     <Modal open={open} onClose={() => setOpen(false)} title="Assessment payment received" size="sm">
       <ModalBody className="space-y-3">
         <p className="text-sm leading-relaxed text-text-secondary">
-          Your payment went through. Staff will align your Skills Check on the calendar — watch Schedule for the confirmed slot and any prep notes.
+          Your payment went through. Staff will align your Skills Check on the calendar; watch Schedule for the confirmed slot and any prep notes.
         </p>
         <p className="text-xs text-text-muted">Receipt and updates also go to the email you used at checkout.</p>
       </ModalBody>

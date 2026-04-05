@@ -31,7 +31,7 @@ export default function AssessmentPage() {
         ))}
       </ul>
 
-      <div className="not-prose marketing-glass my-10 border border-white/[0.08] bg-white/[0.02] p-5 md:p-6">
+      <div className="not-prose marketing-glass mt-14 mb-12 border border-white/[0.08] bg-white/[0.02] p-5 md:mt-16 md:mb-14 md:p-6">
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Fee</p>
         <p className="mt-3 font-mono text-2xl font-semibold tracking-tight text-zinc-100">${FORMULA_SKILLS_CHECK.priceUsd}</p>
         <p className="mt-3 text-sm leading-relaxed text-zinc-400">{FORMULA_SKILLS_CHECK.waiverSummary}</p>
@@ -63,7 +63,7 @@ export default function AssessmentPage() {
         <strong>Off-cycle</strong> when calendar is not enough - return-to-play, tier move, growth spurt, diagnostic stall. <strong>Clinical</strong>, not casual.
       </p>
 
-      <div className="not-prose my-10 overflow-x-auto border border-white/[0.08]">
+      <div className="not-prose mt-12 mb-12 overflow-x-auto border border-white/[0.08] md:mt-14 md:mb-14">
         <table className="w-full min-w-[520px] border-collapse text-left font-sans text-sm">
           <thead>
             <tr className="border-b border-white/[0.08] bg-white/[0.03] font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
@@ -104,7 +104,7 @@ export default function AssessmentPage() {
       <p>
         <strong>After the session</strong> should never be a black hole. Representative cadence below - confirm SLAs in registration and portal.
       </p>
-      <div className="not-prose marketing-glass my-8 border border-white/[0.08] bg-white/[0.02] p-5 md:p-6">
+      <div className="not-prose marketing-glass mt-10 mb-12 border border-white/[0.08] bg-white/[0.02] p-5 md:mt-12 md:mb-14 md:p-6">
         <ul className="list-none space-y-4 p-0 text-sm leading-relaxed text-zinc-400">
           <li className="border-l border-formula-volt/35 pl-4 before:hidden">
             <strong className="text-zinc-300">Same day:</strong> athlete thank-you, recovery cue, what is next - no mystery grading.

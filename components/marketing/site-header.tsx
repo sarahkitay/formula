@@ -2,9 +2,8 @@
 
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
-import { HEADER_MAIN, HOME_ANCHORS } from '@/lib/marketing/nav'
+import { HEADER_MAIN } from '@/lib/marketing/nav'
 
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -18,9 +17,6 @@ function NavLink({ href, children }: { href: string; children: ReactNode }) {
 }
 
 export function SiteHeader() {
-  const pathname = usePathname()
-  const isHome = pathname === '/' || pathname === ''
-
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-formula-frost/10 bg-formula-deep/55 backdrop-blur-xl">
       <div className="mx-auto max-w-[1400px] px-5 md:px-8">
@@ -48,27 +44,17 @@ export function SiteHeader() {
 
         <nav
           className="-mx-5 flex gap-4 overflow-x-auto border-t border-formula-frost/8 px-5 py-2.5 md:hidden"
-          aria-label={isHome ? 'On this page' : 'Quick links'}
+          aria-label="Primary"
         >
-          {isHome
-            ? HOME_ANCHORS.map(item => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="shrink-0 whitespace-nowrap font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-formula-mist"
-                >
-                  {item.label}
-                </a>
-              ))
-            : HEADER_MAIN.map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="shrink-0 whitespace-nowrap font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-formula-mist"
-                >
-                  {item.label}
-                </Link>
-              ))}
+          {HEADER_MAIN.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="shrink-0 whitespace-nowrap font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-formula-mist transition-colors hover:text-formula-paper"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
       </div>
     </header>

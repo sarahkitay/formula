@@ -194,7 +194,7 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
         </h2>
         <MarketingTextReveal>
           <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-formula-frost/85">
-            Pick your door: explore the full stack, then take one clear next step — assessment, waitlist, or clinic registration below; camps, rentals, and
+            Pick your door: explore the full stack, then take one clear next step: assessment, waitlist, or clinic registration below; camps, rentals, and
             adults under <span className="text-formula-paper/90">More ways in</span>.
           </p>
         </MarketingTextReveal>

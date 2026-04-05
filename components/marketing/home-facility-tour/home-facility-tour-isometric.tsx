@@ -18,8 +18,9 @@ function TourFieldPitch() {
  */
 export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
   return (
-    <div className="relative flex min-h-[min(200px,32vh)] w-full items-center justify-center overflow-x-auto overflow-y-visible pb-0 pt-0 md:min-h-[min(240px,36vh)] lg:min-h-[min(280px,40vh)]">
-      <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-center max-md:[transform:perspective(1800px)_rotateX(60deg)_rotateZ(-30deg)_scale(0.4)] md:max-lg:[transform:perspective(1800px)_rotateX(60deg)_rotateZ(-30deg)_scale(0.54)] lg:[transform:perspective(1800px)_rotateX(60deg)_rotateZ(-30deg)_scale(0.7)]">
+    <div className="relative mx-auto w-full max-md:max-h-[min(36vh,300px)] max-md:overflow-hidden sm:max-md:max-h-[min(40vh,340px)] md:max-h-none md:overflow-visible">
+      <div className="relative flex min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-visible pb-0 pt-0 max-md:-mb-1 max-md:pb-0">
+        <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_12%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.22)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.28)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.5)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.66)]">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute inset-[2%] bg-formula-base shadow-2xl" />
           <div className="absolute inset-[2%] border-[6px] border-formula-frost/22" />
@@ -32,7 +33,7 @@ export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
             <div className="absolute bottom-[5%] left-1/2 top-[5%] w-px -translate-x-1/2 bg-white/35" />
           </div>
 
-          {/* Double Speed Court — two bays */}
+          {/* Double Speed Court / two bays */}
           <div className="absolute left-[3.5%] top-[27%] grid h-[24%] w-[12.5%] grid-rows-2 gap-[2%]">
             <div className="relative border border-white/20 shadow-[0_6px_18px_rgba(0,0,0,0.08)]">
               <TourFieldPitch />
@@ -42,10 +43,10 @@ export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
             </div>
           </div>
 
-          {/* Speed Track — vertical lane */}
+          {/* Speed Track / vertical lane */}
           <div className="absolute left-[3.5%] top-[53%] h-[40%] w-[12.5%] bg-[#c92b2b] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]" />
 
-          {/* Field 1 — center block */}
+          {/* Field 1 / center block */}
           <div className="absolute left-[17%] top-[5%] h-[88%] w-[33%] border border-white/20 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
             <TourFieldPitch />
           </div>
@@ -57,7 +58,7 @@ export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
             <div className="absolute inset-y-0 left-[12%] w-px bg-black/30" />
           </div>
 
-          {/* Support cluster — subdued slab */}
+          {/* Support cluster / subdued slab */}
           <div className="absolute left-[51.5%] top-[54%] h-[39%] w-[17%] border border-white/12 bg-[#e8e8e8]/90 shadow-[0_8px_20px_rgba(0,0,0,0.06)]">
             <div className="absolute left-[10%] top-[12%] h-[8%] w-[14%] bg-[#6d7074]/85" />
             <div className="absolute left-[10%] top-[26%] h-[8%] w-[14%] bg-[#6d7074]/85" />
@@ -79,6 +80,7 @@ export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
         </div>
 
         <div className="absolute inset-0 z-20">{hotspots}</div>
+      </div>
       </div>
     </div>
   )

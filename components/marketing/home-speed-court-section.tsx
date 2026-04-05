@@ -13,7 +13,7 @@ const overlaySubtitleClass =
   'font-mono text-[clamp(0.7rem,2vw,0.8125rem)] font-semibold uppercase leading-snug tracking-[0.2em] text-formula-paper/95'
 
 /**
- * Homepage: full-bleed Speed Court video — same overlay panel treatment as Speed Track (`MediaOverlayTextPanel`).
+ * Homepage: full-bleed Speed Court video; same overlay panel treatment as Speed Track (`MediaOverlayTextPanel`).
  */
 export function HomeSpeedCourtSection() {
   const videoRef = useRef<HTMLVideoElement>(null)

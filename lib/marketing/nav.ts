@@ -47,10 +47,10 @@ export const HEADER_MORE: { label: string; href: string }[] = [
 /** Full list for footer / sitemap strip. */
 export const PRIMARY_NAV: { label: string; href: string }[] = [...HEADER_MAIN, ...HEADER_MORE]
 
+/** In-page homepage anchors (optional deep links). Mobile header uses `HEADER_MAIN` for parity with desktop. */
 export const HOME_ANCHORS: { label: string; href: string }[] = [
-  { label: 'Programs', href: '#programs' },
+  { label: 'Programs', href: '#programs-pathways' },
+  { label: 'Training', href: '#programs' },
   { label: 'Ecosystem', href: '#ecosystem' },
-  { label: 'Highlights', href: '#highlights' },
   { label: 'Trust', href: `${MARKETING_HREF.facility}#trust` },
-  { label: 'Convert', href: '#convert' },
 ]

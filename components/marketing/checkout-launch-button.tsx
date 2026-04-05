@@ -11,7 +11,7 @@ type Props = {
   checkoutType: CheckoutType
   label: string
   className?: string
-  /** Allowed server values — extends Stripe success URL for post-checkout UX (e.g. portal assessment). */
+  /** Allowed server values; extends Stripe success URL for post-checkout UX (e.g. portal assessment). */
   successNext?: 'portal-assessment'
   /** Merged into Stripe session metadata (string values only; server sanitizes). */
   metadata?: Record<string, string>
