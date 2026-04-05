@@ -18,9 +18,9 @@ function TourFieldPitch() {
  */
 export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
   return (
-    <div className="relative mx-auto w-full max-md:max-h-[min(36vh,300px)] max-md:overflow-hidden sm:max-md:max-h-[min(40vh,340px)] md:max-h-none md:overflow-visible">
-      <div className="relative flex min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-visible pb-0 pt-0 max-md:-mb-1 max-md:pb-0">
-        <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_12%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.22)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.28)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.5)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.66)]">
+    <div className="relative mx-auto w-full overflow-hidden max-md:h-[min(30vh,248px)] sm:max-md:h-[min(34vh,280px)] md:h-[min(34vh,300px)] lg:h-[min(38vh,360px)] xl:h-[min(40vh,400px)]">
+      <div className="relative flex h-full min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-hidden pb-0 pt-0">
+        <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_8%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.24)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.30)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.52)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.64)]">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute inset-[2%] bg-formula-base shadow-2xl" />
           <div className="absolute inset-[2%] border-[6px] border-formula-frost/22" />
