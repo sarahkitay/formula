@@ -18,10 +18,10 @@ function TourFieldPitch() {
  */
 export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
   return (
-    <div className="relative mx-auto w-full px-2 pb-2 pt-1 md:px-3 md:pb-2.5 md:pt-1.5">
-      <div className="relative w-full overflow-hidden max-md:h-[min(34vh,276px)] sm:max-md:h-[min(38vh,304px)] md:h-[min(38vh,332px)] lg:h-[min(42vh,392px)] xl:h-[min(44vh,424px)]">
+    <div className="relative mx-auto w-full px-2 pb-3 pt-1 md:px-3 md:pb-4 md:pt-1.5">
+      <div className="relative w-full overflow-hidden max-md:h-[min(40vh,320px)] sm:max-md:h-[min(44vh,352px)] md:h-[min(44vh,384px)] lg:h-[min(48vh,448px)] xl:h-[min(50vh,480px)]">
         <div className="relative flex h-full min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-hidden">
-          <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_10%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.225)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.285)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.485)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.60)]">
+          <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_12%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.215)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.275)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.465)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.575)]">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute inset-[2%] bg-formula-base shadow-2xl" />
           <div className="absolute inset-[2%] border-[6px] border-formula-frost/22" />
