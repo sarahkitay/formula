@@ -92,7 +92,7 @@ export function MarketingHero() {
           id="field-3d"
           className="relative z-10 flex w-full shrink-0 flex-col items-center justify-center border-t border-formula-frost/10 bg-formula-deep/20 py-6 max-lg:pointer-events-auto max-lg:w-full max-lg:border-t max-lg:border-formula-frost/10 max-lg:bg-formula-deep/[0.12] max-lg:px-0 max-lg:pb-6 max-lg:pt-2 lg:z-auto lg:max-w-[min(520px,46%)] lg:flex-1 lg:border-l lg:border-t-0 lg:bg-formula-deep/12 lg:py-5 lg:pl-6 xl:max-w-[min(560px,44%)]"
         >
-          <div className="w-full max-w-[min(100%,720px)] origin-center scale-[0.88] max-lg:translate-y-0 sm:scale-[0.92] md:max-lg:scale-[0.96] lg:max-w-none lg:scale-[0.9] xl:scale-[0.96]">
+          <div className="w-full max-w-[min(100%,720px)] origin-center max-lg:translate-y-0 scale-[0.44] sm:scale-[0.92] md:max-lg:scale-[0.96] lg:max-w-none lg:scale-[0.9] xl:scale-[0.96]">
             <HomeField3DHero />
           </div>
           <motion.p
