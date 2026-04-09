@@ -64,10 +64,10 @@ export function MarketingEmailCapture() {
             id="marketing-email-capture-heading"
             className="mt-3 max-w-xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl"
           >
-            Get Formula updates
+            Stay in the loop.
           </h2>
           <p className="mt-2 max-w-[46ch] text-[14px] leading-relaxed text-formula-frost/80">
-            Openings, programs, and facility notes. Low volume, no spam.
+            Memberships are coming. So are new programs, clinic dates, and facility updates. Get notified first. No spam, low volume.
           </p>
 
           {status === 'success' ? (

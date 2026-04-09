@@ -74,18 +74,21 @@ export function MarketingHero() {
           <p className="mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-formula-mist [text-shadow:0_1px_14px_rgba(0,0,0,0.4)]">
             {SITE_VOICE.heroAudienceLine}
           </p>
+          <p className="mt-5 max-w-[38rem] text-[14px] leading-relaxed text-formula-frost/82 [text-shadow:0_1px_16px_rgba(0,0,0,0.35)]">
+            {SITE_VOICE.homeParentOneLiner}
+          </p>
           <div className="mt-8 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <Link
               href={MARKETING_HREF.bookAssessmentPortal}
               className="inline-flex h-11 w-fit items-center border border-formula-volt/50 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-base transition-[filter] duration-300 hover:brightness-105"
             >
-              Book assessment
+              Book an assessment
             </Link>
             <Link
-              href={MARKETING_HREF.youthMembership}
+              href={`${MARKETING_HREF.youthMembership}#programs-catalog`}
               className="inline-flex h-11 w-fit items-center border border-formula-paper/35 bg-transparent px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] transition-colors duration-300 hover:border-formula-volt/45 hover:bg-formula-paper/[0.06] hover:text-formula-paper"
             >
-              Purchase a package
+              Browse programs
             </Link>
             <MembershipWaitlistCapture
               source="hero"

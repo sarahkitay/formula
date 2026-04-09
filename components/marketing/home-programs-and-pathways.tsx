@@ -182,7 +182,7 @@ const primaryClinicClass =
   'inline-flex h-11 shrink-0 items-center border border-formula-frost/12 bg-transparent px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist transition-colors hover:border-formula-frost/22 hover:text-formula-paper'
 
 /**
- * Homepage: programs bento + primary CTAs (assessment, waitlist, clinics) + secondary path cards in one section.
+ * Program catalog bento + CTAs. Rendered on Membership; was previously on the homepage.
  */
 export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: string }) {
   return (
@@ -206,7 +206,7 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
           <Link href={MARKETING_HREF.bookAssessmentPortal} className={primaryAssessmentClass}>
             Book assessment
           </Link>
-          <Link href={MARKETING_HREF.youthMembership} className={primaryWaitlistTriggerClass}>
+          <Link href={`${MARKETING_HREF.youthMembership}#session-package`} className={primaryWaitlistTriggerClass}>
             Purchase a package
           </Link>
           <MembershipWaitlistCapture

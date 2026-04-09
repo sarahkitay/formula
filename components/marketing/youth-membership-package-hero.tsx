@@ -10,7 +10,7 @@ import { SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
  */
 export function YouthMembershipPackageHero() {
   return (
-    <div className="not-prose mb-12 space-y-6 md:mb-14">
+    <div id="session-package" className="not-prose mb-12 space-y-6 md:mb-14 scroll-mt-[calc(3.5rem+1rem)]">
       <div className="relative overflow-hidden rounded-sm border border-formula-frost/[0.14] bg-gradient-to-br from-formula-paper/[0.06] via-formula-deep/40 to-formula-base/80 shadow-[inset_0_1px_0_0_rgb(220_255_0_/_.12)]">
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.35]"
@@ -25,7 +25,7 @@ export function YouthMembershipPackageHero() {
           <div className="flex flex-wrap items-start justify-between gap-8">
             <div className="min-w-0 flex-1">
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-formula-volt">
-                Session package · Available now
+                10-session package · Available now
               </p>
               <div className="mt-6 flex flex-wrap items-start gap-x-5 gap-y-4 md:gap-x-8">
                 <div className="flex min-w-0 items-start gap-4 md:gap-6">
@@ -50,12 +50,12 @@ export function YouthMembershipPackageHero() {
                 </p>
               </div>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <CheckoutLaunchButton checkoutType="package-10" label="Buy package" />
+                <CheckoutLaunchButton checkoutType="package-10" label="Buy the 10-session package" />
                 <Link
                   href={MARKETING_HREF.bookAssessmentPortal}
                   className="inline-flex h-11 items-center justify-center border border-black/25 bg-formula-volt/[0.14] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt shadow-[inset_0_0_0_1px_rgb(220_255_0_/_0.08)] transition-[filter,background-color] hover:bg-formula-volt/[0.2] hover:brightness-105"
                 >
-                  Book assessment
+                  Book an assessment
                 </Link>
                 <Link
                   href={MARKETING_HREF.clinics}
@@ -78,12 +78,12 @@ export function YouthMembershipPackageHero() {
             Coming soon
           </p>
           <p className="mt-2 max-w-[48ch] text-sm leading-relaxed text-formula-frost/80">
-            Recurring youth membership tiers aren&apos;t open yet. Join the waitlist and we&apos;ll reach you when published blocks and pricing go live.
+            Youth memberships are coming within the next month. Join the waitlist to get first access when published blocks and pricing go live.
           </p>
         </div>
         <MembershipWaitlistCapture
           source="youth-membership"
-          label="Join waitlist"
+          label="Join the membership waitlist"
           buttonClassName="inline-flex h-11 shrink-0 items-center border border-formula-frost/18 bg-formula-paper/[0.06] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-volt/35"
         />
       </div>

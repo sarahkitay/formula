@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
-import { HEADER_MAIN } from '@/lib/marketing/nav'
+import { HEADER_MAIN, MARKETING_HREF } from '@/lib/marketing/nav'
 
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -34,12 +34,20 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <Link
-            href="/login?role=parent"
-            className="ml-auto shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt transition-opacity hover:opacity-90"
-          >
-            Parent portal
-          </Link>
+          <div className="ml-auto flex shrink-0 items-center gap-3 md:gap-4">
+            <Link
+              href={MARKETING_HREF.bookAssessmentPortal}
+              className="inline-flex h-9 items-center border border-formula-volt/55 bg-formula-volt/95 px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-base transition-[filter] hover:brightness-105 md:h-10 md:px-4 md:tracking-[0.14em]"
+            >
+              Book
+            </Link>
+            <Link
+              href="/login?role=parent"
+              className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt transition-opacity hover:opacity-90"
+            >
+              Parent portal
+            </Link>
+          </div>
         </div>
 
         <nav

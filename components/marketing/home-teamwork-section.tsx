@@ -33,28 +33,36 @@ export function HomeTeamworkSection() {
         <div className="flex flex-col justify-center border-b border-formula-frost/10 bg-formula-deep px-8 py-14 md:px-12 md:py-16 lg:px-16">
           <ScrollFadeIn>
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/60">
-              On the floor together
+              Who this is for
             </p>
 
             <h2
               id="teamwork-heading"
               className="mt-4 font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
             >
-              Teamwork sharpened in a building that shows up for everyone.
+              Built for every level of player.
             </h2>
 
             <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">
-              Soccer is relational: pressure, support, and honest competition in the same room. Formula is built so athletes share real standards among coaches,
-              peers, and programmed space, not anonymous open gyms.
+              <strong className="font-medium text-formula-paper">Club athletes:</strong> sharpen the skills your team doesn&apos;t have time to isolate. Stay
+              sharp between seasons.
+            </p>
+
+            <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/80">
+              <strong className="font-medium text-formula-paper">Recreational players:</strong> learn the right habits early. Get better in a structured,
+              supportive environment.
+            </p>
+
+            <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/80">
+              <strong className="font-medium text-formula-paper">Competitive and elite players:</strong> train against real standards with real data. No fluff.
             </p>
 
             <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">
-              When operations stay disciplined with on-time blocks, protected ratios, and coaching that holds, the room levels up together. Clearer progress
-              tomorrow starts with better habits today.
+              <strong className="font-medium text-formula-paper">Families:</strong> know exactly what your athlete is working on and why. No black box.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              {['Shared standards', 'Protected ratios', 'On-time blocks', 'Community around development'].map(tag => (
+              {['Every level', 'Clear standards', 'Real data', 'Family-visible plans'].map(tag => (
                 <span
                   key={tag}
                   className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-volt/70"
@@ -71,9 +79,12 @@ export function HomeTeamworkSection() {
               >
                 Book an assessment →
               </Link>
-              <span className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/55">
-                Memberships coming soon
-              </span>
+              <Link
+                href={MARKETING_HREF.youthMembership}
+                className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/55 transition-colors hover:text-formula-volt"
+              >
+                Memberships coming soon →
+              </Link>
             </div>
           </ScrollFadeIn>
         </div>

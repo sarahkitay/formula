@@ -1,45 +1,39 @@
 import Link from 'next/link'
 import { FormulaPositioningBackground } from '@/components/marketing/formula-positioning-background'
 import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { cn } from '@/lib/utils'
 
-/** Same modules as current copy; titles match `<strong>` labels on the live page. */
-const COMBINES = [
-  {
-    title: 'Youth blocks',
-    body: 'Published schedules, capped density, no drop-in chaos.',
-  },
-  {
-    title: 'The Formula',
-    body: 'Coach + family signal. Internal science, not public ranking.',
-  },
-  {
-    title: 'Application',
-    body: 'Friday circuit + arena scenarios; training → execution.',
-  },
-  {
-    title: 'Clinics & camps',
-    body: 'Scarce, coach-led labs + full-facility immersion.',
-  },
-  {
-    title: 'Adults',
-    body: 'Hosted pickup + leagues, respectful intensity.',
-  },
-  {
-    title: 'Rentals',
-    body: 'Packaged inventory: clubs, teams, private training.',
-  },
-  {
-    title: 'Events',
-    body: 'Parties, tournaments, Footbot - same ops standard.',
-  },
-] as const
+const CLUB_VS_FORMULA: [string, string][] = [
+  ['Team identity and culture', 'Individual performance data'],
+  ['Minutes and match experience', 'Isolated skill development'],
+  ['Group coaching', 'Personalized training plans'],
+  ['Game application', 'Measured technical reps'],
+  ['Season structure', 'Year-round development arc'],
+]
 
-const NEXT_LINKS: { label: string; href: string }[] = [
-  { label: 'Youth membership', href: MARKETING_HREF.youthMembership },
-  { label: 'The Formula', href: MARKETING_HREF.fpi },
-  { label: 'Friday circuit', href: MARKETING_HREF.fridayCircuit },
+const OFFER_NOW: { title: string; body: string }[] = [
+  {
+    title: '10-session package',
+    body: '$300. Start immediately after your assessment.',
+  },
+  {
+    title: 'Friday Youth Game Circuit',
+    body: 'Live now. Structured competitive play.',
+  },
+  {
+    title: 'Adult programming',
+    body: 'Live now. Pickup and leagues.',
+  },
+  {
+    title: 'Clinics',
+    body: 'Small group, coach-led sessions. Check availability.',
+  },
+  {
+    title: 'Memberships',
+    body: 'Coming within the next month. Join the waitlist to get first access.',
+  },
 ]
 
 export function WhatIsFormulaPageContent() {
@@ -53,13 +47,14 @@ export function WhatIsFormulaPageContent() {
             <div className="max-w-4xl">
               <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Positioning</div>
               <h1 className={cn(marketingDisplayH1ClassName, 'max-w-5xl')}>
-                Club-complementary.
+                Built to work alongside your club.
                 <br />
-                Built for the next tier.
+                Not replace it.
               </h1>
               <p className="mt-8 max-w-3xl text-[clamp(1.05rem,1.8vw,1.45rem)] leading-9 text-white/72">
-                Not a club replacement - an operating layer: structure, measurement, and application when the team calendar
-                can’t carry it all.
+                Formula Soccer Center isn&apos;t a club team. We don&apos;t do travel schedules, tournaments, or team identity. That&apos;s your club&apos;s job,
+                and they do it well. What we do is fill the gap: the structured individual development, objective performance data, and measured skill-building
+                that club practice doesn&apos;t have time for.
               </p>
             </div>
 
@@ -68,11 +63,11 @@ export function WhatIsFormulaPageContent() {
                 <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">The idea</div>
                 <div className="space-y-4 text-[1.05rem] leading-8 text-white/78">
                   <p>
-                    Clubs build identity and minutes. Formula builds{' '}
-                    <span className="text-white/95">repeatable habits</span>,{' '}
-                    <span className="text-white/95">measured progression</span>, and{' '}
-                    <span className="text-white/95">controlled application</span> - visible, coachable, long-term athletic
-                    literacy.
+                    Your club builds team chemistry, minutes, and identity. Formula builds the individual habits, data-backed improvements, and technical reps
+                    that make your athlete better inside the club environment.
+                  </p>
+                  <p>
+                    More training isn&apos;t the answer. Better training is. And the only way to know if training is working is to measure it.
                   </p>
                 </div>
               </div>
@@ -80,56 +75,96 @@ export function WhatIsFormulaPageContent() {
           </div>
         </section>
 
-        <section className="border-b border-white/10">
+        <section className="border-b border-white/10" aria-labelledby="what-formula-adds-heading">
           <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
-            <div className="grid gap-14 lg:grid-cols-[0.78fr_1.22fr]">
-              <div>
-                <h2 className="max-w-xl font-sans text-[clamp(2rem,3.8vw,3.35rem)] leading-[1.04] tracking-[-0.04em] text-[#eef2ed]">
-                  What Formula combines
-                </h2>
+            <ScrollFadeIn>
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-white/45">Complement, don&apos;t compete</p>
+              <h2
+                id="what-formula-adds-heading"
+                className="mt-4 font-mono text-2xl font-semibold tracking-tight text-[#eef2ed] md:text-[1.65rem]"
+              >
+                What Formula adds
+              </h2>
+              <p className="mt-6 max-w-[62ch] text-[15px] leading-relaxed text-white/72">
+                Side by side with what you already get from club soccer.
+              </p>
+
+              <div className="not-prose mt-10 overflow-x-auto border border-white/10 bg-white/[0.025]">
+                <table className="w-full min-w-[480px] border-collapse text-left font-sans text-sm">
+                  <thead>
+                    <tr className="border-b border-white/[0.08] bg-white/[0.03] font-mono text-[10px] uppercase tracking-[0.16em] text-white/45">
+                      <th className="px-4 py-3 font-medium text-white/70">What your club provides</th>
+                      <th className="px-4 py-3 font-medium text-formula-volt/95">What Formula adds</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-white/65">
+                    {CLUB_VS_FORMULA.map(([club, formula]) => (
+                      <tr key={club} className="border-b border-white/[0.06] last:border-b-0">
+                        <td className="px-4 py-3 leading-relaxed">{club}</td>
+                        <td className="px-4 py-3 leading-relaxed text-white/85">{formula}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                {COMBINES.map((item) => (
-                  <article
-                    key={item.title}
-                    className="group min-h-[172px] border border-white/10 bg-white/[0.025] p-6 transition duration-300 hover:border-formula-volt/40 hover:bg-white/[0.04]"
-                  >
-                    <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.26em] text-white/40">Module</div>
-                    <h3 className="text-[1.35rem] leading-8 tracking-[-0.03em] text-white/92">{item.title}</h3>
-                    <p className="mt-4 text-[15px] leading-7 text-white/62">{item.body}</p>
-                  </article>
-                ))}
+              <Link
+                href={MARKETING_HREF.fpi}
+                className="mt-8 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
+              >
+                See how The Formula works →
+              </Link>
+            </ScrollFadeIn>
+          </div>
+        </section>
+
+        <section className="border-b border-white/10">
+          <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
+            <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr]">
+              <div>
+                <h2 className="font-sans text-[clamp(2rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.04em] text-[#eef2ed]">Who Formula is for</h2>
+                <p className="mt-6 max-w-xl text-lg leading-8 text-white/68">
+                  Athletes and families who want structure, measurement, and a facility that runs like a performance brand.
+                </p>
+              </div>
+
+              <div className="border border-white/10 bg-white/[0.025] p-8 md:p-10">
+                <ul className="list-none space-y-4 p-0 text-[15px] leading-relaxed text-white/72">
+                  <li>
+                    <strong className="text-white/92">Club athletes</strong> who want to show up to practice sharper, and track it.
+                  </li>
+                  <li>
+                    <strong className="text-white/92">Recreational players</strong> who want structured development without the commitment of a travel team.
+                  </li>
+                  <li>
+                    <strong className="text-white/92">Competitive athletes</strong> heading toward high school, college, or elite club who need every edge
+                    measured and optimized.
+                  </li>
+                  <li>
+                    <strong className="text-white/92">Parents</strong> who want to see real data on what their athlete is working on, and why.
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
         </section>
 
         <section className="border-b border-white/10">
-          <div className="mx-auto grid max-w-7xl gap-16 px-6 py-20 md:py-24 lg:grid-cols-[0.85fr_1.15fr] lg:px-10 lg:py-28">
-            <div>
-              <h2 className="font-sans text-[clamp(2rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.04em] text-[#eef2ed]">
-                Who it is for
-              </h2>
-              <p className="mt-6 max-w-xl text-lg leading-8 text-white/68">
-                Athletes who want <strong className="font-semibold text-white/90">standards</strong>,{' '}
-                <strong className="font-semibold text-white/90">continuity</strong>, and a building that runs like a performance
-                brand - on time, buffered, coaching that holds.
-              </p>
-            </div>
-
-            <div className="border border-white/10 bg-white/[0.025] p-8 md:p-10">
-              <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Next</div>
-              <div className="flex flex-wrap gap-x-3 gap-y-2 text-[1.1rem] leading-8">
-                {NEXT_LINKS.map((item, index) => (
-                  <div key={item.href} className="flex items-center gap-3">
-                    <Link href={item.href} className="text-formula-volt transition hover:opacity-85">
-                      {item.label}
-                    </Link>
-                    {index < NEXT_LINKS.length - 1 ? <span className="text-white/30">·</span> : null}
-                  </div>
-                ))}
-              </div>
+          <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
+            <h2 className="max-w-xl font-sans text-[clamp(2rem,3.8vw,3.35rem)] leading-[1.04] tracking-[-0.04em] text-[#eef2ed]">
+              What we offer right now
+            </h2>
+            <div className="mt-10 grid gap-5 md:grid-cols-2">
+              {OFFER_NOW.map(item => (
+                <article
+                  key={item.title}
+                  className="min-h-[140px] border border-white/10 bg-white/[0.025] p-6 transition duration-300 hover:border-formula-volt/40 hover:bg-white/[0.04]"
+                >
+                  <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">Live or next</h3>
+                  <p className="mt-3 text-[1.2rem] font-semibold tracking-tight text-white/92">{item.title}</p>
+                  <p className="mt-3 text-[15px] leading-7 text-white/62">{item.body}</p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
@@ -137,9 +172,9 @@ export function WhatIsFormulaPageContent() {
         <section className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
           <div className="flex flex-col items-start justify-between gap-10 border border-white/10 bg-white/[0.025] p-8 md:flex-row md:items-end md:p-12">
             <div className="max-w-2xl">
-              <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Positioning</div>
-              <h2 className="font-mono text-[clamp(2rem,4vw,3.7rem)] leading-[1.02] tracking-[-0.04em] text-[#edf1ec]">
-                Club-complementary. Built for the next tier.
+              <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Start here</div>
+              <h2 className="font-mono text-[clamp(1.5rem,3vw,2rem)] leading-[1.1] tracking-[-0.02em] text-[#edf1ec]">
+                Book an assessment. Join the membership waitlist when you&apos;re ready for recurring blocks.
               </h2>
             </div>
             <div className="flex flex-wrap gap-4">
@@ -147,13 +182,13 @@ export function WhatIsFormulaPageContent() {
                 href={MARKETING_HREF.bookAssessmentPortal}
                 className="inline-flex border border-formula-volt bg-formula-volt px-7 py-4 font-mono text-[11px] font-semibold uppercase tracking-[0.26em] text-[#0a0d0c] transition hover:brightness-95"
               >
-                Book Assessment
+                Book an assessment
               </Link>
               <Link
                 href={MARKETING_HREF.youthMembership}
                 className="inline-flex border border-white/14 bg-transparent px-7 py-4 font-mono text-[11px] font-semibold uppercase tracking-[0.26em] text-white/85 transition hover:border-white/30 hover:bg-white/[0.03]"
               >
-                Explore Membership
+                Join the membership waitlist
               </Link>
             </div>
           </div>

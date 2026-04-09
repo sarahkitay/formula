@@ -1,25 +1,39 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
 const primaryCtaClass =
   'inline-flex h-11 items-center justify-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50'
+
+export type CheckoutSuccessNext = 'portal-assessment' | 'field-rental'
 
 type Props = {
   checkoutType: CheckoutType
   label: string
   className?: string
   /** Allowed server values; extends Stripe success URL for post-checkout UX (e.g. portal assessment). */
-  successNext?: 'portal-assessment'
+  successNext?: CheckoutSuccessNext
   /** Merged into Stripe session metadata (string values only; server sanitizes). */
   metadata?: Record<string, string>
+  /** Hide SMS opt-in toggle (default: show). Consent is still recorded as false when hidden. */
+  hideSmsConsent?: boolean
 }
 
-export function CheckoutLaunchButton({ checkoutType, label, className, successNext, metadata }: Props) {
+export function CheckoutLaunchButton({
+  checkoutType,
+  label,
+  className,
+  successNext,
+  metadata,
+  hideSmsConsent = false,
+}: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [smsOptIn, setSmsOptIn] = useState(false)
 
   async function handleClick() {
     setError(null)
@@ -30,6 +44,7 @@ export function CheckoutLaunchButton({ checkoutType, label, className, successNe
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: checkoutType,
+          smsConsent: smsOptIn,
           ...(successNext ? { successNext } : {}),
           ...(metadata && Object.keys(metadata).length > 0 ? { metadata } : {}),
         }),
@@ -51,7 +66,56 @@ export function CheckoutLaunchButton({ checkoutType, label, className, successNe
   }
 
   return (
-    <span className="inline-flex flex-col gap-1">
+    <span className="inline-flex max-w-md flex-col gap-3">
+      {!hideSmsConsent ? (
+        <div className="rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-4">
+          <div className="flex items-start gap-3">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={smsOptIn}
+              onClick={() => setSmsOptIn(v => !v)}
+              className={cn(
+                'relative mt-0.5 h-6 w-11 shrink-0 rounded-full border transition-colors',
+                smsOptIn ? 'border-formula-volt/60 bg-formula-volt/25' : 'border-formula-frost/25 bg-formula-base/80'
+              )}
+            >
+              <span
+                className={cn(
+                  'absolute top-0.5 h-5 w-5 rounded-full bg-formula-paper shadow transition-transform',
+                  smsOptIn ? 'translate-x-5' : 'translate-x-0.5'
+                )}
+                aria-hidden
+              />
+            </button>
+            <div className="min-w-0 text-[13px] leading-relaxed text-formula-frost/88">
+              <span className="font-medium text-formula-paper">SMS notifications (optional)</span>
+              <p className="mt-1.5">
+                If you opt in, Formula Soccer Center may send text messages about your purchase, scheduling, and facility updates using{' '}
+                <a
+                  href="https://www.twilio.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-formula-volt underline-offset-2 hover:underline"
+                >
+                  Twilio
+                </a>
+                , our messaging provider. Message and data rates may apply. Message frequency varies. Reply STOP to opt out, HELP for help. Opting in is not
+                required to complete your purchase.
+              </p>
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-formula-mist">
+                <Link href={MARKETING_HREF.privacy} className="text-formula-volt/90 underline-offset-2 hover:underline">
+                  Privacy policy
+                </Link>
+                <span className="mx-2 text-formula-frost/40">·</span>
+                <Link href={MARKETING_HREF.terms} className="text-formula-volt/90 underline-offset-2 hover:underline">
+                  Terms
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <button type="button" disabled={loading} onClick={() => void handleClick()} className={cn(primaryCtaClass, className)}>
         {loading ? 'Redirecting…' : label}
       </button>

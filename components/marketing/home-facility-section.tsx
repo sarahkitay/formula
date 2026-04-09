@@ -42,15 +42,17 @@ export function HomeFacilitySection() {
               id="home-facility-heading"
               className="mt-4 font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
             >
-              The full facility: structured soccer development under one roof.
+              A performance facility. Not a rental hall.
             </h2>
 
             <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">{SITE_VOICE.trainingCenterPrograms}</p>
 
-            <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">{SITE_VOICE.whoWeTrain}</p>
+            <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/80">{SITE_VOICE.trainingCenterFollowOn}</p>
+
+            <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">{SITE_VOICE.trainingCenterClosing}</p>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              {['Capped density', 'Published blocks', 'The Formula', 'Pro floor ops'].map(tag => (
+              {['Real data', 'Structured programming', 'Measured progress', 'Parent clarity'].map(tag => (
                 <span
                   key={tag}
                   className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-volt/70"
@@ -65,13 +67,13 @@ export function HomeFacilitySection() {
                 href={MARKETING_HREF.facility}
                 className="inline-flex items-center gap-2 border border-formula-frost/20 px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-paper transition-colors duration-200 hover:border-formula-frost/40 hover:bg-formula-frost/5"
               >
-                Facility & interactive map →
+                Tour the facility →
               </Link>
               <Link
-                href={MARKETING_HREF.whatIsFormula}
+                href={MARKETING_HREF.fpi}
                 className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt/80 opacity-70 transition-opacity hover:opacity-100"
               >
-                How the formula works →
+                See how The Formula works →
               </Link>
             </div>
           </ScrollFadeIn>

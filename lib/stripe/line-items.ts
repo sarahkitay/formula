@@ -1,5 +1,5 @@
 import type Stripe from 'stripe'
-import { FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
+import { FIELD_RENTAL_BOOKING_CHECKOUT, FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
 /**
@@ -33,6 +33,22 @@ export function lineItemsForCheckoutType(type: CheckoutType): Stripe.Checkout.Se
             description: SESSION_PACKAGE_10.summary,
           },
           unit_amount: Math.round(SESSION_PACKAGE_10.priceUsd * 100),
+        },
+      },
+    ]
+  }
+
+  if (type === 'field-rental-booking') {
+    return [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: FIELD_RENTAL_BOOKING_CHECKOUT.productName,
+            description: FIELD_RENTAL_BOOKING_CHECKOUT.summary,
+          },
+          unit_amount: Math.round(FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * 100),
         },
       },
     ]

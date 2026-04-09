@@ -7,7 +7,7 @@ import { FORMULA_SKILLS_CHECK } from '@/lib/marketing/public-pricing'
 export const metadata: Metadata = {
   title: 'Assessments · Formula Skills Check',
   description:
-    'Formula Skills Check: passing, ball control, decisions, speed, strength, and agility. $200 assessment; fee may be waived with 6-month membership. Baseline + 6-month rhythm.',
+    'Formula Skills Check: one-hour assessment across six performance pillars. $200; fee waived with qualifying membership. Baseline, 6-month reassessment, and team blocks.',
 }
 
 export default function AssessmentPage() {
@@ -16,20 +16,50 @@ export default function AssessmentPage() {
       wide
       eyebrow="Assessments"
       title="Formula Skills Check"
-      intro={`${FORMULA_SKILLS_CHECK.name}: ${FORMULA_SKILLS_CHECK.priceUsd} per assessment. ${FORMULA_SKILLS_CHECK.waiverSummary}`}
+      intro={`Know exactly where your athlete stands. Build from there. The Formula Skills Check is a one-hour, data-driven assessment that measures your athlete across six performance pillars and gives you real scores, not impressions. Every athlete who trains at Formula starts here. Assessment results determine placement, program fit, and the individual training focus that drives improvement. $${FORMULA_SKILLS_CHECK.priceUsd} · One hour · Parent portal report within 5 to 7 business days. ${FORMULA_SKILLS_CHECK.waiverSummary}`}
     >
       <h2>What we measure</h2>
       <p>
-        Essential markers that feed honest placement and coaching priorities inside Formula (see also{' '}
-        <Link href={MARKETING_HREF.fpi}>The Formula</Link>):
+        Six pillars. Objective scores. No guesswork. Every task in the assessment is standardized, run the same way for every athlete, every time. Our
+        technology captures the data. Our coaches review it. You get the scores. See also{' '}
+        <Link href={MARKETING_HREF.fpi}>The Formula</Link>.
       </p>
       <ul>
-        {FORMULA_SKILLS_CHECK.measures.map(skill => (
-          <li key={skill}>
-            <strong>{skill}</strong>
-          </li>
-        ))}
+        <li>
+          <strong>Speed and explosiveness:</strong> timed on the Speed Track. Linear acceleration, first step, and repeat sprint performance with and without
+          the ball.
+        </li>
+        <li>
+          <strong>Agility and change of direction:</strong> measured through structured movement tasks. Lateral quickness, deceleration, and directional
+          efficiency.
+        </li>
+        <li>
+          <strong>Decision-making and cognitive speed:</strong> assessed on the Double Speed Court. Reaction time, scanning, and correct choices under pressure.
+        </li>
+        <li>
+          <strong>Technical execution:</strong> ball control, passing, receiving, and manipulation assessed through Footbot and structured ball tasks.
+        </li>
+        <li>
+          <strong>Game application:</strong> how skills transfer in applied scenarios, small-sided situations, and circuit exercises designed to reflect game
+          demands.
+        </li>
+        <li>
+          <strong>Consistency and coachability:</strong> response to instruction, effort under repeated stress, and performance across the full session.
+        </li>
       </ul>
+
+      <h2>Your athlete&apos;s scores</h2>
+      <p>
+        After the assessment, each pillar receives an individual score. Scores are age-weighted, so your U10 is evaluated against U10 standards, not U16.
+        Together, the scores build a complete Formula performance profile.
+      </p>
+      <p>
+        You see everything in your parent portal dashboard: individual pillar scores, an overall profile, and a recommended training focus based on what&apos;s
+        limiting your athlete&apos;s overall performance right now.
+      </p>
+      <p>
+        This is how we know whether to prioritize speed sessions, decision-making reps, or technical work. Not opinion. Data.
+      </p>
 
       <div className="not-prose marketing-glass mt-14 mb-12 border border-white/[0.08] bg-white/[0.02] p-5 md:mt-16 md:mb-14 md:p-6">
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Fee</p>
@@ -40,30 +70,33 @@ export default function AssessmentPage() {
         </p>
       </div>
 
-      <h2>What assessments do</h2>
-      <p>
-        <strong>Coachable snapshot</strong>: technical samples, athletic markers, cognitive tempo, early application and fit notes. Not internet ranking -{' '}
-        <strong>placement</strong> inside Formula.
-      </p>
+      <h2>What happens after</h2>
+      <ul>
+        <li>
+          <strong>Assessment completed:</strong> one hour, all six pillars.
+        </li>
+        <li>
+          <strong>Same day:</strong> summary note in your portal: what was covered, what to expect next.
+        </li>
+        <li>
+          <strong>48 to 72 hours:</strong> internal review and scoring finalized.
+        </li>
+        <li>
+          <strong>5 to 7 business days:</strong> full report in your parent portal: pillar scores, overall profile, training priorities.
+        </li>
+        <li>
+          <strong>Placement confirmed:</strong> your athlete is placed into the right program tier and training plan.
+        </li>
+        <li>
+          <strong>Training begins:</strong> sessions target the specific limiter identified in your athlete&apos;s scores.
+        </li>
+        <li>
+          <strong>6-month reassessment:</strong> scores are retested, progress is measured, plan is updated.
+        </li>
+      </ul>
 
-      <h2>Baseline Formula assessments</h2>
-      <p>
-        <strong>Baseline</strong> starts <Link href={MARKETING_HREF.fpi}>The Formula</Link>: age-weighted pillars, limiters, honest first plan - lane, expectations,
-        what “better” looks like next block. Structured tasks and observation - not one trick drill deciding a future.
-      </p>
-
-      <h2>6-month reassessments</h2>
-      <p>
-        Default: <strong>full Formula review every six months</strong> - adaptation visible, course correctable. Validates emphasis, updates priorities, fresh
-        reporting.
-      </p>
-
-      <h2>Off-cycle assessments</h2>
-      <p>
-        <strong>Off-cycle</strong> when calendar is not enough - return-to-play, tier move, growth spurt, diagnostic stall. <strong>Clinical</strong>, not casual.
-      </p>
-
-      <div className="not-prose mt-12 mb-12 overflow-x-auto border border-white/[0.08] md:mt-14 md:mb-14">
+      <h2>Types of assessments</h2>
+      <div className="not-prose mt-8 mb-12 overflow-x-auto border border-white/[0.08] md:mb-14">
         <table className="w-full min-w-[520px] border-collapse text-left font-sans text-sm">
           <thead>
             <tr className="border-b border-white/[0.08] bg-white/[0.03] font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
@@ -73,75 +106,53 @@ export default function AssessmentPage() {
           </thead>
           <tbody className="text-zinc-400">
             <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Baseline Formula</td>
+              <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Baseline Formula assessment</td>
               <td className="px-4 py-3 leading-relaxed">
-                Establishes pillar baselines, placement, and first priorities - entry to structured programming.
+                First-time athletes. Establishes pillar scores, confirms placement, and sets the first training priorities. The starting point for all Formula
+                programming.
               </td>
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">6-month reassessment</td>
-              <td className="px-4 py-3 leading-relaxed">Updates The Formula profile, confirms coaching emphasis, publishes next-phase guidance for families.</td>
+              <td className="px-4 py-3 leading-relaxed">
+                Full re-score across all six pillars. Validates what&apos;s improved, updates training emphasis, and produces a new report for families.
+              </td>
             </tr>
             <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Off-cycle</td>
-              <td className="px-4 py-3 leading-relaxed">Event-driven checkpoint when change velocity demands a reset - injury, tier, growth, diagnostic.</td>
+              <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Off-cycle assessment</td>
+              <td className="px-4 py-3 leading-relaxed">
+                For athletes returning from injury, experiencing significant growth, or moving up a training tier. Scheduled when it&apos;s clinically appropriate,
+                not just on a calendar.
+              </td>
             </tr>
             <tr>
-              <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Team / club block</td>
-              <td className="px-4 py-3 leading-relaxed">Coordinated roster throughput with Formula ops - same rigor, scheduled throughput.</td>
+              <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Team / club assessment block</td>
+              <td className="px-4 py-3 leading-relaxed">
+                Structured group assessment windows for rosters. Same standardized protocol, same data capture, coordinated scheduling. Inquire for group pricing
+                and availability.
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <h2>Team assessment bookings</h2>
+      <h2>For teams and clubs</h2>
       <p>
-        <strong>Structured windows</strong> for rosters: arrival pattern, consistent tasks, disciplined reporting - comparable signal, not a crowded combine. Book
-        against inventory and staff (often near <Link href={MARKETING_HREF.rentals}>rentals</Link>). Inquire: size, ages, outcomes.
+        Formula offers coordinated assessment blocks for club rosters and school teams: the same standardized protocol, scaled for groups. Results are
+        individual (each athlete receives their own profile) and delivered on the same reporting timeline.
       </p>
+      <p>Contact us to discuss group size, age range, and scheduling against our inventory.</p>
 
-      <h2>Reporting timeline</h2>
+      <h2>A note on how we work with kids</h2>
       <p>
-        <strong>After the session</strong> should never be a black hole. Representative cadence below - confirm SLAs in registration and portal.
-      </p>
-      <div className="not-prose marketing-glass mt-10 mb-12 border border-white/[0.08] bg-white/[0.02] p-5 md:mt-12 md:mb-14 md:p-6">
-        <ul className="list-none space-y-4 p-0 text-sm leading-relaxed text-zinc-400">
-          <li className="border-l border-formula-volt/35 pl-4 before:hidden">
-            <strong className="text-zinc-300">Same day:</strong> athlete thank-you, recovery cue, what is next - no mystery grading.
-          </li>
-          <li className="border-l border-formula-volt/35 pl-4 before:hidden">
-            <strong className="text-zinc-300">~48–72h:</strong> internal digest - notes, clips, pillar draft QC.
-          </li>
-          <li className="border-l border-formula-volt/35 pl-4 before:hidden">
-            <strong className="text-zinc-300">~5–7 biz days:</strong> family summary - priorities, next block, lane / <Link href={MARKETING_HREF.clinics}>clinic</Link> / revisit.
-          </li>
-          <li className="border-l border-formula-volt/35 pl-4 before:hidden">
-            <strong className="text-zinc-300">Portal:</strong> artifacts live in <strong>parent portal</strong> when applicable - no lost threads.
-          </li>
-        </ul>
-        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-600">
-          Adjust dates for peak volume or specialty testing - communication is part of the premium product.
-        </p>
-      </div>
-
-      <h2>Scientific and youth-sensitive</h2>
-      <p>
-        <strong>Respectful</strong> measurement: age-right language, pacing, breaks, why without tension. Protocol is science; tone is care. Direct with parents;
-        gentle with kids; honest always.
-      </p>
-
-      <h2>Book an assessment</h2>
-      <p>
-        <strong>Parent portal</strong> when slots open - returning sign in; new accounts same path.
-      </p>
-      <p>
-        Pathway after placement: <Link href={MARKETING_HREF.youthMembership}>Youth membership</Link> · <Link href={MARKETING_HREF.fpi}>The Formula</Link> ·{' '}
-        <Link href={MARKETING_HREF.fridayCircuit}>Friday circuit</Link>
+        Assessments are structured and data-driven, but we don&apos;t forget there&apos;s a kid doing them. Our staff explains every task before it starts, takes
+        breaks when needed, and communicates results directly and clearly to parents without putting pressure on athletes. Honest with families. Supportive with
+        kids.
       </p>
 
       <CtaRow
-        primary={{ label: 'Book assessment', href: MARKETING_HREF.bookAssessmentPortal }}
-        secondary={{ label: 'Youth membership pricing', href: MARKETING_HREF.youthMembership }}
+        primary={{ label: 'Book an assessment', href: MARKETING_HREF.bookAssessmentPortal }}
+        secondary={{ label: 'Youth membership and pricing', href: MARKETING_HREF.youthMembership }}
       />
       <p className="not-prose mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
         Already have an account?{' '}

@@ -1,16 +1,18 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
+import { FIELD_RENTAL_BOOKING_CHECKOUT } from '@/lib/marketing/public-pricing'
 import {
   type Classification,
   type RentalType,
   bookingCanProceed,
-  bookingRequiresApproval,
   classifyRentalBooking,
   insuranceMayBeRequired,
 } from '@/lib/rentals/booking-classification'
 
-const STEPS = 6
+const PAYMENT_STEP = 6
+const STEP_LABELS = ['Type', 'Slot', 'Headcount', 'Tier', 'Rules', 'Pay'] as const
 
 const TIME_SLOTS = [
   '6:00 AM - 7:00 AM',
@@ -39,14 +41,26 @@ function classificationSummary(c: Classification): string {
       return c.reason
     case 'private_tier1':
       return `Your session is classified as ${c.label}.`
-    case 'group_training_approval':
-      return `This session qualifies as Group Training / Clinic Use (${c.participantCount} participants) and requires approval before it can be confirmed.`
+    case 'group_training_ok':
+      return `Group Training / Clinic Use (${c.participantCount} participants). Same field rules apply; the calendar blocks double bookings automatically.`
     case 'club_ok':
       return `Club / Team Practice  -  ${c.participantCount} of ${c.maxParticipants} participants allowed per field.`
     case 'general_ok':
       return `General Use / Pick-Up  -  ${c.participantCount} of ${c.maxParticipants} participants allowed per field.`
     default:
       return ''
+  }
+}
+
+async function releasePendingHold(rentalRef: string) {
+  try {
+    await fetch('/api/rental-slots', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'release_pending', rentalRef }),
+    })
+  } catch {
+    /* non-blocking */
   }
 }
 
@@ -62,6 +76,7 @@ export function FieldRentalBookingFlow() {
   const [rulesOk, setRulesOk] = useState(false)
   const [agreementOk, setAgreementOk] = useState(false)
   const [confirmedRef, setConfirmedRef] = useState<string | null>(null)
+  const [bookedSlots, setBookedSlots] = useState<{ fieldId: string; timeSlot: string }[]>([])
 
   const countNum = useMemo(() => {
     const n = parseInt(participantCount, 10)
@@ -80,55 +95,68 @@ export function FieldRentalBookingFlow() {
     return insuranceMayBeRequired(rentalType, classification)
   }, [rentalType, classification])
 
-  const needsApproval = classification ? bookingRequiresApproval(classification) : false
   const canProceedBooking = classification ? bookingCanProceed(classification) : false
   const step3Valid =
-    rentalType !== '' &&
-    Number.isFinite(countNum) &&
-    countNum >= 1 &&
-    canProceedBooking &&
-    classification !== null
+    rentalType !== '' && Number.isFinite(countNum) && countNum >= 1 && canProceedBooking && classification !== null
 
-  const step2Valid = sessionDate !== '' && timeSlot !== '' && fieldId !== ''
+  const isSlotBooked = useCallback(
+    (field: string, slot: string) => bookedSlots.some(b => b.fieldId === field && b.timeSlot === slot),
+    [bookedSlots]
+  )
 
-  const confirmBooking = () => {
+  useEffect(() => {
+    if (!sessionDate) {
+      setBookedSlots([])
+      return
+    }
+    let cancelled = false
+    void fetch(`/api/rental-slots?date=${encodeURIComponent(sessionDate)}`)
+      .then(r => r.json())
+      .then((d: { booked?: { fieldId: string; timeSlot: string }[] }) => {
+        if (!cancelled && Array.isArray(d.booked)) {
+          setBookedSlots(d.booked)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setBookedSlots([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [sessionDate])
+
+  useEffect(() => {
+    if (fieldId && timeSlot && isSlotBooked(fieldId, timeSlot)) {
+      setTimeSlot('')
+    }
+  }, [fieldId, timeSlot, isSlotBooked])
+
+  const step2Valid = sessionDate !== '' && timeSlot !== '' && fieldId !== '' && !isSlotBooked(fieldId, timeSlot)
+
+  const goToPaymentStep = () => {
     const ref = `FR-${Date.now().toString(36).toUpperCase()}`
     setConfirmedRef(ref)
-    setStep(STEPS)
-  }
-
-  const resetBooking = () => {
-    setStep(1)
-    setRentalType('')
-    setSessionDate('')
-    setTimeSlot('')
-    setFieldId('')
-    setParticipantCount('')
-    setRenterName('')
-    setRenterEmail('')
-    setRulesOk(false)
-    setAgreementOk(false)
-    setConfirmedRef(null)
+    setStep(PAYMENT_STEP)
   }
 
   return (
     <section id="rental-booking" className="not-prose my-14 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8">
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Booking flow</p>
       <h3 className="mt-4 font-mono text-xl font-semibold tracking-tight text-formula-paper md:text-2xl">
-        Classify, enforce, and filter before arrival
+        Classify, pick a free slot, then pay the deposit
       </h3>
       <p className="mt-3 max-w-3xl text-sm leading-relaxed text-formula-mist">
-        Rental type and headcount drive capacity rules, tier, pricing logic, and waiver enforcement. Live inventory and email delivery will connect
-        once your booking backend is wired; this flow implements the product logic today.
+        Each field and time window can only hold one booking at a time. Taken windows are marked automatically. When you pay, your slot is locked in after
+        Stripe confirms payment (no separate staff approval step).
       </p>
 
       <ol className="mt-8 flex flex-wrap gap-2 border border-formula-frost/10 bg-formula-paper/[0.02] p-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">
-        {Array.from({ length: STEPS }, (_, i) => (
+        {STEP_LABELS.map((label, i) => (
           <li
-            key={i}
+            key={label}
             className={`rounded-sm px-2 py-1 ${step === i + 1 ? 'bg-formula-volt/20 text-formula-paper' : ''}`}
           >
-            {i + 1}. {['Type', 'Slot', 'Headcount', 'Tier', 'Rules', 'Done'][i]}
+            {i + 1}. {label}
           </li>
         ))}
       </ol>
@@ -144,7 +172,7 @@ export function FieldRentalBookingFlow() {
                 {
                   value: 'private_semi_private' as const,
                   title: 'Private / Semi-Private',
-                  hint: '1–4 Tier 1; 5+ group / clinic approval',
+                  hint: '1–4 Tier 1; 5+ group / clinic (same field)',
                 },
                 { value: 'general_pickup' as const, title: 'General Use / Pick-Up', hint: 'Max 15; no organized coaching' },
               ] as const
@@ -181,7 +209,7 @@ export function FieldRentalBookingFlow() {
         <div className="mt-8 space-y-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 2  -  Date, time, and field</p>
           <p className="text-sm text-formula-mist">
-            Fixed session windows. All sessions end on time. Overstay is billed in 30-minute increments (disclosed now, enforced at check-in).
+            Fixed session windows. Booked combinations for your date are disabled. All sessions end on time. Overstay is billed in 30-minute increments.
           </p>
           <div className="grid gap-4 md:grid-cols-3">
             <label className="flex flex-col gap-2">
@@ -192,21 +220,6 @@ export function FieldRentalBookingFlow() {
                 onChange={e => setSessionDate(e.target.value)}
                 className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
               />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Window *</span>
-              <select
-                value={timeSlot}
-                onChange={e => setTimeSlot(e.target.value)}
-                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              >
-                <option value="">Select window</option>
-                {TIME_SLOTS.map(t => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
             </label>
             <label className="flex flex-col gap-2">
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Field *</span>
@@ -221,6 +234,26 @@ export function FieldRentalBookingFlow() {
                     {f.label}
                   </option>
                 ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Window *</span>
+              <select
+                value={timeSlot}
+                onChange={e => setTimeSlot(e.target.value)}
+                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                disabled={!fieldId}
+              >
+                <option value="">{fieldId ? 'Select window' : 'Choose a field first'}</option>
+                {TIME_SLOTS.map(t => {
+                  const taken = fieldId ? isSlotBooked(fieldId, t) : false
+                  return (
+                    <option key={t} value={t} disabled={taken}>
+                      {t}
+                      {taken ? ' (booked)' : ''}
+                    </option>
+                  )
+                })}
               </select>
             </label>
           </div>
@@ -248,7 +281,7 @@ export function FieldRentalBookingFlow() {
         <div className="mt-8 space-y-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 3  -  Participant count (control step)</p>
           <ul className="list-inside list-disc text-sm text-formula-mist">
-            <li>Private: 1–4 → Tier 1 (Standard). 5+ → Group / Clinic, approval required.</li>
+            <li>Private: 1–4 → Tier 1 (Standard). 5+ → group / clinic tier on the same field (up to 20).</li>
             <li>Club / Team: max 20 per field (booking blocked above).</li>
             <li>General / Pick-Up: max 15 (booking blocked above).</li>
           </ul>
@@ -267,9 +300,7 @@ export function FieldRentalBookingFlow() {
               className={`border p-4 text-sm ${
                 classification.status === 'blocked'
                   ? 'border-red-500/35 bg-red-500/10 text-red-100'
-                  : needsApproval
-                    ? 'border-amber-400/35 bg-amber-400/10 text-amber-50'
-                    : 'border-formula-volt/35 bg-formula-volt/10 text-formula-paper'
+                  : 'border-formula-volt/35 bg-formula-volt/10 text-formula-paper'
               }`}
               role="status"
             >
@@ -300,28 +331,33 @@ export function FieldRentalBookingFlow() {
 
       {step === 4 && classification && rentalType ? (
         <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 4  -  Auto classification and pricing</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 4  -  Classification and deposit</p>
           <div className="border border-formula-frost/12 bg-formula-paper/[0.03] p-5">
             <p className="text-sm font-medium text-formula-paper">{classificationSummary(classification)}</p>
             {classification.status === 'private_tier1' ? (
               <p className="mt-3 text-sm text-formula-mist">
-                Pricing: Tier 1 rate applies (connect rate card). No group approval required.
+                Tier 1 rate applies for published windows. You&apos;ll place a <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong>{' '}
+                deposit at checkout to lock this slot if it is still available.
               </p>
             ) : null}
-            {needsApproval ? (
+            {classification.status === 'group_training_ok' ? (
               <p className="mt-3 text-sm text-formula-mist">
-                Pricing and slot hold remain pending until staff approves. You will receive status by email once connected.
+                Group / clinic use on one field (up to {classification.maxParticipants} participants). COI may still be required. Deposit{' '}
+                <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong> locks the calendar slot at checkout.
               </p>
             ) : null}
             {needsInsurance ? (
               <p className="mt-3 border-l-2 border-formula-volt/50 pl-3 text-sm text-formula-mist">
                 <strong className="text-formula-paper">Insurance:</strong> Certificate of Insurance may be required with Formula Soccer Center named as
-                additional insured ($1M+ per occurrence). Booking may stay pending until COI is verified.
+                additional insured ($1M+ per occurrence). Upload timing is coordinated after the booking is paid.
               </p>
             ) : null}
-            {(classification.status === 'club_ok' || classification.status === 'general_ok') && !needsApproval ? (
-              <p className="mt-3 text-sm text-formula-mist">Pricing follows published band for this rental class and window (connect checkout).</p>
-            ) : null}
+            {(classification.status === 'club_ok' || classification.status === 'general_ok') && (
+              <p className="mt-3 text-sm text-formula-mist">
+                After rules and agreement, you&apos;ll pay a <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong> booking
+                deposit via Stripe. The calendar prevents double booking for this field and window.
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap justify-between gap-3">
             <button
@@ -346,7 +382,7 @@ export function FieldRentalBookingFlow() {
         <div className="mt-8 space-y-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 5  -  Rules and agreement</p>
           <p className="text-sm text-formula-mist">
-            Primary renter (distributes waivers). After confirmation, the system sends a waiver link for all participants (when email is connected).
+            Primary renter (distributes waivers). After payment, the system can send a waiver link for all participants when email is connected.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-2">
@@ -403,48 +439,62 @@ export function FieldRentalBookingFlow() {
             <button
               type="button"
               disabled={!rulesOk || !agreementOk || !renterName.trim() || !renterEmail.trim()}
-              onClick={confirmBooking}
+              onClick={goToPaymentStep}
               className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black disabled:opacity-40"
             >
-              {needsApproval ? 'Submit request (pending approval)' : 'Confirm booking'}
+              {`Pay $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} deposit (Stripe)`}
             </button>
           </div>
         </div>
       ) : null}
 
-      {step === STEPS && confirmedRef ? (
+      {step === PAYMENT_STEP && confirmedRef && classification && rentalType ? (
         <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 6  -  Waiver distribution</p>
-          <div className="border border-formula-volt/30 bg-formula-volt/10 p-5">
-            <p className="font-mono text-sm font-semibold text-formula-paper">Reference: {confirmedRef}</p>
-            <p className="mt-3 text-sm text-formula-mist">
-              {needsApproval
-                ? 'Request recorded. You will be notified when staff approves; waiver blast sends after confirmed booking when email is connected.'
-                : 'Booking recorded locally for demo. When email is connected, the renter receives a waiver link to forward to every participant.'}
-            </p>
-          </div>
-          <div className="border border-formula-frost/12 bg-formula-paper/[0.02] p-5 text-sm text-formula-mist">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Renter dashboard (example)</p>
-            <p className="mt-2 text-formula-paper">
-              Waiver completion: <strong>0 / {Number.isFinite(countNum) ? countNum : ' - '}</strong> (e.g. 8 / 12 when partially complete)
-            </p>
-            <p className="mt-2">
-              Automated reminders at <strong>24 hours</strong> and <strong>3 hours</strong> before session for anyone not completed - once messaging is connected.
-            </p>
-          </div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 6  -  Pay booking deposit</p>
           <p className="text-sm text-formula-mist">
-            Each participant completes the{' '}
-            <a href="#participant-waiver" className="font-mono text-formula-volt underline-offset-4 hover:underline">
-              participant waiver
-            </a>{' '}
-            (name, email, DOB, signature). Minors: parent or guardian on their behalf.
+            Paying creates a short hold on this field and window while Stripe opens. If the slot was taken by someone else in the last moment, checkout will
+            tell you to pick a new time.
           </p>
+          <div className="border border-formula-frost/12 bg-formula-paper/[0.03] p-5 text-sm text-formula-mist">
+            <p className="font-mono text-xs font-semibold text-formula-paper">Reference {confirmedRef}</p>
+            <ul className="mt-3 list-inside list-disc space-y-1">
+              <li>Type: {rentalType.replace(/_/g, ' ')}</li>
+              <li>Date: {sessionDate}</li>
+              <li>Window: {timeSlot}</li>
+              <li>Field: {FIELDS.find(f => f.value === fieldId)?.label ?? fieldId}</li>
+              <li>Participants: {countNum}</li>
+              <li>Renter: {renterName.trim()}</li>
+            </ul>
+            <p className="mt-4 text-formula-paper">
+              Total due now: <strong>${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong> ({FIELD_RENTAL_BOOKING_CHECKOUT.productName})
+            </p>
+            <p className="mt-2 text-xs">{FIELD_RENTAL_BOOKING_CHECKOUT.summary}</p>
+          </div>
+          <CheckoutLaunchButton
+            checkoutType="field-rental-booking"
+            label={`Pay $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} with Stripe`}
+            successNext="field-rental"
+            metadata={{
+              rental_ref: confirmedRef,
+              rental_type: rentalType,
+              rental_date: sessionDate.slice(0, 40),
+              rental_window: timeSlot.slice(0, 80),
+              rental_field: fieldId.slice(0, 40),
+              rental_participants: String(countNum),
+              renter_name: renterName.trim().slice(0, 80),
+              renter_email: renterEmail.trim().slice(0, 80),
+            }}
+          />
           <button
             type="button"
-            onClick={resetBooking}
+            onClick={() => {
+              void releasePendingHold(confirmedRef)
+              setStep(5)
+              setConfirmedRef(null)
+            }}
             className="inline-flex h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
           >
-            Start new booking
+            Back
           </button>
         </div>
       ) : null}

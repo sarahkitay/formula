@@ -64,17 +64,16 @@ export function HomeSpeedTrackSection() {
                 >
                   Speed Track
                 </h2>
-                <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>Double speed court</p>
+                <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>Linear acceleration and explosive speed</p>
                 <p className="mt-5 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
-                  Soccer rewards the first step, separation, and the willingness to do it again late in a half. Our speed track meters linear acceleration and
-                  repeat bursts the way games ask you to close space, break pressure, and recover - so the work stays tied to the pitch, not random sprints for
-                  their own sake.
+                  Linear acceleration and explosive speed, metered and tracked the same way games demand it. First step, separation, and repeat sprint capacity
+                  stay tied to how athletes actually close space and recover on the pitch.
                 </p>
                 <Link
                   href={MARKETING_HREF.facility}
                   className="mt-8 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
                 >
-                  See it on the facility map →
+                  Tour the facility →
                 </Link>
               </MediaOverlayTextPanel>
             </div>

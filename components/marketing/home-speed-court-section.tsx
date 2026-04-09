@@ -61,18 +61,20 @@ export function HomeSpeedCourtSection() {
                 id="home-speed-court-title"
                 className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]"
               >
-                Speed Court
+                Double Speed Court
               </h2>
-              <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>Reaction · scan · choose under pressure</p>
+              <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>
+                Reaction, scanning, and decision-making under pressure
+              </p>
               <p className="mt-5 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
-                Decision speed is a soccer skill. Reaction time, scanning, and choice density under constraint: the overload moments that decide whether a
-                player influences the game or just occupies space.
+                The cognitive side of soccer, trained and measured. We stress reading, scanning, and correct choices under pressure so habits transfer when
+                the game speeds up.
               </p>
               <Link
                 href={MARKETING_HREF.facility}
                 className="mt-8 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
               >
-                See it on the facility map →
+                Tour the facility →
               </Link>
             </MediaOverlayTextPanel>
           </div>

@@ -3,17 +3,28 @@
  * Prefer importing from here for homepage and program-framing copy; keep ops-specific pages flexible.
  */
 export const SITE_VOICE = {
-  /** Primary hero line under the wordmark: specific, operational, not generic motivation. */
-  heroHeadline: 'Assess. Lock your lane. Train the standard.',
+  /**
+   * Homepage hero lead: facility positioning (no fabricated metrics or credentials).
+   */
+  homeParentOneLiner:
+    'Formula Soccer Center is an elite soccer development facility in Van Nuys, built for players of all ages and skill levels, from recreational to aspiring professional. Using cutting-edge technology and structured programming, we measure where your player is today and build a clear path to where they need to be.',
 
-  /** Tight protocol fragments (replaces bullet pillars in hero). */
-  heroProtocolLine: 'Structured · Measured · Premium · Disciplined',
+  /** Primary line under the FORMULA wordmark. */
+  heroHeadline: 'Elite training. Real data. Built for every player.',
 
-  heroAudienceLine: 'Every level welcome: youth to adult, rec to elite',
+  heroProtocolLine: 'Structured sessions · Real performance data · Clear progression',
 
-  /** Facility / homepage: operational, not SEO boilerplate. */
+  heroAudienceLine: 'Every level · Measured standards · Family-visible results',
+
+  /** Facility intro / first homepage band (right column). */
   trainingCenterPrograms:
-    'A performance building, not a rental hall. Match-grade turf lanes, station-based training, linear speed capture, a cognitive decision layer, and controlled application zones. Every session has a job.',
+    "Formula isn't a gym you drop into and hope for the best. It's a full soccer development system: advanced training technology, structured sessions, and real performance data, all under one roof.",
+
+  trainingCenterFollowOn:
+    'Every athlete who walks in gets assessed, placed in the right program, and trained against a measurable standard. Progress is tracked. Families can see it. Coaches can act on it.',
+
+  trainingCenterClosing:
+    "Whether your kid plays for a competitive club or just loves the game, there's a lane here for them.",
 
   whoWeTrain:
     'Built for club athletes sharpening beside their team schedule, families tired of chaotic open gyms, and competitors who expect pro floor ops, on-time sessions, and honest feedback.',
@@ -21,11 +32,10 @@ export const SITE_VOICE = {
   partners:
     'Clubs, schools, and academies tap our coaching standard and floor ops when they need real capacity, not a rental block with a logo.',
 
-  /** Homepage Training column: operational, not generic curriculum speak. */
+  /** Training / program catalog context (Membership page, FPI training block if used). */
   programDesign:
     'We run published blocks, not drop-in chaos: technical lanes, application zones, and clear ratios so every session targets a limiter (technique, decisions, speed, or transfer). Same bar from youth development through adult leagues and elite small-group work.',
 
-  /** Single-line inventory for Training / Programs list row. */
   programInventoryLine:
     'Youth development and leagues · Adult leagues · Elite and small-group technical · Fitness conditioning',
 

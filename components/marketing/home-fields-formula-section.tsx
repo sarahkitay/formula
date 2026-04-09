@@ -33,28 +33,28 @@ export function HomeFieldsFormulaSection() {
         <div className="flex flex-col justify-center border-b border-formula-frost/10 bg-formula-deep px-8 py-14 md:px-12 md:py-16 lg:px-16">
           <ScrollFadeIn>
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/60">
-              Match-grade inventory
+              State-of-the-art technology. Actual results.
             </p>
 
             <h2
               id="fields-formula-heading"
               className="mt-4 font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
             >
-              Different fields. One operating standard.
+              Footbot
             </h2>
 
             <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">
-              Multiple lanes and enclosed surfaces keep technical work tight and traffic controlled: netting, buffers, and zoned turf so every session stays
-              legible.
+              Precision ball training that captures technical reps with data, not just repetition for repetition&apos;s sake.
             </p>
 
             <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">
-              <strong className="font-medium text-formula-paper">The Formula</strong> connects that infrastructure to progress: age-weighted pillars, honest
-              baselines, and reassessment so we train the limiter (speed, decisions, technique, or application), not guesswork.
+              <strong className="font-medium text-formula-paper">The Formula</strong> is how we track progress and prove it. After an assessment, athletes
+              receive scores across six measurable pillars. Objective data from our technology, reviewed by staff, tells us where to focus and how to measure
+              improvement over time.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              {['Zoned turf', 'Published blocks', 'Measured transfer', 'Family-visible arc'].map(tag => (
+              {['Precision reps', 'Data capture', 'Technical work', 'Measured progress'].map(tag => (
                 <span
                   key={tag}
                   className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-volt/70"
@@ -69,13 +69,13 @@ export function HomeFieldsFormulaSection() {
                 href={MARKETING_HREF.fpi}
                 className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
               >
-                How The Formula works →
+                See how The Formula works →
               </Link>
               <Link
                 href={MARKETING_HREF.facility}
                 className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/80 transition-colors hover:text-formula-volt"
               >
-                Facility & map →
+                Tour the facility →
               </Link>
             </div>
           </ScrollFadeIn>

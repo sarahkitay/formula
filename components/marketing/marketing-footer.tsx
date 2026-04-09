@@ -17,7 +17,7 @@ const COLS: { title: string; links: { label: string; href: string }[] }[] = [
   title: 'Facility & events',
   links: [
   { label: 'Facility', href: MARKETING_HREF.facility },
-  { label: 'Rentals', href: MARKETING_HREF.rentals },
+  { label: 'Field rentals', href: MARKETING_HREF.rentals },
   { label: 'Birthday parties', href: MARKETING_HREF.parties },
   { label: 'Footbot', href: MARKETING_HREF.footbot },
   { label: 'Tournaments', href: MARKETING_HREF.tournaments },
@@ -41,7 +41,10 @@ export function MarketingFooter() {
   <div>
   <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-formula-olive">Formula Soccer Center</p>
   <p className="mt-4 max-w-xs text-sm leading-relaxed text-formula-mist">
-  Elevate your game - top-tier programs, cutting-edge tech, elite facilities. Club-complementary, not a replacement.
+  Indoor training built on scheduled blocks, coached standards, and a real facility layout, not open-gym noise.
+  </p>
+  <p className="mt-4 max-w-sm text-xs leading-relaxed text-formula-olive/90">
+  Visit and enrollment details are confirmed when you book. No walk-in sales floor: assessment and staff coordination keep the floor disciplined.
   </p>
   <Link
   href={MARKETING_HREF.bookAssessmentPortal}
@@ -86,11 +89,19 @@ export function MarketingFooter() {
   </nav>
   </div>
   <div className="mt-8 flex flex-wrap gap-4 border-t border-formula-frost/10 pt-8 font-mono text-[10px] uppercase tracking-[0.16em] text-formula-olive">
-  {PRIMARY_NAV.slice(0, 6).map(n => (
+  {PRIMARY_NAV.map(n => (
   <Link key={n.href} href={n.href} className="hover:text-formula-mist">
   {n.label}
   </Link>
   ))}
+  </div>
+  <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.16em] text-formula-olive/90">
+  <Link href={MARKETING_HREF.privacy} className="hover:text-formula-mist">
+  Privacy policy
+  </Link>
+  <Link href={MARKETING_HREF.terms} className="hover:text-formula-mist">
+  Terms and conditions
+  </Link>
   </div>
   <p className="mt-8 text-center text-xs text-formula-olive">© {new Date().getFullYear()} Formula Soccer Center</p>
   </div>

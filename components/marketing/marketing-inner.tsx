@@ -31,6 +31,7 @@ export function MarketingInnerPage({
   intro,
   children,
   wide = false,
+  articleClassName,
 }: {
   /** Renders above eyebrow/title (e.g. hero offer). */
   prepend?: ReactNode
@@ -39,9 +40,17 @@ export function MarketingInnerPage({
   intro?: string
   children: ReactNode
   wide?: boolean
+  /** Merged onto the article (e.g. tighter top when content above already clears the header). */
+  articleClassName?: string
 }) {
   return (
-    <article className={`mx-auto px-6 pb-24 pt-28 md:pb-32 md:pt-32 ${wide ? 'max-w-[1100px]' : 'max-w-[720px]'}`}>
+    <article
+      className={cn(
+        'mx-auto px-6 pb-24 pt-28 md:pb-32 md:pt-32',
+        wide ? 'max-w-[1100px]' : 'max-w-[720px]',
+        articleClassName
+      )}
+    >
       {prepend}
       <ScrollFadeIn>
         <SectionLabel>{eyebrow}</SectionLabel>

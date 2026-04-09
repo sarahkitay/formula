@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
+import { confirmSlotFromPaidCheckout } from '@/lib/rentals/rental-slots'
 import { recordCheckoutSessionCompleted } from '@/lib/stripe/record-purchase'
 import { getStripe } from '@/lib/stripe/server'
 
@@ -33,6 +34,7 @@ export async function POST(req: Request) {
     if (session.mode === 'payment' && session.payment_status === 'paid') {
       try {
         await recordCheckoutSessionCompleted(session)
+        await confirmSlotFromPaidCheckout(session)
       } catch {
         return NextResponse.json({ error: 'Failed to persist purchase' }, { status: 500 })
       }

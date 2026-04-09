@@ -16,6 +16,8 @@ export const MARKETING_HREF = {
   footbot: '/events/footbot',
   tournaments: '/events/tournaments',
   assessment: '/assessment',
+  privacy: '/privacy',
+  terms: '/terms',
   /** Parent portal: account gate + slot + Stripe for Skills Check */
   bookAssessmentPortal: '/parent/book-assessment',
 } as const
@@ -28,6 +30,7 @@ export const HEADER_MAIN: { label: string; href: string }[] = [
   { label: 'Membership', href: MARKETING_HREF.youthMembership },
   { label: 'The Formula', href: MARKETING_HREF.fpi },
   { label: 'Facility', href: MARKETING_HREF.facility },
+  { label: 'Field rentals', href: MARKETING_HREF.rentals },
   { label: 'Assessments', href: MARKETING_HREF.assessment },
 ]
 
@@ -37,7 +40,6 @@ export const HEADER_MORE: { label: string; href: string }[] = [
   { label: 'Clinics', href: MARKETING_HREF.clinics },
   { label: 'Camps', href: MARKETING_HREF.camps },
   { label: 'Adults', href: MARKETING_HREF.adults },
-  { label: 'Rentals', href: MARKETING_HREF.rentals },
   { label: 'Events', href: MARKETING_HREF.events },
   { label: 'Parties', href: MARKETING_HREF.parties },
   { label: 'Footbot', href: MARKETING_HREF.footbot },
@@ -49,8 +51,7 @@ export const PRIMARY_NAV: { label: string; href: string }[] = [...HEADER_MAIN, .
 
 /** In-page homepage anchors (optional deep links). Mobile header uses `HEADER_MAIN` for parity with desktop. */
 export const HOME_ANCHORS: { label: string; href: string }[] = [
-  { label: 'Programs', href: '#programs-pathways' },
-  { label: 'Training', href: '#programs' },
-  { label: 'Ecosystem', href: '#ecosystem' },
+  { label: 'Next step', href: '#next-steps' },
+  { label: 'Programs', href: `${MARKETING_HREF.youthMembership}#programs-catalog` },
   { label: 'Trust', href: `${MARKETING_HREF.facility}#trust` },
 ]

@@ -49,6 +49,14 @@ export default async function CheckoutSuccessPage({
             Portal · Schedule
           </Link>
         ) : null}
+        {nextStep === 'field-rental' ? (
+          <Link
+            href={`${MARKETING_HREF.rentals}#rental-booking`}
+            className="inline-flex h-11 items-center border border-formula-frost/14 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/22"
+          >
+            Field rentals
+          </Link>
+        ) : null}
       </div>
 
       <CheckoutSuccessPortalModal nextStep={nextStep} />

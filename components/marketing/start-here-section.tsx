@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
@@ -9,6 +9,15 @@ export function StartHereSection() {
   const ref = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(false)
   const [reduceMotion, setReduceMotion] = useState(false)
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el || typeof window === 'undefined') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const r = el.getBoundingClientRect()
+    const h = window.innerHeight
+    if (r.bottom > 0 && r.top < h) setVisible(true)
+  }, [])
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -24,7 +33,7 @@ export function StartHereSection() {
       ([e]) => {
         if (e?.isIntersecting) setVisible(true)
       },
-      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
+      { threshold: 0, rootMargin: '0px 0px 18% 0px' }
     )
     obs.observe(el)
     return () => obs.disconnect()
@@ -45,11 +54,11 @@ export function StartHereSection() {
           Assess. Lock your lane. Train the standard.
         </h2>
         <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-formula-mist/85">
-          Programs, waitlist, and clinics live in{' '}
-          <Link href="#programs-pathways" className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
-            Programs & assets
-          </Link>{' '}
-          above, plus email updates before this section.
+          Full program catalog lives on{' '}
+          <Link href="/youth-membership#programs-catalog" className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
+            Membership
+          </Link>
+          . Book an assessment from the homepage or header when you&apos;re ready.
         </p>
         <div className="mt-8 flex flex-col items-center gap-2.5 sm:gap-3">
           <Link
