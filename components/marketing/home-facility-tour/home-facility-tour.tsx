@@ -198,7 +198,7 @@ export function HomeFacilityTour() {
                     Tour the facility before you step inside.
                   </h2>
                   <p className="mt-1.5 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-2 md:text-sm md:leading-relaxed">
-                    Field 3 and Field 1 are matching pitches; Footbot and Entrance are the same-size blocks beneath them; performance and support sit mid; Field 2 runs the full height on the right. Each stop ties to{' '}
+                    Field 3 sits outdoor above the speed stack; Field 1 and Field 2 are the same size; entrance and Footbot are matching blocks under those pitches; performance and gym sit between. Each stop ties to{' '}
                     <Link href={MARKETING_HREF.fpi} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
                       The Formula
                     </Link>{' '}

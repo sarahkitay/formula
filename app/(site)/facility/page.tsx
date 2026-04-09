@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { FacilityWalkthroughVideo } from '@/components/marketing/facility-walkthrough-video'
 import { HomeFacilityTour } from '@/components/marketing/home-facility-tour'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
 import { TrustLayer } from '@/components/marketing/trust-layer'
@@ -80,18 +81,7 @@ export default function FacilityPage() {
             </p>
           </div>
           <div className="overflow-hidden rounded-lg border border-formula-frost/12 bg-black shadow-[0_20px_48px_rgba(0,0,0,0.35)] md:rounded-xl">
-            <video
-              className="aspect-video w-full object-cover"
-              autoPlay
-              muted
-              loop
-              playsInline
-              controls
-              preload="metadata"
-              aria-label="Formula Soccer Center facility walkthrough video"
-            >
-              <source src="/formula_trailer_1.mov" type="video/quicktime" />
-            </video>
+            <FacilityWalkthroughVideo />
           </div>
         </div>
       </section>
