@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { HomeFacilityTour } from '@/components/marketing/home-facility-tour'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
-import { PublicFacilityMap } from '@/components/marketing/public-facility-map'
 import { TrustLayer } from '@/components/marketing/trust-layer'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
@@ -57,20 +56,6 @@ export default function FacilityPage() {
         </p>
         <p>This is what separates Formula from a rental hall with turf.</p>
       </MarketingInnerPage>
-
-      <section className="border-t border-formula-frost/10 bg-formula-deep/50" aria-label="Interactive facility floor plan">
-        <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-16">
-          <div className="not-prose max-w-3xl">
-            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">Interactive floor plan</p>
-            <p className="mt-2 max-w-2xl text-[13px] leading-snug text-formula-frost/80 md:text-[14px] md:leading-relaxed">
-              Tour every zone before you walk in. Click any area to see what it does and how it connects to The Formula and your athlete&apos;s training plan.
-            </p>
-          </div>
-          <div className="not-prose mt-6">
-            <PublicFacilityMap />
-          </div>
-        </div>
-      </section>
 
       <div className="marketing-section-divider" aria-hidden />
       <HomeFacilityTour />

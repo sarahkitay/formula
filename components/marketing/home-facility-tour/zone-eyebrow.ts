@@ -15,6 +15,8 @@ export function facilityZoneEyebrow(z: FacilityZone): string {
       return 'Lateral repeatability'
     case 'footbot':
       return 'Precision reps'
+    case 'entrance':
+      return 'Check-in'
     case 'support-cluster':
       return 'Program support'
     default:

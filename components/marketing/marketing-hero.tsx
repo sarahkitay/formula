@@ -68,12 +68,6 @@ export function MarketingHero() {
           <p className="mt-4 max-w-[38rem] font-mono text-[clamp(1.05rem,2.8vw,1.5rem)] font-semibold leading-snug tracking-[0.04em] text-formula-paper [text-shadow:0_2px_24px_rgba(0,0,0,0.5)]">
             {SITE_VOICE.heroHeadline}
           </p>
-          <p className="mt-3 font-mono text-[10px] font-medium uppercase tracking-[0.26em] text-formula-frost/88 [text-shadow:0_1px_16px_rgba(0,0,0,0.45)]">
-            {SITE_VOICE.heroProtocolLine}
-          </p>
-          <p className="mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-formula-mist [text-shadow:0_1px_14px_rgba(0,0,0,0.4)]">
-            {SITE_VOICE.heroAudienceLine}
-          </p>
           <p className="mt-5 max-w-[38rem] text-[14px] leading-relaxed text-formula-frost/82 [text-shadow:0_1px_16px_rgba(0,0,0,0.35)]">
             {SITE_VOICE.homeParentOneLiner}
           </p>

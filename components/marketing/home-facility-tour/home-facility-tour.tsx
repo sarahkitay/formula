@@ -95,7 +95,8 @@ function TourHotspot({
           'pointer-events-none absolute inset-x-0 top-1.5 text-center font-mono text-[7px] uppercase leading-tight tracking-[0.18em] sm:top-2 sm:text-[8px] sm:tracking-[0.22em] md:text-[9px]',
           stop.id === 'footbot' && 'text-white/92',
           stop.id === 'support-cluster' && 'text-zinc-800/90',
-          stop.id !== 'footbot' && stop.id !== 'support-cluster' && 'text-white/88'
+          stop.id === 'entrance' && 'text-white/90',
+          stop.id !== 'footbot' && stop.id !== 'support-cluster' && stop.id !== 'entrance' && 'text-white/88'
         )}
       >
         {stop.label}
@@ -104,7 +105,7 @@ function TourHotspot({
         <span
           className={cn(
             'pointer-events-none absolute inset-x-0 top-5 text-center font-mono text-[6px] uppercase tracking-[0.2em] sm:top-7 sm:text-[7px] sm:tracking-[0.22em] md:top-8 md:text-[8px]',
-            stop.id === 'support-cluster' ? 'text-zinc-700/85' : 'text-white/50'
+            stop.id === 'support-cluster' ? 'text-zinc-700/85' : stop.id === 'entrance' ? 'text-white/48' : 'text-white/50'
           )}
         >
           {stop.subCaption}
@@ -197,11 +198,11 @@ export function HomeFacilityTour() {
                     Tour the facility before you step inside.
                   </h2>
                   <p className="mt-1.5 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-2 md:text-sm md:leading-relaxed">
-                    Floor plan layout (left stack → center field → performance + support → Field 2 / Footbot). Same zones as the{' '}
-                    <Link href={MARKETING_HREF.facility} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
-                      Facility
+                    Field 3 reads as outdoor above the slab; inside, Field 1 with entrance below, speed stack on the left, performance and support mid, and a long Field 2 with Footbot on a small green bay. Each stop ties to{' '}
+                    <Link href={MARKETING_HREF.fpi} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
+                      The Formula
                     </Link>{' '}
-                    page.
+                    and how we train.
                   </p>
                 </div>
 
@@ -221,13 +222,13 @@ export function HomeFacilityTour() {
 
           <div className="border-b border-white/[0.06] px-2 py-0.5 md:px-2.5 md:py-1">
             <p className="font-mono text-[9px] font-medium uppercase leading-tight tracking-[0.22em] text-formula-olive md:text-[10px]">
-              Floor plan · select a zone
+              Tour · select a stop
             </p>
             <p className="mt-0.5 font-mono text-[8px] font-medium uppercase leading-snug tracking-[0.2em] text-formula-frost/50 md:hidden">
-              Tap a zone to move the tour
+              Tap the map or a stop below
             </p>
             <p className="sr-only">
-              Click or tap a zone on the map or choose a stop below. The selected area is highlighted on the floor plan.
+              Click or tap a zone on the tour map or choose a stop in the list below. The selected area is highlighted.
             </p>
           </div>
           <FacilityTourStaticFloor
@@ -279,10 +280,10 @@ export function HomeFacilityTour() {
               ) : null}
               <p className="mt-1.5 text-[13px] leading-snug text-white/72 md:mt-2 md:text-sm md:leading-relaxed">{active.description}</p>
               <Link
-                href={MARKETING_HREF.facility}
+                href={MARKETING_HREF.fpi}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/16 bg-white/8 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/14 md:mt-4 md:gap-2 md:px-3.5 md:py-1.5 md:text-sm"
               >
-                Facility map
+                The Formula
                 <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
               </Link>
             </motion.div>

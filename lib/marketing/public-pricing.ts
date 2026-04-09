@@ -45,17 +45,9 @@ export const FIELD_RENTAL_BOOKING_CHECKOUT = {
     'Non-refundable booking deposit for a classified field rental window. Staff confirms inventory and may apply published hourly or package rates to any balance.',
 } as const
 
+/** Published field rental hourly rate (same for all windows until ops publishes a change). */
 export const FIELD_RENTAL_PUBLISHED_RATES = {
-  peak: {
-    label: 'Peak hours',
-    detail: 'Monday–Friday 4–9pm, plus weekends',
-    perHourUsd: 180,
-  },
-  offPeak: {
-    label: 'Non-peak hours',
-    perHourLowUsd: 150,
-    perHourHighUsd: 160,
-  },
+  perHourUsd: 180,
   packages: 'Package pricing is available with a 3-month minimum commitment.',
 } as const
 

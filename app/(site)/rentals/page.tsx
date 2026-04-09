@@ -9,7 +9,7 @@ import { FIELD_RENTAL_PUBLISHED_RATES } from '@/lib/marketing/public-pricing'
 export const metadata: Metadata = {
   title: 'Rentals',
   description:
-    'Cutting-edge rental ops: packages, 12-week alignment, club + private windows, premium vs off-peak - protected performance inventory.',
+    'Field rentals at Formula Soccer Center: published hourly rate, packaged inventory, 12-week alignment, and protected performance scheduling.',
 }
 
 export default function RentalsPage() {
@@ -27,17 +27,9 @@ export default function RentalsPage() {
 
   <FieldRentalBookingFlow />
 
-  <h2>Published hourly rates</h2>
+  <h2>Published hourly rate</h2>
   <p>
-  <strong>{FIELD_RENTAL_PUBLISHED_RATES.peak.label}</strong> ({FIELD_RENTAL_PUBLISHED_RATES.peak.detail}):{' '}
-  <strong className="text-zinc-200">${FIELD_RENTAL_PUBLISHED_RATES.peak.perHourUsd}/hr</strong>.
-  </p>
-  <p>
-  <strong>{FIELD_RENTAL_PUBLISHED_RATES.offPeak.label}</strong>:{' '}
-  <strong className="text-zinc-200">
-  ${FIELD_RENTAL_PUBLISHED_RATES.offPeak.perHourLowUsd}–${FIELD_RENTAL_PUBLISHED_RATES.offPeak.perHourHighUsd}/hr
-  </strong>
-  .
+  <strong className="text-zinc-200">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> for all rental windows. No separate peak or non-peak pricing.
   </p>
   <p>
   {FIELD_RENTAL_PUBLISHED_RATES.packages}
@@ -83,12 +75,6 @@ export default function RentalsPage() {
   <p>
   Trainers get <strong>fit windows</strong> for surface need - tech, speed, constrained games - no margin improvisation. <strong>Structured use</strong>: right space,
   duration, buffers - quality + liability managed.
-  </p>
-
-  <h2>Premium vs off-peak</h2>
-  <p>
-  Time ≠ same <strong>opportunity cost</strong>. <strong>Premium</strong> = peak demand, top surfaces, max support. <strong>Off-peak</strong> = right goals, longer setup,
-  partners who respect rhythm. Keeps Formula <strong>selective</strong> - relationships, not discount warehouse.
   </p>
 
   <h2>Inventory + structured use</h2>

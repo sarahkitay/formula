@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { FpiPillarsInteractive } from '@/components/marketing/fpi-pillars-interactive'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
 import { FormulaLiveChamber } from '@/components/marketing/formula-live-chamber'
+import { FPI_PILLARS } from '@/lib/marketing/formula-pillars'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
 export const metadata: Metadata = {
@@ -10,36 +11,6 @@ export const metadata: Metadata = {
   description:
     'How Formula Soccer Center measures performance: six pillars, age-weighted scoring, reassessment cadence, and family reporting in the parent portal.',
 }
-
-const PILLARS = [
-  {
-    title: 'Speed and explosiveness',
-    description:
-      'First step, separation, repeat sprint capacity. Measured on our Speed Track with and without the ball.',
-  },
-  {
-    title: 'Agility and change of direction',
-    description: 'Lateral movement, deceleration, and directional efficiency. Assessed through structured movement tasks.',
-  },
-  {
-    title: 'Decision-making and cognitive speed',
-    description:
-      'Reading the field, scanning under pressure, choosing correctly and quickly. Measured on our Double Speed Court.',
-  },
-  {
-    title: 'Technical execution',
-    description: 'Passing, receiving, control, and ball manipulation under structured conditions. Measured with and by Footbot.',
-  },
-  {
-    title: 'Game application',
-    description:
-      'How skills transfer when it matters, in small-sided play, circuit scenarios, and applied pressure situations.',
-  },
-  {
-    title: 'Consistency and coachability',
-    description: 'Effort, response to feedback, and performance under repeated stress. Evaluated by coaching staff across sessions.',
-  },
-] as const
 
 export default function TheFormulaPage() {
   return (
@@ -59,7 +30,7 @@ export default function TheFormulaPage() {
 
       <FpiPillarsInteractive
         intro="Tap a pillar for how we measure it on the floor."
-        pillars={PILLARS}
+        pillars={FPI_PILLARS}
       />
 
       <h2>How scoring works</h2>

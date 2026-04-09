@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { FpiPillarsInteractive } from '@/components/marketing/fpi-pillars-interactive'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
+import { ASSESSMENT_PILLARS } from '@/lib/marketing/formula-pillars'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { FORMULA_SKILLS_CHECK } from '@/lib/marketing/public-pricing'
 
@@ -24,29 +26,11 @@ export default function AssessmentPage() {
         technology captures the data. Our coaches review it. You get the scores. See also{' '}
         <Link href={MARKETING_HREF.fpi}>The Formula</Link>.
       </p>
-      <ul>
-        <li>
-          <strong>Speed and explosiveness:</strong> timed on the Speed Track. Linear acceleration, first step, and repeat sprint performance with and without
-          the ball.
-        </li>
-        <li>
-          <strong>Agility and change of direction:</strong> measured through structured movement tasks. Lateral quickness, deceleration, and directional
-          efficiency.
-        </li>
-        <li>
-          <strong>Decision-making and cognitive speed:</strong> assessed on the Double Speed Court. Reaction time, scanning, and correct choices under pressure.
-        </li>
-        <li>
-          <strong>Technical execution:</strong> ball control, passing, receiving, and manipulation assessed through Footbot and structured ball tasks.
-        </li>
-        <li>
-          <strong>Game application:</strong> how skills transfer in applied scenarios, small-sided situations, and circuit exercises designed to reflect game
-          demands.
-        </li>
-        <li>
-          <strong>Consistency and coachability:</strong> response to instruction, effort under repeated stress, and performance across the full session.
-        </li>
-      </ul>
+
+      <FpiPillarsInteractive
+        intro="Same six pillars as The Formula. Tap a pillar on mobile, or hover or focus on desktop, for how we measure it during the Skills Check."
+        pillars={ASSESSMENT_PILLARS}
+      />
 
       <h2>Your athlete&apos;s scores</h2>
       <p>

@@ -19,10 +19,10 @@ export function MarketingHome() {
       <HomeFacilitySection />
 
       <SectionDivider />
-      <HomeFieldsFormulaSection />
+      <HomeSpeedCourtSection />
 
       <SectionDivider />
-      <HomeSpeedCourtSection />
+      <HomeFieldsFormulaSection />
 
       <SectionDivider />
       <HomeSpeedTrackSection />

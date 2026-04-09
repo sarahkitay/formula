@@ -8,8 +8,9 @@ export type { PublicFacilityZoneId }
 
 const GRID_AREAS = `
   "f3 f1 perf f2"
-  "ds f1 perf fb"
-  "st f1 sup fb"
+  "ds f1 perf f2"
+  "st f1 perf f2"
+  "st ent sup fb"
 `
 
 export function PublicFacilityMap({ compact = false }: { compact?: boolean }) {
@@ -40,7 +41,7 @@ export function PublicFacilityMap({ compact = false }: { compact?: boolean }) {
           style={{
             gridTemplateAreas: GRID_AREAS,
             gridTemplateColumns: 'minmax(0,0.9fr) minmax(0,2.1fr) minmax(0,1fr) minmax(0,1fr)',
-            gridTemplateRows: 'minmax(2.5rem,1fr) minmax(2.5rem,1fr) minmax(3rem,1.2fr)',
+            gridTemplateRows: 'minmax(2rem,0.85fr) minmax(2.25rem,1fr) minmax(2.25rem,1fr) minmax(2rem,0.75fr)',
           }}
           role="group"
           aria-label="Facility floor plan. Select a zone"

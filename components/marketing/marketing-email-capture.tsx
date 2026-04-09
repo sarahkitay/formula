@@ -52,32 +52,38 @@ export function MarketingEmailCapture() {
     [email, name, hp]
   )
 
+  const labelClass =
+    'mb-1.5 block text-center font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-formula-mist'
+
   return (
     <section
       className="border-t border-formula-frost/10 bg-formula-deep/30 py-14 md:py-16"
       aria-labelledby="marketing-email-capture-heading"
     >
-      <div className="mx-auto max-w-[1200px] px-6">
+      <div className="mx-auto max-w-[1200px] px-6 text-center">
         <ScrollFadeIn>
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-olive">Email</p>
           <h2
             id="marketing-email-capture-heading"
-            className="mt-3 max-w-xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl"
+            className="mx-auto mt-3 max-w-xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl"
           >
             Stay in the loop.
           </h2>
-          <p className="mt-2 max-w-[46ch] text-[14px] leading-relaxed text-formula-frost/80">
+          <p className="mx-auto mt-2 max-w-[46ch] text-[14px] leading-relaxed text-formula-frost/80">
             Memberships are coming. So are new programs, clinic dates, and facility updates. Get notified first. No spam, low volume.
           </p>
 
           {status === 'success' ? (
-            <p className="mt-6 text-sm leading-relaxed text-formula-frost/90" role="status">
+            <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-formula-frost/90" role="status">
               {message}
             </p>
           ) : (
-            <form onSubmit={submit} className="mt-6 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-              <div className="min-w-0 flex-1 sm:min-w-[200px]">
-                <label htmlFor={emailId} className="sr-only">
+            <form
+              onSubmit={submit}
+              className="mx-auto mt-8 flex w-full max-w-lg flex-col items-center gap-4 sm:max-w-2xl sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-3 sm:gap-y-3"
+            >
+              <div className="w-full min-w-0 sm:w-auto sm:min-w-[220px] sm:flex-1 sm:max-w-[280px]">
+                <label htmlFor={emailId} className={labelClass}>
                   Email
                 </label>
                 <input
@@ -88,13 +94,13 @@ export function MarketingEmailCapture() {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="Email"
-                  className="w-full border border-formula-frost/14 bg-formula-base/80 px-3 py-2.5 font-sans text-sm text-formula-paper placeholder:text-formula-mist/50 focus:border-formula-volt/40 focus:outline-none focus:ring-1 focus:ring-formula-volt/30"
+                  placeholder="you@example.com"
+                  className="w-full border border-formula-frost/14 bg-formula-base/80 px-3 py-2.5 text-center font-sans text-sm text-formula-paper placeholder:text-formula-mist/45 focus:border-formula-volt/40 focus:outline-none focus:ring-1 focus:ring-formula-volt/30 sm:text-left"
                 />
               </div>
-              <div className="min-w-0 flex-1 sm:min-w-[180px]">
-                <label htmlFor={nameId} className="sr-only">
-                  Name (optional)
+              <div className="w-full min-w-0 sm:w-auto sm:min-w-[200px] sm:flex-1 sm:max-w-[260px]">
+                <label htmlFor={nameId} className={labelClass}>
+                  Name <span className="normal-case tracking-normal text-formula-frost/55">(optional)</span>
                 </label>
                 <input
                   id={nameId}
@@ -103,8 +109,8 @@ export function MarketingEmailCapture() {
                   autoComplete="name"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  placeholder="Name (optional)"
-                  className="w-full border border-formula-frost/14 bg-formula-base/80 px-3 py-2.5 font-sans text-sm text-formula-paper placeholder:text-formula-mist/50 focus:border-formula-volt/40 focus:outline-none focus:ring-1 focus:ring-formula-volt/30"
+                  placeholder="Your name"
+                  className="w-full border border-formula-frost/14 bg-formula-base/80 px-3 py-2.5 text-center font-sans text-sm text-formula-paper placeholder:text-formula-mist/45 focus:border-formula-volt/40 focus:outline-none focus:ring-1 focus:ring-formula-volt/30 sm:text-left"
                 />
               </div>
               <input
@@ -117,17 +123,21 @@ export function MarketingEmailCapture() {
                 className="sr-only"
                 aria-hidden
               />
-              <button
-                type="submit"
-                disabled={status === 'loading'}
-                className={cn(
-                  'h-11 shrink-0 border border-formula-volt/45 bg-formula-volt/[0.14] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt transition-colors hover:bg-formula-volt/[0.22] disabled:opacity-50',
-                  'sm:w-auto sm:self-end'
-                )}
-              >
-                {status === 'loading' ? 'Sending…' : 'Subscribe'}
-              </button>
-              {status === 'error' ? <p className="w-full text-sm text-red-300/90 sm:order-last">{message}</p> : null}
+              <div className="flex w-full justify-center sm:w-auto sm:shrink-0 sm:pt-[1.625rem]">
+                <button
+                  type="submit"
+                  disabled={status === 'loading'}
+                  className={cn(
+                    'h-11 w-full max-w-xs border border-formula-volt/45 bg-formula-volt/[0.14] px-8 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt transition-colors hover:bg-formula-volt/[0.22] disabled:opacity-50',
+                    'sm:w-auto sm:max-w-none'
+                  )}
+                >
+                  {status === 'loading' ? 'Sending…' : 'Subscribe'}
+                </button>
+              </div>
+              {status === 'error' ? (
+                <p className="w-full text-center text-sm text-red-300/90 sm:basis-full">{message}</p>
+              ) : null}
             </form>
           )}
         </ScrollFadeIn>

@@ -14,27 +14,19 @@ create index if not exists assessments_completed_at_idx on public.assessments (c
 
 alter table public.assessments enable row level security;
 
+-- Requires `formula_is_staff()` from `profiles.sql` / `rls_profile_helpers.sql` (security definer; avoids profiles RLS recursion).
+
 -- Staff: create assessments for any player
+drop policy if exists "assessments_insert_staff" on public.assessments;
 create policy "assessments_insert_staff"
   on public.assessments for insert
-  with check (
-    exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid()
-        and lower(coalesce(p.role, '')) in ('admin', 'coach', 'staff')
-    )
-  );
+  with check (public.formula_is_staff());
 
 -- Staff: read all assessments (roster + history)
+drop policy if exists "assessments_select_staff" on public.assessments;
 create policy "assessments_select_staff"
   on public.assessments for select
-  using (
-    exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid()
-        and lower(coalesce(p.role, '')) in ('admin', 'coach', 'staff')
-    )
-  );
+  using (public.formula_is_staff());
 
 -- Parent: read assessments only for athletes linked in parent_players
 create policy "assessments_select_linked_parent"

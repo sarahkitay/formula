@@ -37,24 +37,16 @@ create policy "players_select_for_linked_parent"
     )
   );
 
+-- Requires `formula_is_staff()` from `profiles.sql` / `rls_profile_helpers.sql`.
+
 -- Staff roles: read all players (adjust if you need tighter scope)
+drop policy if exists "players_select_staff" on public.players;
 create policy "players_select_staff"
   on public.players for select
-  using (
-    exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid()
-        and lower(coalesce(p.role, '')) in ('admin', 'coach', 'staff')
-    )
-  );
+  using (public.formula_is_staff());
 
 -- Staff: read parent_players for ops (optional; tighten later)
+drop policy if exists "parent_players_select_staff" on public.parent_players;
 create policy "parent_players_select_staff"
   on public.parent_players for select
-  using (
-    exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid()
-        and lower(coalesce(p.role, '')) in ('admin', 'coach', 'staff')
-    )
-  );
+  using (public.formula_is_staff());

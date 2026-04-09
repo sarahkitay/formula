@@ -42,7 +42,7 @@ export default function YouthMembershipPage() {
         <p className="not-prose">
           <Link
             href={MARKETING_HREF.bookAssessmentPortal}
-            className="inline-flex h-11 items-center border border-formula-volt/50 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-base transition-[filter] hover:brightness-105"
+            className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black no-underline transition-[filter] hover:brightness-105 hover:!text-black"
           >
             Book your assessment
           </Link>

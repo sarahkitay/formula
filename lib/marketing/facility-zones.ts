@@ -7,6 +7,7 @@ export type PublicFacilityZoneId =
   | 'field-1'
   | 'field-2'
   | 'field-3'
+  | 'entrance'
   | 'performance-center'
   | 'speed-track'
   | 'double-speed-court'
@@ -37,10 +38,13 @@ export type FacilityZone = {
 
 /**
  * Spatial reading order; `FACILITY_TOUR_LAYOUT` is derived from this array.
- * Grid areas (4×3):
- *   f3  f1  perf  f2
- *   ds  f1  perf  fb
- *   st  f1  sup   fb
+ * Isometric tour: Field 3 sits above the main slab (outdoor); Field 1 & 2 share width;
+ * entrance below Field 1; Footbot is a small bay on a green block beside tall Field 2.
+ * Grid map (4×4) for `PublicFacilityMap`:
+ *   f3  f1  perf f2
+ *   ds  f1  perf f2
+ *   st  f1  perf f2
+ *   st  ent sup  fb
  */
 export const FACILITY_ZONES: FacilityZone[] = [
   {
@@ -48,14 +52,14 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: 'Field 3',
     gridArea: 'f3',
     emphasis: 'primary',
-    copy: 'Technical emphasis and high-touch coaching ratios during peak windows.',
+    copy: 'Outdoor technical lanes: open-air work with the same coaching density as inside.',
     tour: {
       label: 'FIELD 3',
-      sublabel: 'Court lanes',
-      left: '3.5%',
-      top: '5%',
-      width: '12.5%',
-      height: '20%',
+      sublabel: 'Outdoor',
+      left: '9%',
+      top: '0.5%',
+      width: '22%',
+      height: '10.5%',
     },
   },
   {
@@ -67,10 +71,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'DOUBLE SPEED COURT',
       sublabel: 'Drill bays',
-      left: '3.5%',
-      top: '27%',
-      width: '12.5%',
-      height: '24%',
+      left: '3%',
+      top: '14%',
+      width: '11%',
+      height: '22%',
     },
   },
   {
@@ -82,10 +86,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'SPEED TRACK',
       sublabel: 'Sprint lane',
-      left: '3.5%',
-      top: '53%',
-      width: '12.5%',
-      height: '40%',
+      left: '3%',
+      top: '38%',
+      width: '11%',
+      height: '55%',
     },
   },
   {
@@ -97,10 +101,26 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'FIELD 1',
       sublabel: 'Center pitch',
-      left: '17%',
-      top: '5%',
-      width: '33%',
-      height: '88%',
+      left: '15%',
+      top: '13.5%',
+      width: '30%',
+      height: '36%',
+    },
+  },
+  {
+    id: 'entrance',
+    label: 'Entrance',
+    sub: 'Front desk',
+    gridArea: 'ent',
+    emphasis: 'support',
+    copy: 'Check-in, orientation, and the first touchpoint before athletes step onto the floor.',
+    tour: {
+      label: 'ENTRANCE',
+      sublabel: 'Front desk',
+      left: '15%',
+      top: '51%',
+      width: '30%',
+      height: '9.5%',
     },
   },
   {
@@ -114,10 +134,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'PERFORMANCE CENTER',
       sublabel: 'Application layer',
-      left: '51.5%',
-      top: '5%',
-      width: '17%',
-      height: '47%',
+      left: '46.5%',
+      top: '13.5%',
+      width: '14%',
+      height: '36%',
     },
   },
   {
@@ -131,10 +151,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'SUPPORT',
       sublabel: 'Gym · flex · party',
-      left: '51.5%',
-      top: '54%',
-      width: '17%',
-      height: '39%',
+      left: '46.5%',
+      top: '51%',
+      width: '14%',
+      height: '42%',
     },
   },
   {
@@ -142,14 +162,14 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: 'Field 2',
     gridArea: 'f2',
     emphasis: 'primary',
-    copy: 'Parallel lane for age-tiered sessions and capacity-balanced programming.',
+    copy: 'Extended parallel lane for age-tiered sessions—same width as Field 1 with a longer run of turf.',
     tour: {
       label: 'FIELD 2',
       sublabel: 'Main pitch',
-      left: '70%',
-      top: '5%',
-      width: '27%',
-      height: '40%',
+      left: '62%',
+      top: '13.5%',
+      width: '30%',
+      height: '48%',
     },
   },
   {
@@ -160,11 +180,11 @@ export const FACILITY_ZONES: FacilityZone[] = [
     copy: 'Precision touch and distribution reps with measurable volume and consistency.',
     tour: {
       label: 'FOOTBOT',
-      sublabel: 'Tech zone',
-      left: '70%',
-      top: '47%',
-      width: '27%',
-      height: '46%',
+      sublabel: 'On-pitch tech',
+      left: '68%',
+      top: '63%',
+      width: '18%',
+      height: '12%',
     },
   },
 ]
