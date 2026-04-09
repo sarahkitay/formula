@@ -60,6 +60,42 @@ export default function FacilityPage() {
       <div className="marketing-section-divider" aria-hidden />
       <HomeFacilityTour />
 
+      <section
+        className="border-t border-formula-frost/10 bg-formula-deep/50"
+        aria-labelledby="facility-walkthrough-heading"
+      >
+        <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-16">
+          <div className="not-prose mb-8 max-w-3xl">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-formula-mist">
+              Video walkthrough
+            </p>
+            <h2
+              id="facility-walkthrough-heading"
+              className="mt-2 text-[clamp(1.35rem,3vw,1.85rem)] font-semibold leading-tight tracking-[-0.03em] text-formula-paper"
+            >
+              Walk the full facility
+            </h2>
+            <p className="mt-2 max-w-2xl text-[13px] leading-snug text-formula-frost/80 md:text-[14px] md:leading-relaxed">
+              Plays automatically on mute so it loads cleanly in the browser. Use the controls to pause, scrub, or turn sound on.
+            </p>
+          </div>
+          <div className="overflow-hidden rounded-lg border border-formula-frost/12 bg-black shadow-[0_20px_48px_rgba(0,0,0,0.35)] md:rounded-xl">
+            <video
+              className="aspect-video w-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls
+              preload="metadata"
+              aria-label="Formula Soccer Center facility walkthrough video"
+            >
+              <source src="/formula_trailer_1.mov" type="video/quicktime" />
+            </video>
+          </div>
+        </div>
+      </section>
+
       <div className="mx-auto max-w-[1200px] border-t border-formula-frost/10 px-6 py-8 text-center">
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
           <Link

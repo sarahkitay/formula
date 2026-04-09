@@ -38,13 +38,11 @@ export type FacilityZone = {
 
 /**
  * Spatial reading order; `FACILITY_TOUR_LAYOUT` is derived from this array.
- * Isometric tour: Field 3 sits above the main slab (outdoor); Field 1 & 2 share width;
- * entrance below Field 1; Footbot is a small bay on a green block beside tall Field 2.
- * Grid map (4×4) for `PublicFacilityMap`:
- *   f3  f1  perf f2
- *   ds  f1  perf f2
- *   st  f1  perf f2
- *   st  ent sup  fb
+ * Tour layout mirrors the reference plan: Field 3 and Field 1 are matching long pitches;
+ * Footbot and Entrance are equal blocks directly beneath them; Field 2 fills the right.
+ * Grid map (5×2) for `PublicFacilityMap`:
+ *   ds  f3  f1  perf f2
+ *   st  fb  ent sup  f2
  */
 export const FACILITY_ZONES: FacilityZone[] = [
   {
@@ -55,11 +53,11 @@ export const FACILITY_ZONES: FacilityZone[] = [
     copy: 'Outdoor technical lanes: open-air work with the same coaching density as inside.',
     tour: {
       label: 'FIELD 3',
-      sublabel: 'Outdoor',
-      left: '9%',
-      top: '0.5%',
-      width: '22%',
-      height: '10.5%',
+      sublabel: 'Outdoor pitch',
+      left: '13%',
+      top: '12%',
+      width: '15%',
+      height: '47%',
     },
   },
   {
@@ -72,8 +70,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
       label: 'DOUBLE SPEED COURT',
       sublabel: 'Drill bays',
       left: '3%',
-      top: '14%',
-      width: '11%',
+      top: '12%',
+      width: '9%',
       height: '22%',
     },
   },
@@ -87,9 +85,9 @@ export const FACILITY_ZONES: FacilityZone[] = [
       label: 'SPEED TRACK',
       sublabel: 'Sprint lane',
       left: '3%',
-      top: '38%',
-      width: '11%',
-      height: '55%',
+      top: '35%',
+      width: '9%',
+      height: '35%',
     },
   },
   {
@@ -101,10 +99,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'FIELD 1',
       sublabel: 'Center pitch',
-      left: '15%',
-      top: '13.5%',
-      width: '30%',
-      height: '36%',
+      left: '29%',
+      top: '12%',
+      width: '15%',
+      height: '47%',
     },
   },
   {
@@ -117,10 +115,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'ENTRANCE',
       sublabel: 'Front desk',
-      left: '15%',
-      top: '51%',
-      width: '30%',
-      height: '9.5%',
+      left: '29%',
+      top: '59%',
+      width: '15%',
+      height: '11%',
     },
   },
   {
@@ -134,10 +132,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'PERFORMANCE CENTER',
       sublabel: 'Application layer',
-      left: '46.5%',
-      top: '13.5%',
-      width: '14%',
-      height: '36%',
+      left: '45%',
+      top: '12%',
+      width: '13%',
+      height: '34%',
     },
   },
   {
@@ -151,10 +149,10 @@ export const FACILITY_ZONES: FacilityZone[] = [
     tour: {
       label: 'SUPPORT',
       sublabel: 'Gym · flex · party',
-      left: '46.5%',
-      top: '51%',
-      width: '14%',
-      height: '42%',
+      left: '45%',
+      top: '48%',
+      width: '13%',
+      height: '22%',
     },
   },
   {
@@ -162,14 +160,14 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: 'Field 2',
     gridArea: 'f2',
     emphasis: 'primary',
-    copy: 'Extended parallel lane for age-tiered sessions—same width as Field 1 with a longer run of turf.',
+    copy: 'Parallel full-length lane beside performance and support—capacity for tiered sessions.',
     tour: {
       label: 'FIELD 2',
       sublabel: 'Main pitch',
-      left: '62%',
-      top: '13.5%',
-      width: '30%',
-      height: '48%',
+      left: '59%',
+      top: '12%',
+      width: '36%',
+      height: '58%',
     },
   },
   {
@@ -180,11 +178,11 @@ export const FACILITY_ZONES: FacilityZone[] = [
     copy: 'Precision touch and distribution reps with measurable volume and consistency.',
     tour: {
       label: 'FOOTBOT',
-      sublabel: 'On-pitch tech',
-      left: '68%',
-      top: '63%',
-      width: '18%',
-      height: '12%',
+      sublabel: 'Tech bay',
+      left: '13%',
+      top: '59%',
+      width: '15%',
+      height: '11%',
     },
   },
 ]

@@ -2,6 +2,7 @@ import { HomeFacilitySection } from '@/components/marketing/home-facility-sectio
 import { HomeSpeedCourtSection } from '@/components/marketing/home-speed-court-section'
 import { HomeSpeedTrackSection } from '@/components/marketing/home-speed-track-section'
 import { HomeFieldsFormulaSection } from '@/components/marketing/home-fields-formula-section'
+import { HomeCherundoloQuoteSection } from '@/components/marketing/home-cherundolo-quote-section'
 import { HomeTeamworkSection } from '@/components/marketing/home-teamwork-section'
 import { MarketingHero } from '@/components/marketing/marketing-hero'
 import { HomeNextSteps } from '@/components/marketing/home-next-steps'
@@ -29,6 +30,9 @@ export function MarketingHome() {
 
       <SectionDivider />
       <HomeTeamworkSection />
+
+      <SectionDivider />
+      <HomeCherundoloQuoteSection />
 
       <SectionDivider />
       <HomeNextSteps />

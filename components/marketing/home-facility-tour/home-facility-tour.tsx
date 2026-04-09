@@ -95,7 +95,7 @@ function TourHotspot({
           'pointer-events-none absolute inset-x-0 top-1.5 text-center font-mono text-[7px] uppercase leading-tight tracking-[0.18em] sm:top-2 sm:text-[8px] sm:tracking-[0.22em] md:text-[9px]',
           stop.id === 'footbot' && 'text-white/92',
           stop.id === 'support-cluster' && 'text-zinc-800/90',
-          stop.id === 'entrance' && 'text-white/90',
+          stop.id === 'entrance' && 'text-zinc-800/92',
           stop.id !== 'footbot' && stop.id !== 'support-cluster' && stop.id !== 'entrance' && 'text-white/88'
         )}
       >
@@ -105,7 +105,7 @@ function TourHotspot({
         <span
           className={cn(
             'pointer-events-none absolute inset-x-0 top-5 text-center font-mono text-[6px] uppercase tracking-[0.2em] sm:top-7 sm:text-[7px] sm:tracking-[0.22em] md:top-8 md:text-[8px]',
-            stop.id === 'support-cluster' ? 'text-zinc-700/85' : stop.id === 'entrance' ? 'text-white/48' : 'text-white/50'
+            stop.id === 'support-cluster' || stop.id === 'entrance' ? 'text-zinc-700/85' : 'text-white/50'
           )}
         >
           {stop.subCaption}
@@ -198,7 +198,7 @@ export function HomeFacilityTour() {
                     Tour the facility before you step inside.
                   </h2>
                   <p className="mt-1.5 max-w-lg text-[13px] leading-snug text-formula-frost/80 md:mt-2 md:text-sm md:leading-relaxed">
-                    Field 3 reads as outdoor above the slab; inside, Field 1 with entrance below, speed stack on the left, performance and support mid, and a long Field 2 with Footbot on a small green bay. Each stop ties to{' '}
+                    Field 3 and Field 1 are matching pitches; Footbot and Entrance are the same-size blocks beneath them; performance and support sit mid; Field 2 runs the full height on the right. Each stop ties to{' '}
                     <Link href={MARKETING_HREF.fpi} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
                       The Formula
                     </Link>{' '}
