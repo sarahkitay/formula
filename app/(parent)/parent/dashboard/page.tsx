@@ -48,6 +48,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title="Home"
   summary={item.description ?? ''}
   href={item.href}
@@ -64,6 +65,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -80,6 +82,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -96,6 +99,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -112,6 +116,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title="Billing"
   summary={item.description ?? ''}
   href={item.href}
@@ -135,6 +140,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -151,6 +157,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title="FPI report"
   summary={item.description ?? ''}
   href={item.href}
@@ -167,6 +174,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -183,6 +191,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -199,6 +208,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -214,6 +224,7 @@ export default function ParentDashboardPage() {
   <ModuleBlock
   key={item.href}
   id={id}
+  surface="portal"
   title={item.label}
   summary={item.description ?? ''}
   href={item.href}
@@ -241,27 +252,27 @@ export default function ParentDashboardPage() {
   </ParentSoftBanner>
 
   <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-  <div className="border border-white/10 bg-[#111111] p-5 lg:col-span-2">
-  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500">Recommended next steps</p>
+  <div className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] lg:col-span-2">
+  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-formula-mist">Recommended next steps</p>
   <ul className="mt-3 space-y-2">
   {parentRecommendedActions.map(a => (
   <li key={a.id}>
   <Link
   href={a.href}
-  className="flex items-center justify-between gap-2 border border-transparent px-2 py-2 text-sm text-zinc-200 transition-colors hover:border-white/10 hover:bg-white/[0.04]"
+  className="flex items-center justify-between gap-2 border border-transparent px-2 py-2 text-sm text-formula-frost/90 transition-colors hover:border-formula-frost/15 hover:bg-formula-paper/[0.04]"
   >
   {a.label}
-  <ChevronRight className="h-4 w-4 shrink-0 text-zinc-500" />
+  <ChevronRight className="h-4 w-4 shrink-0 text-formula-mist" />
   </Link>
   </li>
   ))}
   </ul>
   </div>
-  <div className="border border-white/10 bg-[#111111] p-5">
-  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500">Attendance snapshot</p>
-  <p className="mt-3 text-lg font-semibold text-zinc-100">{parentAttendanceSnapshot.last30Days}</p>
-  <p className="mt-1 text-sm text-zinc-500">{parentAttendanceSnapshot.streakWeeks} week consistency streak</p>
-  <Link href="/parent/progress" className="mt-4 inline-block text-sm font-medium text-[#22c55e] hover:underline">
+  <div className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-formula-mist">Attendance snapshot</p>
+  <p className="mt-3 text-lg font-semibold text-formula-paper">{parentAttendanceSnapshot.last30Days}</p>
+  <p className="mt-1 text-sm text-formula-frost/70">{parentAttendanceSnapshot.streakWeeks} week consistency streak</p>
+  <Link href="/parent/progress" className="mt-4 inline-block text-sm font-medium text-formula-volt hover:underline">
   View progress
   </Link>
   </div>
@@ -272,29 +283,29 @@ export default function ParentDashboardPage() {
   <Link
   key={ev.id}
   href={ev.href}
-  className="border border-white/10 bg-[#111111] p-5 text-inherit no-underline transition-colors hover:border-white/20"
+  className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 text-inherit no-underline shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] transition-colors hover:border-formula-volt/25"
   >
-  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-[#22c55e]/90">
+  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-formula-volt/90">
   {ev.type.replace('-', ' ')}
   </p>
-  <p className="mt-2 font-semibold text-zinc-100">{ev.title}</p>
-  <p className="mt-1 text-xs text-zinc-500">{ev.dateLabel}</p>
-  <p className="mt-2 text-sm leading-snug text-zinc-400">{ev.detail}</p>
+  <p className="mt-2 font-semibold text-formula-paper">{ev.title}</p>
+  <p className="mt-1 text-xs text-formula-mist">{ev.dateLabel}</p>
+  <p className="mt-2 text-sm leading-snug text-formula-frost/80">{ev.detail}</p>
   </Link>
   ))}
   </div>
 
-  <div className="border border-white/10 bg-[#111111] p-5">
-  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500">Recent progress notes</p>
+  <div className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-formula-mist">Recent progress notes</p>
   <div className="mt-4 space-y-4">
   {parentProgressUpdates.map((u, i) => {
   const pl = myPlayers.find(p => p.id === u.playerId)
   return (
-  <div key={i} className="border-b border-white/10 pb-4 last:border-0 last:pb-0">
-  <p className="text-xs font-medium text-zinc-500">
+  <div key={i} className="border-b border-formula-frost/10 pb-4 last:border-0 last:pb-0">
+  <p className="text-xs font-medium text-formula-mist">
   {pl?.firstName ?? 'Athlete'} · {new Date(u.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
   </p>
-  <p className="mt-1 text-sm text-zinc-400">{u.summary}</p>
+  <p className="mt-1 text-sm text-formula-frost/80">{u.summary}</p>
   </div>
   )
   })}

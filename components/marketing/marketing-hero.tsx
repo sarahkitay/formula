@@ -68,7 +68,10 @@ export function MarketingHero() {
           <p className="mt-4 max-w-[38rem] font-mono text-[clamp(1.05rem,2.8vw,1.5rem)] font-semibold leading-snug tracking-[0.04em] text-formula-paper [text-shadow:0_2px_24px_rgba(0,0,0,0.5)]">
             {SITE_VOICE.heroHeadline}
           </p>
-          <p className="mt-5 max-w-[38rem] text-[14px] leading-relaxed text-formula-frost/82 [text-shadow:0_1px_16px_rgba(0,0,0,0.35)]">
+          <p className="mt-3 max-w-[38rem] text-[13px] leading-snug text-formula-frost/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.35)] sm:text-[14px]">
+            {SITE_VOICE.heroPortalSubline}
+          </p>
+          <p className="mt-5 max-w-[38rem] text-[14px] leading-relaxed text-formula-frost/78 [text-shadow:0_1px_16px_rgba(0,0,0,0.35)]">
             {SITE_VOICE.homeParentOneLiner}
           </p>
           <div className="mt-8 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">

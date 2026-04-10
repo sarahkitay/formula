@@ -8,6 +8,7 @@ import { LoginFormulaBallBackground } from '@/components/auth/login-formula-ball
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
 import { Button } from '@/components/ui/button'
 import { loadProfileForUser } from '@/lib/auth/load-profile'
+import { sanitizePostLoginPath } from '@/lib/auth/sanitize-post-login-path'
 import { getPortalRoute } from '@/lib/getPortalRoute'
 import { supabase } from '@/lib/supabase'
 import { SITE } from '@/lib/site-config'
@@ -105,7 +106,8 @@ export function LoginPageClient() {
     }
 
     setLoading(false)
-    router.push(next)
+    const redirectTarget = sanitizePostLoginPath(searchParams.get('next'))
+    router.push(redirectTarget ?? next)
     router.refresh()
   }
 

@@ -109,8 +109,8 @@ export default function StaffPortalHubPage() {
 
       const hub = getPortalRoute(p.role)
 
-      if (hub === '/parent-portal') {
-        router.replace('/parent-portal')
+      if (p.role?.toLowerCase() === 'parent') {
+        router.replace('/parent/dashboard')
         return
       }
 

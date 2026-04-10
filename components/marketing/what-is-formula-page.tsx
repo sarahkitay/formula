@@ -52,9 +52,11 @@ export function WhatIsFormulaPageContent() {
                 Not replace it.
               </h1>
               <p className="mt-8 max-w-3xl text-[clamp(1.05rem,1.8vw,1.45rem)] leading-9 text-white/72">
-                Formula Soccer Center isn&apos;t a club team. We don&apos;t do travel schedules, tournaments, or team identity. That&apos;s your club&apos;s job,
-                and they do it well. What we do is fill the gap: the structured individual development, objective performance data, and measured skill-building
-                that club practice doesn&apos;t have time for.
+                We aren&apos;t a club team — no travel schedule or team identity. That&apos;s your club&apos;s job. We fill the gap:{' '}
+                <span className="text-white/88">individual training, measured with real data.</span>
+              </p>
+              <p className="mt-5 max-w-3xl font-mono text-[15px] leading-relaxed text-white/78">
+                Most training is based on feel. <span className="font-semibold text-formula-volt/95">Formula is based on data.</span>
               </p>
             </div>
 
@@ -62,13 +64,8 @@ export function WhatIsFormulaPageContent() {
               <div className="w-full max-w-md border border-white/10 bg-white/[0.03] p-8">
                 <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">The idea</div>
                 <div className="space-y-4 text-[1.05rem] leading-8 text-white/78">
-                  <p>
-                    Your club builds team chemistry, minutes, and identity. Formula builds the individual habits, data-backed improvements, and technical reps
-                    that make your athlete better inside the club environment.
-                  </p>
-                  <p>
-                    More training isn&apos;t the answer. Better training is. And the only way to know if training is working is to measure it.
-                  </p>
+                  <p>Your club builds chemistry and minutes. We build measurable individual habits and reps that show up in club play.</p>
+                  <p className="font-mono text-[13px] uppercase tracking-[0.12em] text-white/55">captured · logged · tracked over time</p>
                 </div>
               </div>
             </div>

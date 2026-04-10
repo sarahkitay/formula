@@ -20,7 +20,7 @@ export const parentNav: NavItem[] = [
   label: 'Book assessment',
   href: '/parent/book-assessment',
   icon: 'CalendarClock',
-  description: 'Portal account · pick slot · pay',
+  description: 'Same live windows · checkout uses your account',
   gridStatus: 'neutral',
   },
   {

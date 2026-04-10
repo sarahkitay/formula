@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { FacilityMeasurementStations } from '@/components/marketing/facility-measurement-stations'
 import { FacilityWalkthroughVideo } from '@/components/marketing/facility-walkthrough-video'
 import { HomeFacilityTour } from '@/components/marketing/home-facility-tour'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
@@ -18,9 +19,11 @@ export default function FacilityPage() {
       <MarketingInnerPage
         eyebrow="Facility"
         title="Built for development. <br> Not rented by the hour."
-        intro="Formula Soccer Center is a purpose-built soccer performance facility, designed around structured training, not open gym access. Every surface, station, and zone has a job."
+        intro="Purpose-built for structured training — not open gym access. Every surface and station has a job; most of them produce a measurement."
         wide
       >
+        <FacilityMeasurementStations className="!mb-10" />
+
         <h2>What&apos;s inside</h2>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Match-grade turf lanes</h3>
@@ -29,17 +32,13 @@ export default function FacilityPage() {
         </p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Speed Track</h3>
-        <p>
-          Linear acceleration measured and tracked: first-step explosiveness, repeat sprints, and mechanical efficiency in a controlled environment.
-        </p>
+        <p>Controlled linear sprints — acceleration and repeat efforts, logged consistently.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Double Speed Court</h3>
-        <p>
-          Reaction time, scanning, and decision-making under pressure. The cognitive and perceptual side of soccer, with real data capture.
-        </p>
+        <p>Reaction, scanning, and decisions under time pressure — cognitive load, captured.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Footbot</h3>
-        <p>Precision ball technology for high-repetition technical training. Every rep counted and calibrated.</p>
+        <p>High-volume technical reps with precision ball tech — every rep counted.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Performance center</h3>
         <p>
@@ -51,11 +50,12 @@ export default function FacilityPage() {
 
         <h2 className="!mt-14">Why it matters</h2>
         <p>
-          Random space produces random training. Every zone at Formula is tied to a specific pillar in{' '}
-          <Link href={MARKETING_HREF.fpi}>The Formula</Link>, so when your athlete works on speed, decision-making, or technical execution, it&apos;s being
-          measured in an environment designed for exactly that.
+          Random space produces random training. Zones here map to{' '}
+          <Link href={MARKETING_HREF.fpi}>The Formula</Link> — so the work matches the measurement.
         </p>
-        <p>This is what separates Formula from a rental hall with turf.</p>
+        <p className="!mt-4 font-mono text-[13px] leading-relaxed text-formula-frost/88">
+          Most training is based on feel. <span className="font-semibold text-formula-paper">Formula is based on data.</span>
+        </p>
       </MarketingInnerPage>
 
       <div className="marketing-section-divider" aria-hidden />

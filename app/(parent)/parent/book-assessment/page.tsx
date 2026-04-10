@@ -1,6 +1,12 @@
-import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
+import { ParentBookAssessmentClient } from '@/components/parent/parent-book-assessment-client'
 
-/** Legacy URL: assessment booking is public at `/book-assessment`. */
-export default function ParentBookAssessmentRedirectPage() {
-  redirect('/book-assessment')
+export const metadata: Metadata = {
+  title: 'Book a Skills Check',
+  description: 'Book a Formula Skills Check from your parent portal using live availability.',
+  robots: { index: false, follow: false },
+}
+
+export default function ParentBookAssessmentPage() {
+  return <ParentBookAssessmentClient />
 }

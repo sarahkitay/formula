@@ -136,12 +136,18 @@
 .admin-os .stat-module,
 .admin-os .stat-module--signal,
 .coach-os .stat-module,
-.coach-os .stat-module--signal,
-.parent-os .stat-module,
-.parent-os .stat-module--signal {
+.coach-os .stat-module--signal {
   background: #111111 !important;
   border-color: rgb(255 255 255 / 0.1) !important;
   box-shadow: none !important;
+}
+
+/* Parent portal: green-tinted cards on gradient (avoid flat #111) */
+.parent-os .stat-module,
+.parent-os .stat-module--signal {
+  background: rgb(24 38 34 / 0.78) !important;
+  border-color: rgb(205 225 225 / 0.12) !important;
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04) !important;
 }
 
 .admin-os .stat-module::before,
@@ -154,11 +160,16 @@
 }
 
 .admin-os .panel-technical,
-.coach-os .panel-technical,
-.parent-os .panel-technical {
+.coach-os .panel-technical {
   background: #111111;
   border-color: rgb(255 255 255 / 0.1);
   box-shadow: none;
+}
+
+.parent-os .panel-technical {
+  background: rgb(24 38 34 / 0.78);
+  border-color: rgb(205 225 225 / 0.12);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
 }
 
 .dark {

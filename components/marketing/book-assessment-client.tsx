@@ -16,7 +16,21 @@ type Slot = {
   available: number
 }
 
-export function BookAssessmentClient() {
+export type BookAssessmentVariant = 'public' | 'portal'
+
+type BookAssessmentClientProps = {
+  /** Public marketing flow asks for name/email; portal uses signed-in profile. */
+  variant?: BookAssessmentVariant
+  /** Required when variant is `portal` (from Supabase profile / auth). */
+  guardianFullName?: string
+  guardianEmail?: string
+}
+
+export function BookAssessmentClient({
+  variant = 'public',
+  guardianFullName = '',
+  guardianEmail = '',
+}: BookAssessmentClientProps) {
   const [slots, setSlots] = useState<Slot[]>([])
   const [slotsError, setSlotsError] = useState<string | null>(null)
   const [loadingSlots, setLoadingSlots] = useState(true)
@@ -24,6 +38,10 @@ export function BookAssessmentClient() {
   const [numKids, setNumKids] = useState(1)
   const [parentFullName, setParentFullName] = useState('')
   const [parentEmail, setParentEmail] = useState('')
+
+  const isPortal = variant === 'portal'
+  const billingName = isPortal ? guardianFullName.trim() : parentFullName.trim()
+  const billingEmail = isPortal ? guardianEmail.trim() : parentEmail.trim()
 
   useEffect(() => {
     let cancelled = false
@@ -70,50 +88,69 @@ export function BookAssessmentClient() {
     selected.available > 0 &&
     numKids >= 1 &&
     numKids <= Math.min(ASSESSMENT_MAX_KIDS_PER_BOOKING, selected.available) &&
-    parentFullName.trim().length > 1 &&
-    parentEmail.includes('@')
+    billingName.length > 1 &&
+    billingEmail.includes('@')
 
   return (
     <div className="not-prose space-y-10">
       <p className="max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
-        Pick an open Skills Check window, choose how many athletes you&apos;re bringing (up to four spots per hour across all families), then pay securely. You
-        don&apos;t need a portal account first. After checkout, you can create a parent login and add your athletes&apos; names so they appear in your portal.
+        {isPortal ? (
+          <>
+            Pick an open Skills Check window and how many athletes you&apos;re bringing (up to four spots per hour across all families), then pay securely.
+            Receipts use the email on your portal account.
+          </>
+        ) : (
+          <>
+            Pick an open Skills Check window, choose how many athletes you&apos;re bringing (up to four spots per hour across all families), then pay securely. You
+            don&apos;t need a portal account first. After checkout, you can create a parent login and add your athletes&apos; names so they appear in your portal.
+          </>
+        )}
       </p>
 
-      <section aria-labelledby="ba-contact-heading">
-        <h2 id="ba-contact-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
-          Guardian contact
-        </h2>
-        <div className="mt-4 grid max-w-xl gap-4 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label htmlFor="ba-parent-name" className="block font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">
-              Full name
-            </label>
-            <input
-              id="ba-parent-name"
-              value={parentFullName}
-              onChange={e => setParentFullName(e.target.value)}
-              autoComplete="name"
-              className="mt-1.5 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
-              placeholder="Parent or guardian"
-            />
+      {isPortal ? (
+        <section aria-labelledby="ba-account-heading" className="rounded-sm border border-formula-frost/14 bg-formula-paper/[0.04] p-4">
+          <h2 id="ba-account-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
+            Your account
+          </h2>
+          <p className="mt-2 text-sm font-medium text-formula-paper">{billingName}</p>
+          <p className="mt-1 text-[13px] text-formula-frost/75">{billingEmail}</p>
+        </section>
+      ) : (
+        <section aria-labelledby="ba-contact-heading">
+          <h2 id="ba-contact-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
+            Guardian contact
+          </h2>
+          <div className="mt-4 grid max-w-xl gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label htmlFor="ba-parent-name" className="block font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">
+                Full name
+              </label>
+              <input
+                id="ba-parent-name"
+                value={parentFullName}
+                onChange={e => setParentFullName(e.target.value)}
+                autoComplete="name"
+                className="mt-1.5 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
+                placeholder="Parent or guardian"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="ba-parent-email" className="block font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">
+                Email (for receipt & portal)
+              </label>
+              <input
+                id="ba-parent-email"
+                type="email"
+                value={parentEmail}
+                onChange={e => setParentEmail(e.target.value.trim())}
+                autoComplete="email"
+                className="mt-1.5 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
+                placeholder="you@example.com"
+              />
+            </div>
           </div>
-          <div className="sm:col-span-2">
-            <label htmlFor="ba-parent-email" className="block font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">
-              Email (for receipt & portal)
-            </label>
-            <input
-              id="ba-parent-email"
-              type="email"
-              value={parentEmail}
-              onChange={e => setParentEmail(e.target.value.trim())}
-              autoComplete="email"
-              className="mt-1.5 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
-              placeholder="you@example.com"
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section aria-labelledby="ba-slots-heading">
         <h2 id="ba-slots-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
@@ -208,28 +245,43 @@ export function BookAssessmentClient() {
             <CheckoutLaunchButton
               checkoutType="assessment"
               label="Continue to secure payment"
-              successNext="portal-assessment"
+              successNext={isPortal ? undefined : 'portal-assessment'}
               metadata={{
                 assessment_slot_id: selected!.id,
                 assessment_num_kids: String(numKids),
-                parent_full_name: parentFullName.trim(),
-                parent_email_hint: parentEmail.trim(),
+                parent_full_name: billingName,
+                parent_email_hint: billingEmail,
               }}
             />
           </div>
         </section>
       ) : null}
 
-      <p className="text-[12px] text-formula-frost/55">
-        Already have a portal account?{' '}
-        <Link href="/login?role=parent" className="text-formula-volt underline-offset-2 hover:underline">
-          Sign in
-        </Link>
-        {' · '}
-        <Link href={MARKETING_HREF.assessment} className="text-formula-volt underline-offset-2 hover:underline">
-          What we measure
-        </Link>
-      </p>
+      {isPortal ? (
+        <p className="text-[12px] text-formula-frost/55">
+          <Link href="/parent/dashboard" className="text-formula-volt underline-offset-2 hover:underline">
+            Back to home
+          </Link>
+          {' · '}
+          <Link href={MARKETING_HREF.assessment} className="text-formula-volt underline-offset-2 hover:underline">
+            What we measure
+          </Link>
+        </p>
+      ) : (
+        <p className="text-[12px] text-formula-frost/55">
+          Already have a portal account?{' '}
+          <Link
+            href={`/login?role=parent&next=${encodeURIComponent('/parent/book-assessment')}`}
+            className="text-formula-volt underline-offset-2 hover:underline"
+          >
+            Sign in to book here
+          </Link>
+          {' · '}
+          <Link href={MARKETING_HREF.assessment} className="text-formula-volt underline-offset-2 hover:underline">
+            What we measure
+          </Link>
+        </p>
+      )}
     </div>
   )
 }

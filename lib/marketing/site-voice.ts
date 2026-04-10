@@ -7,10 +7,14 @@ export const SITE_VOICE = {
    * Homepage hero lead: facility positioning (no fabricated metrics or credentials).
    */
   homeParentOneLiner:
-    'Formula Soccer Center is an elite soccer development facility in Van Nuys, built for players of all ages and skill levels, from recreational to aspiring professional. Using cutting-edge technology and structured programming, we measure where your player is today and build a clear path to where they need to be.',
+    'Formula Soccer Center is an elite soccer development facility in Van Nuys, built for players of all ages and skill levels, from recreational players to aspiring professionals. We use cutting-edge technology and structured programming, measuring where your player is today and building a clear path to where they need to be.',
 
   /** Primary line under the FORMULA wordmark. */
   heroHeadline: 'Elite training. Real data. Built for every player.',
+
+  /** Tight line directly under the hero headline (portal + scores). */
+  heroPortalSubline:
+    "Track your athlete's progress with real scores — visible in your parent portal.",
 
   /** Facility intro / first homepage band (right column). */
   trainingCenterPrograms:
