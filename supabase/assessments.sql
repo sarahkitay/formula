@@ -6,6 +6,7 @@ create table if not exists public.assessments (
   player_id uuid not null references public.players (id) on delete cascade,
   summary text,
   completed_at timestamptz,
+  pillar_scores jsonb not null default '{}'::jsonb,
   created_at timestamptz default now()
 );
 

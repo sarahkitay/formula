@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Modal, ModalBody, ModalFooter } from '@/components/ui/modal'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const parentLoginHref = `/login?role=parent&next=${encodeURIComponent('/parent/dashboard')}`
@@ -59,14 +58,15 @@ export function CheckoutSuccessPortalModal({ nextStep, sessionId }: { nextStep?:
         >
           Sign in
         </Link>
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
+          type="button"
           onClick={() => setOpen(false)}
-          className="order-3 !text-black hover:bg-black/10 hover:!text-black sm:order-3"
+          className={cn(
+            'order-3 inline-flex h-10 w-full items-center justify-center rounded-control border border-black/25 bg-white px-4 text-xs font-medium text-black hover:bg-black/[0.06] sm:order-3 sm:w-auto'
+          )}
         >
           Close
-        </Button>
+        </button>
       </ModalFooter>
     </Modal>
   )

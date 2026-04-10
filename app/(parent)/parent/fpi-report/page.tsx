@@ -17,17 +17,17 @@ export default function ParentFpiReportIndexPage() {
   />
 
   <ParentPanel title="Your athletes" eyebrow="REPORTS">
-  <ul className="divide-y divide-white/10">
+  <ul className="divide-y divide-formula-frost/10">
   {myPlayers.map(p => (
   <li key={p.id}>
   <Link
   href={`/parent/fpi-report/${p.id}`}
-  className="flex items-center justify-between py-4 text-inherit no-underline transition-colors hover:text-[#22c55e]"
+  className="flex items-center justify-between py-4 text-inherit no-underline transition-colors hover:text-formula-volt"
   >
-  <span className="font-medium text-zinc-100">
+  <span className="font-medium text-formula-paper">
   {p.firstName} {p.lastName}
   </span>
-  <span className="text-sm text-zinc-500">{p.ageGroup}</span>
+  <span className="text-sm text-formula-mist">{p.ageGroup}</span>
   </Link>
   </li>
   ))}

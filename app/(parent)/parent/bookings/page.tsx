@@ -16,6 +16,7 @@ import { getUpcomingSessions } from '@/lib/mock-data/sessions'
 import { getBookingsByPlayer } from '@/lib/mock-data/bookings'
 import { getSessionById } from '@/lib/mock-data/sessions'
 import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
+import { parentPortalInsetStrip } from '@/lib/parent/portal-surface'
 import { SITE } from '@/lib/site-config'
 import { weeklyBlockAllowance } from '@/lib/mock-data/parent-portal'
 import { generateWeeklySchedule, startOfScheduleWeek } from '@/lib/schedule/generator'
@@ -142,24 +143,24 @@ export default function ParentBookingsPage() {
   subtitle={`${SITE.facilityName} · structured selection from published blocks - not an open calendar`}
   />
 
-  <div className="border border-white/10 bg-[#0f0f0f] px-4 py-3 font-mono text-[10px] leading-relaxed text-zinc-400">
-  <p className="font-bold uppercase tracking-wide text-zinc-200">Weekly attendance allowance</p>
+  <div className={parentPortalInsetStrip}>
+  <p className="font-bold uppercase tracking-wide text-formula-paper">Weekly attendance allowance</p>
   <p className="mt-1">
-  <strong className="text-[#22c55e]">{weeklyBlockAllowance.performance.label}</strong>: up to{' '}
+  <strong className="text-formula-volt">{weeklyBlockAllowance.performance.label}</strong>: up to{' '}
   {weeklyBlockAllowance.performance.blocksPerWeek} youth blocks per week ·{' '}
-  <strong className="text-[#22c55e]">{weeklyBlockAllowance.performanceElite.label}</strong>: up to{' '}
+  <strong className="text-formula-volt">{weeklyBlockAllowance.performanceElite.label}</strong>: up to{' '}
   {weeklyBlockAllowance.performanceElite.blocksPerWeek} blocks per week.
   </p>
-  <p className="mt-2 font-bold uppercase tracking-wide text-zinc-200">System schedule</p>
+  <p className="mt-2 font-bold uppercase tracking-wide text-formula-paper">System schedule</p>
   <p className="mt-1">
   Blocks are pre-built by the facility engine. The schedule map and enroll list only include rows whose age
   matches your child&apos;s training band: roster{' '}
-  <strong className="text-[#22c55e]">{selectedPlayer?.ageGroup ?? 'N/A'}</strong> →{' '}
-  <strong className="text-[#22c55e]">{scheduleBand ?? 'N/A'}</strong> (same ages shown next to stations,
+  <strong className="text-formula-volt">{selectedPlayer?.ageGroup ?? 'N/A'}</strong> →{' '}
+  <strong className="text-formula-volt">{scheduleBand ?? 'N/A'}</strong> (same ages shown next to stations,
   e.g. Station 1 // 12-14).
   </p>
-  <p className="mt-1.5 text-zinc-500">{SITE.cancellationPolicy}</p>
-  <p className="mt-1.5 text-zinc-500">{SITE.membershipPolicy}</p>
+  <p className="mt-1.5 text-formula-mist">{SITE.cancellationPolicy}</p>
+  <p className="mt-1.5 text-formula-mist">{SITE.membershipPolicy}</p>
   </div>
 
   {/* Player selector */}
@@ -196,17 +197,17 @@ export default function ParentBookingsPage() {
   title="Training floor: this week"
   description={`Full floor view. Green = Open Gym + sessions for ${scheduleBand}. Click green blocks to enroll.`}
   />
-  <div className="flex flex-wrap gap-1 border border-white/10 bg-[#111111] p-1">
+  <div className="flex flex-wrap gap-1 rounded-sm border border-formula-frost/12 bg-formula-paper/[0.03] p-1">
   {([0, 1, 2, 3, 4, 5, 6] as const).map(d => (
   <button
   key={d}
   type="button"
   onClick={() => setGridDay(d as DayIndex)}
   className={cn(
-  'border px-2 py-1 font-mono text-[9px] font-bold uppercase',
+  'border px-2 py-1 font-mono text-[9px] font-bold uppercase transition-colors',
   gridDay === d
-  ? 'border-white/30 bg-zinc-100 text-zinc-900'
-  : 'border-white/10 bg-black/30 text-zinc-400'
+  ? 'border-formula-volt/45 bg-formula-volt text-formula-base'
+  : 'border-formula-frost/12 bg-formula-deep/45 text-formula-mist hover:border-formula-frost/25'
   )}
   >
   {DAY_LABELS[d]}
@@ -287,10 +288,10 @@ export default function ParentBookingsPage() {
   <div
   key={slot.id}
   className={cn(
-  'border p-4 transition-all',
+  'rounded-xl border p-4 transition-all',
   isBooked
-  ? 'border-[#22c55e]/35 bg-[#22c55e]/10'
-  : 'border-white/10 bg-[#111111] hover:border-white/25'
+  ? 'border-formula-volt/35 bg-formula-volt/10'
+  : 'border-formula-frost/12 bg-formula-paper/[0.04] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] hover:border-formula-frost/25'
   )}
   >
   <div className="flex items-start gap-3">
@@ -300,7 +301,7 @@ export default function ParentBookingsPage() {
   <Badge variant="accent" size="sm">
   Band {slot.ageBand}
   </Badge>
-  <span className="font-mono text-[10px] uppercase text-zinc-500">{slot.youthBlockId}</span>
+  <span className="font-mono text-[10px] uppercase text-formula-mist">{slot.youthBlockId}</span>
   </div>
   <div className="flex flex-wrap items-center gap-4 text-xs text-text-secondary">
   <span className="flex items-center gap-1">
@@ -321,7 +322,7 @@ export default function ParentBookingsPage() {
   {slot.enrolled}/{slot.capacity}
   </span>
   </div>
-  <div className="h-1.5 overflow-hidden bg-zinc-800">
+  <div className="h-1.5 overflow-hidden rounded-full bg-formula-deep/80">
   <div
   className={cn('h-full', almostFull ? 'bg-warning' : 'bg-[#005700]')}
   style={{ width: `${(slot.enrolled / slot.capacity) * 100}%` }}
@@ -331,7 +332,7 @@ export default function ParentBookingsPage() {
   </div>
   <div className="flex shrink-0 flex-col items-end gap-2">
   {isBooked ? (
-  <div className="flex items-center gap-1.5 text-sm font-medium text-[#22c55e]">
+  <div className="flex items-center gap-1.5 text-sm font-medium text-formula-volt">
   <CheckCircle2 className="h-4 w-4" />
   Enrolled
   </div>
@@ -371,8 +372,8 @@ export default function ParentBookingsPage() {
   <div
   key={session.id}
   className={cn(
-  'border border-white/10 bg-[#111111] p-4',
-  isBooked && 'border-[#22c55e]/35 bg-[#22c55e]/10'
+  'rounded-xl border border-formula-frost/12 bg-formula-paper/[0.04] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]',
+  isBooked && 'border-formula-volt/35 bg-formula-volt/10'
   )}
   >
   <div className="flex items-start justify-between gap-3">
@@ -393,7 +394,7 @@ export default function ParentBookingsPage() {
   Book
   </Button>
   ) : (
-  <span className="text-xs font-medium text-[#22c55e]">Booked</span>
+  <span className="text-xs font-medium text-formula-volt">Booked</span>
   )}
   </div>
   </div>

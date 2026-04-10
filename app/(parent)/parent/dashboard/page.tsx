@@ -19,8 +19,8 @@ import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
 import { ParentDashboardSubtitle } from '@/components/parent/parent-dashboard-subtitle'
 import { ParentSoftBanner } from '@/components/parent/parent-panel'
 import {
+  buildParentRecommendedActions,
   parentAttendanceSnapshot,
-  parentRecommendedActions,
   parentUpcomingEvents,
   parentProgressUpdates,
 } from '@/lib/mock-data/parent-portal'
@@ -32,6 +32,9 @@ const myPlayers = mockPlayers.filter(p => PARENT_PLAYER_IDS.includes(p.id))
 const PARENT_ID = 'parent-6'
 
 export default function ParentDashboardPage() {
+  const recommendedActions = buildParentRecommendedActions(
+    myPlayers.map(p => ({ id: p.id, firstName: p.firstName }))
+  )
   const upcomingBookings = myPlayers.flatMap(p => {
   const bookings = getBookingsByPlayer(p.id).filter(b => b.status === 'confirmed')
   return bookings.map(b => ({ ...b, player: p }))
@@ -255,7 +258,7 @@ export default function ParentDashboardPage() {
   <div className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] lg:col-span-2">
   <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-formula-mist">Recommended next steps</p>
   <ul className="mt-3 space-y-2">
-  {parentRecommendedActions.map(a => (
+  {recommendedActions.map(a => (
   <li key={a.id}>
   <Link
   href={a.href}

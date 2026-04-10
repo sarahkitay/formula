@@ -14,6 +14,7 @@ export const STAFF_ROSTER_SELECT = `
   assessments (
     id,
     summary,
-    completed_at
+    completed_at,
+    pillar_scores
   )
 ` as const

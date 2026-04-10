@@ -44,11 +44,51 @@ export const parentAttendanceSnapshot = {
   streakWeeks: 3,
 }
 
-export const parentRecommendedActions: ParentRecommendedAction[] = [
-  { id: 'a1', label: 'Book next youth block for Liam', href: '/parent/bookings' },
-  { id: 'a2', label: 'Review FPI summary before April reassessment', href: '/parent/fpi-report/player-6' },
-  { id: 'a3', label: 'Confirm Friday game registration window', href: '/parent/register' },
-]
+/** Join first names for copy: "Ava", "Ava and Ben", "Ava, Ben, and Cal". */
+export function formatAthleteFirstNames(firstNames: string[]): string {
+  const n = firstNames.map(s => s.trim()).filter(Boolean)
+  if (n.length === 0) return 'your athlete'
+  if (n.length === 1) return n[0]!
+  if (n.length === 2) return `${n[0]} and ${n[1]}`
+  return `${n.slice(0, -1).join(', ')}, and ${n[n.length - 1]}`
+}
+
+/**
+ * Recommended next steps use real linked athletes (first names), not placeholder demo names.
+ */
+export function buildParentRecommendedActions(players: { id: string; firstName: string }[]): ParentRecommendedAction[] {
+  if (players.length === 0) {
+    return [
+      { id: 'a1', label: 'Book next youth block', href: '/parent/bookings' },
+      { id: 'a2', label: 'Review FPI summary before April reassessment', href: '/parent/fpi-report' },
+      { id: 'a3', label: 'Confirm Friday game registration window', href: '/parent/register' },
+    ]
+  }
+
+  const names = formatAthleteFirstNames(players.map(p => p.firstName))
+  const primary = players[0]!
+  const fpiHref = players.length === 1 ? `/parent/fpi-report/${primary.id}` : '/parent/fpi-report'
+
+  return [
+    { id: 'a1', label: `Book next youth block for ${names}`, href: '/parent/bookings' },
+    {
+      id: 'a2',
+      label:
+        players.length === 1
+          ? `Review ${primary.firstName}'s FPI summary before April reassessment`
+          : `Review FPI summaries for ${names} before April reassessment`,
+      href: fpiHref,
+    },
+    {
+      id: 'a3',
+      label:
+        players.length === 1
+          ? `Confirm Friday game registration window for ${primary.firstName}`
+          : `Confirm Friday game registration window (${names})`,
+      href: '/parent/register',
+    },
+  ]
+}
 
 export const parentUpcomingEvents: ParentUpcomingEvent[] = [
   {

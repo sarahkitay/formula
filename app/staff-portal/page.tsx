@@ -12,6 +12,16 @@ import type { ProfileRow } from '@/types/profile'
 
 const DEFAULT_ASSESSMENT_SUMMARY = 'Initial assessment completed'
 
+const PILLAR_FIELDS = [
+  { key: 'technical', label: 'Technical' },
+  { key: 'speed', label: 'Speed' },
+  { key: 'agility', label: 'Agility' },
+  { key: 'endurance', label: 'Endurance' },
+  { key: 'strength', label: 'Strength' },
+] as const
+
+type PillarFieldKey = (typeof PILLAR_FIELDS)[number]['key']
+
 type ProgramRow = {
   name: string | null
 }
@@ -25,6 +35,7 @@ type AssessmentRow = {
   id?: string
   summary: string | null
   completed_at: string | null
+  pillar_scores?: unknown
 }
 
 type PlayerWithDetails = {
@@ -63,6 +74,9 @@ export default function StaffPortalHubPage() {
   const [players, setPlayers] = useState<PlayerWithDetails[]>([])
   const [playersError, setPlayersError] = useState<string | null>(null)
   const [summaryDraft, setSummaryDraft] = useState<Record<string, string>>({})
+  const [pillarDraft, setPillarDraft] = useState<
+    Record<string, Partial<Record<PillarFieldKey, string>>>
+  >({})
   const [creatingFor, setCreatingFor] = useState<string | null>(null)
   const [createFlash, setCreateFlash] = useState<{ kind: 'ok' | 'error'; message: string } | null>(null)
 
@@ -136,16 +150,33 @@ export default function StaffPortalHubPage() {
     }
   }, [router, reloadPlayers])
 
+  function buildPillarScoresJson(playerId: string): Record<string, number> | null {
+    const draft = pillarDraft[playerId]
+    if (!draft) return null
+    const out: Record<string, number> = {}
+    for (const { key } of PILLAR_FIELDS) {
+      const raw = draft[key]?.trim()
+      if (!raw) continue
+      const n = Number(raw)
+      if (!Number.isFinite(n)) continue
+      const clamped = Math.min(100, Math.max(0, Math.round(n)))
+      out[key] = clamped
+    }
+    return Object.keys(out).length > 0 ? out : null
+  }
+
   async function handleCreateAssessment(playerId: string) {
     setCreateFlash(null)
     setCreatingFor(playerId)
     const raw = summaryDraft[playerId]?.trim()
     const summary = raw && raw.length > 0 ? raw : DEFAULT_ASSESSMENT_SUMMARY
+    const pillarScores = buildPillarScoresJson(playerId)
 
     const { error: insertErr } = await supabase.from('assessments').insert({
       player_id: playerId,
       summary,
       completed_at: new Date().toISOString(),
+      ...(pillarScores ? { pillar_scores: pillarScores } : {}),
     })
 
     setCreatingFor(null)
@@ -298,6 +329,32 @@ export default function StaffPortalHubPage() {
                         <p className="mt-1">Assessments · {completedAssessments.length}</p>
                         <p className="mt-1">Latest · {latestAssessmentDate ?? 'N/A'}</p>
                       </div>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-5">
+                      {PILLAR_FIELDS.map(({ key, label }) => (
+                        <label
+                          key={key}
+                          className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-formula-mist"
+                        >
+                          <span className="mb-1.5 block text-formula-mist/90">{label} (0–100)</span>
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            inputMode="numeric"
+                            value={pillarDraft[pl.id]?.[key] ?? ''}
+                            onChange={(e) =>
+                              setPillarDraft((prev) => ({
+                                ...prev,
+                                [pl.id]: { ...prev[pl.id], [key]: e.target.value },
+                              }))
+                            }
+                            placeholder="—"
+                            className="w-full border border-formula-frost/20 bg-formula-paper/[0.04] px-2 py-2 font-sans text-[13px] font-normal normal-case tracking-normal text-formula-paper placeholder:text-formula-mist/45 outline-none focus:border-formula-volt/40"
+                          />
+                        </label>
+                      ))}
                     </div>
 
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-end">

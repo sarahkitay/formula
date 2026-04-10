@@ -6,7 +6,12 @@ export type PlayerRow = {
   age_group: string | null
   created_at?: string | null
   player_programs?: { status: string; programs: { name: string | null }[] | null }[] | null
-  assessments?: { summary: string | null; completed_at: string | null }[] | null
+  assessments?: {
+    id?: string
+    summary: string | null
+    completed_at: string | null
+    pillar_scores?: unknown
+  }[] | null
 }
 
 /** `public.parent_players` row with embedded player (Supabase FK embed). */

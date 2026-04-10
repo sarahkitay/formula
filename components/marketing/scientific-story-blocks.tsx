@@ -6,6 +6,10 @@ import { cn } from '@/lib/utils'
 const gridPaper =
   'bg-[linear-gradient(to_right,rgb(255_255_255_/_0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255_/_0.06)_1px,transparent_1px)] bg-[size:20px_20px]'
 
+/** Softer grid for parent journey strip so copy stays primary. */
+const gridPaperFaint =
+  'bg-[linear-gradient(to_right,rgb(255_255_255_/_0.018)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255_/_0.018)_1px,transparent_1px)] bg-[size:20px_20px]'
+
 export function FeelVsDataStrip({ className }: { className?: string }) {
   return (
     <p
@@ -147,7 +151,7 @@ export function ParentJourneyBlock({ className }: { className?: string }) {
     <section
       className={cn(
         'not-prose rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-6 md:p-8',
-        gridPaper,
+        gridPaperFaint,
         className
       )}
       aria-labelledby="parent-journey-heading"

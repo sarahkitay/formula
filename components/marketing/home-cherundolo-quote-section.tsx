@@ -24,7 +24,7 @@ export function HomeCherundoloQuoteSection() {
             sizes={HOME_STEVE_PHOTO_SIZES}
             decoding="async"
             fetchPriority="low"
-            className="origin-center scale-[0.78] object-cover object-[center_42%] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] sm:scale-[0.82] md:scale-[0.86] md:object-[center_40%] md:hover:scale-[0.89]"
+            className="origin-center scale-[0.58] object-cover object-[center_42%] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] sm:scale-[0.62] md:scale-[0.66] md:object-[center_40%] md:hover:scale-[0.70]"
             priority={false}
           />
           <div

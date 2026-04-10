@@ -30,13 +30,13 @@ export default function ParentMessagesPage() {
   {sorted.map(m => (
   <li
   key={m.id}
-  className="border border-white/10 bg-black/25 px-4 py-3 transition-colors hover:border-white/20"
+  className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.03] px-4 py-3 transition-colors hover:border-formula-frost/22 hover:bg-formula-paper/[0.06]"
   >
   <div className="flex flex-wrap items-center justify-between gap-2">
-  <span className="text-[10px] font-semibold uppercase tracking-wider text-[#22c55e]/90">
+  <span className="text-[10px] font-semibold uppercase tracking-wider text-formula-volt/90">
   {categoryLabel[m.category]}
   </span>
-  <time className="text-xs text-zinc-500" dateTime={m.sentAt}>
+  <time className="text-xs text-formula-mist" dateTime={m.sentAt}>
   {new Date(m.sentAt).toLocaleString('en-US', {
   month: 'short',
   day: 'numeric',
@@ -45,12 +45,12 @@ export default function ParentMessagesPage() {
   })}
   </time>
   </div>
-  <p className="mt-1 font-medium text-zinc-100">{m.title}</p>
-  <p className="mt-1 text-sm text-zinc-400">{m.preview}</p>
+  <p className="mt-1 font-medium text-formula-paper">{m.title}</p>
+  <p className="mt-1 text-sm text-formula-frost/78">{m.preview}</p>
   </li>
   ))}
   </ul>
-  <p className="mt-6 text-center text-xs text-text-muted">Push & SMS preferences - coming with mobile app.</p>
+  <p className="mt-6 text-center text-xs text-formula-mist">Push & SMS preferences - coming with mobile app.</p>
   </ParentPanel>
   </div>
   </PageContainer>

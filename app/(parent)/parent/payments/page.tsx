@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { DataTable, Column } from '@/components/ui/data-table'
 import { getPaymentsByPlayer } from '@/lib/mock-data/payments'
 import { getParentTotalSaved } from '@/lib/mock-data/parent-savings'
+import { parentPortalPanel } from '@/lib/parent/portal-surface'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import { Payment } from '@/types'
 
@@ -41,9 +42,9 @@ export default function ParentPaymentsPage() {
   actions={<Button variant="secondary" leftIcon={<Download className="h-4 w-4" />}>Download PDF</Button>}
   />
 
-  <div className="border border-white/10 bg-[#111111] p-5">
+  <div className={cn('p-5', parentPortalPanel)}>
   <SectionHeader title="Payment method" description="Card on file · update with front desk or when billing portal connects." />
-  <p className="mt-2 font-mono text-xs text-text-muted">•••• •••• •••• 4242 · Visa · exp 08/28 (demo)</p>
+  <p className="mt-2 font-mono text-xs text-formula-mist">•••• •••• •••• 4242 · Visa · exp 08/28 (demo)</p>
   </div>
 
   <SectionHeader title="Invoices & receipts" description="Completed and pending charges across membership and add-ons." />
