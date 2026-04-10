@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { useLazyAutoplayVideo } from '@/lib/marketing/use-lazy-autoplay-video'
 import { MEDIA_SCRIM_BOTTOM, MEDIA_SCRIM_TOP } from '@/lib/marketing/media-scrims'
 import { cn } from '@/lib/utils'
 
@@ -16,42 +16,28 @@ const overlaySubtitleClass =
  * Homepage: full-bleed Speed Track video with copy overlaid. Video pauses when `prefers-reduced-motion: reduce`.
  */
 export function HomeSpeedTrackSection() {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const sync = () => {
-      if (mq.matches) {
-        el.pause()
-      } else {
-        void el.play().catch(() => {})
-      }
-    }
-
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
+  const { containerRef, videoRef, ready } = useLazyAutoplayVideo()
 
   return (
     <section aria-labelledby="home-speed-track-title">
       <div className="relative w-full overflow-hidden border-b border-formula-frost/10">
-        <div className="relative min-h-[min(78vh,820px)] w-full md:min-h-[min(90vh,960px)]">
-          <video
-            ref={videoRef}
-            className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-label="Athletes on the Speed Track"
-          >
-            <source src={VIDEO_SRC} type="video/mp4" />
-          </video>
+        <div ref={containerRef} className="relative min-h-[min(78vh,820px)] w-full md:min-h-[min(90vh,960px)]">
+          {ready ? (
+            <video
+              ref={videoRef}
+              className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label="Athletes on the Speed Track"
+            >
+              <source src={VIDEO_SRC} type="video/mp4" />
+            </video>
+          ) : (
+            <div className="absolute inset-0 bg-formula-deep" aria-hidden />
+          )}
           <div className={MEDIA_SCRIM_TOP} aria-hidden />
           <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />
           <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 md:pt-32">

@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
+import { HOME_SPLIT_PHOTO_QUALITY, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
 const FIELDS_PHOTO_SRC = '/8E3A3278.jpg'
@@ -20,8 +21,11 @@ export function HomeFieldsFormulaSection() {
             src={FIELDS_PHOTO_SRC}
             alt="Athlete strikes a ball on an indoor turf field partitioned by netting, with additional training lanes visible in the background."
             fill
+            quality={HOME_SPLIT_PHOTO_QUALITY}
+            sizes={HOME_SPLIT_PHOTO_SIZES}
+            decoding="async"
+            fetchPriority="low"
             className="object-cover object-[center_35%] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] md:hover:scale-[1.02]"
-            sizes="(max-width: 768px) 100vw, 50vw"
             priority={false}
           />
           <div

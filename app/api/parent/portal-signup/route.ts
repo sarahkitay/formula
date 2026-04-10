@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Server signup is not configured (Supabase service role)' }, { status: 503 })
   }
 
-  const { data: existingProfile } = await sb.from('profiles').select('id').ilike('email', email).maybeSingle()
+  const { data: existingProfile } = await sb.from('profiles').select('id').eq('email', email).maybeSingle()
   if (existingProfile) {
     return NextResponse.json(
       { error: 'An account already exists for this email. Sign in at /login with the Parent portal.' },
@@ -98,12 +98,17 @@ export async function POST(req: Request) {
   const userId = created.user.id
 
   try {
-    const { error: profileErr } = await sb.from('profiles').insert({
-      id: userId,
-      role: 'parent',
-      full_name: parentFullName,
-      email,
-    })
+    // Upsert: Supabase projects often add a trigger on auth.users that inserts into profiles first;
+    // a plain insert then fails with duplicate key (23505).
+    const { error: profileErr } = await sb.from('profiles').upsert(
+      {
+        id: userId,
+        role: 'parent',
+        full_name: parentFullName,
+        email,
+      },
+      { onConflict: 'id' }
+    )
     if (profileErr) throw profileErr
 
     for (const kid of kids) {
@@ -131,8 +136,19 @@ export async function POST(req: Request) {
     }
   } catch (e) {
     await sb.auth.admin.deleteUser(userId)
-    console.error('[portal-signup]', e)
-    return NextResponse.json({ error: 'Signup failed. Try again or contact the front desk.' }, { status: 500 })
+    const err = e as { message?: string; code?: string; details?: string; hint?: string }
+    console.error('[portal-signup]', err?.code, err?.message, err?.details, err?.hint, e)
+    const debug =
+      process.env.NODE_ENV === 'development'
+        ? [err?.code, err?.message, err?.details].filter(Boolean).join(' · ') || String(e)
+        : undefined
+    return NextResponse.json(
+      {
+        error: 'Signup failed. Try again or contact the front desk.',
+        ...(debug ? { debug } : {}),
+      },
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({ ok: true, userId })

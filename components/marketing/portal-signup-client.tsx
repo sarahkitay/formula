@@ -92,8 +92,11 @@ export function PortalSignupClient() {
             kids: kids.map(k => ({ firstName: k.firstName.trim(), lastName: k.lastName.trim() })),
           }),
         })
-        const data = (await res.json()) as { error?: string }
-        if (!res.ok) throw new Error(data.error ?? 'Signup failed')
+        const data = (await res.json()) as { error?: string; debug?: string }
+        if (!res.ok) {
+          const msg = data.debug ? `${data.error ?? 'Signup failed'} (${data.debug})` : (data.error ?? 'Signup failed')
+          throw new Error(msg)
+        }
 
         const { error: signErr } = await supabase.auth.signInWithPassword({
           email: summary.email,

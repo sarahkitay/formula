@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
+import { HOME_STEVE_PHOTO_QUALITY, HOME_STEVE_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
 const PHOTO_SRC = '/steve.jpg'
@@ -14,13 +15,16 @@ export function HomeCherundoloQuoteSection() {
   return (
     <section id="partner-quote" aria-labelledby="cherundolo-quote-heading">
       <div className="grid min-h-[min(72vh,760px)] grid-cols-1 md:grid-cols-2 md:min-h-[min(82vh,860px)]">
-        <div className="relative min-h-[min(52vh,420px)] overflow-hidden border-b border-formula-frost/10 md:min-h-0 md:border-b-0 md:border-r">
+        <div className="relative min-h-[min(52vh,420px)] overflow-hidden border-b border-formula-frost/10 bg-formula-deep md:min-h-0 md:border-b-0 md:border-r">
           <Image
             src={PHOTO_SRC}
             alt="Steve Cherundolo on an outdoor pitch in LAFC coaching kit."
             fill
-            className="object-cover object-[22%_center] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] md:hover:scale-[1.02]"
-            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={HOME_STEVE_PHOTO_QUALITY}
+            sizes={HOME_STEVE_PHOTO_SIZES}
+            decoding="async"
+            fetchPriority="low"
+            className="origin-center scale-[0.78] object-cover object-[center_42%] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] sm:scale-[0.82] md:scale-[0.86] md:object-[center_40%] md:hover:scale-[0.89]"
             priority={false}
           />
           <div

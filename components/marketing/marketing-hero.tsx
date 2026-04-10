@@ -1,5 +1,6 @@
 'use client'
 
+import { Fragment } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { AmbientGeometry } from '@/components/marketing/ambient-geometry'
@@ -65,7 +66,12 @@ export function MarketingHero() {
             </span>
           </h1>
           <p className="mt-4 max-w-[38rem] font-mono text-[clamp(1.05rem,2.8vw,1.5rem)] font-semibold leading-snug tracking-[0.04em] text-formula-paper [text-shadow:0_2px_24px_rgba(0,0,0,0.5)]">
-            {SITE_VOICE.heroHeadline}
+            {SITE_VOICE.heroHeadlineLines.map((line, i) => (
+              <Fragment key={`hero-headline-${i}`}>
+                {i > 0 ? <br /> : null}
+                {line}
+              </Fragment>
+            ))}
           </p>
           <p className="mt-5 max-w-[38rem] text-[14px] leading-relaxed text-formula-frost/78 [text-shadow:0_1px_16px_rgba(0,0,0,0.35)]">
             {SITE_VOICE.homeParentOneLiner}

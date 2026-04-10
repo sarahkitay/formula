@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { useLazyAutoplayVideo } from '@/lib/marketing/use-lazy-autoplay-video'
 import { MEDIA_SCRIM_BOTTOM, MEDIA_SCRIM_TOP } from '@/lib/marketing/media-scrims'
 import { cn } from '@/lib/utils'
 
@@ -16,39 +16,27 @@ const overlaySubtitleClass =
  * Homepage: full-bleed assessment video; overlay explains Skills Check → scores → program placement.
  */
 export function HomeAssessmentVideoSection() {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const sync = () => {
-      if (mq.matches) {
-        el.pause()
-      } else {
-        void el.play().catch(() => {})
-      }
-    }
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
+  const { containerRef, videoRef, ready } = useLazyAutoplayVideo()
 
   return (
     <section aria-labelledby="home-assessment-video-title" className="relative w-full overflow-hidden border-b border-formula-frost/10">
-      <div className="relative min-h-[min(72vh,780px)] w-full md:min-h-[min(86vh,940px)]">
-        <video
-          ref={videoRef}
-          className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-label="Athletes during a Formula assessment on the training floor"
-        >
-          <source src={VIDEO_SRC} type="video/mp4" />
-        </video>
+      <div ref={containerRef} className="relative min-h-[min(72vh,780px)] w-full md:min-h-[min(86vh,940px)]">
+        {ready ? (
+          <video
+            ref={videoRef}
+            className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-label="Athletes during a Formula assessment on the training floor"
+          >
+            <source src={VIDEO_SRC} type="video/mp4" />
+          </video>
+        ) : (
+          <div className="absolute inset-0 bg-formula-deep" aria-hidden />
+        )}
 
         <div className={MEDIA_SCRIM_TOP} aria-hidden />
         <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />
