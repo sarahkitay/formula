@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
+import { slotHasRoom } from '@/lib/assessment/slots-server'
 import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimSlotForCheckout } from '@/lib/rentals/rental-slots'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
@@ -55,7 +57,31 @@ export async function POST(req: Request) {
   const smsConsent = (body as { smsConsent?: unknown }).smsConsent === true
 
   const origin = getSiteOrigin()
-  const line_items = lineItemsForCheckoutType(type)
+
+  let line_items = lineItemsForCheckoutType(type)
+
+  if (type === 'assessment') {
+    const slotId = metadataExtra.assessment_slot_id?.trim()
+    const parentName = metadataExtra.parent_full_name?.trim()
+    const numKids = parseInt(metadataExtra.assessment_num_kids ?? '1', 10)
+    if (!slotId || !parentName) {
+      return NextResponse.json(
+        { error: 'Assessment checkout requires metadata: assessment_slot_id, parent_full_name, assessment_num_kids (1–4)' },
+        { status: 400 }
+      )
+    }
+    if (!Number.isInteger(numKids) || numKids < 1 || numKids > ASSESSMENT_MAX_KIDS_PER_BOOKING) {
+      return NextResponse.json({ error: 'assessment_num_kids must be an integer from 1 to 4' }, { status: 400 })
+    }
+    const hasRoom = await slotHasRoom(slotId, numKids)
+    if (!hasRoom) {
+      return NextResponse.json(
+        { error: 'Not enough spots left in that window. Choose another time or fewer athletes.' },
+        { status: 409 }
+      )
+    }
+    line_items = lineItemsForCheckoutType(type, { assessmentQuantity: numKids })
+  }
 
   const successQuery =
     successNext != null
@@ -93,6 +119,10 @@ export async function POST(req: Request) {
     }
   }
 
+  const emailHint = metadataExtra.parent_email_hint?.trim().toLowerCase() ?? ''
+  const prefillEmail =
+    type === 'assessment' && emailHint.length > 3 && emailHint.includes('@') && emailHint.includes('.') ? emailHint : undefined
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -104,6 +134,7 @@ export async function POST(req: Request) {
         twilio_sms_opt_in: smsConsent ? 'true' : 'false',
         ...metadataExtra,
       },
+      ...(prefillEmail ? { customer_email: prefillEmail } : {}),
       customer_creation: 'always',
       billing_address_collection: 'auto',
     })

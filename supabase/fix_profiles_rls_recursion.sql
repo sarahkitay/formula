@@ -1,15 +1,18 @@
 -- Run in Supabase SQL Editor if you see:
 --   "infinite recursion detected in policy for relation profiles"
 --
--- Cause: a policy ON public.profiles that uses a subquery on public.profiles
--- (e.g. EXISTS (SELECT 1 FROM profiles ...)) re-enters RLS forever.
+-- Common causes:
+-- (1) A policy ON public.profiles that subqueries public.profiles (EXISTS SELECT ... FROM profiles).
+-- (2) A policy ON public.profiles that calls formula_is_staff() / formula_profile_role():
+--     those functions SELECT from profiles, which re-evaluates RLS on profiles → infinite loop.
 --
--- This script: (1) installs safe helper functions, (2) drops ALL policies on
--- public.profiles, (3) recreates non-recursive policies. Review Step 2 if you
--- had custom profile policies you still need.
+-- Fix: keep ONLY "read your own row" on profiles. Staff-wide reads must use service_role
+-- or an Edge Function — not an RLS policy that calls a function which reads profiles again.
 
 -- ---------------------------------------------------------------------------
--- 1) Helpers — SECURITY DEFINER reads profiles as owner (RLS not re-applied).
+-- 1) Helpers — still used by policies ON *other* tables (assessments, players, etc.).
+--    They only fetch the caller's row (auth.uid()); with a single "own row" policy on
+--    profiles, that inner SELECT succeeds without recursion.
 -- ---------------------------------------------------------------------------
 create or replace function public.formula_profile_role()
 returns text
@@ -41,8 +44,11 @@ revoke all on function public.formula_is_staff() from public;
 grant execute on function public.formula_is_staff() to authenticated;
 grant execute on function public.formula_is_staff() to service_role;
 
+-- Optional: if profiles had FORCE RLS, table owner would still hit policies (rare).
+-- alter table public.profiles no force row level security;
+
 -- ---------------------------------------------------------------------------
--- 2) Remove every policy on public.profiles (removes the recursive one).
+-- 2) Remove every policy on public.profiles, then recreate safe SELECT only.
 -- ---------------------------------------------------------------------------
 do $$
 declare
@@ -58,15 +64,8 @@ begin
   end loop;
 end $$;
 
--- ---------------------------------------------------------------------------
--- 3) Safe replacements
--- ---------------------------------------------------------------------------
 create policy "profiles_select_own"
   on public.profiles for select
   using (auth.uid() = id);
 
-create policy "profiles_select_staff_all"
-  on public.profiles for select
-  using (public.formula_is_staff());
-
--- Optional: tighten staff (e.g. admin-only) by editing formula_is_staff or this policy.
+-- Do NOT recreate profiles_select_staff_all using formula_is_staff() — it causes recursion.

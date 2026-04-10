@@ -47,10 +47,10 @@ alter table public.profiles enable row level security;
 drop policy if exists "profiles_select_own" on public.profiles;
 drop policy if exists "profiles_select_staff_all" on public.profiles;
 
--- Own row (portal login).
+-- Own row only. Do NOT add "staff read all" via formula_is_staff() here: that function
+-- SELECTs profiles, which re-runs these policies and causes infinite recursion.
+-- Staff roster / admin reads: use service role on the server, or a dedicated RPC.
 create policy "profiles_select_own" on public.profiles for select using (auth.uid() = id);
--- Staff read any profile without subquery recursion (optional; drop if you only use service role).
-create policy "profiles_select_staff_all" on public.profiles for select using (public.formula_is_staff());
 
 -- Optional: allow users to update their own row
 -- create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);

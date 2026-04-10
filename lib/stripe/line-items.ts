@@ -2,19 +2,31 @@ import type Stripe from 'stripe'
 import { FIELD_RENTAL_BOOKING_CHECKOUT, FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
+export type LineItemsOptions = {
+  /** Skills Check: one line item per athlete (quantity 1–4). */
+  assessmentQuantity?: number
+}
+
 /**
  * Line items for Checkout. Amounts come from published pricing constants only (never from the client).
  */
-export function lineItemsForCheckoutType(type: CheckoutType): Stripe.Checkout.SessionCreateParams.LineItem[] {
+export function lineItemsForCheckoutType(
+  type: CheckoutType,
+  options?: LineItemsOptions // only used for `assessment`
+): Stripe.Checkout.SessionCreateParams.LineItem[] {
   if (type === 'assessment') {
+    const q = Math.min(4, Math.max(1, Math.floor(options?.assessmentQuantity ?? 1)))
     return [
       {
-        quantity: 1,
+        quantity: q,
         price_data: {
           currency: 'usd',
           product_data: {
             name: FORMULA_SKILLS_CHECK.name,
-            description: 'Baseline assessment for placement and progression.',
+            description:
+              q === 1
+                ? 'Baseline assessment for placement and progression.'
+                : `${q} athletes · Skills Check (per-athlete pricing).`,
           },
           unit_amount: Math.round(FORMULA_SKILLS_CHECK.priceUsd * 100),
         },

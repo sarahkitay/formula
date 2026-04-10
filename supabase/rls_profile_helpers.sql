@@ -1,7 +1,9 @@
--- SECURITY DEFINER helpers: read the caller's profile row without re-evaluating RLS on `profiles`.
--- Use these in policies instead of `exists (select 1 from public.profiles ...)` to avoid
--- "infinite recursion detected in policy for relation profiles" when a policy ON `profiles`
--- also subqueries `profiles`.
+-- SECURITY DEFINER helpers: read the caller's profile row (WHERE id = auth.uid()).
+-- Use on policies for *other* tables (e.g. assessments) instead of subquerying profiles.
+--
+-- Never use these inside a policy ON public.profiles, and do not add "staff read all profiles"
+-- with formula_is_staff(): that SELECT hits profiles RLS again → infinite recursion.
+-- On profiles, only: using (auth.uid() = id).
 
 create or replace function public.formula_profile_role()
 returns text

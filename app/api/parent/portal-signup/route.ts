@@ -1,0 +1,139 @@
+import { NextResponse } from 'next/server'
+import { getServiceSupabase } from '@/lib/supabase/service'
+import { getStripe } from '@/lib/stripe/server'
+
+export const runtime = 'nodejs'
+
+type KidPayload = { firstName?: unknown; lastName?: unknown }
+
+function cleanKid(k: KidPayload): { firstName: string; lastName: string } | null {
+  const fn = typeof k.firstName === 'string' ? k.firstName.trim() : ''
+  const ln = typeof k.lastName === 'string' ? k.lastName.trim() : ''
+  if (!fn || !ln) return null
+  return { firstName: fn, lastName: ln }
+}
+
+/**
+ * After a paid assessment, create Supabase auth user + parent profile + player rows + parent_players links.
+ */
+export async function POST(req: Request) {
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  const sessionId = typeof (body as { sessionId?: unknown }).sessionId === 'string' ? (body as { sessionId: string }).sessionId.trim() : ''
+  const password = typeof (body as { password?: unknown }).password === 'string' ? (body as { password: string }).password : ''
+  const kidsRaw = (body as { kids?: unknown }).kids
+
+  if (!sessionId || password.length < 8) {
+    return NextResponse.json({ error: 'sessionId and password (min 8 characters) are required' }, { status: 400 })
+  }
+
+  if (!Array.isArray(kidsRaw) || kidsRaw.length === 0) {
+    return NextResponse.json({ error: 'kids must be a non-empty array' }, { status: 400 })
+  }
+
+  const stripe = getStripe()
+  if (!stripe) {
+    return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 })
+  }
+
+  let session: Awaited<ReturnType<typeof stripe.checkout.sessions.retrieve>>
+  try {
+    session = await stripe.checkout.sessions.retrieve(sessionId)
+  } catch {
+    return NextResponse.json({ error: 'Invalid checkout session' }, { status: 400 })
+  }
+
+  if (session.mode !== 'payment' || session.metadata?.type !== 'assessment' || session.payment_status !== 'paid') {
+    return NextResponse.json({ error: 'Session is not a paid assessment' }, { status: 400 })
+  }
+
+  const numKids = parseInt(session.metadata.assessment_num_kids ?? '1', 10)
+  const expected = Number.isInteger(numKids) && numKids >= 1 && numKids <= 4 ? numKids : 1
+
+  if (kidsRaw.length !== expected) {
+    return NextResponse.json({ error: `Enter exactly ${expected} athlete(s) to match your booking.` }, { status: 400 })
+  }
+
+  const kids = kidsRaw.map(k => cleanKid(k as KidPayload)).filter(Boolean) as { firstName: string; lastName: string }[]
+  if (kids.length !== expected) {
+    return NextResponse.json({ error: 'Each athlete needs a first and last name' }, { status: 400 })
+  }
+
+  const email = (session.customer_details?.email ?? session.customer_email ?? '').trim().toLowerCase()
+  if (!email) {
+    return NextResponse.json({ error: 'Checkout session has no email' }, { status: 400 })
+  }
+
+  const parentFullName = (session.metadata.parent_full_name ?? '').trim() || 'Parent'
+
+  const sb = getServiceSupabase()
+  if (!sb) {
+    return NextResponse.json({ error: 'Server signup is not configured (Supabase service role)' }, { status: 503 })
+  }
+
+  const { data: existingProfile } = await sb.from('profiles').select('id').ilike('email', email).maybeSingle()
+  if (existingProfile) {
+    return NextResponse.json(
+      { error: 'An account already exists for this email. Sign in at /login with the Parent portal.' },
+      { status: 409 }
+    )
+  }
+
+  const { data: created, error: createErr } = await sb.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: parentFullName },
+  })
+
+  if (createErr || !created.user) {
+    return NextResponse.json({ error: createErr?.message ?? 'Could not create account' }, { status: 400 })
+  }
+
+  const userId = created.user.id
+
+  try {
+    const { error: profileErr } = await sb.from('profiles').insert({
+      id: userId,
+      role: 'parent',
+      full_name: parentFullName,
+      email,
+    })
+    if (profileErr) throw profileErr
+
+    for (const kid of kids) {
+      const { data: player, error: pErr } = await sb
+        .from('players')
+        .insert({ first_name: kid.firstName, last_name: kid.lastName })
+        .select('id')
+        .single()
+      if (pErr || !player) throw pErr ?? new Error('player insert failed')
+
+      const { error: linkErr } = await sb.from('parent_players').insert({
+        parent_user_id: userId,
+        player_id: player.id,
+      })
+      if (linkErr) throw linkErr
+    }
+
+    const { error: bookErr } = await sb
+      .from('assessment_bookings')
+      .update({ parent_user_id: userId })
+      .eq('stripe_session_id', sessionId)
+
+    if (bookErr) {
+      console.warn('[portal-signup] Could not link booking row:', bookErr.message)
+    }
+  } catch (e) {
+    await sb.auth.admin.deleteUser(userId)
+    console.error('[portal-signup]', e)
+    return NextResponse.json({ error: 'Signup failed. Try again or contact the front desk.' }, { status: 500 })
+  }
+
+  return NextResponse.json({ ok: true, userId })
+}

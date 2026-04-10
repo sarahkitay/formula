@@ -18,8 +18,9 @@ export const MARKETING_HREF = {
   assessment: '/assessment',
   privacy: '/privacy',
   terms: '/terms',
-  /** Parent portal: account gate + slot + Stripe for Skills Check */
-  bookAssessmentPortal: '/parent/book-assessment',
+  /** Public Skills Check booking (no login). Optional portal signup after Stripe. */
+  bookAssessment: '/book-assessment',
+  bookAssessmentPortal: '/book-assessment',
 } as const
 
 export type MarketingHref = (typeof MARKETING_HREF)[keyof typeof MARKETING_HREF]

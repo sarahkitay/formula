@@ -59,7 +59,7 @@ export default async function CheckoutSuccessPage({
         ) : null}
       </div>
 
-      <CheckoutSuccessPortalModal nextStep={nextStep} />
+      <CheckoutSuccessPortalModal nextStep={nextStep} sessionId={sessionId} />
     </article>
   )
 }
