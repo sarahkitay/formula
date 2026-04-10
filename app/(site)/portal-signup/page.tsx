@@ -13,7 +13,7 @@ export default function PortalSignupPage() {
     <MarketingInnerPage
       eyebrow="After checkout"
       title="Set up your parent portal"
-      intro="Use the email from your Stripe receipt. We’ll create your login and link the athletes from your assessment booking."
+      intro="Start with your athletes’ names; they’ll show at the top of your portal. Then set a password using the same email you used at checkout."
       wide
     >
       <Suspense fallback={<p className="font-mono text-[11px] text-formula-frost/50">Loading…</p>}>

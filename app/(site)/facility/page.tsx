@@ -19,7 +19,7 @@ export default function FacilityPage() {
       <MarketingInnerPage
         eyebrow="Facility"
         title="Built for development. <br> Not rented by the hour."
-        intro="Purpose-built for structured training — not open gym access. Every surface and station has a job; most of them produce a measurement."
+        intro="Purpose-built for structured training, not open gym access. Every surface and station has a job; most of them produce a measurement."
         wide
       >
         <FacilityMeasurementStations className="!mb-10" />
@@ -32,13 +32,13 @@ export default function FacilityPage() {
         </p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Speed Track</h3>
-        <p>Controlled linear sprints — acceleration and repeat efforts, logged consistently.</p>
+        <p>Controlled linear sprints: acceleration and repeat efforts, logged consistently.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Double Speed Court</h3>
-        <p>Reaction, scanning, and decisions under time pressure — cognitive load, captured.</p>
+        <p>Reaction, scanning, and decisions under time pressure: cognitive load, captured.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Footbot</h3>
-        <p>High-volume technical reps with precision ball tech — every rep counted.</p>
+        <p>High-volume technical reps with precision ball tech; every rep counted.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Performance center</h3>
         <p>
@@ -51,7 +51,7 @@ export default function FacilityPage() {
         <h2 className="!mt-14">Why it matters</h2>
         <p>
           Random space produces random training. Zones here map to{' '}
-          <Link href={MARKETING_HREF.fpi}>The Formula</Link> — so the work matches the measurement.
+          <Link href={MARKETING_HREF.fpi}>The Formula</Link>, so the work matches the measurement.
         </p>
         <p className="!mt-4 font-mono text-[13px] leading-relaxed text-formula-frost/88">
           Most training is based on feel. <span className="font-semibold text-formula-paper">Formula is based on data.</span>

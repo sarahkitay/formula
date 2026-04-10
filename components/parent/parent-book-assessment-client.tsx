@@ -97,7 +97,7 @@ export function ParentBookAssessmentClient() {
     <PageContainer>
       <PageHeader
         title="Book a Skills Check"
-        subtitle={`${SITE.facilityName} · signed in — we’ll use your account email for receipts. Same live windows as public booking.`}
+        subtitle={`${SITE.facilityName} · signed in. We’ll use your account email for receipts. Same live windows as public booking.`}
       />
       <div className="mt-8 max-w-3xl">
         <BookAssessmentClient variant="portal" guardianFullName={guardianName} guardianEmail={guardianEmail} />

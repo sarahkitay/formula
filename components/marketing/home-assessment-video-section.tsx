@@ -64,15 +64,15 @@ export function HomeAssessmentVideoSection() {
                 Start with the data, not a guess
               </h2>
               <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>
-                Same structured Skills Check for every athlete—then programming built to the player
+                Same structured Skills Check for every athlete, then programming built to the player
               </p>
               <p className="mt-5 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
                 Every young athlete runs the same standardized assessment: speed, agility, decision-making, technique, how skills show up in play, and how they
-                respond under fatigue. Our systems capture the numbers; coaches interpret them. Families leave with objective scores—not a vague “looks good out
+                respond under fatigue. Our systems capture the numbers; coaches interpret them. Families leave with objective scores, not a vague “looks good out
                 there.”
               </p>
               <p className="mt-4 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
-                Those results drive placement. We match kids to training emphasis, session types, and progression paths that fit what they actually need—so time on
+                Those results drive placement. We match kids to training emphasis, session types, and progression paths that fit what they actually need, so time on
                 the floor reinforces the right gaps instead of repeating what they already do well.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">

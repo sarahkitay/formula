@@ -12,10 +12,6 @@ export const SITE_VOICE = {
   /** Primary line under the FORMULA wordmark. */
   heroHeadline: 'Elite training. Real data. Built for every player.',
 
-  /** Tight line directly under the hero headline (portal + scores). */
-  heroPortalSubline:
-    "Track your athlete's progress with real scores — visible in your parent portal.",
-
   /** Facility intro / first homepage band (right column). */
   trainingCenterPrograms:
     "Formula isn't a gym you drop into and hope for the best. It's a full soccer development system: advanced training technology, structured sessions, and real performance data, all under one roof.",

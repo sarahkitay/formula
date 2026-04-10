@@ -10,7 +10,7 @@ export interface BreadcrumbItem {
 
 export interface PageHeaderProps {
   title: string
-  subtitle?: string
+  subtitle?: string | React.ReactNode
   breadcrumb?: BreadcrumbItem[]
   actions?: React.ReactNode
   className?: string
@@ -39,7 +39,9 @@ export function PageHeader({ title, subtitle, breadcrumb, actions, className }: 
         <h1 className="truncate text-2xl font-semibold uppercase tracking-tight text-text-primary md:text-[1.65rem] md:leading-tight">
           {title}
         </h1>
-        {subtitle && <p className="max-w-2xl text-[13px] leading-relaxed text-text-secondary">{subtitle}</p>}
+        {subtitle != null && subtitle !== '' ? (
+          <p className="max-w-2xl text-[13px] leading-relaxed text-text-secondary">{subtitle}</p>
+        ) : null}
       </div>
 
       {actions && <div className="flex shrink-0 items-start gap-2 pt-0.5">{actions}</div>}

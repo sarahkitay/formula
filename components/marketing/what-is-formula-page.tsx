@@ -52,7 +52,7 @@ export function WhatIsFormulaPageContent() {
                 Not replace it.
               </h1>
               <p className="mt-8 max-w-3xl text-[clamp(1.05rem,1.8vw,1.45rem)] leading-9 text-white/72">
-                We aren&apos;t a club team — no travel schedule or team identity. That&apos;s your club&apos;s job. We fill the gap:{' '}
+                We aren&apos;t a club team: no travel schedule or team identity. That&apos;s your club&apos;s job. We fill the gap:{' '}
                 <span className="text-white/88">individual training, measured with real data.</span>
               </p>
               <p className="mt-5 max-w-3xl font-mono text-[15px] leading-relaxed text-white/78">

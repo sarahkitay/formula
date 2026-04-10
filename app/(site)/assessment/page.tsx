@@ -26,7 +26,7 @@ export default function AssessmentPage() {
       wide
       eyebrow="Assessments"
       title="Formula Skills Check"
-      intro="One standardized hour across six performance pillars. You get real scores and a clear training focus — in your parent portal, not in a coach's hunch."
+      intro="One standardized hour across six performance pillars. You get real scores and a clear training focus in your parent portal, not in a coach's hunch."
     >
       <div className="not-prose space-y-10 md:space-y-12">
         <FeelVsDataStrip />
@@ -36,7 +36,7 @@ export default function AssessmentPage() {
           <div className="flex flex-col justify-center gap-6">
             <BeforeAfterProgress />
             <p className="text-[13px] leading-relaxed text-formula-frost/75">
-              Illustrative bars — your report uses age-weighted pillar scores and a recommended focus tied to what&apos;s limiting performance right now.
+              Illustrative bars: your report uses age-weighted pillar scores and a recommended focus tied to what&apos;s limiting performance right now.
             </p>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default function AssessmentPage() {
       <h2>How it works</h2>
       <ul className="!mt-6">
         <li>
-          <strong className="text-formula-paper">Same day:</strong> portal note — what ran, what comes next.
+          <strong className="text-formula-paper">Same day:</strong> portal note on what ran and what comes next.
         </li>
         <li>
           <strong className="text-formula-paper">48–72 hours:</strong> scoring finalized internally.
@@ -104,7 +104,7 @@ export default function AssessmentPage() {
             </tr>
             <tr className="border-b border-white/[0.06]">
               <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Off-cycle</td>
-              <td className="px-4 py-3 leading-relaxed">Injury return, growth spurt, or tier change — when it makes sense, not just on a calendar.</td>
+              <td className="px-4 py-3 leading-relaxed">Injury return, growth spurt, or tier change when it makes sense, not just on a calendar.</td>
             </tr>
             <tr>
               <td className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-300">Team / club block</td>
@@ -129,7 +129,7 @@ export default function AssessmentPage() {
 
       <h2>Working with kids</h2>
       <p>
-        Tasks are explained before they start; breaks when needed. Results go to parents clearly — honest with families, supportive with athletes.
+        Tasks are explained before they start; breaks when needed. Results go to parents clearly: honest with families, supportive with athletes.
       </p>
 
       <CtaRow

@@ -5,8 +5,7 @@ import Link from 'next/link'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
-/** Public filename includes a space; encode for reliable fetching. */
-const PHOTO_SRC = encodeURI('/steve charudo.jpg')
+const PHOTO_SRC = '/steve.jpg'
 
 /**
  * Homepage: partner endorsement, 50/50 photo + quote (md+). Matches `HomeFacilitySection` / `HomeTeamworkSection` split layout.
@@ -18,7 +17,7 @@ export function HomeCherundoloQuoteSection() {
         <div className="relative min-h-[min(52vh,420px)] overflow-hidden border-b border-formula-frost/10 md:min-h-0 md:border-b-0 md:border-r">
           <Image
             src={PHOTO_SRC}
-            alt="Steve Cherundolo coaching outdoors, gesturing toward the pitch during a training session."
+            alt="Steve Cherundolo on an outdoor pitch in LAFC coaching kit."
             fill
             className="object-cover object-[22%_center] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] md:hover:scale-[1.02]"
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -43,7 +42,7 @@ export function HomeCherundoloQuoteSection() {
 
             <blockquote className="mt-6 border-l-2 border-formula-volt/45 pl-6">
               <p className="text-[15px] font-normal leading-[1.7] text-formula-frost/88 md:text-[16px] md:leading-[1.75]">
-                I have partnered with Formula because it reflects how the modern game is played — built on structure, driven by freedom, and powered by
+                I have partnered with Formula because it reflects how the modern game is played: built on structure, driven by freedom, and powered by
                 intelligence. By combining elite coaching with cutting-edge technology, Formula will develop players who think faster, make better decisions, and
                 perform at their highest level.
               </p>

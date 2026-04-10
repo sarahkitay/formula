@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LogoutButton } from '@/components/auth/logout-button'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -16,10 +17,16 @@ export interface TechnicalHeaderProps {
   navItems: TechnicalNavItem[]
   /** Root dashboard href: exact match for active state and logo link */
   homeHref: string
-  /** Optional sign-out target */
+  /** Optional sign-out target when endSessionVariant is login-link */
   signOutHref?: string
   /** Admin facility OS: dark chrome */
   variant?: 'light' | 'dark'
+  /** Readable name (parent / staff demo) */
+  identityName?: string
+  identityEmail?: string
+  /** Parent: linked athletes */
+  athletesSummary?: string
+  endSessionVariant?: 'login-link' | 'logout-button'
 }
 
 function navItemActive(pathname: string | null, href: string, homeHref: string): boolean {
@@ -35,9 +42,14 @@ export function TechnicalHeader({
   homeHref,
   signOutHref = '/login',
   variant = 'light',
+  identityName,
+  identityEmail,
+  athletesSummary,
+  endSessionVariant = 'login-link',
 }: TechnicalHeaderProps) {
   const pathname = usePathname()
   const dark = variant === 'dark'
+  const showIdentity = Boolean(identityName?.trim() || identityEmail?.trim())
 
   return (
     <header
@@ -69,17 +81,68 @@ export function TechnicalHeader({
             >
               {operatorLine}
             </div>
-            <Link
-              href={signOutHref}
-              className={cn(
-                'mt-2 inline-block text-[10px] font-bold uppercase tracking-wider underline underline-offset-2',
-                dark
-                  ? 'text-formula-mist decoration-formula-frost/25 hover:text-formula-volt'
-                  : 'text-zinc-400 decoration-black/20 hover:text-[#005700]'
-              )}
-            >
-              End session
-            </Link>
+            {showIdentity ? (
+              <div className="mt-2 space-y-0.5 text-left sm:text-right">
+                {identityName?.trim() ? (
+                  <p
+                    className={cn(
+                      'text-sm font-semibold normal-case tracking-normal',
+                      dark ? 'text-formula-paper' : 'text-[#1a1a1a]'
+                    )}
+                  >
+                    {identityName.trim()}
+                  </p>
+                ) : null}
+                {identityEmail?.trim() ? (
+                  <p
+                    className={cn(
+                      'text-[11px] font-normal normal-case tracking-normal',
+                      dark ? 'text-formula-mist' : 'text-zinc-500'
+                    )}
+                  >
+                    {identityEmail.trim()}
+                  </p>
+                ) : null}
+                {athletesSummary?.trim() ? (
+                  <p
+                    className={cn(
+                      'pt-1 text-[10px] font-medium uppercase leading-snug tracking-[0.12em]',
+                      dark ? 'text-formula-frost/80' : 'text-zinc-500'
+                    )}
+                  >
+                    Athletes ·{' '}
+                    <span
+                      className={cn('normal-case tracking-normal', dark ? 'text-formula-frost/90' : 'text-zinc-700')}
+                    >
+                      {athletesSummary.trim()}
+                    </span>
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+            {endSessionVariant === 'logout-button' ? (
+              <LogoutButton
+                label="End session"
+                className={cn(
+                  'mt-3 border-transparent bg-transparent p-0 font-mono text-[10px] font-bold uppercase tracking-wider underline underline-offset-2',
+                  dark
+                    ? 'text-formula-mist decoration-formula-frost/25 hover:border-transparent hover:bg-transparent hover:text-formula-volt'
+                    : 'text-zinc-400 decoration-black/20 hover:text-[#005700]'
+                )}
+              />
+            ) : (
+              <Link
+                href={signOutHref}
+                className={cn(
+                  'mt-2 inline-block text-[10px] font-bold uppercase tracking-wider underline underline-offset-2',
+                  dark
+                    ? 'text-formula-mist decoration-formula-frost/25 hover:text-formula-volt'
+                    : 'text-zinc-400 decoration-black/20 hover:text-[#005700]'
+                )}
+              >
+                End session
+              </Link>
+            )}
           </div>
         </div>
 

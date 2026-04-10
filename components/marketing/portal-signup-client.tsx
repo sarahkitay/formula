@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
+const PARENT_LOGIN_WITH_RETURN = `/login?role=parent&next=${encodeURIComponent('/parent/dashboard')}`
+
 type Summary = {
   email: string
   parentFullName: string
@@ -98,7 +100,7 @@ export function PortalSignupClient() {
           password,
         })
         if (signErr) {
-          router.push(`/login?role=parent`)
+          router.push(PARENT_LOGIN_WITH_RETURN)
           return
         }
         router.push('/parent/dashboard')
@@ -133,51 +135,71 @@ export function PortalSignupClient() {
   }
 
   return (
-    <form onSubmit={e => void handleSubmit(e)} className="not-prose max-w-xl space-y-6">
-      <p className="text-[14px] leading-relaxed text-formula-frost/85">
-        Create your parent portal with the same email used at checkout:{' '}
-        <span className="font-medium text-formula-paper">{summary.email}</span>. Add each athlete&apos;s name so they appear under your account.
-      </p>
-
-      <div className="space-y-1.5">
-        <label htmlFor="ps-password" className="font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">
-          Password
-        </label>
-        <input
-          id="ps-password"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
-        />
-      </div>
-
-      <div className="space-y-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-formula-mist">Athletes ({summary.numKids})</p>
-        {kids.map((k, i) => (
-          <div key={i} className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">First name · athlete {i + 1}</label>
-              <input
-                value={k.firstName}
-                onChange={e => updateKid(i, 'firstName', e.target.value)}
-                autoComplete="given-name"
-                className="mt-1 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
-              />
+    <form onSubmit={e => void handleSubmit(e)} className="not-prose max-w-xl space-y-8">
+      <section className="rounded-sm border border-formula-volt/25 bg-formula-volt/[0.06] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.06)]">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-formula-mist">Your athletes · portal header</p>
+        <p className="mt-2 text-[14px] leading-relaxed text-formula-frost/88">
+          These names appear at the top of your parent portal: one row per athlete from your booking ({summary.numKids}).
+        </p>
+        <div className="mt-5 space-y-4">
+          {kids.map((k, i) => (
+            <div
+              key={i}
+              className="grid gap-3 rounded-sm border border-formula-frost/14 bg-formula-deep/50 p-4 sm:grid-cols-2"
+            >
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-volt/90 sm:col-span-2">
+                Athlete {i + 1}
+              </p>
+              <div>
+                <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">First name</label>
+                <input
+                  value={k.firstName}
+                  onChange={e => updateKid(i, 'firstName', e.target.value)}
+                  autoComplete="given-name"
+                  className="mt-1 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
+                />
+              </div>
+              <div>
+                <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">Last name</label>
+                <input
+                  value={k.lastName}
+                  onChange={e => updateKid(i, 'lastName', e.target.value)}
+                  autoComplete="family-name"
+                  className="mt-1 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
+                />
+              </div>
             </div>
-            <div>
-              <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">Last name</label>
-              <input
-                value={k.lastName}
-                onChange={e => updateKid(i, 'lastName', e.target.value)}
-                autoComplete="family-name"
-                className="mt-1 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-4 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-formula-mist">Guardian account</p>
+        <div className="grid gap-1 text-[13px] text-formula-frost/85">
+          <p>
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Name · from checkout</span>
+            <span className="mt-1 block font-medium text-formula-paper">{summary.parentFullName || '-'}</span>
+          </p>
+          <p className="pt-2">
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Email · login</span>
+            <span className="mt-1 block font-medium text-formula-paper">{summary.email}</span>
+          </p>
+        </div>
+        <div className="space-y-1.5 pt-2">
+          <label htmlFor="ps-password" className="font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">
+            Create password
+          </label>
+          <input
+            id="ps-password"
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="At least 8 characters"
+            className="w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
+          />
+        </div>
+      </section>
 
       {formError ? <p className="text-sm text-amber-300/95">{formError}</p> : null}
 
@@ -186,13 +208,13 @@ export function PortalSignupClient() {
           {submitting ? 'Creating account…' : 'Create portal & sign in'}
         </Button>
         <Link
-          href="/login?role=parent"
+          href={PARENT_LOGIN_WITH_RETURN}
           className={cn(
             'inline-flex h-10 items-center border border-formula-frost/20 px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-formula-frost/80',
             'hover:border-formula-frost/35'
           )}
         >
-          I already have an account
+          I already have an account · sign in
         </Link>
       </div>
     </form>

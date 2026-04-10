@@ -20,7 +20,7 @@ export function FeelVsDataStrip({ className }: { className?: string }) {
   )
 }
 
-/** Example pillar-style scores — illustrative, not live athlete data. */
+/** Example pillar-style scores (illustrative, not live athlete data). */
 const SAMPLE_METRICS: { tag: string; value: string; micro: string }[] = [
   { tag: 'SPEED', value: '7.4', micro: 'measured' },
   { tag: 'AGILITY', value: '6.9', micro: 'captured' },
@@ -69,7 +69,7 @@ function BarFill({ targetPct, delay, label }: { targetPct: number; delay: number
   )
 }
 
-/** Before / after block fill — tactile progress metaphor. */
+/** Before / after block fill (tactile progress metaphor). */
 export function BeforeAfterProgress({ className }: { className?: string }) {
   return (
     <div className={cn('not-prose font-mono text-[10px] uppercase tracking-[0.18em]', className)}>
@@ -105,7 +105,7 @@ export function SampleMetricsPanel({ className }: { className?: string }) {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-formula-volt/[0.03] to-transparent" aria-hidden />
       <div className="relative">
         <p className="font-mono text-[9px] font-medium uppercase tracking-[0.22em] text-formula-mist">Sample readout</p>
-        <p className="mt-1 text-[11px] text-formula-frost/65">Illustrative — your athlete&apos;s scores are age-weighted.</p>
+        <p className="mt-1 text-[11px] text-formula-frost/65">Illustrative: your athlete&apos;s scores are age-weighted.</p>
         <div className="mt-5">
           {SAMPLE_METRICS.map((m, i) => (
             <MetricRow key={m.tag} {...m} delay={0.08 + i * 0.1} />
@@ -136,12 +136,12 @@ const JOURNEY_STEPS: { step: number; title: string; body: string; axis: string }
   {
     step: 3,
     title: 'Your dashboard',
-    body: 'You see scores, progress, and training focus — all in your parent portal.',
+    body: 'You see scores, progress, and training focus, all in your parent portal.',
     axis: 'visibility · logged',
   },
 ]
 
-/** “What you’ll see as a parent” — scannable 3-step strip. */
+/** “What you’ll see as a parent”: scannable 3-step strip. */
 export function ParentJourneyBlock({ className }: { className?: string }) {
   return (
     <section
@@ -164,7 +164,7 @@ export function ParentJourneyBlock({ className }: { className?: string }) {
               className="border-l-2 border-formula-volt/35 pl-4 md:min-h-[11rem] md:border-formula-frost/15 md:pl-5"
             >
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">
-                Step {s.step} — {s.title}
+                Step {s.step}: {s.title}
               </p>
               <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.18em] text-formula-mist">{s.axis}</p>
               <p className="mt-4 text-[13px] leading-relaxed text-formula-frost/82">{s.body}</p>

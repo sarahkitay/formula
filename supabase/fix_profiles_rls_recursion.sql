@@ -7,10 +7,10 @@
 --     those functions SELECT from profiles, which re-evaluates RLS on profiles → infinite loop.
 --
 -- Fix: keep ONLY "read your own row" on profiles. Staff-wide reads must use service_role
--- or an Edge Function — not an RLS policy that calls a function which reads profiles again.
+-- or an Edge Function, not an RLS policy that calls a function which reads profiles again.
 
 -- ---------------------------------------------------------------------------
--- 1) Helpers — still used by policies ON *other* tables (assessments, players, etc.).
+-- 1) Helpers: still used by policies ON *other* tables (assessments, players, etc.).
 --    They only fetch the caller's row (auth.uid()); with a single "own row" policy on
 --    profiles, that inner SELECT succeeds without recursion.
 -- ---------------------------------------------------------------------------
@@ -68,4 +68,4 @@ create policy "profiles_select_own"
   on public.profiles for select
   using (auth.uid() = id);
 
--- Do NOT recreate profiles_select_staff_all using formula_is_staff() — it causes recursion.
+-- Do NOT recreate profiles_select_staff_all using formula_is_staff(); it causes recursion.

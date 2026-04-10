@@ -5,8 +5,8 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
   return (
     <AppShell
       role="coach"
-      userName="Marcus Rivera"
-      userEmail="marcus.rivera@formulafc.com"
+      identityName="Marcus Rivera"
+      identityEmail="marcus.rivera@formulafc.com"
       dashboardHref="/coach/today"
       navItems={coachNav}
       operatorLine="COACH_STATION // M_RIVERA"

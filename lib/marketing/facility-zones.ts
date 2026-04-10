@@ -163,7 +163,7 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: 'Field 2',
     gridArea: 'f2',
     emphasis: 'primary',
-    copy: 'Match-grade parallel pitch—same size as Field 1—for tiered sessions and capacity.',
+    copy: 'Match-grade parallel pitch, same size as Field 1, for tiered sessions and capacity.',
     tour: {
       label: 'FIELD 2',
       sublabel: 'Main pitch',

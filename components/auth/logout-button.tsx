@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
-export function LogoutButton({ className }: { className?: string }) {
+export function LogoutButton({ className, label = 'Log out' }: { className?: string; label?: string }) {
   const router = useRouter()
 
   async function handleLogout() {
@@ -22,7 +22,7 @@ export function LogoutButton({ className }: { className?: string }) {
         className
       )}
     >
-      Log out
+      {label}
     </button>
   )
 }

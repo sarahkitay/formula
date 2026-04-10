@@ -73,23 +73,14 @@ export function CheckoutLaunchButton({
         <div
           className="cursor-pointer rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-4 transition-colors hover:border-formula-frost/22"
           onClick={() => setSmsLegalOpen(o => !o)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              setSmsLegalOpen(o => !o)
-            }
-          }}
-          role="presentation"
         >
           <div className="flex items-start gap-3">
             <button
               type="button"
               role="switch"
               aria-checked={smsOptIn}
-              aria-expanded={smsLegalOpen}
-              aria-controls="sms-consent-legal"
               id="sms-consent-switch"
-              aria-label={smsOptIn ? 'SMS notifications on' : 'SMS notifications off'}
+              aria-labelledby="sms-consent-label"
               onClick={e => {
                 e.stopPropagation()
                 setSmsOptIn(v => !v)
@@ -102,7 +93,7 @@ export function CheckoutLaunchButton({
             >
               <span
                 className={cn(
-                  'pointer-events-none h-5 w-5 shrink-0 rounded-full bg-formula-paper shadow-md ring-1 ring-black/5 transition-[margin] duration-200 ease-out',
+                  'pointer-events-none h-5 w-5 shrink-0 rounded-full bg-formula-paper shadow-md ring-1 ring-black/5 transition-all duration-200 ease-out',
                   /* Knob flush left (off) / flush right (on) inside padded track */
                   smsOptIn ? 'ml-auto' : 'ml-0'
                 )}
@@ -132,7 +123,6 @@ export function CheckoutLaunchButton({
                   aria-labelledby="sms-consent-label"
                   className="mt-3 border-t border-formula-frost/10 pt-3"
                   onClick={e => e.stopPropagation()}
-                  onKeyDown={e => e.stopPropagation()}
                 >
                   <p>
                     If you opt in, Formula Soccer Center may send text messages about your purchase, scheduling, and facility updates using{' '}

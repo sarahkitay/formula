@@ -16,7 +16,7 @@ import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
 import { getBookingsByPlayer } from '@/lib/mock-data/bookings'
 import { getSessionById } from '@/lib/mock-data/sessions'
 import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
-import { SITE } from '@/lib/site-config'
+import { ParentDashboardSubtitle } from '@/components/parent/parent-dashboard-subtitle'
 import { ParentSoftBanner } from '@/components/parent/parent-panel'
 import {
   parentAttendanceSnapshot,
@@ -238,7 +238,7 @@ export default function ParentDashboardPage() {
   <div className="space-y-7">
   <PageHeader
   title="Home"
-  subtitle={`${SITE.facilityName} · Welcome back, Jennifer · structured development, private to your family`}
+  subtitle={<ParentDashboardSubtitle />}
   actions={
   <Link href="/parent/bookings">
   <Button variant="primary">Book a block</Button>

@@ -42,12 +42,24 @@ export default async function CheckoutSuccessPage({
           Membership
         </Link>
         {nextStep === 'portal-assessment' ? (
-          <Link
-            href="/parent/bookings#upcoming-bookings"
-            className="inline-flex h-11 items-center border border-formula-frost/14 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/22"
-          >
-            Portal · Schedule
-          </Link>
+          <>
+            <Link
+              href={
+                sessionId && sessionId.length > 0
+                  ? `/portal-signup?session_id=${encodeURIComponent(sessionId)}`
+                  : '/portal-signup'
+              }
+              className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black hover:brightness-105"
+            >
+              Create parent portal
+            </Link>
+            <Link
+              href={`/login?role=parent&next=${encodeURIComponent('/parent/dashboard')}`}
+              className="inline-flex h-11 items-center border border-formula-frost/14 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/22"
+            >
+              Sign in
+            </Link>
+          </>
         ) : null}
         {nextStep === 'field-rental' ? (
           <Link

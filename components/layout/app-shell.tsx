@@ -8,8 +8,6 @@ import type { NavItem } from '@/lib/nav/types'
 export interface AppShellProps {
   children: React.ReactNode
   role: 'admin' | 'coach' | 'parent'
-  userName?: string
-  userEmail?: string
   dashboardHref: string
   navItems: NavItem[]
   /** Shown in header, e.g. FRONT_DESK // ROY */
@@ -17,6 +15,13 @@ export interface AppShellProps {
   operatorContextLabel?: string
   /** Facility OS: dark control surface + inverted header */
   surface?: 'default' | 'admin-os' | 'coach-os' | 'parent-os'
+  /** Parent portal: readable name under operator slug */
+  identityName?: string
+  identityEmail?: string
+  /** Parent portal: linked athletes, e.g. "Alex M. · Jordan M." */
+  athletesSummary?: string
+  /** Parent: real Supabase sign-out vs marketing link to /login */
+  endSessionVariant?: 'login-link' | 'logout-button'
 }
 
 export function AppShell({
@@ -26,6 +31,10 @@ export function AppShell({
   operatorLine,
   operatorContextLabel,
   surface = 'default',
+  identityName,
+  identityEmail,
+  athletesSummary,
+  endSessionVariant = 'login-link',
 }: AppShellProps) {
   const technicalNav = navItems.map(item => ({ label: item.label, href: item.href }))
   const isDarkOs = surface === 'admin-os' || surface === 'coach-os' || surface === 'parent-os'
@@ -46,6 +55,10 @@ export function AppShell({
         operatorLine={operatorLine}
         operatorContextLabel={operatorContextLabel}
         variant={isDarkOs ? 'dark' : 'light'}
+        identityName={identityName}
+        identityEmail={identityEmail}
+        athletesSummary={athletesSummary}
+        endSessionVariant={endSessionVariant}
       />
       <main className="lab-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-10">{children}</main>
     </div>
