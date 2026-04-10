@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { BookOpen, Clock, Users, CheckCircle2, AlertCircle } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
@@ -10,12 +10,12 @@ import { Modal, ModalBody, ModalFooter } from '@/components/ui/modal'
 import { Badge, StatusPill, SessionTypeBadge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ControlScheduleGrid, DAY_LABELS } from '@/components/schedule/control-schedule-grid'
-import { mockPlayers, getPlayerById } from '@/lib/mock-data/players'
-import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
+import type { AgeGroup } from '@/types/player'
+import { useParentLinkedPlayers } from '@/components/parent/parent-linked-players-context'
 import { getUpcomingSessions } from '@/lib/mock-data/sessions'
 import { getBookingsByPlayer } from '@/lib/mock-data/bookings'
 import { getSessionById } from '@/lib/mock-data/sessions'
-import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
+import { getAvatarColor, cn } from '@/lib/utils'
 import { parentPortalInsetStrip } from '@/lib/parent/portal-surface'
 import { SITE } from '@/lib/site-config'
 import { weeklyBlockAllowance } from '@/lib/mock-data/parent-portal'
@@ -24,8 +24,20 @@ import { ageGroupToScheduleBand } from '@/lib/schedule/age-map'
 import { getBookableYouthSlots } from '@/lib/schedule/parent'
 import type { DayIndex, ScheduleSlot } from '@/types/schedule'
 
-const PARENT_PLAYER_IDS = ['player-6', 'player-7']
-const myPlayers = mockPlayers.filter(p => PARENT_PLAYER_IDS.includes(p.id))
+const AGE_GROUPS: AgeGroup[] = ['U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
+
+function toBookingAgeGroup(raw: string): AgeGroup {
+  const t = raw.trim() as AgeGroup
+  return AGE_GROUPS.includes(t) ? t : 'U12'
+}
+
+type BookingRosterPlayer = {
+  id: string
+  firstName: string
+  lastName: string
+  ageGroup: AgeGroup
+  sessionsRemaining: number
+}
 
 /** Training-floor rows only: parents never book fields or party room from this view */
 const PARENT_SCHEDULE_ASSETS = [
@@ -38,13 +50,31 @@ const PARENT_SCHEDULE_ASSETS = [
 ]
 
 export default function ParentBookingsPage() {
-  const [selectedPlayerId, setSelectedPlayerId] = useState(myPlayers[0]?.id ?? '')
+  const { players: linkedPlayers, loading: rosterLoading } = useParentLinkedPlayers()
+
+  const roster: BookingRosterPlayer[] = useMemo(
+    () =>
+      linkedPlayers.map((p) => ({
+        id: p.id,
+        firstName: p.firstName,
+        lastName: p.lastName,
+        ageGroup: toBookingAgeGroup(p.ageGroup),
+        sessionsRemaining: 0,
+      })),
+    [linkedPlayers]
+  )
+
+  const [selectedPlayerId, setSelectedPlayerId] = useState('')
   const [bookedIds, setBookedIds] = useState<Set<string>>(new Set())
   const [gridDay, setGridDay] = useState<DayIndex>(() => new Date().getDay() as DayIndex)
   const [pendingGridEnroll, setPendingGridEnroll] = useState<{ id: string; prompt: string } | null>(null)
 
-  const selectedPlayer = getPlayerById(selectedPlayerId)
-  const membership = selectedPlayer ? getMembershipByPlayer(selectedPlayer.id) : null
+  useEffect(() => {
+    if (roster.length === 0) return
+    setSelectedPlayerId((cur) => (roster.some((r) => r.id === cur) ? cur : roster[0]!.id))
+  }, [roster])
+
+  const selectedPlayer = roster.find((r) => r.id === selectedPlayerId)
   const sessionsLeft = selectedPlayer?.sessionsRemaining ?? 0
 
   const scheduleBand = selectedPlayer ? ageGroupToScheduleBand(selectedPlayer.ageGroup) : null
@@ -143,6 +173,14 @@ export default function ParentBookingsPage() {
   subtitle={`${SITE.facilityName} · structured selection from published blocks - not an open calendar`}
   />
 
+  {rosterLoading ? (
+    <p className="text-sm text-text-muted">Loading your athletes…</p>
+  ) : roster.length === 0 ? (
+    <p className="text-sm text-text-muted">
+      No athletes linked to this account. Link a player to book youth blocks for their age band.
+    </p>
+  ) : null}
+
   <div className={parentPortalInsetStrip}>
   <p className="font-bold uppercase tracking-wide text-formula-paper">Weekly attendance allowance</p>
   <p className="mt-1">
@@ -167,7 +205,7 @@ export default function ParentBookingsPage() {
   <div className="flex items-center gap-2">
   <span className="text-sm text-text-secondary">Booking for:</span>
   <div className="flex items-center gap-2">
-  {myPlayers.map(player => (
+  {roster.map(player => (
   <button
   key={player.id}
   onClick={() => setSelectedPlayerId(player.id)}
@@ -251,9 +289,7 @@ export default function ParentBookingsPage() {
   <p className="text-sm font-semibold text-text-primary">
   {sessionsLeft === 0 ? 'No sessions remaining' : `${sessionsLeft} sessions remaining`}
   </p>
-  {membership && (
-  <p className="text-xs text-text-muted mt-0.5">{membership.planName} · Expires {formatDate(membership.expiryDate)}</p>
-  )}
+  <p className="mt-0.5 text-xs text-text-muted">Session balance in the portal isn&apos;t connected yet — confirm credits at the desk.</p>
   </div>
   {sessionsLeft === 0 && (
   <Button variant="primary" size="sm">Renew Membership</Button>

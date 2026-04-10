@@ -29,7 +29,7 @@ export function HomeAssessmentVideoSection() {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             aria-label="Athletes during a Formula assessment on the training floor"
           >
             <source src={VIDEO_SRC} type="video/mp4" />

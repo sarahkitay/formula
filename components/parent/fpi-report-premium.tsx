@@ -5,9 +5,13 @@ import { ParentPanel } from '@/components/parent/parent-panel'
 import { fpiReportDemo } from '@/lib/mock-data/parent-portal'
 import { parentPortalDashedCallout, parentPortalPanel } from '@/lib/parent/portal-surface'
 import { cn } from '@/lib/utils'
-import type { Player } from '@/types'
+export type FpiReportAthlete = {
+  firstName: string
+  lastName: string
+  ageGroup: string
+}
 
-export function FpiReportPremium({ player, backHref }: { player: Player; backHref: string }) {
+export function FpiReportPremium({ player, backHref }: { player: FpiReportAthlete; backHref: string }) {
   const r = fpiReportDemo
 
   return (

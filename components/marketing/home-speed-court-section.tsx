@@ -29,7 +29,7 @@ export function HomeSpeedCourtSection() {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             aria-label="Speed Court cognitive training station in action"
           >
             <source src={VIDEO_SRC} type="video/mp4" />

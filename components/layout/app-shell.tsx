@@ -22,6 +22,8 @@ export interface AppShellProps {
   athletesSummary?: string
   /** Parent: real Supabase sign-out vs marketing link to /login */
   endSessionVariant?: 'login-link' | 'logout-button'
+  /** Header logo destination (parent portal: public site `/`) */
+  logoHref?: string
 }
 
 export function AppShell({
@@ -35,6 +37,7 @@ export function AppShell({
   identityEmail,
   athletesSummary,
   endSessionVariant = 'login-link',
+  logoHref,
 }: AppShellProps) {
   const technicalNav = navItems.map(item => ({ label: item.label, href: item.href }))
   const isDarkOs = surface === 'admin-os' || surface === 'coach-os' || surface === 'parent-os'
@@ -52,6 +55,7 @@ export function AppShell({
       <TechnicalHeader
         navItems={technicalNav}
         homeHref={dashboardHref}
+        logoHref={logoHref}
         operatorLine={operatorLine}
         operatorContextLabel={operatorContextLabel}
         variant={isDarkOs ? 'dark' : 'light'}

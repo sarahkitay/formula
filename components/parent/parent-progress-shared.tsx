@@ -35,14 +35,29 @@ export function ParentPerformanceScoresBlock({
   lastAssessedIso: string | null
   pillars: ReturnType<typeof parsePillarScores>
 }) {
-  if (!pillars || !lastAssessedIso) {
+  if (!lastAssessedIso) {
     return (
       <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-border bg-surface p-5">
-        <div className="space-y-2 text-center">
+        <div className="space-y-2 px-2 text-center">
           <Zap className="mx-auto h-6 w-6 text-text-muted" />
-          <p className="text-sm text-text-muted">No pillar scores on file yet</p>
+          <p className="text-sm font-medium text-text-primary">No data collected yet</p>
           <p className="text-xs text-text-muted">
-            Staff can add technical, speed, agility, endurance, and strength when they log an assessment.
+            Progress scores appear after staff complete an assessment. Check back post-assessment, or follow up with the front desk if you expected to see data
+            already.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!pillars) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-border bg-surface p-5">
+        <div className="space-y-2 px-2 text-center">
+          <Zap className="mx-auto h-6 w-6 text-text-muted" />
+          <p className="text-sm font-medium text-text-primary">No pillar scores on file yet</p>
+          <p className="text-xs text-text-muted">
+            An assessment is on file, but detailed pillar scores aren&apos;t showing yet. Staff may still be updating — check back soon or follow up post-assessment.
           </p>
         </div>
       </div>
@@ -84,7 +99,9 @@ export function ParentPerformanceScoresBlock({
           )}
         </div>
       ) : (
-        <p className="text-sm text-text-muted">Scores will appear here once staff saves pillar values.</p>
+        <p className="text-sm text-text-muted">
+          Scores will fill in once staff save pillar values on an assessment — follow up post-assessment if this stays empty.
+        </p>
       )}
       {overall != null ? (
         <div className="rounded-lg border border-accent/20 bg-accent/5 p-3 text-center">
@@ -105,7 +122,9 @@ export function ParentAssessmentNotesBlock({ assessments }: { assessments: Asses
     <div className="space-y-4 rounded-xl border border-border bg-surface p-5">
       <p className="text-sm font-semibold text-text-primary">Assessment notes</p>
       {timeline.length === 0 ? (
-        <p className="text-sm text-text-muted">No written notes yet</p>
+        <p className="text-sm text-text-muted">
+          No written notes yet. Staff summaries appear after they&apos;re added to an assessment — check back post-assessment.
+        </p>
       ) : (
         <div className="space-y-3">
           {timeline.map((a) => (

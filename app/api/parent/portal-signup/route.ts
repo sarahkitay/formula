@@ -1,16 +1,43 @@
 import { NextResponse } from 'next/server'
+import { isValidPortalSignupAgeGroup } from '@/lib/parent/portal-signup-age-groups'
 import { getServiceSupabase } from '@/lib/supabase/service'
 import { getStripe } from '@/lib/stripe/server'
 
 export const runtime = 'nodejs'
 
-type KidPayload = { firstName?: unknown; lastName?: unknown }
+type KidPayload = {
+  firstName?: unknown
+  lastName?: unknown
+  dateOfBirth?: unknown
+  ageGroup?: unknown
+}
 
-function cleanKid(k: KidPayload): { firstName: string; lastName: string } | null {
+function parseIsoDateOnly(s: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null
+  const [y, m, d] = s.split('-').map(Number) as [number, number, number]
+  const dt = new Date(Date.UTC(y, m - 1, d))
+  return Number.isNaN(dt.getTime()) ? null : dt
+}
+
+function isPlausibleDateOfBirth(s: string): boolean {
+  const d = parseIsoDateOnly(s)
+  if (!d) return false
+  const today = new Date()
+  const end = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  if (d.getTime() > end) return false
+  if (d.getUTCFullYear() < 1920) return false
+  return true
+}
+
+function cleanKid(k: KidPayload): { firstName: string; lastName: string; dateOfBirth: string; ageGroup: string } | null {
   const fn = typeof k.firstName === 'string' ? k.firstName.trim() : ''
   const ln = typeof k.lastName === 'string' ? k.lastName.trim() : ''
-  if (!fn || !ln) return null
-  return { firstName: fn, lastName: ln }
+  const dob = typeof k.dateOfBirth === 'string' ? k.dateOfBirth.trim() : ''
+  const ag = typeof k.ageGroup === 'string' ? k.ageGroup.trim() : ''
+  if (!fn || !ln || !dob || !ag) return null
+  if (!isPlausibleDateOfBirth(dob)) return null
+  if (!isValidPortalSignupAgeGroup(ag)) return null
+  return { firstName: fn, lastName: ln, dateOfBirth: dob, ageGroup: ag }
 }
 
 /**
@@ -59,9 +86,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `Enter exactly ${expected} athlete(s) to match your booking.` }, { status: 400 })
   }
 
-  const kids = kidsRaw.map(k => cleanKid(k as KidPayload)).filter(Boolean) as { firstName: string; lastName: string }[]
+  const kids = kidsRaw.map(k => cleanKid(k as KidPayload)).filter(Boolean) as {
+    firstName: string
+    lastName: string
+    dateOfBirth: string
+    ageGroup: string
+  }[]
   if (kids.length !== expected) {
-    return NextResponse.json({ error: 'Each athlete needs a first and last name' }, { status: 400 })
+    return NextResponse.json(
+      { error: 'Each athlete needs first name, last name, date of birth, and a valid age group' },
+      { status: 400 }
+    )
   }
 
   const email = (session.customer_details?.email ?? session.customer_email ?? '').trim().toLowerCase()
@@ -114,7 +149,12 @@ export async function POST(req: Request) {
     for (const kid of kids) {
       const { data: player, error: pErr } = await sb
         .from('players')
-        .insert({ first_name: kid.firstName, last_name: kid.lastName })
+        .insert({
+          first_name: kid.firstName,
+          last_name: kid.lastName,
+          age_group: kid.ageGroup,
+          date_of_birth: kid.dateOfBirth,
+        })
         .select('id')
         .single()
       if (pErr || !player) throw pErr ?? new Error('player insert failed')

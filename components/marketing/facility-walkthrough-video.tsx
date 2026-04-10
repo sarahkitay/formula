@@ -1,14 +1,16 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import { useLazyAutoplayVideo } from '@/lib/marketing/use-lazy-autoplay-video'
 
 const SRC_MP4 = '/IMG_6200_5.mp4'
 
 /**
- * Facility walkthrough video (MP4). Error state explains format if decode fails.
+ * Facility walkthrough (MP4). Mounted only when near the viewport so the homepage and upper facility page stay light.
  */
 export function FacilityWalkthroughVideo() {
   const [failed, setFailed] = useState(false)
+  const { containerRef, videoRef, ready } = useLazyAutoplayVideo()
 
   const onError = useCallback(() => {
     setFailed(true)
@@ -34,18 +36,25 @@ export function FacilityWalkthroughVideo() {
   }
 
   return (
-    <video
-      className="aspect-video w-full object-cover"
-      autoPlay
-      muted
-      loop
-      playsInline
-      controls
-      preload="metadata"
-      aria-label="Formula Soccer Center facility walkthrough video"
-      onError={onError}
-    >
-      <source src={SRC_MP4} type="video/mp4" />
-    </video>
+    <div ref={containerRef} className="relative aspect-video w-full bg-black">
+      {ready ? (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          controls
+          preload="none"
+          aria-label="Formula Soccer Center facility walkthrough video"
+          onError={onError}
+        >
+          <source src={SRC_MP4} type="video/mp4" />
+        </video>
+      ) : (
+        <div className="absolute inset-0 bg-formula-deep" aria-hidden />
+      )}
+    </div>
   )
 }

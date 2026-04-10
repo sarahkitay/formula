@@ -1,6 +1,4 @@
-import { notFound } from 'next/navigation'
-import { mockPlayers } from '@/lib/mock-data/players'
-import { FpiReportPremium } from '@/components/parent/fpi-report-premium'
+import { ParentFpiReportPlayerClient } from '@/components/parent/parent-fpi-report-player-client'
 
 export default async function ParentFpiReportPlayerPage({
   params,
@@ -8,8 +6,5 @@ export default async function ParentFpiReportPlayerPage({
   params: Promise<{ playerId: string }>
 }) {
   const { playerId } = await params
-  const player = mockPlayers.find(p => p.id === playerId)
-  if (!player) notFound()
-
-  return <FpiReportPremium player={player} backHref="/parent/fpi-report" />
+  return <ParentFpiReportPlayerClient playerId={playerId} />
 }

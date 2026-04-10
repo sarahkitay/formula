@@ -26,9 +26,9 @@ export function HomeFacilitySection() {
             quality={HOME_SPLIT_PHOTO_QUALITY}
             sizes={HOME_SPLIT_PHOTO_SIZES}
             decoding="async"
-            fetchPriority="low"
+            fetchPriority="high"
             className="object-cover object-[28%_center] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] md:hover:scale-[1.02]"
-            priority={false}
+            priority
           />
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-formula-deep/60 to-transparent md:hidden"

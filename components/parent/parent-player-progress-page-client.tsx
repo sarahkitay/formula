@@ -6,7 +6,7 @@ import { ChevronLeft } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { Badge } from '@/components/ui/badge'
 import { SectionHeader } from '@/components/ui/section-header'
-import { PARENT_PROGRESS_PLAYER_SELECT } from '@/lib/supabase/parent-progress-query'
+import { fetchParentProgressSinglePlayer } from '@/lib/parent/fetch-parent-progress'
 import { supabase } from '@/lib/supabase'
 import { cn, getAvatarColor, getInitials } from '@/lib/utils'
 import type { PlayerRow } from '@/types/players'
@@ -43,12 +43,7 @@ export function ParentPlayerProgressPageClient({ playerId }: { playerId: string 
         return
       }
 
-      const { data, error: qErr } = await supabase
-        .from('parent_players')
-        .select(`players ( ${PARENT_PROGRESS_PLAYER_SELECT} )`)
-        .eq('parent_user_id', user.id)
-        .eq('player_id', playerId)
-        .maybeSingle()
+      const { data, error: qErr } = await fetchParentProgressSinglePlayer(supabase, user.id, playerId)
 
       if (cancelled) return
 
@@ -210,7 +205,10 @@ export function ParentPlayerProgressPageClient({ playerId }: { playerId: string 
                 ))}
             </ul>
             {completedCount === 0 ? (
-              <p className="mt-4 text-sm text-text-muted">No assessments on file yet.</p>
+              <p className="mt-4 text-sm text-text-muted">
+                No data collected yet. Check back after your athlete&apos;s assessment, or follow up post-assessment with
+                the front desk if you expected to see results here.
+              </p>
             ) : null}
           </div>
         </div>

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { loadProfileForUser, staffDashboardHref } from '@/lib/auth/load-profile'
 import { getPortalRoute } from '@/lib/getPortalRoute'
-import { STAFF_ROSTER_SELECT } from '@/lib/supabase/staff-roster-query'
+import { STAFF_ROSTER_SELECT, STAFF_ROSTER_SELECT_LEGACY } from '@/lib/supabase/staff-roster-query'
 import { supabase } from '@/lib/supabase'
 import type { ProfileRow } from '@/types/profile'
 
@@ -81,16 +81,33 @@ export default function StaffPortalHubPage() {
   const [createFlash, setCreateFlash] = useState<{ kind: 'ok' | 'error'; message: string } | null>(null)
 
   const reloadPlayers = useCallback(async () => {
-    const { data: roster, error: rosterErr } = await supabase
-      .from('players')
-      .select(STAFF_ROSTER_SELECT)
-      .order('created_at', { ascending: false })
+    let roster: PlayerWithDetails[] | null = null
+    let rosterErr: { message: string } | null = null
+
+    const first = await supabase.from('players').select(STAFF_ROSTER_SELECT).order('created_at', { ascending: false })
+
+    const msg = first.error?.message?.toLowerCase() ?? ''
+    if (
+      first.error &&
+      msg.includes('pillar_scores') &&
+      (msg.includes('does not exist') || msg.includes('unknown'))
+    ) {
+      const second = await supabase
+        .from('players')
+        .select(STAFF_ROSTER_SELECT_LEGACY)
+        .order('created_at', { ascending: false })
+      roster = (second.data as PlayerWithDetails[]) ?? null
+      rosterErr = second.error
+    } else {
+      roster = (first.data as PlayerWithDetails[]) ?? null
+      rosterErr = first.error
+    }
 
     if (rosterErr) {
       setPlayers([])
       setPlayersError(rosterErr.message)
     } else {
-      setPlayers((roster as PlayerWithDetails[]) ?? [])
+      setPlayers(roster ?? [])
       setPlayersError(null)
     }
   }, [])
@@ -171,13 +188,32 @@ export default function StaffPortalHubPage() {
     const raw = summaryDraft[playerId]?.trim()
     const summary = raw && raw.length > 0 ? raw : DEFAULT_ASSESSMENT_SUMMARY
     const pillarScores = buildPillarScoresJson(playerId)
+    const completedAt = new Date().toISOString()
 
-    const { error: insertErr } = await supabase.from('assessments').insert({
-      player_id: playerId,
-      summary,
-      completed_at: new Date().toISOString(),
-      ...(pillarScores ? { pillar_scores: pillarScores } : {}),
-    })
+    let insertErr = (
+      await supabase.from('assessments').insert({
+        player_id: playerId,
+        summary,
+        completed_at: completedAt,
+        ...(pillarScores ? { pillar_scores: pillarScores } : {}),
+      })
+    ).error
+
+    const insertMsg = insertErr?.message?.toLowerCase() ?? ''
+    if (
+      insertErr &&
+      pillarScores &&
+      insertMsg.includes('pillar_scores') &&
+      (insertMsg.includes('does not exist') || insertMsg.includes('unknown') || insertMsg.includes('column'))
+    ) {
+      insertErr = (
+        await supabase.from('assessments').insert({
+          player_id: playerId,
+          summary,
+          completed_at: completedAt,
+        })
+      ).error
+    }
 
     setCreatingFor(null)
 

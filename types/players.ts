@@ -4,6 +4,7 @@ export type PlayerRow = {
   first_name: string | null
   last_name: string | null
   age_group: string | null
+  date_of_birth?: string | null
   created_at?: string | null
   player_programs?: { status: string; programs: { name: string | null }[] | null }[] | null
   assessments?: {

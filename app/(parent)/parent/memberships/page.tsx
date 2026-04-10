@@ -1,15 +1,10 @@
 import Link from 'next/link'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
-import { SectionHeader } from '@/components/ui/section-header'
-import { mockPlayers } from '@/lib/mock-data/players'
-import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
+import { ParentMembershipsLinkedAthletes } from '@/components/parent/parent-memberships-linked-athletes'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
-import { formatDate, cn } from '@/lib/utils'
-
-const PARENT_PLAYER_IDS = ['player-6', 'player-7']
-const myPlayers = mockPlayers.filter((p) => PARENT_PLAYER_IDS.includes(p.id))
+import { cn } from '@/lib/utils'
 
 export default function ParentMembershipsPage() {
   return (
@@ -96,77 +91,7 @@ export default function ParentMembershipsPage() {
           </Link>
         </div>
 
-        <div className="space-y-4">
-          <SectionHeader
-            title="Your athletes"
-            description="Linked players and membership status once recurring plans go live."
-          />
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {myPlayers.map((player) => {
-              const mem = getMembershipByPlayer(player.id)
-              if (!mem) {
-                return (
-                  <div
-                    key={player.id}
-                    className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-border-bright"
-                  >
-                    <p className="text-lg font-semibold text-text-primary">
-                      {player.firstName} {player.lastName}
-                    </p>
-                    <p className="mt-2 text-sm text-text-secondary">
-                      No active membership on file. The {SESSION_PACKAGE_10.sessions}-session package (${SESSION_PACKAGE_10.priceUsd}) is our current offer. Ask
-                      staff at your next visit or assessment to purchase or redeem sessions.
-                    </p>
-                  </div>
-                )
-              }
-              return (
-                <div key={player.id} className="rounded-2xl border border-border bg-surface p-6 space-y-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs text-text-muted">
-                        {player.firstName} {player.lastName}
-                      </p>
-                      <p className="text-xl font-bold text-text-primary mt-0.5">{mem.planName}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-text-secondary">Sessions remaining</span>
-                      <span
-                        className={cn(
-                          'font-bold',
-                          player.sessionsRemaining === 0 ? 'text-error' : 'text-success'
-                        )}
-                      >
-                        {player.sessionsRemaining} /{' '}
-                        {mem.sessionsTotal === 'unlimited' ? '∞' : mem.sessionsTotal}
-                      </span>
-                    </div>
-                    <div className="h-2 bg-surface-raised rounded-full overflow-hidden">
-                      <div
-                        className={cn(
-                          'h-full rounded-full',
-                          player.sessionsRemaining === 0 ? 'bg-error' : 'bg-primary'
-                        )}
-                        style={{
-                          width:
-                            typeof mem.sessionsTotal === 'number'
-                              ? `${(player.sessionsRemaining / mem.sessionsTotal) * 100}%`
-                              : '100%',
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-text-muted">
-                    <span>Started {formatDate(mem.startDate)}</span>
-                    <span>Expires {formatDate(mem.expiryDate)}</span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        <ParentMembershipsLinkedAthletes />
       </div>
     </PageContainer>
   )

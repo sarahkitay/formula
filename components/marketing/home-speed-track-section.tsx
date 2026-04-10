@@ -30,7 +30,7 @@ export function HomeSpeedTrackSection() {
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="none"
               aria-label="Athletes on the Speed Track"
             >
               <source src={VIDEO_SRC} type="video/mp4" />

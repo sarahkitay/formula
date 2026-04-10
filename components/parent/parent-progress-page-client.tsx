@@ -6,7 +6,7 @@ import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { ParentSoftBanner, ParentPanel } from '@/components/parent/parent-panel'
 import { parentPortalTextLink } from '@/lib/parent/portal-surface'
-import { PARENT_PROGRESS_PLAYER_SELECT } from '@/lib/supabase/parent-progress-query'
+import { fetchParentProgressParentPlayers } from '@/lib/parent/fetch-parent-progress'
 import { supabase } from '@/lib/supabase'
 import type { PlayerRow } from '@/types/players'
 import { ParentAthleteProgressCard } from '@/components/parent/parent-progress-shared'
@@ -44,10 +44,7 @@ export function ParentProgressPageClient() {
         return
       }
 
-      const { data, error: qErr } = await supabase
-        .from('parent_players')
-        .select(`player_id, players ( ${PARENT_PROGRESS_PLAYER_SELECT} )`)
-        .eq('parent_user_id', user.id)
+      const { data, error: qErr } = await fetchParentProgressParentPlayers(supabase, user.id)
 
       if (cancelled) return
 
@@ -145,8 +142,8 @@ export function ParentProgressPageClient() {
         />
 
         <ParentSoftBanner>
-          Formula shares progress constructively. Scores and notes come from staff assessments on file. For the full
-          report experience, open{' '}
+          Formula shares progress constructively. If you don&apos;t see data yet, check back after your athlete&apos;s
+          assessment — or follow up with the front desk. For the full report experience, open{' '}
           <Link href="/parent/fpi-report" className={parentPortalTextLink}>
             FPI reports
           </Link>
@@ -154,9 +151,13 @@ export function ParentProgressPageClient() {
         </ParentSoftBanner>
 
         {athletes.length === 0 ? (
-          <p className="text-sm text-text-muted">
-            No linked athletes yet. After registration and linking, assessments and scores will show here.
-          </p>
+          <div className="rounded-xl border border-border bg-surface p-6 text-center">
+            <p className="text-sm font-medium text-text-primary">No linked athletes yet</p>
+            <p className="mt-2 text-sm text-text-muted">
+              After registration and linking, progress will show here. No data collected until an assessment is on file —
+              follow up post-assessment if you expected to see results.
+            </p>
+          </div>
         ) : (
           athletes.map((athlete) => {
             const completed = athlete.assessments.filter((x) => x.completed_at)
@@ -178,7 +179,7 @@ export function ParentProgressPageClient() {
         <ParentPanel title="Recent focus" eyebrow="FROM ASSESSMENTS">
           <p className="text-sm leading-relaxed text-formula-frost/82">
             {recentFocusText ??
-              'When staff complete assessments with a written summary, the latest note will appear here. Open an athlete above for full detail.'}
+              'No notes on file yet. After staff complete an assessment, a summary can appear here — check back post-assessment or ask at the desk.'}
           </p>
         </ParentPanel>
       </div>

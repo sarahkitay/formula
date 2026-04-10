@@ -15,8 +15,10 @@ export interface TechnicalHeaderProps {
   operatorContextLabel?: string
   operatorLine: string
   navItems: TechnicalNavItem[]
-  /** Root dashboard href: exact match for active state and logo link */
+  /** Root dashboard href: exact match for active state on the primary nav item */
   homeHref: string
+  /** Logo link; defaults to `homeHref` (parent portal often uses `/` to return to the marketing site) */
+  logoHref?: string
   /** Optional sign-out target when endSessionVariant is login-link */
   signOutHref?: string
   /** Admin facility OS: dark chrome */
@@ -40,6 +42,7 @@ export function TechnicalHeader({
   operatorLine,
   navItems,
   homeHref,
+  logoHref: logoHrefProp,
   signOutHref = '/login',
   variant = 'light',
   identityName,
@@ -48,6 +51,7 @@ export function TechnicalHeader({
   endSessionVariant = 'login-link',
 }: TechnicalHeaderProps) {
   const pathname = usePathname()
+  const logoHref = logoHrefProp ?? homeHref
   const dark = variant === 'dark'
   const showIdentity = Boolean(identityName?.trim() || identityEmail?.trim())
 
@@ -61,7 +65,7 @@ export function TechnicalHeader({
       <div className="mx-auto max-w-[1600px] px-6 pb-0 pt-6">
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <FormulaLogoMarkLink
-            href={homeHref}
+            href={logoHref}
             className="h-10 max-h-10 max-w-[min(100%,20rem)] sm:h-12 sm:max-h-12"
           />
           <div className="text-left sm:text-right">

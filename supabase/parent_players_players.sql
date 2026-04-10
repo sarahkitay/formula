@@ -5,6 +5,7 @@ create table if not exists public.players (
   first_name text,
   last_name text,
   age_group text,
+  date_of_birth date,
   created_at timestamptz default now()
 );
 

@@ -40,8 +40,8 @@ export interface RegistrationSurface {
 }
 
 export const parentAttendanceSnapshot = {
-  last30Days: '92% of scheduled blocks attended',
-  streakWeeks: 3,
+  last30Days: 'Live attendance will appear when check-ins sync to your portal',
+  streakWeeks: 0,
 }
 
 /** Join first names for copy: "Ava", "Ava and Ben", "Ava, Ben, and Cal". */
@@ -90,48 +90,52 @@ export function buildParentRecommendedActions(players: { id: string; firstName: 
   ]
 }
 
-export const parentUpcomingEvents: ParentUpcomingEvent[] = [
-  {
-  id: 'e1',
-  type: 'reassessment',
-  title: 'FPI reassessment window',
-  dateLabel: 'Opens Apr 2',
-  detail: 'Scheduled 6-month development check - not a test to pass or fail.',
-  href: '/parent/progress/player-6',
-  },
-  {
-  id: 'e2',
-  type: 'clinic',
-  title: 'Speed lab · members early access',
-  dateLabel: 'Mar 28',
-  detail: 'Invitation based on development priorities - limited seats.',
-  href: '/parent/register',
-  },
-  {
-  id: 'e3',
-  type: 'friday',
-  title: 'Friday Youth Game Circuit',
-  dateLabel: 'Register by Thu 6pm',
-  detail: 'Pre-registered teams · application-focused environment.',
-  href: '/parent/register',
-  },
-  {
-  id: 'e4',
-  type: 'camp',
-  title: 'Summer structure week',
-  dateLabel: 'Opens Apr 15',
-  detail: 'Capacity-controlled · members notified first.',
-  href: '/parent/register',
-  },
-  {
-  id: 'e5',
-  type: 'footbot',
-  title: 'Footbot technical challenge',
-  dateLabel: 'Sun Apr 6',
-  detail: 'Optional add-on · sign-up when window opens.',
-  href: '/parent/register',
-  },
-]
+/** Reassessment tile links to progress (or a specific athlete when `primaryPlayerId` is set). */
+export function buildParentUpcomingEvents(primaryPlayerId: string | null): ParentUpcomingEvent[] {
+  const progressHref = primaryPlayerId ? `/parent/progress/${primaryPlayerId}` : '/parent/progress'
+  return [
+    {
+      id: 'e1',
+      type: 'reassessment',
+      title: 'FPI reassessment window',
+      dateLabel: 'Opens Apr 2',
+      detail: 'Scheduled 6-month development check - not a test to pass or fail.',
+      href: progressHref,
+    },
+    {
+      id: 'e2',
+      type: 'clinic',
+      title: 'Speed lab · members early access',
+      dateLabel: 'Mar 28',
+      detail: 'Invitation based on development priorities - limited seats.',
+      href: '/parent/register',
+    },
+    {
+      id: 'e3',
+      type: 'friday',
+      title: 'Friday Youth Game Circuit',
+      dateLabel: 'Register by Thu 6pm',
+      detail: 'Pre-registered teams · application-focused environment.',
+      href: '/parent/register',
+    },
+    {
+      id: 'e4',
+      type: 'camp',
+      title: 'Summer structure week',
+      dateLabel: 'Opens Apr 15',
+      detail: 'Capacity-controlled · members notified first.',
+      href: '/parent/register',
+    },
+    {
+      id: 'e5',
+      type: 'footbot',
+      title: 'Footbot technical challenge',
+      dateLabel: 'Sun Apr 6',
+      detail: 'Optional add-on · sign-up when window opens.',
+      href: '/parent/register',
+    },
+  ]
+}
 
 export const parentProgressUpdates: ParentProgressUpdate[] = [
   {

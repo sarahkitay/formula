@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { PORTAL_SIGNUP_AGE_GROUPS } from '@/lib/parent/portal-signup-age-groups'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
@@ -23,7 +24,9 @@ export function PortalSignupClient() {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [password, setPassword] = useState('')
-  const [kids, setKids] = useState<{ firstName: string; lastName: string }[]>([])
+  const [kids, setKids] = useState<
+    { firstName: string; lastName: string; dateOfBirth: string; ageGroup: string }[]
+  >([])
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -44,7 +47,14 @@ export function PortalSignupClient() {
             parentFullName: data.parentFullName,
             numKids: data.numKids,
           })
-          setKids(Array.from({ length: data.numKids }, () => ({ firstName: '', lastName: '' })))
+          setKids(
+            Array.from({ length: data.numKids }, () => ({
+              firstName: '',
+              lastName: '',
+              dateOfBirth: '',
+              ageGroup: '',
+            }))
+          )
         }
       } catch (e) {
         if (!cancelled) setLoadError(e instanceof Error ? e.message : 'Could not load booking')
@@ -55,14 +65,17 @@ export function PortalSignupClient() {
     }
   }, [sessionId])
 
-  const updateKid = useCallback((index: number, field: 'firstName' | 'lastName', value: string) => {
-    setKids(prev => {
-      const next = [...prev]
-      const row = next[index]
-      if (row) next[index] = { ...row, [field]: value }
-      return next
-    })
-  }, [])
+  const updateKid = useCallback(
+    (index: number, field: 'firstName' | 'lastName' | 'dateOfBirth' | 'ageGroup', value: string) => {
+      setKids((prev) => {
+        const next = [...prev]
+        const row = next[index]
+        if (row) next[index] = { ...row, [field]: value }
+        return next
+      })
+    },
+    []
+  )
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -73,10 +86,23 @@ export function PortalSignupClient() {
         setFormError('Use at least 8 characters for your password.')
         return
       }
+      const todayIso = new Date().toISOString().slice(0, 10)
       for (let i = 0; i < kids.length; i++) {
         const k = kids[i]
         if (!k?.firstName.trim() || !k?.lastName.trim()) {
           setFormError(`Add first and last name for athlete ${i + 1}.`)
+          return
+        }
+        if (!k.dateOfBirth.trim()) {
+          setFormError(`Add date of birth for athlete ${i + 1}.`)
+          return
+        }
+        if (k.dateOfBirth > todayIso) {
+          setFormError(`Date of birth for athlete ${i + 1} cannot be in the future.`)
+          return
+        }
+        if (!k.ageGroup.trim()) {
+          setFormError(`Select an age group for athlete ${i + 1} (used for youth block booking).`)
           return
         }
       }
@@ -89,7 +115,12 @@ export function PortalSignupClient() {
           body: JSON.stringify({
             sessionId,
             password,
-            kids: kids.map(k => ({ firstName: k.firstName.trim(), lastName: k.lastName.trim() })),
+            kids: kids.map(k => ({
+              firstName: k.firstName.trim(),
+              lastName: k.lastName.trim(),
+              dateOfBirth: k.dateOfBirth.trim(),
+              ageGroup: k.ageGroup.trim(),
+            })),
           }),
         })
         const data = (await res.json()) as { error?: string; debug?: string }
@@ -142,7 +173,8 @@ export function PortalSignupClient() {
       <section className="rounded-sm border border-formula-volt/25 bg-formula-volt/[0.06] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.06)]">
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-formula-mist">Your athletes · portal header</p>
         <p className="mt-2 text-[14px] leading-relaxed text-formula-frost/88">
-          These names appear at the top of your parent portal: one row per athlete from your booking ({summary.numKids}).
+          Names, birth date, and age group are saved to your athlete profile. The age group controls which youth training blocks you can book in the parent
+          portal — choose the band your child trains in (ask staff if unsure).
         </p>
         <div className="mt-5 space-y-4">
           {kids.map((k, i) => (
@@ -170,6 +202,35 @@ export function PortalSignupClient() {
                   autoComplete="family-name"
                   className="mt-1 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
                 />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">Date of birth</label>
+                <input
+                  type="date"
+                  value={k.dateOfBirth}
+                  max={new Date().toISOString().slice(0, 10)}
+                  onChange={e => updateKid(i, 'dateOfBirth', e.target.value)}
+                  autoComplete="bday"
+                  className="mt-1 w-full max-w-[14rem] border border-formula-frost/18 bg-formula-deep/80 px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">Age group (for booking)</label>
+                <select
+                  value={k.ageGroup}
+                  onChange={e => updateKid(i, 'ageGroup', e.target.value)}
+                  className="mt-1 w-full max-w-md border border-formula-frost/18 bg-formula-deep/80 px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
+                >
+                  <option value="">Select age group…</option>
+                  {PORTAL_SIGNUP_AGE_GROUPS.map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1.5 text-[12px] leading-snug text-formula-mist">
+                  Must match the facility training band (e.g. U12 → 12–14 stations). Adult programs use desk booking.
+                </p>
               </div>
             </div>
           ))}

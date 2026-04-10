@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 
 /**
  * Defer mounting a <video> until the container is near the viewport, then autoplay (unless reduced motion).
- * Avoids competing with LCP images and earlier sections for bandwidth.
+ * Tighter rootMargin = less upfront bandwidth; pair `<video preload="none">` so the file isn’t fetched until mount.
  */
-export function useLazyAutoplayVideo(rootMargin = '280px') {
+export function useLazyAutoplayVideo(rootMargin = '140px') {
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [ready, setReady] = useState(false)
