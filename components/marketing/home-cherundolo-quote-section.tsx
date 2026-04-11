@@ -1,40 +1,18 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
-import { HOME_SPLIT_PHOTO_QUALITY, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
-const PHOTO_SRC = '/steve.jpg'
-
 /**
- * Homepage: partner endorsement, 50/50 photo + quote (md+). Matches `HomeFacilitySection` / `HomeTeamworkSection` split layout.
+ * Homepage: partner endorsement quote (photo omitted until a higher-res asset ships).
  */
 export function HomeCherundoloQuoteSection() {
   return (
     <section id="partner-quote" aria-labelledby="cherundolo-quote-heading">
-      <div className="grid min-h-[min(72vh,760px)] grid-cols-1 md:grid-cols-2 md:min-h-[min(82vh,860px)]">
-        <div className="relative min-h-[min(52vh,420px)] overflow-hidden border-b border-formula-frost/10 bg-formula-deep md:min-h-0 md:border-b-0 md:border-r">
-          <Image
-            src={PHOTO_SRC}
-            alt="Steve Cherundolo on an outdoor pitch in LAFC coaching kit."
-            fill
-            quality={HOME_SPLIT_PHOTO_QUALITY}
-            sizes={HOME_SPLIT_PHOTO_SIZES}
-            decoding="async"
-            fetchPriority="low"
-            className="object-cover object-[center_42%] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] md:hover:scale-[1.02]"
-            priority={false}
-          />
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-formula-deep/60 to-transparent md:hidden"
-            aria-hidden
-          />
-        </div>
-
-        <div className="flex flex-col justify-center border-b border-formula-frost/10 bg-formula-deep px-8 py-14 md:px-12 md:py-16 lg:px-16">
-          <ScrollFadeIn>
+      <div className="border-b border-formula-frost/10 bg-formula-deep px-8 py-14 md:px-12 md:py-20 lg:px-16">
+        <ScrollFadeIn>
+          <div className="mx-auto max-w-[min(100%,52rem)]">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/60">Partnership</p>
 
             <h2
@@ -69,8 +47,8 @@ export function HomeCherundoloQuoteSection() {
                 The Formula →
               </Link>
             </div>
-          </ScrollFadeIn>
-        </div>
+          </div>
+        </ScrollFadeIn>
       </div>
     </section>
   )
