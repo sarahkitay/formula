@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { AppShell } from '@/components/layout/app-shell'
 import { ParentPortalSessionContext } from '@/components/parent/parent-portal-context'
 import { ParentLinkedPlayersProvider } from '@/components/parent/parent-linked-players-context'
+import { ParentPortalQuickSearch } from '@/components/parent/parent-portal-quick-search'
 import { loadProfileForUser } from '@/lib/auth/load-profile'
 import { guardianOperatorSlug } from '@/lib/parent/guardian-operator-slug'
 import { parentNav } from '@/lib/nav/parent'
@@ -139,6 +140,7 @@ export function ParentPortalShell({ children }: { children: React.ReactNode }) {
         identityEmail={email}
         athletesSummary={athletesSummary}
         endSessionVariant="logout-button"
+        mainTop={<ParentPortalQuickSearch />}
       >
         <ParentLinkedPlayersProvider>{children}</ParentLinkedPlayersProvider>
       </AppShell>

@@ -19,29 +19,38 @@ export function HomeAssessmentVideoSection() {
   const { containerRef, videoRef, ready } = useLazyAutoplayVideo()
 
   return (
-    <section aria-labelledby="home-assessment-video-title" className="relative w-full overflow-hidden border-b border-formula-frost/10">
-      <div ref={containerRef} className="relative min-h-[min(72vh,780px)] w-full md:min-h-[min(86vh,940px)]">
-        {ready ? (
-          <video
-            ref={videoRef}
-            className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="none"
-            aria-label="Athletes during a Formula assessment on the training floor"
-          >
-            <source src={VIDEO_SRC} type="video/mp4" />
-          </video>
-        ) : (
-          <div className="absolute inset-0 bg-formula-deep" aria-hidden />
-        )}
+    <section aria-labelledby="home-assessment-video-title" className="relative w-full border-b border-formula-frost/10">
+      {/*
+        Copy sits in normal flow with mt-auto so tall panels grow the section instead of overflowing upward
+        into overflow-hidden (which clipped the top of the headline against the teamwork band above).
+      */}
+      <div
+        ref={containerRef}
+        className="relative flex min-h-[min(72vh,780px)] w-full flex-col md:min-h-[min(86vh,940px)]"
+      >
+        <div className="absolute inset-0 overflow-hidden">
+          {ready ? (
+            <video
+              ref={videoRef}
+              className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="none"
+              aria-label="Athletes during a Formula assessment on the training floor"
+            >
+              <source src={VIDEO_SRC} type="video/mp4" />
+            </video>
+          ) : (
+            <div className="absolute inset-0 bg-formula-deep" aria-hidden />
+          )}
 
-        <div className={MEDIA_SCRIM_TOP} aria-hidden />
-        <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />
+          <div className={MEDIA_SCRIM_TOP} aria-hidden />
+          <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />
+        </div>
 
-        <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 md:pt-32">
+        <div className="relative z-10 mt-auto flex w-full flex-col px-6 pb-12 pt-28 md:px-10 md:pb-16 md:pt-36">
           <div className="mx-auto w-full max-w-[1200px]">
             <MediaOverlayTextPanel className="mr-auto w-full max-w-[min(100%,52rem)]">
               <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/90">Assessment & placement</p>

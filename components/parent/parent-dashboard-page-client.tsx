@@ -12,15 +12,16 @@ import { CountUp } from '@/components/ui/count-up'
 import { SectionHeader } from '@/components/ui/section-header'
 import { Button } from '@/components/ui/button'
 import { StatusPill } from '@/components/ui/badge'
-import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
+import { getInitials, getAvatarColor, cn } from '@/lib/utils'
 import { ParentDashboardSubtitle } from '@/components/parent/parent-dashboard-subtitle'
 import { ParentSoftBanner } from '@/components/parent/parent-panel'
 import {
   buildParentRecommendedActions,
-  buildParentUpcomingEvents,
   parentAttendanceSnapshot,
+  type ParentUpcomingEvent,
 } from '@/lib/mock-data/parent-portal'
 import { useParentLinkedPlayers } from '@/components/parent/parent-linked-players-context'
+import { fetchParentBlockBookings } from '@/lib/parent/parent-block-bookings'
 import { supabase } from '@/lib/supabase'
 
 type HomeNote = { playerId: string; firstName: string; date: string; summary: string }
@@ -29,8 +30,8 @@ export function ParentDashboardPageClient() {
   const { players: myPlayers, loading, error } = useParentLinkedPlayers()
   const [homeNotes, setHomeNotes] = useState<HomeNote[]>([])
 
-  const primaryId = myPlayers[0]?.id ?? null
-  const upcomingEvents = useMemo(() => buildParentUpcomingEvents(primaryId), [primaryId])
+  const [portalUpcoming, setPortalUpcoming] = useState<ParentUpcomingEvent[]>([])
+  const [portalUpcomingLoading, setPortalUpcomingLoading] = useState(true)
 
   const recommendedActions = useMemo(
     () => buildParentRecommendedActions(myPlayers.map((p) => ({ id: p.id, firstName: p.firstName || 'Athlete' }))),
@@ -83,8 +84,110 @@ export function ParentDashboardPageClient() {
     }
   }, [myPlayers])
 
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadUpcoming() {
+      setPortalUpcomingLoading(true)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) {
+        if (!cancelled) {
+          setPortalUpcoming([])
+          setPortalUpcomingLoading(false)
+        }
+        return
+      }
+
+      const [blocksRes, asstRes] = await Promise.all([
+        fetchParentBlockBookings(),
+        supabase
+          .from('assessment_bookings')
+          .select('id, num_kids, assessment_slots ( starts_at, label )')
+          .eq('parent_user_id', user.id),
+      ])
+
+      if (cancelled) return
+
+      const nowCut = Date.now() - 60 * 60 * 1000
+      type Row = { ts: number; ev: ParentUpcomingEvent }
+      const rows: Row[] = []
+
+      if (blocksRes.data) {
+        for (const row of blocksRes.data) {
+          const ts = new Date(row.starts_at).getTime()
+          if (ts < nowCut) continue
+          const pl = myPlayers.find((p) => p.id === row.player_id)
+          rows.push({
+            ts,
+            ev: {
+              id: `block-${row.id}`,
+              type: 'clinic',
+              title: row.title,
+              dateLabel: new Date(row.starts_at).toLocaleString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+              }),
+              detail: pl ? `Saved hold · ${pl.firstName}` : 'Youth block hold',
+              href: '/parent/bookings#upcoming-bookings',
+            },
+          })
+        }
+      }
+
+      if (!asstRes.error && Array.isArray(asstRes.data)) {
+        for (const rawUnknown of asstRes.data as unknown[]) {
+          if (!rawUnknown || typeof rawUnknown !== 'object') continue
+          const raw = rawUnknown as {
+            id: string
+            num_kids: number
+            assessment_slots:
+              | { starts_at: string; label: string | null }
+              | { starts_at: string; label: string | null }[]
+              | null
+          }
+          const slotEmbed = raw.assessment_slots
+          const slot = Array.isArray(slotEmbed) ? slotEmbed[0] : slotEmbed
+          if (!slot?.starts_at) continue
+          const ts = new Date(slot.starts_at).getTime()
+          if (ts < nowCut) continue
+          rows.push({
+            ts,
+            ev: {
+              id: `assessment-${raw.id}`,
+              type: 'reassessment',
+              title: slot.label?.trim() || 'Assessment',
+              dateLabel: new Date(slot.starts_at).toLocaleString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+              }),
+              detail: `${raw.num_kids} athlete(s) · paid booking`,
+              href: '/parent/book-assessment',
+            },
+          })
+        }
+      }
+
+      rows.sort((a, b) => a.ts - b.ts)
+      setPortalUpcoming(rows.map((r) => r.ev))
+      setPortalUpcomingLoading(false)
+    }
+
+    void loadUpcoming()
+    return () => {
+      cancelled = true
+    }
+  }, [myPlayers])
+
   const creditsTotal = 0
-  const upcomingBookings: { id: string; player: (typeof myPlayers)[0] }[] = []
+  const upcomingBookingsCount = portalUpcoming.length
   const paymentRows: unknown[] = []
   const totalSessionsAttended = 0
 
@@ -102,7 +205,7 @@ export function ParentDashboardPageClient() {
           dataPoints={[
             { label: 'Players', value: myPlayers.length, highlight: 'green' },
             { label: 'Credits', value: creditsTotal, highlight: 'volt' },
-            { label: 'Upcoming', value: upcomingBookings.length },
+            { label: 'Upcoming', value: upcomingBookingsCount },
           ]}
         />
       )
@@ -134,9 +237,9 @@ export function ParentDashboardPageClient() {
           summary={item.description ?? ''}
           href={item.href}
           dataPoints={[
-            { label: 'Confirmed', value: upcomingBookings.length, highlight: 'green' },
+            { label: 'Confirmed', value: upcomingBookingsCount, highlight: 'green' },
             { label: 'Capacity', value: 'SEE DESK' },
-            { label: 'Next', value: upcomingBookings[0] ? 'BOOKED' : 'OPEN' },
+            { label: 'Next', value: portalUpcoming[0] ? 'BOOKED' : 'OPEN' },
           ]}
         />
       )
@@ -341,19 +444,46 @@ export function ParentDashboardPageClient() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {upcomingEvents.map((ev) => (
-            <Link
-              key={ev.id}
-              href={ev.href}
-              className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 text-inherit no-underline shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] transition-colors hover:border-formula-volt/25"
-            >
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-formula-volt/90">{ev.type.replace('-', ' ')}</p>
-              <p className="mt-2 font-semibold text-formula-paper">{ev.title}</p>
-              <p className="mt-1 text-xs text-formula-mist">{ev.dateLabel}</p>
-              <p className="mt-2 text-sm leading-snug text-formula-frost/80">{ev.detail}</p>
-            </Link>
-          ))}
+        <div className="space-y-3">
+          <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-formula-mist">Your upcoming bookings</p>
+          {portalUpcomingLoading ? (
+            <p className="text-sm text-formula-frost/70">Loading bookings…</p>
+          ) : portalUpcoming.length === 0 ? (
+            <div className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 text-sm text-formula-frost/75">
+              <p>No upcoming sessions on file yet. Paid assessments appear after you finish parent portal signup with your checkout reference.</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  href="/parent/bookings"
+                  className="inline-flex h-9 items-center border border-formula-volt/40 px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-volt hover:bg-formula-volt/10"
+                >
+                  Schedule & booking
+                </Link>
+                <Link
+                  href="/parent/book-assessment"
+                  className="inline-flex h-9 items-center border border-formula-frost/20 px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-paper hover:border-formula-frost/35"
+                >
+                  Book assessment
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {portalUpcoming.map((ev) => (
+                <Link
+                  key={ev.id}
+                  href={ev.href}
+                  className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 text-inherit no-underline shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] transition-colors hover:border-formula-volt/25"
+                >
+                  <p className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-formula-volt/90">
+                    {ev.type.replace('-', ' ')}
+                  </p>
+                  <p className="mt-2 font-semibold text-formula-paper">{ev.title}</p>
+                  <p className="mt-1 text-xs text-formula-mist">{ev.dateLabel}</p>
+                  <p className="mt-2 text-sm leading-snug text-formula-frost/80">{ev.detail}</p>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.04] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
@@ -389,7 +519,7 @@ export function ParentDashboardPageClient() {
           />
           <StatCard
             label="Upcoming Bookings"
-            value={<CountUp end={upcomingBookings.length} format="integer" />}
+            value={<CountUp end={upcomingBookingsCount} format="integer" />}
             href="/parent/bookings"
           />
           <StatCard

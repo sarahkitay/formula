@@ -24,6 +24,8 @@ export interface AppShellProps {
   endSessionVariant?: 'login-link' | 'logout-button'
   /** Header logo destination (parent portal: public site `/`) */
   logoHref?: string
+  /** Rendered at top of `<main>` (e.g. parent portal quick search) */
+  mainTop?: React.ReactNode
 }
 
 export function AppShell({
@@ -38,6 +40,7 @@ export function AppShell({
   athletesSummary,
   endSessionVariant = 'login-link',
   logoHref,
+  mainTop,
 }: AppShellProps) {
   const technicalNav = navItems.map(item => ({ label: item.label, href: item.href }))
   const isDarkOs = surface === 'admin-os' || surface === 'coach-os' || surface === 'parent-os'
@@ -64,7 +67,10 @@ export function AppShell({
         athletesSummary={athletesSummary}
         endSessionVariant={endSessionVariant}
       />
-      <main className="lab-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-10">{children}</main>
+      <main className="lab-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-10">
+        {mainTop}
+        {children}
+      </main>
     </div>
   )
 }
