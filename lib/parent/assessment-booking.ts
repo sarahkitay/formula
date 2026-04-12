@@ -1,3 +1,5 @@
+import { generateSkillCheckSlotInstants } from '@/lib/assessment/skill-check-slot-times'
+
 /** Client-only local storage for the assessment booking gate (replace with real auth when wired). */
 export const ASSESSMENT_PORTAL_ACCOUNT_KEY = 'formula_portal_assessment_account_v1'
 
@@ -37,30 +39,16 @@ export function writeAssessmentPortalAccount(account: Omit<AssessmentPortalAccou
   localStorage.setItem(ASSESSMENT_PORTAL_ACCOUNT_KEY, JSON.stringify(v))
 }
 
-/** Published-style assessment windows (mock); weekdays only, spread across the next few weeks. */
+/** Fallback windows when API slots are unavailable; matches server rules (facility TZ, weekdays, 8–5). */
 export function buildAssessmentTimeSlots(anchor: Date = new Date()): AssessmentTimeSlot[] {
-  const out: AssessmentTimeSlot[] = []
-  const start = new Date(anchor)
-  start.setHours(0, 0, 0, 0)
-  let added = 0
-  for (let dayOffset = 1; dayOffset <= 28 && added < 8; dayOffset++) {
-    const d = new Date(start)
-    d.setDate(d.getDate() + dayOffset)
-    const dow = d.getDay()
-    if (dow === 0 || dow === 6) continue
-    const hour = added % 2 === 0 ? 10 : 15
-    d.setHours(hour, 0, 0, 0)
-    if (d.getTime() <= anchor.getTime()) continue
-    const y = d.getFullYear()
-    const mo = String(d.getMonth() + 1).padStart(2, '0')
-    const da = String(d.getDate()).padStart(2, '0')
-    const h = String(d.getHours()).padStart(2, '0')
-    out.push({
-      id: `as-${y}${mo}${da}-${h}`,
-      startsAtIso: d.toISOString(),
+  const instants = generateSkillCheckSlotInstants(24, anchor)
+  return instants.map((d) => {
+    const iso = d.toISOString()
+    const id = `as-${iso.slice(0, 10)}-${iso.slice(11, 16).replace(':', '')}`
+    return {
+      id,
+      startsAtIso: iso,
       label: 'Formula Skills Check · ~60 min',
-    })
-    added++
-  }
-  return out
+    }
+  })
 }

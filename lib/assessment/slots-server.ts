@@ -1,36 +1,20 @@
-import { ASSESSMENT_MAX_KIDS_PER_BOOKING, ASSESSMENT_SLOT_CAPACITY } from '@/lib/assessment/constants'
+import {
+  ASSESSMENT_MAX_KIDS_PER_BOOKING,
+  ASSESSMENT_SLOT_CAPACITY,
+  ASSESSMENT_SLOT_TIMEZONE,
+} from '@/lib/assessment/constants'
+import { generateSkillCheckSlotInstants } from '@/lib/assessment/skill-check-slot-times'
 import { getServiceSupabase } from '@/lib/supabase/service'
 
 export { ASSESSMENT_MAX_KIDS_PER_BOOKING, ASSESSMENT_SLOT_CAPACITY }
 
-function nextWeekdaySlotStarts(count: number): Date[] {
-  const out: Date[] = []
-  const cursor = new Date()
-  cursor.setMilliseconds(0)
-  cursor.setSeconds(0)
-  cursor.setMinutes(0)
-  cursor.setHours(0, 0, 0, 0)
-  cursor.setDate(cursor.getDate() + 1)
+/** First seed batch when the table is empty (weekdays, ~8am–4pm local, five windows/day). */
+const SEED_SLOT_COUNT = 60
 
-  while (out.length < count) {
-    const dow = cursor.getDay()
-    if (dow !== 0 && dow !== 6) {
-      for (const hour of [10, 15]) {
-        if (out.length >= count) break
-        const t = new Date(cursor)
-        t.setHours(hour, 0, 0, 0)
-        if (t.getTime() > Date.now()) {
-          out.push(t)
-        }
-      }
-    }
-    cursor.setDate(cursor.getDate() + 1)
-    if (cursor.getTime() > Date.now() + 120 * 24 * 60 * 60 * 1000) break
-  }
-  return out.slice(0, count)
-}
-
-/** Seed upcoming weekday slots if the table is empty (dev / first deploy). */
+/**
+ * Seed upcoming weekday slots if the table is empty (dev / first deploy).
+ * Re-seed after changing slot logic: clear `assessment_slots` (and bookings if needed) in Supabase, then hit GET /api/assessment-slots.
+ */
 export async function ensureAssessmentSlotsSeeded(): Promise<void> {
   const sb = getServiceSupabase()
   if (!sb) return
@@ -38,7 +22,7 @@ export async function ensureAssessmentSlotsSeeded(): Promise<void> {
   const { count, error: countErr } = await sb.from('assessment_slots').select('*', { count: 'exact', head: true })
   if (countErr || (count ?? 0) > 0) return
 
-  const starts = nextWeekdaySlotStarts(8)
+  const starts = generateSkillCheckSlotInstants(SEED_SLOT_COUNT, new Date(), ASSESSMENT_SLOT_TIMEZONE)
   const rows = starts.map(starts_at => ({
     starts_at: starts_at.toISOString(),
     capacity: ASSESSMENT_SLOT_CAPACITY,
