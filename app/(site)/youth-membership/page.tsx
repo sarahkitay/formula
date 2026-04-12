@@ -4,6 +4,7 @@ import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-but
 import { HomeProgramsAndPathways } from '@/components/marketing/home-programs-and-pathways'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
 import { YouthMembershipPackageHero } from '@/components/marketing/youth-membership-package-hero'
+import { YouthPackageAckStrip } from '@/components/marketing/youth-package-ack-strip'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
 
@@ -56,6 +57,7 @@ export default function YouthMembershipPage() {
         <p className="not-prose">
           <CheckoutLaunchButton checkoutType="package-10" label="Buy the 10-session package" />
         </p>
+        <YouthPackageAckStrip />
         <p className="text-sm text-formula-frost/70">Session expiration window: confirm with the desk before launch.</p>
 
         <h2 className="!mt-14">Memberships</h2>

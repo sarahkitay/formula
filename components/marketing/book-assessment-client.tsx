@@ -2,7 +2,11 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { AssessmentMonthCalendar } from '@/components/marketing/assessment-month-calendar'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
+import { FieldRentalAgreementForm } from '@/components/marketing/field-rental-agreement-form'
+import { FieldRentalBookingFlow } from '@/components/marketing/field-rental-booking-flow'
+import { YouthBlocksWeekPanel } from '@/components/marketing/youth-blocks-week-panel'
 import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { cn } from '@/lib/utils'
@@ -19,9 +23,7 @@ type Slot = {
 export type BookAssessmentVariant = 'public' | 'portal'
 
 type BookAssessmentClientProps = {
-  /** Public marketing flow asks for name/email; portal uses signed-in profile. */
   variant?: BookAssessmentVariant
-  /** Required when variant is `portal` (from Supabase profile / auth). */
   guardianFullName?: string
   guardianEmail?: string
 }
@@ -62,7 +64,7 @@ export function BookAssessmentClient({
     }
   }, [])
 
-  const selected = useMemo(() => slots.find(s => s.id === selectedId) ?? null, [slots, selectedId])
+  const selected = useMemo(() => slots.find((s) => s.id === selectedId) ?? null, [slots, selectedId])
 
   useEffect(() => {
     if (selected && numKids > selected.available) {
@@ -92,17 +94,17 @@ export function BookAssessmentClient({
     billingEmail.includes('@')
 
   return (
-    <div className="not-prose space-y-10">
+    <div className="not-prose space-y-14">
       <p className="max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
         {isPortal ? (
           <>
-            Pick an open Skills Check window and how many athletes you&apos;re bringing (up to four spots per hour across all families), then pay securely.
-            Receipts use the email on your portal account.
+            Use the calendar to pick a Skills Check window, book field time with deposit + agreement, and preview youth training blocks. Receipts use the email
+            on your portal account.
           </>
         ) : (
           <>
-            Pick an open Skills Check window, choose how many athletes you&apos;re bringing (up to four spots per hour across all families), then pay securely. You
-            don&apos;t need a portal account first. After checkout, you can create a parent login and add your athletes&apos; names so they appear in your portal.
+            One hub: Skills Check calendar, youth block preview (package required to finalize in portal), and field rentals with the same anti-overlap calendar
+            rules. After checkout you can create a parent login for athlete names.
           </>
         )}
       </p>
@@ -128,7 +130,7 @@ export function BookAssessmentClient({
               <input
                 id="ba-parent-name"
                 value={parentFullName}
-                onChange={e => setParentFullName(e.target.value)}
+                onChange={(e) => setParentFullName(e.target.value)}
                 autoComplete="name"
                 className="mt-1.5 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
                 placeholder="Parent or guardian"
@@ -142,7 +144,7 @@ export function BookAssessmentClient({
                 id="ba-parent-email"
                 type="email"
                 value={parentEmail}
-                onChange={e => setParentEmail(e.target.value.trim())}
+                onChange={(e) => setParentEmail(e.target.value.trim())}
                 autoComplete="email"
                 className="mt-1.5 w-full border border-formula-frost/18 bg-formula-deep/80 px-3 py-2.5 text-sm text-formula-paper outline-none focus:border-formula-volt/40"
                 placeholder="you@example.com"
@@ -152,52 +154,27 @@ export function BookAssessmentClient({
         </section>
       )}
 
-      <section aria-labelledby="ba-slots-heading">
+      <section id="skills-check" className="scroll-mt-24 space-y-4" aria-labelledby="ba-slots-heading">
         <h2 id="ba-slots-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
-          Open windows
+          Skills Check — month calendar
         </h2>
-        <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-formula-frost/70">
-          Each hour has up to four athlete spots total. We show how many are already reserved and how many you can still book.
+        <p className="max-w-2xl text-[13px] leading-relaxed text-formula-frost/70">
+          Times shown in Pacific. Each window has up to four athlete spots total across families. Pick a day, then a time.
         </p>
 
         {loadingSlots ? (
-          <p className="mt-6 font-mono text-[11px] text-formula-frost/50">Loading availability…</p>
+          <p className="font-mono text-[11px] text-formula-frost/50">Loading availability…</p>
         ) : slotsError ? (
-          <p className="mt-6 text-sm text-amber-300/95">{slotsError}</p>
+          <p className="text-sm text-amber-300/95">{slotsError}</p>
         ) : slots.length === 0 ? (
-          <p className="mt-6 text-sm text-formula-frost/70">No upcoming windows published yet. Check back soon or call the front desk.</p>
+          <p className="text-sm text-formula-frost/70">No upcoming windows published yet. Check back soon or call the front desk.</p>
         ) : (
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {slots.map(slot => {
-              const active = selectedId === slot.id
-              const full = slot.available <= 0
-              return (
-                <li key={slot.id}>
-                  <button
-                    type="button"
-                    disabled={full}
-                    onClick={() => !full && setSelectedId(slot.id)}
-                    className={cn(
-                      'w-full border p-4 text-left transition-colors',
-                      full
-                        ? 'cursor-not-allowed border-formula-frost/8 bg-formula-paper/[0.02] opacity-50'
-                        : active
-                          ? 'border-formula-volt/45 bg-formula-volt/[0.08] ring-1 ring-formula-volt/25'
-                          : 'border-formula-frost/14 bg-formula-paper/[0.03] hover:border-formula-frost/24'
-                    )}
-                  >
-                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-formula-frost/55">
-                      {slot.label ?? 'Formula Skills Check'}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-formula-paper">{formatWhen(slot.starts_at)}</p>
-                    <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-volt/85">
-                      {full ? 'Full' : `${slot.booked_kids}/${slot.capacity} booked · ${slot.available} open`}
-                    </p>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
+          <AssessmentMonthCalendar
+            slots={slots}
+            selectedId={selectedId}
+            onSelectId={setSelectedId}
+            formatWhen={formatWhen}
+          />
         )}
       </section>
 
@@ -211,7 +188,7 @@ export function BookAssessmentClient({
             {Math.min(ASSESSMENT_MAX_KIDS_PER_BOOKING, selected.available) === 1 ? '' : 's'} in this window.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {Array.from({ length: Math.min(ASSESSMENT_MAX_KIDS_PER_BOOKING, selected.available) }, (_, i) => i + 1).map(n => (
+            {Array.from({ length: Math.min(ASSESSMENT_MAX_KIDS_PER_BOOKING, selected.available) }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
                 type="button"
@@ -257,6 +234,16 @@ export function BookAssessmentClient({
         </section>
       ) : null}
 
+      <div className="marketing-section-divider" aria-hidden />
+
+      <YouthBlocksWeekPanel />
+
+      <div className="marketing-section-divider" aria-hidden />
+
+      <FieldRentalBookingFlow sectionId="field-rental-on-hub" />
+
+      <FieldRentalAgreementForm />
+
       {isPortal ? (
         <p className="text-[12px] text-formula-frost/55">
           <Link href="/parent/dashboard" className="text-formula-volt underline-offset-2 hover:underline">
@@ -275,6 +262,10 @@ export function BookAssessmentClient({
             className="text-formula-volt underline-offset-2 hover:underline"
           >
             Sign in to book here
+          </Link>
+          {' · '}
+          <Link href={MARKETING_HREF.rentals} className="text-formula-volt underline-offset-2 hover:underline">
+            Rental policies
           </Link>
           {' · '}
           <Link href={MARKETING_HREF.assessment} className="text-formula-volt underline-offset-2 hover:underline">

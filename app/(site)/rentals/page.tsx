@@ -25,6 +25,14 @@ export default function RentalsPage() {
   performance environment.
   </p>
 
+  <p className="not-prose text-sm leading-relaxed text-zinc-400">
+    Prefer one stop? Book field time with deposit and sign the rental agreement on the same page as Skills Check and youth block preview:{' '}
+    <Link href={`${MARKETING_HREF.bookAssessment}#field-rental-on-hub`} className="text-formula-volt underline-offset-2 hover:underline">
+      unified booking hub
+    </Link>
+    .
+  </p>
+
   <FieldRentalBookingFlow />
 
   <h2>Published hourly rate</h2>

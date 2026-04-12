@@ -52,6 +52,11 @@ function classificationSummary(c: Classification): string {
   }
 }
 
+type FieldRentalBookingFlowProps = {
+  /** Anchor id for deep links from the unified booking hub. */
+  sectionId?: string
+}
+
 async function releasePendingHold(rentalRef: string) {
   try {
     await fetch('/api/rental-slots', {
@@ -64,7 +69,7 @@ async function releasePendingHold(rentalRef: string) {
   }
 }
 
-export function FieldRentalBookingFlow() {
+export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRentalBookingFlowProps) {
   const [step, setStep] = useState(1)
   const [rentalType, setRentalType] = useState<RentalType | ''>('')
   const [sessionDate, setSessionDate] = useState('')
@@ -140,7 +145,7 @@ export function FieldRentalBookingFlow() {
   }
 
   return (
-    <section id="rental-booking" className="not-prose my-14 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8">
+    <section id={sectionId} className="not-prose my-14 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8">
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Booking flow</p>
       <h3 className="mt-4 font-mono text-xl font-semibold tracking-tight text-formula-paper md:text-2xl">
         Classify, pick a free slot, then pay the deposit
