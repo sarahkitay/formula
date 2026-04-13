@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # `npm run lint` is not enforced here yet — the repo has pre-existing ESLint errors.
+      - run: npm run test:unit
+
+      - run: npm run build
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: E2E smoke (production server)
+        run: npm run test:e2e
+        env:
+          CI: true

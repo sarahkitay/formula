@@ -12,7 +12,7 @@ export function facilityZoneEyebrow(z: FacilityZone): string {
     case 'speed-track':
       return 'Linear speed'
     case 'double-speed-court':
-      return 'Lateral repeatability'
+      return 'Agility & COD'
     case 'footbot':
       return 'Precision reps'
     case 'entrance':

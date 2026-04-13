@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 const STATIONS: { tool: string; measures: string }[] = [
   { tool: 'Speed Track', measures: 'Acceleration & repeat sprint performance' },
   { tool: 'Footbot', measures: 'Technical reps & ball-control load' },
-  { tool: 'Double Speed Court', measures: 'Reaction, scanning & decisions under pressure' },
+  { tool: 'Double Speed Court', measures: 'Agility, COD & reactive movement under pressure' },
 ]
 
 /**

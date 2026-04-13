@@ -19,14 +19,14 @@ export function HomeCherundoloQuoteSection() {
               id="cherundolo-quote-heading"
               className="mt-4 font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
             >
-              Structure, freedom, intelligence
+              Three critical moments
             </h2>
 
             <blockquote className="mt-6 border-l-2 border-formula-volt/45 pl-6">
               <p className="text-[15px] font-normal leading-[1.7] text-formula-frost/88 md:text-[16px] md:leading-[1.75]">
-                I have partnered with Formula because it reflects how the modern game is played: built on structure, driven by freedom, and powered by
-                intelligence. By combining elite coaching with cutting-edge technology, Formula will develop players who think faster, make better decisions, and
-                perform at their highest level.
+                I have partnered with Formula because it reflects my own personal philosophy of player development in the modern game. Every soccer action has
+                three critical moments which increase in difficulty when time and space are reduced. By combining elite coaching with cutting-edge technology,
+                Formula will develop players who think faster, make intelligent decisions and execute at the highest of levels.
               </p>
               <footer className="mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-formula-frost/55">
                 <cite className="not-italic">Steve Cherundolo</cite>

@@ -1,6 +1,6 @@
 /**
  * Performance pipeline: manual coach entry (V1) + machine feeds (V2).
- * Footbot, double speed court, speed track, etc.
+ * Footbot, Double Speed Court (agility / COD), Speed Track, etc.
  */
 export type MetricSource = 'manual' | 'footbot' | 'speed_track' | 'speed_court' | 'coach_input'
 

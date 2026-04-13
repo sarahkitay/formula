@@ -11,12 +11,13 @@ export const FPI_PILLARS: readonly FormulaPillar[] = [
   },
   {
     title: 'Agility and change of direction',
-    description: 'Lateral movement, deceleration, and directional efficiency. Assessed through structured movement tasks.',
+    description:
+      'Lateral movement, deceleration, reactive cuts, and directional efficiency. Measured on our Double Speed Court with structured change-of-direction tasks.',
   },
   {
     title: 'Decision-making and cognitive speed',
     description:
-      'Reading the field, scanning under pressure, choosing correctly and quickly. Measured on our Double Speed Court.',
+      'Reading the field, scanning under pressure, choosing correctly and quickly. Captured in applied play, small-sided work, and coach evaluation on the floor.',
   },
   {
     title: 'Technical execution',
@@ -43,11 +44,12 @@ export const ASSESSMENT_PILLARS: readonly FormulaPillar[] = [
   {
     title: 'Agility and change of direction',
     description:
-      'Measured through structured movement tasks. Lateral quickness, deceleration, and directional efficiency.',
+      'Measured on the Double Speed Court and through structured movement tasks: lateral quickness, deceleration, reactive cuts, and directional efficiency.',
   },
   {
     title: 'Decision-making and cognitive speed',
-    description: 'Assessed on the Double Speed Court. Reaction time, scanning, and correct choices under pressure.',
+    description:
+      'Assessed in application blocks and small-sided scenarios where decisions show up on the ball, with coach review alongside your movement data.',
   },
   {
     title: 'Technical execution',

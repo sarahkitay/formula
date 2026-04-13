@@ -30,7 +30,7 @@ export function HomeSpeedCourtSection() {
             loop
             playsInline
             preload="none"
-            aria-label="Speed Court cognitive training station in action"
+            aria-label="Double Speed Court agility and change-of-direction station in action"
           >
             <source src={VIDEO_SRC} type="video/mp4" />
           </video>
@@ -44,7 +44,7 @@ export function HomeSpeedCourtSection() {
         <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 md:pt-32">
           <div className="mx-auto w-full max-w-[1200px]">
             <MediaOverlayTextPanel className="mr-auto w-full max-w-[min(100%,52rem)]">
-              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/90">Cognitive layer</p>
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/90">Agility layer</p>
               <h2
                 id="home-speed-court-title"
                 className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]"
@@ -52,11 +52,11 @@ export function HomeSpeedCourtSection() {
                 Double Speed Court
               </h2>
               <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>
-                Reaction, scanning, and decision-making under pressure
+                Change of direction, deceleration, and reactive movement under pressure
               </p>
               <p className="mt-5 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
-                The cognitive side of soccer, trained and measured. We stress reading, scanning, and correct choices under pressure so habits transfer when
-                the game speeds up.
+                The agility side of the game, trained and measured. We stress lateral quickness, sharp cuts, and repeatability so movement holds up when space
+                disappears and the game speeds up.
               </p>
               <Link
                 href={MARKETING_HREF.facility}

@@ -35,7 +35,7 @@ export default function FacilityPage() {
         <p>Controlled linear sprints: acceleration and repeat efforts, logged consistently.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Double Speed Court</h3>
-        <p>Reaction, scanning, and decisions under time pressure: cognitive load, captured.</p>
+        <p>Change of direction, deceleration, and reactive movement under time pressure: agility work, captured.</p>
 
         <h3 className="!mt-8 !mb-2 font-mono text-sm font-semibold uppercase tracking-[0.12em] text-formula-frost/90">Footbot</h3>
         <p>High-volume technical reps with precision ball tech; every rep counted.</p>
