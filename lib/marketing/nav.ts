@@ -1,5 +1,10 @@
 /** Public marketing site navigation - URLs are stable for SEO and deep links. */
 
+import { isEventsHubPublished } from '@/lib/marketing/events-public'
+
+/** Element `id` on the booking hub + hash for deep links (`/book-assessment#…`). */
+export const BOOKING_HUB_DIRECTORY_ID = 'booking-hub-directory' as const
+
 export const MARKETING_HREF = {
   home: '/',
   whatIsFormula: '/what-is-formula',
@@ -18,9 +23,14 @@ export const MARKETING_HREF = {
   assessment: '/assessment',
   privacy: '/privacy',
   terms: '/terms',
-  /** Public Skills Check booking (no login). Optional portal signup after Stripe. */
+  /** Public booking hub path only (compose hashes yourself, e.g. field rental). */
   bookAssessment: '/book-assessment',
-  bookAssessmentPortal: '/book-assessment',
+  /** Booking hub “Book by type” directory — public. */
+  bookAssessmentDirectory: `/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
+  /** Same directory on the parent portal hub. */
+  parentBookAssessmentDirectory: `/parent/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
+  /** Primary CTA: opens booking hub at the directory. */
+  bookAssessmentPortal: `/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
 } as const
 
 export type MarketingHref = (typeof MARKETING_HREF)[keyof typeof MARKETING_HREF]
@@ -47,10 +57,23 @@ export const HEADER_MORE: { label: string; href: string }[] = [
   { label: 'Tournaments', href: MARKETING_HREF.tournaments },
 ]
 
-/** Full list for footer / sitemap strip. */
-export const PRIMARY_NAV: { label: string; href: string }[] = [...HEADER_MAIN, ...HEADER_MORE]
+/** “More” links with /events hidden until `SUMMER_EVENT_SECTIONS` has content. */
+export function getHeaderMoreNav(): { label: string; href: string }[] {
+  return HEADER_MORE.filter(item => item.href !== MARKETING_HREF.events || isEventsHubPublished())
+}
 
-/** In-page homepage anchors (optional deep links). Mobile header uses `HEADER_MAIN` for parity with desktop. */
+/** Main strip + optional Events when the hub is published (matches footer visibility). */
+export function getSiteHeaderPrimaryNav(): { label: string; href: string }[] {
+  if (!isEventsHubPublished()) return [...HEADER_MAIN]
+  return [...HEADER_MAIN, { label: 'Events', href: MARKETING_HREF.events }]
+}
+
+/** Full list for footer / sitemap strip (respects events hub gate). */
+export function getPrimaryNav(): { label: string; href: string }[] {
+  return [...HEADER_MAIN, ...getHeaderMoreNav()]
+}
+
+/** In-page homepage anchors (optional deep links). Mobile header uses `getSiteHeaderPrimaryNav()` for parity with desktop. */
 export const HOME_ANCHORS: { label: string; href: string }[] = [
   { label: 'Next step', href: '#next-steps' },
   { label: 'Programs', href: `${MARKETING_HREF.youthMembership}#programs-catalog` },

@@ -145,7 +145,10 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   }
 
   return (
-    <section id={sectionId} className="not-prose my-14 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8">
+    <section
+      id={sectionId}
+      className="not-prose my-14 scroll-mt-24 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8"
+    >
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Booking flow</p>
       <h3 className="mt-4 font-mono text-xl font-semibold tracking-tight text-formula-paper md:text-2xl">
         Classify, pick a free slot, then pay the deposit

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MARKETING_HREF, PRIMARY_NAV } from '@/lib/marketing/nav'
+import { getPrimaryNav, MARKETING_HREF } from '@/lib/marketing/nav'
 
 const COLS: { title: string; links: { label: string; href: string }[] }[] = [
   {
@@ -89,7 +89,7 @@ export function MarketingFooter() {
   </nav>
   </div>
   <div className="mt-8 flex flex-wrap gap-4 border-t border-formula-frost/10 pt-8 font-mono text-[10px] uppercase tracking-[0.16em] text-formula-olive">
-  {PRIMARY_NAV.map(n => (
+  {getPrimaryNav().map(n => (
   <Link key={n.href} href={n.href} className="hover:text-formula-mist">
   {n.label}
   </Link>

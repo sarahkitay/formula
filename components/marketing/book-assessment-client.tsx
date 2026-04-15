@@ -8,7 +8,7 @@ import { FieldRentalAgreementForm } from '@/components/marketing/field-rental-ag
 import { FieldRentalBookingFlow } from '@/components/marketing/field-rental-booking-flow'
 import { YouthBlocksWeekPanel } from '@/components/marketing/youth-blocks-week-panel'
 import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
-import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { BOOKING_HUB_DIRECTORY_ID, MARKETING_HREF } from '@/lib/marketing/nav'
 import { cn } from '@/lib/utils'
 
 type Slot = {
@@ -93,6 +93,16 @@ export function BookAssessmentClient({
     billingName.length > 1 &&
     billingEmail.includes('@')
 
+  const bookingDirectoryLinks = [
+    ...(isPortal
+      ? [{ href: '#booking-account', label: 'Account' as const }]
+      : [{ href: '#booking-contact', label: 'Guardian contact' as const }]),
+    { href: '#skills-check', label: 'Skills Check' as const },
+    { href: '#youth-training-blocks', label: 'Youth training blocks' as const },
+    { href: '#field-rental-on-hub', label: 'Field rental' as const },
+    { href: '#participant-waiver', label: 'Rental agreement & waiver' as const },
+  ]
+
   return (
     <div className="not-prose space-y-14">
       <p className="max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
@@ -109,8 +119,35 @@ export function BookAssessmentClient({
         )}
       </p>
 
+      <nav
+        id={BOOKING_HUB_DIRECTORY_ID}
+        aria-label="Jump to booking type"
+        className="scroll-mt-24 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-4 md:p-5"
+      >
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Book by type</p>
+        <p className="mt-2 max-w-2xl text-[12px] leading-relaxed text-formula-frost/70">
+          Jump to the section you need — Skills Check calendar, youth block preview, field rental hold, or the rental agreement.
+        </p>
+        <ul className="mt-4 flex flex-wrap gap-2">
+          {bookingDirectoryLinks.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                className="inline-flex border border-formula-frost/18 bg-formula-deep/50 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-paper transition-colors hover:border-formula-volt/40 hover:text-formula-volt"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       {isPortal ? (
-        <section aria-labelledby="ba-account-heading" className="rounded-sm border border-formula-frost/14 bg-formula-paper/[0.04] p-4">
+        <section
+          id="booking-account"
+          aria-labelledby="ba-account-heading"
+          className="scroll-mt-24 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.04] p-4"
+        >
           <h2 id="ba-account-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
             Your account
           </h2>
@@ -118,7 +155,7 @@ export function BookAssessmentClient({
           <p className="mt-1 text-[13px] text-formula-frost/75">{billingEmail}</p>
         </section>
       ) : (
-        <section aria-labelledby="ba-contact-heading">
+        <section id="booking-contact" aria-labelledby="ba-contact-heading" className="scroll-mt-24">
           <h2 id="ba-contact-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
             Guardian contact
           </h2>
@@ -258,7 +295,7 @@ export function BookAssessmentClient({
         <p className="text-[12px] text-formula-frost/55">
           Already have a portal account?{' '}
           <Link
-            href={`/login?role=parent&next=${encodeURIComponent('/parent/book-assessment')}`}
+            href={`/login?role=parent&next=${encodeURIComponent(MARKETING_HREF.parentBookAssessmentDirectory)}`}
             className="text-formula-volt underline-offset-2 hover:underline"
           >
             Sign in to book here

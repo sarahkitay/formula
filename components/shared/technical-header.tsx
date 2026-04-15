@@ -31,10 +31,17 @@ export interface TechnicalHeaderProps {
   endSessionVariant?: 'login-link' | 'logout-button'
 }
 
+function pathWithoutHash(href: string): string {
+  const i = href.indexOf('#')
+  return i === -1 ? href : href.slice(0, i)
+}
+
 function navItemActive(pathname: string | null, href: string, homeHref: string): boolean {
   if (!pathname) return false
-  if (href === homeHref) return pathname === homeHref
-  return pathname === href || pathname.startsWith(`${href}/`)
+  const base = pathWithoutHash(href)
+  const home = pathWithoutHash(homeHref)
+  if (base === home) return pathname === home
+  return pathname === base || pathname.startsWith(`${base}/`)
 }
 
 export function TechnicalHeader({

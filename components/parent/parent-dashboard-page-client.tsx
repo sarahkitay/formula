@@ -22,6 +22,7 @@ import {
 } from '@/lib/mock-data/parent-portal'
 import { useParentLinkedPlayers } from '@/components/parent/parent-linked-players-context'
 import { fetchParentBlockBookings } from '@/lib/parent/parent-block-bookings'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { supabase } from '@/lib/supabase'
 
 type HomeNote = { playerId: string; firstName: string; date: string; summary: string }
@@ -169,7 +170,7 @@ export function ParentDashboardPageClient() {
                 minute: '2-digit',
               }),
               detail: `${raw.num_kids} athlete(s) · paid booking`,
-              href: '/parent/book-assessment',
+              href: MARKETING_HREF.parentBookAssessmentDirectory,
             },
           })
         }
@@ -459,7 +460,7 @@ export function ParentDashboardPageClient() {
                   Schedule & booking
                 </Link>
                 <Link
-                  href="/parent/book-assessment"
+                  href={MARKETING_HREF.parentBookAssessmentDirectory}
                   className="inline-flex h-9 items-center border border-formula-frost/20 px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-paper hover:border-formula-frost/35"
                 >
                   Book assessment

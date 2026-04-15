@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
-import { HEADER_MAIN, MARKETING_HREF } from '@/lib/marketing/nav'
+import { getSiteHeaderPrimaryNav, MARKETING_HREF } from '@/lib/marketing/nav'
 
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -27,7 +27,7 @@ export function SiteHeader() {
           />
 
           <nav className="hidden min-w-0 flex-1 items-center gap-x-5 overflow-x-auto py-1 md:flex lg:gap-x-6" aria-label="Primary">
-            {HEADER_MAIN.map(item => (
+            {getSiteHeaderPrimaryNav().map(item => (
               <NavLink key={item.href} href={item.href}>
                 {item.label}
               </NavLink>
@@ -54,7 +54,7 @@ export function SiteHeader() {
           className="-mx-5 flex gap-4 overflow-x-auto border-t border-formula-frost/8 px-5 py-2.5 md:hidden"
           aria-label="Primary"
         >
-          {HEADER_MAIN.map(item => (
+          {getSiteHeaderPrimaryNav().map(item => (
             <Link
               key={item.href}
               href={item.href}

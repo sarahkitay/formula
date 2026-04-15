@@ -5,6 +5,9 @@ describe('sanitizePostLoginPath', () => {
   it('allows same-origin absolute paths', () => {
     expect(sanitizePostLoginPath('/parent/dashboard')).toBe('/parent/dashboard')
     expect(sanitizePostLoginPath(' /parent/bookings ')).toBe('/parent/bookings')
+    expect(sanitizePostLoginPath('/parent/book-assessment#booking-hub-directory')).toBe(
+      '/parent/book-assessment#booking-hub-directory'
+    )
   })
 
   it('rejects open redirects and protocol-relative URLs', () => {

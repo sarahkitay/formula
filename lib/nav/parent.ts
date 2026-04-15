@@ -1,4 +1,5 @@
 import type { NavItem } from '@/lib/nav/types'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
 
 /** Parent portal - clarity, structure, trust; no leaderboard culture */
 export const parentNav: NavItem[] = [
@@ -18,7 +19,7 @@ export const parentNav: NavItem[] = [
   },
   {
   label: 'Book assessment',
-  href: '/parent/book-assessment',
+  href: MARKETING_HREF.parentBookAssessmentDirectory,
   icon: 'CalendarClock',
   description: 'Same live windows · checkout uses your account',
   gridStatus: 'neutral',

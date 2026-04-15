@@ -1,3 +1,5 @@
+import { MARKETING_HREF } from '@/lib/marketing/nav'
+
 /** Quick-search targets: keywords are matched substring-wise (lowercase). */
 export type ParentPortalSearchItem = {
   id: string
@@ -26,7 +28,7 @@ export const PARENT_PORTAL_SEARCH_ITEMS: ParentPortalSearchItem[] = [
     id: 'assessment',
     label: 'Book an assessment',
     description: 'Skills check and placement',
-    href: '/parent/book-assessment',
+    href: MARKETING_HREF.parentBookAssessmentDirectory,
     keywords: ['assessment', 'skills', 'check', 'evaluate', 'book assessment', 'signup', 'register assessment'],
   },
   {

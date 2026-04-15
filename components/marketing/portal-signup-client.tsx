@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { PORTAL_SIGNUP_AGE_GROUPS } from '@/lib/parent/portal-signup-age-groups'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
@@ -152,7 +153,7 @@ export function PortalSignupClient() {
     return (
       <p className="text-[14px] text-formula-frost/80">
         Go to{' '}
-        <Link href="/book-assessment" className="text-formula-volt underline-offset-2 hover:underline">
+        <Link href={MARKETING_HREF.bookAssessmentDirectory} className="text-formula-volt underline-offset-2 hover:underline">
           book an assessment
         </Link>{' '}
         first, then return here from the post-checkout link.

@@ -8,6 +8,7 @@ import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { loadProfileForUser } from '@/lib/auth/load-profile'
 import { supabase } from '@/lib/supabase'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SITE } from '@/lib/site-config'
 
 export function ParentBookAssessmentClient() {
@@ -29,7 +30,7 @@ export function ParentBookAssessmentClient() {
       if (cancelled) return
 
       if (userErr || !user) {
-        router.replace(`/login?role=parent&next=${encodeURIComponent('/parent/book-assessment')}`)
+        router.replace(`/login?role=parent&next=${encodeURIComponent(MARKETING_HREF.parentBookAssessmentDirectory)}`)
         return
       }
 
