@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server'
+import Stripe from 'stripe'
 import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
 import { slotHasRoom } from '@/lib/assessment/slots-server'
-import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimSlotForCheckout } from '@/lib/rentals/rental-slots'
+import {
+  attachStripeSessionToSlot,
+  releasePendingSlotByRef,
+  tryClaimRecurringWeeklySlots,
+} from '@/lib/rentals/rental-slots'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
 import { getSiteOrigin, getStripe } from '@/lib/stripe/server'
@@ -59,6 +64,7 @@ export async function POST(req: Request) {
   const origin = getSiteOrigin()
 
   let line_items = lineItemsForCheckoutType(type)
+  let fieldRentalWeeks = 1
 
   if (type === 'assessment') {
     const slotId = metadataExtra.assessment_slot_id?.trim()
@@ -105,15 +111,22 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
-    const claimed = await tryClaimSlotForCheckout({
+    const rw = parseInt(metadataExtra.rental_weeks ?? '1', 10)
+    fieldRentalWeeks = Number.isFinite(rw) ? Math.min(52, Math.max(1, Math.floor(rw))) : 1
+    line_items = lineItemsForCheckoutType(type, { fieldRentalSessionWeeks: fieldRentalWeeks })
+    const claimed = await tryClaimRecurringWeeklySlots({
       fieldId: rentalSlot.field,
-      sessionDate: rentalSlot.date,
+      anchorDateYmd: rentalSlot.date,
       timeSlot: rentalSlot.window,
       rentalRef: rentalSlot.ref,
+      weekCount: fieldRentalWeeks,
     })
     if (!claimed) {
       return NextResponse.json(
-        { error: 'That field and time slot are already booked. Choose another window or field.' },
+        {
+          error:
+            'One or more weeks in that recurring series are already booked for this field and window. Reduce weeks or pick different dates.',
+        },
         { status: 409 }
       )
     }
@@ -133,6 +146,7 @@ export async function POST(req: Request) {
         type,
         twilio_sms_opt_in: smsConsent ? 'true' : 'false',
         ...metadataExtra,
+        ...(type === 'field-rental-booking' ? { rental_weeks: String(fieldRentalWeeks) } : {}),
       },
       ...(prefillEmail ? { customer_email: prefillEmail } : {}),
       customer_creation: 'always',
@@ -164,6 +178,10 @@ export async function POST(req: Request) {
       await releasePendingSlotByRef(rentalSlot.ref)
     }
     console.error('[checkout/session]', e)
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
+    const stripeDetail = e instanceof Stripe.errors.StripeError ? e.message : null
+    return NextResponse.json(
+      { error: stripeDetail ?? 'Failed to create checkout session' },
+      { status: 500 }
+    )
   }
 }

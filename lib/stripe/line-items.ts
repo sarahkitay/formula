@@ -5,6 +5,8 @@ import type { CheckoutType } from '@/lib/stripe/checkout-types'
 export type LineItemsOptions = {
   /** Skills Check: one line item per athlete (quantity 1–4). */
   assessmentQuantity?: number
+  /** Field rental: number of weekly sessions at published per-session price (default 1). */
+  fieldRentalSessionWeeks?: number
 }
 
 /**
@@ -21,6 +23,7 @@ export function lineItemsForCheckoutType(
         quantity: q,
         price_data: {
           currency: 'usd',
+          tax_behavior: 'exclusive',
           product_data: {
             name: FORMULA_SKILLS_CHECK.name,
             description:
@@ -40,6 +43,7 @@ export function lineItemsForCheckoutType(
         quantity: 1,
         price_data: {
           currency: 'usd',
+          tax_behavior: 'exclusive',
           product_data: {
             name: `${SESSION_PACKAGE_10.sessions}-session package`,
             description: SESSION_PACKAGE_10.summary,
@@ -51,16 +55,25 @@ export function lineItemsForCheckoutType(
   }
 
   if (type === 'field-rental-booking') {
+    const weeks = Math.min(52, Math.max(1, Math.floor(options?.fieldRentalSessionWeeks ?? 1)))
+    const unitCents = Math.round(FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * 100)
     return [
       {
-        quantity: 1,
+        quantity: weeks,
         price_data: {
           currency: 'usd',
+          tax_behavior: 'exclusive',
           product_data: {
-            name: FIELD_RENTAL_BOOKING_CHECKOUT.productName,
-            description: FIELD_RENTAL_BOOKING_CHECKOUT.summary,
+            name:
+              weeks === 1
+                ? FIELD_RENTAL_BOOKING_CHECKOUT.productName
+                : `Field rental · ${weeks} weekly sessions`,
+            description:
+              weeks === 1
+                ? FIELD_RENTAL_BOOKING_CHECKOUT.summary
+                : `${weeks} sessions (same field & time window, consecutive weeks) at $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} each. Non-refundable booking hold; staff may reconcile any balance vs published rates.`,
           },
-          unit_amount: Math.round(FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * 100),
+          unit_amount: unitCents,
         },
       },
     ]

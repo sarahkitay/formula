@@ -5,6 +5,7 @@
 
 import type Stripe from 'stripe'
 import { getServiceSupabase } from '@/lib/supabase/service'
+import { weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 
 export type RentalSlotFields = {
   fieldId: string
@@ -79,6 +80,30 @@ export async function listUnavailableSlotsForDate(sessionDate: string): Promise<
   return out
 }
 
+/** Claim the same field + time window on consecutive weekly dates (anchor = first session). Rolls back all on any failure. */
+export async function tryClaimRecurringWeeklySlots(params: {
+  fieldId: string
+  timeSlot: string
+  rentalRef: string
+  anchorDateYmd: string
+  weekCount: number
+}): Promise<boolean> {
+  const dates = weeklyOccurrenceDatesIso(params.anchorDateYmd, params.weekCount)
+  for (const sessionDate of dates) {
+    const ok = await tryClaimSlotForCheckout({
+      fieldId: params.fieldId,
+      sessionDate,
+      timeSlot: params.timeSlot,
+      rentalRef: params.rentalRef,
+    })
+    if (!ok) {
+      await releasePendingSlotByRef(params.rentalRef)
+      return false
+    }
+  }
+  return true
+}
+
 /** Returns false if the slot is already held or confirmed. */
 export async function tryClaimSlotForCheckout(fields: RentalSlotFields): Promise<boolean> {
   const supabase = getServiceSupabase()
@@ -128,6 +153,7 @@ export async function tryClaimSlotForCheckout(fields: RentalSlotFields): Promise
   return true
 }
 
+/** Attach checkout session id to every pending row for this rental ref (single or recurring weeks). */
 export async function attachStripeSessionToSlot(fields: RentalSlotFields, stripeSessionId: string): Promise<void> {
   const supabase = getServiceSupabase()
   if (supabase) {
@@ -135,16 +161,14 @@ export async function attachStripeSessionToSlot(fields: RentalSlotFields, stripe
       .from('rental_slot_bookings')
       .update({ stripe_checkout_session_id: stripeSessionId })
       .eq('rental_ref', fields.rentalRef)
-      .eq('field_id', fields.fieldId)
-      .eq('session_date', fields.sessionDate)
-      .eq('time_slot', fields.timeSlot)
+      .eq('status', 'pending')
     return
   }
 
-  const key = slotKey(fields.fieldId, fields.sessionDate, fields.timeSlot)
-  const entry = memoryBookings.get(key)
-  if (entry && entry.rentalRef === fields.rentalRef) {
-    entry.stripeCheckoutSessionId = stripeSessionId
+  for (const entry of memoryBookings.values()) {
+    if (entry.rentalRef === fields.rentalRef && entry.status === 'pending') {
+      entry.stripeCheckoutSessionId = stripeSessionId
+    }
   }
 }
 
@@ -184,8 +208,7 @@ export async function confirmSlotFromPaidCheckout(session: Stripe.Checkout.Sessi
       })
       .eq('rental_ref', rentalRef)
       .eq('field_id', fieldId)
-      .eq('session_date', sessionDate)
-      .eq('time_slot', timeSlot)
+      .eq('status', 'pending')
 
     if (error) {
       console.error('[rental-slots] confirm update:', error.message)
@@ -193,11 +216,11 @@ export async function confirmSlotFromPaidCheckout(session: Stripe.Checkout.Sessi
     return
   }
 
-  const key = slotKey(fieldId, sessionDate, timeSlot)
-  memoryBookings.set(key, {
-    rentalRef,
-    stripeCheckoutSessionId: session.id,
-    status: 'confirmed',
-    pendingExpiresAt: Date.now() + 365 * 24 * 60 * 60 * 1000,
-  })
+  for (const [, entry] of memoryBookings.entries()) {
+    if (entry.rentalRef === rentalRef && entry.status === 'pending') {
+      entry.status = 'confirmed'
+      entry.stripeCheckoutSessionId = session.id
+      entry.pendingExpiresAt = Date.now() + 365 * 24 * 60 * 60 * 1000
+    }
+  }
 }

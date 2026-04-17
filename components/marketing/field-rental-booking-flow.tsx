@@ -10,6 +10,7 @@ import {
   classifyRentalBooking,
   insuranceMayBeRequired,
 } from '@/lib/rentals/booking-classification'
+import { weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 
 const PAYMENT_STEP = 6
 const STEP_LABELS = ['Type', 'Slot', 'Headcount', 'Tier', 'Rules', 'Pay'] as const
@@ -82,6 +83,9 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   const [agreementOk, setAgreementOk] = useState(false)
   const [confirmedRef, setConfirmedRef] = useState<string | null>(null)
   const [bookedSlots, setBookedSlots] = useState<{ fieldId: string; timeSlot: string }[]>([])
+  const [weeklySessions, setWeeklySessions] = useState(1)
+  const [recurringConflict, setRecurringConflict] = useState(false)
+  const [recurringChecking, setRecurringChecking] = useState(false)
 
   const countNum = useMemo(() => {
     const n = parseInt(participantCount, 10)
@@ -108,6 +112,44 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
     (field: string, slot: string) => bookedSlots.some(b => b.fieldId === field && b.timeSlot === slot),
     [bookedSlots]
   )
+
+  const recurringDates = useMemo(() => {
+    if (!sessionDate || !/^\d{4}-\d{2}-\d{2}$/.test(sessionDate)) return []
+    return weeklyOccurrenceDatesIso(sessionDate, weeklySessions)
+  }, [sessionDate, weeklySessions])
+
+  useEffect(() => {
+    if (!fieldId || !timeSlot || recurringDates.length === 0) {
+      setRecurringConflict(false)
+      setRecurringChecking(false)
+      return
+    }
+    let cancelled = false
+    setRecurringChecking(true)
+    void Promise.all(
+      recurringDates.map(d =>
+        fetch(`/api/rental-slots?date=${encodeURIComponent(d)}`)
+          .then(r => r.json())
+          .then((data: { booked?: { fieldId: string; timeSlot: string }[] }) => data.booked ?? [])
+      )
+    )
+      .then(bookLists => {
+        if (cancelled) return
+        const bad = bookLists.some(booked =>
+          booked.some(b => b.fieldId === fieldId && b.timeSlot === timeSlot)
+        )
+        setRecurringConflict(bad)
+      })
+      .catch(() => {
+        if (!cancelled) setRecurringConflict(true)
+      })
+      .finally(() => {
+        if (!cancelled) setRecurringChecking(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [recurringDates, fieldId, timeSlot])
 
   useEffect(() => {
     if (!sessionDate) {
@@ -136,7 +178,17 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
     }
   }, [fieldId, timeSlot, isSlotBooked])
 
-  const step2Valid = sessionDate !== '' && timeSlot !== '' && fieldId !== '' && !isSlotBooked(fieldId, timeSlot)
+  const step2Valid =
+    sessionDate !== '' &&
+    timeSlot !== '' &&
+    fieldId !== '' &&
+    !isSlotBooked(fieldId, timeSlot) &&
+    !recurringConflict &&
+    !recurringChecking &&
+    weeklySessions >= 1 &&
+    weeklySessions <= 52
+
+  const rentalCheckoutCents = FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * weeklySessions
 
   const goToPaymentStep = () => {
     const ref = `FR-${Date.now().toString(36).toUpperCase()}`
@@ -265,6 +317,34 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               </select>
             </label>
           </div>
+          <label className="flex max-w-md flex-col gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">
+              Recurring · same field & window (consecutive weeks)
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={52}
+              value={weeklySessions}
+              onChange={e => {
+                const n = parseInt(e.target.value, 10)
+                setWeeklySessions(Number.isFinite(n) ? Math.min(52, Math.max(1, n)) : 1)
+              }}
+              className="h-11 max-w-[10rem] border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+            />
+            <span className="text-xs text-formula-mist">
+              {weeklySessions} session{weeklySessions === 1 ? '' : 's'} × ${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} ={' '}
+              <strong className="text-formula-paper">${rentalCheckoutCents}</strong> charged at checkout (Stripe).
+            </span>
+          </label>
+          {recurringChecking ? (
+            <p className="font-mono text-[10px] text-formula-frost/55">Checking calendar for every week in this series…</p>
+          ) : null}
+          {recurringConflict ? (
+            <p className="text-sm text-amber-200/95">
+              One or more weeks in this series already has this field and window booked. Lower the week count or pick a different start date, field, or time.
+            </p>
+          ) : null}
           <div className="flex flex-wrap justify-between gap-3">
             <button
               type="button"
@@ -450,7 +530,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               onClick={goToPaymentStep}
               className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black disabled:opacity-40"
             >
-              {`Pay $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} deposit (Stripe)`}
+              {`Pay $${rentalCheckoutCents} deposit (Stripe)`}
             </button>
           </div>
         </div>
@@ -467,20 +547,21 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             <p className="font-mono text-xs font-semibold text-formula-paper">Reference {confirmedRef}</p>
             <ul className="mt-3 list-inside list-disc space-y-1">
               <li>Type: {rentalType.replace(/_/g, ' ')}</li>
-              <li>Date: {sessionDate}</li>
+              <li>First session date: {sessionDate}</li>
+              <li>Weekly sessions: {weeklySessions}</li>
               <li>Window: {timeSlot}</li>
               <li>Field: {FIELDS.find(f => f.value === fieldId)?.label ?? fieldId}</li>
               <li>Participants: {countNum}</li>
               <li>Renter: {renterName.trim()}</li>
             </ul>
             <p className="mt-4 text-formula-paper">
-              Total due now: <strong>${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong> ({FIELD_RENTAL_BOOKING_CHECKOUT.productName})
+              Total due now: <strong>${rentalCheckoutCents}</strong> ({weeklySessions} × ${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} per session)
             </p>
             <p className="mt-2 text-xs">{FIELD_RENTAL_BOOKING_CHECKOUT.summary}</p>
           </div>
           <CheckoutLaunchButton
             checkoutType="field-rental-booking"
-            label={`Pay $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} with Stripe`}
+            label={`Pay $${rentalCheckoutCents} with Stripe`}
             successNext="field-rental"
             metadata={{
               rental_ref: confirmedRef,
@@ -488,6 +569,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               rental_date: sessionDate.slice(0, 40),
               rental_window: timeSlot.slice(0, 80),
               rental_field: fieldId.slice(0, 40),
+              rental_weeks: String(weeklySessions),
               rental_participants: String(countNum),
               renter_name: renterName.trim().slice(0, 80),
               renter_email: renterEmail.trim().slice(0, 80),
