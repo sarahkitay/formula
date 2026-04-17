@@ -7,22 +7,19 @@ import { PageHeader } from '@/components/ui/page-header'
 import { SectionHeader } from '@/components/ui/section-header'
 import { Button } from '@/components/ui/button'
 import { Modal, ModalBody, ModalFooter } from '@/components/ui/modal'
-import { Badge, StatusPill, SessionTypeBadge } from '@/components/ui/badge'
+import { Badge, StatusPill } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ControlScheduleGrid, DAY_LABELS } from '@/components/schedule/control-schedule-grid'
 import type { AgeGroup } from '@/types/player'
 import { useParentLinkedPlayers } from '@/components/parent/parent-linked-players-context'
-import { getUpcomingSessions } from '@/lib/mock-data/sessions'
-import { getSessionById } from '@/lib/mock-data/sessions'
 import { getAvatarColor, cn } from '@/lib/utils'
 import { parentPortalInsetStrip } from '@/lib/parent/portal-surface'
 import { SITE } from '@/lib/site-config'
-import { weeklyBlockAllowance } from '@/lib/mock-data/parent-portal'
-import { generateWeeklySchedule, startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
+import { weeklyBlockAllowance } from '@/lib/parent/block-allowance-config'
+import { startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
 import { ageGroupToScheduleBand } from '@/lib/schedule/age-map'
 import { getBookableYouthSlots } from '@/lib/schedule/parent'
-import type { BookableYouthSlot } from '@/types/schedule'
-import type { DayIndex, ScheduleSlot } from '@/types/schedule'
+import type { BookableYouthSlot, DayIndex, GeneratedWeek, ScheduleSlot } from '@/types/schedule'
 import {
   createParentBlockBooking,
   fetchParentBlockBookings,
@@ -63,6 +60,12 @@ function bandInstant(weekStart: string, dayIndex: DayIndex, minute: number): Dat
   return d
 }
 
+function shiftFacilityWeekStart(weekStart: string, deltaWeeks: number): string {
+  const sun = new Date(`${weekStart}T12:00:00`)
+  sun.setDate(sun.getDate() + deltaWeeks * 7)
+  return toISODateLocal(sun)
+}
+
 type PendingGridPayload = {
   slotRef: string
   playerId: string
@@ -100,13 +103,49 @@ export default function ParentBookingsPage() {
   const [rowActionId, setRowActionId] = useState<string | null>(null)
   const [bookingFlash, setBookingFlash] = useState<string | null>(null)
 
-  const generatedWeek = useMemo(() => {
-    const sun = startOfScheduleWeek(new Date())
-    const wix = Math.floor(sun.getTime() / (7 * 86400000)) % 52
-    return generateWeeklySchedule(new Date(), [], wix)
-  }, [])
+  const [weekStartStr, setWeekStartStr] = useState(() => toISODateLocal(startOfScheduleWeek(new Date())))
+  const [generatedWeek, setGeneratedWeek] = useState<GeneratedWeek | null>(null)
+  const [publishedWeekError, setPublishedWeekError] = useState<string | null>(null)
+  const [publishedCycle, setPublishedCycle] = useState<{
+    currentCycleLabel: string
+    weekInCycle: number
+    totalWeeksInCycle: number
+    nextCycleStartDisplay: string
+  } | null>(null)
 
-  const weekStartStr = generatedWeek.weekStart
+  useEffect(() => {
+    let cancelled = false
+    setPublishedWeekError(null)
+    ;(async () => {
+      try {
+        const res = await fetch(`/api/schedule/published-week?weekStart=${encodeURIComponent(weekStartStr)}`)
+        const body = (await res.json()) as {
+          week?: GeneratedWeek
+          cycle?: {
+            currentCycleLabel: string
+            weekInCycle: number
+            totalWeeksInCycle: number
+            nextCycleStartDisplay: string
+          }
+          error?: string
+        }
+        if (!res.ok) throw new Error(body.error ?? 'Failed to load schedule')
+        if (!cancelled) {
+          setGeneratedWeek(body.week ?? null)
+          setPublishedCycle(body.cycle ?? null)
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setGeneratedWeek(null)
+          setPublishedCycle(null)
+          setPublishedWeekError(e instanceof Error ? e.message : 'Failed to load schedule')
+        }
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [weekStartStr])
 
   const reloadBookings = useCallback(async () => {
     setBookingsLoadError(null)
@@ -160,17 +199,13 @@ export default function ParentBookingsPage() {
   const scheduleBand = selectedPlayer ? ageGroupToScheduleBand(selectedPlayer.ageGroup) : null
 
   const bookableSlots = useMemo(
-    () => getBookableYouthSlots(generatedWeek, scheduleBand, enrollmentBySlotRef),
+    () =>
+      generatedWeek ? getBookableYouthSlots(generatedWeek, scheduleBand, enrollmentBySlotRef) : [],
     [generatedWeek, scheduleBand, enrollmentBySlotRef]
   )
   const bookableByYouthBlock = useMemo(
     () => new Map(bookableSlots.map((slot) => [slot.youthBlockId, slot.id] as const)),
     [bookableSlots]
-  )
-
-  const availableSessions = getUpcomingSessions().filter(
-    (s) =>
-      s.ageGroups.includes(selectedPlayer?.ageGroup ?? '') && s.enrolledCount < s.capacity
   )
 
   const isYouthSlotBooked = useCallback(
@@ -183,17 +218,6 @@ export default function ParentBookingsPage() {
           b.status === 'confirmed'
       ),
     [dbBookings, selectedPlayerId, weekStartStr]
-  )
-
-  const isLegacySessionBooked = useCallback(
-    (sessionId: string) =>
-      dbBookings.some(
-        (b) =>
-          b.player_id === selectedPlayerId &&
-          b.slot_ref === `legacy-${sessionId}` &&
-          b.status === 'confirmed'
-      ),
-    [dbBookings, selectedPlayerId]
   )
 
   const persistPayload = useCallback(
@@ -343,32 +367,6 @@ export default function ParentBookingsPage() {
     }
   }
 
-  const handleBookLegacySession = async (sessionId: string) => {
-    if (!selectedPlayer) return
-    const session = getSessionById(sessionId)
-    if (!session) return
-    if (isLegacySessionBooked(sessionId)) {
-      setBookingFlash('This session is already saved.')
-      return
-    }
-    setRowActionId(`legacy-${sessionId}`)
-    try {
-      const weekStart = toISODateLocal(startOfScheduleWeek(new Date(session.startTime)))
-      const r = await persistPayload({
-        slotRef: `legacy-${sessionId}`,
-        playerId: selectedPlayer.id,
-        weekStart,
-        title: session.title,
-        startsAt: new Date(session.startTime).toISOString(),
-        endsAt: new Date(session.endTime).toISOString(),
-      })
-      if (!r.ok && 'duplicate' in r && r.duplicate) setBookingFlash('Already saved — list updated.')
-      else if (!r.ok && 'message' in r && r.message) setBookingFlash(r.message)
-    } finally {
-      setRowActionId(null)
-    }
-  }
-
   const myBlockBookings = useMemo(() => {
     if (!selectedPlayer) return []
     return dbBookings
@@ -414,14 +412,23 @@ export default function ParentBookingsPage() {
             <strong className="text-formula-volt">{weeklyBlockAllowance.performanceElite.label}</strong>: up to{' '}
             {weeklyBlockAllowance.performanceElite.blocksPerWeek} blocks per week.
           </p>
-          <p className="mt-2 font-bold uppercase tracking-wide text-formula-paper">System schedule</p>
+          <p className="mt-2 font-bold uppercase tracking-wide text-formula-paper">Published facility schedule</p>
           <p className="mt-1">
-            Blocks are pre-built by the facility engine. The schedule map and enroll list only include rows whose age
-            matches your child&apos;s training band: roster{' '}
+            Blocks follow the same published week as the marketing site (staff can adjust blackouts and overrides in
+            Admin → Schedule). The map and enroll list only include rows whose age matches your child&apos;s training
+            band: roster{' '}
             <strong className="text-formula-volt">{selectedPlayer?.ageGroup ?? 'N/A'}</strong> →{' '}
             <strong className="text-formula-volt">{scheduleBand ?? 'N/A'}</strong> (same ages shown next to stations,
             e.g. Station 1 // 12-14).
           </p>
+          {publishedCycle ? (
+            <p className="mt-2 font-mono text-[11px] text-formula-frost/85">
+              <span className="text-formula-mist">12-week cycle · </span>
+              {publishedCycle.currentCycleLabel} · week {publishedCycle.weekInCycle}/{publishedCycle.totalWeeksInCycle}
+              <span className="text-formula-mist"> · next cycle </span>
+              {publishedCycle.nextCycleStartDisplay}
+            </p>
+          ) : null}
           <p className="mt-1.5 text-formula-mist">{SITE.cancellationPolicy}</p>
           <p className="mt-1.5 text-formula-mist">{SITE.membershipPolicy}</p>
         </div>
@@ -466,6 +473,41 @@ export default function ParentBookingsPage() {
                     title="Training floor: this week"
                     description={`Full floor view. Green = Open Gym + sessions for ${scheduleBand}. Click green blocks to enroll.`}
                   />
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-sm border border-formula-frost/12 bg-formula-paper/[0.03] px-2 py-2 font-mono text-[10px] text-formula-mist">
+                    <span className="tabular-nums text-formula-frost/90">Week of {weekStartStr}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-[10px]"
+                        onClick={() => setWeekStartStr(ws => shiftFacilityWeekStart(ws, -1))}
+                      >
+                        Prev week
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-[10px]"
+                        onClick={() => setWeekStartStr(toISODateLocal(startOfScheduleWeek(new Date())))}
+                      >
+                        This week
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-[10px]"
+                        onClick={() => setWeekStartStr(ws => shiftFacilityWeekStart(ws, 1))}
+                      >
+                        Next week
+                      </Button>
+                    </div>
+                  </div>
+                  {publishedWeekError ? (
+                    <p className="text-sm text-error">{publishedWeekError}</p>
+                  ) : null}
                   <div className="flex flex-wrap gap-1 rounded-sm border border-formula-frost/12 bg-formula-paper/[0.03] p-1">
                     {([0, 1, 2, 3, 4, 5, 6] as const).map((d) => (
                       <button
@@ -484,23 +526,27 @@ export default function ParentBookingsPage() {
                     ))}
                   </div>
                   <div className="overflow-x-auto">
-                    <ControlScheduleGrid
-                      week={generatedWeek}
-                      dayIndex={gridDay}
-                      assetFilter={PARENT_SCHEDULE_ASSETS}
-                      scheduleAgeBand={scheduleBand ?? undefined}
-                      parentMode
-                      onSlotClick={handleGridSlotClick}
-                      isSlotInteractive={(slot) => {
-                        if (!canBookGridSlot(slot)) return false
-                        const ref = resolveGridBookId(slot)
-                        if (!ref) return false
-                        if (isYouthSlotBooked(ref)) return false
-                        const row = bookableSlots.find((b) => b.id === ref)
-                        if (row && row.enrolled >= row.capacity) return false
-                        return true
-                      }}
-                    />
+                    {generatedWeek ? (
+                      <ControlScheduleGrid
+                        week={generatedWeek}
+                        dayIndex={gridDay}
+                        assetFilter={PARENT_SCHEDULE_ASSETS}
+                        scheduleAgeBand={scheduleBand ?? undefined}
+                        parentMode
+                        onSlotClick={handleGridSlotClick}
+                        isSlotInteractive={(slot) => {
+                          if (!canBookGridSlot(slot)) return false
+                          const ref = resolveGridBookId(slot)
+                          if (!ref) return false
+                          if (isYouthSlotBooked(ref)) return false
+                          const row = bookableSlots.find((b) => b.id === ref)
+                          if (row && row.enrolled >= row.capacity) return false
+                          return true
+                        }}
+                      />
+                    ) : (
+                      <p className="py-8 text-center font-mono text-sm text-formula-mist">Loading schedule…</p>
+                    )}
                   </div>
                 </div>
               )}
@@ -648,51 +694,12 @@ export default function ParentBookingsPage() {
               )}
 
               <SectionHeader
-                title={`Open roster sessions: ${selectedPlayer.ageGroup}`}
-                description={`${availableSessions.length} legacy / coach-led sessions (if listed)`}
+                title="Coach-led add-ons"
+                description="Extra sessions from coaches will list here when that feed is connected to the portal."
               />
-              {availableSessions.length === 0 ? (
-                <p className="text-xs text-text-muted">No additional coach sessions in mock data.</p>
-              ) : (
-                <div className="space-y-3">
-                  {availableSessions.map((session) => {
-                    const isBooked = isLegacySessionBooked(session.id)
-                    const spotsLeft = session.capacity - session.enrolledCount
-                    const busy = rowActionId === `legacy-${session.id}`
-                    return (
-                      <div
-                        key={session.id}
-                        className={cn(
-                          'rounded-xl border border-formula-frost/12 bg-formula-paper/[0.04] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]',
-                          isBooked && 'border-formula-volt/35 bg-formula-volt/10'
-                        )}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-semibold text-text-primary">{session.title}</p>
-                            <SessionTypeBadge type={session.sessionType} />
-                            <p className="mt-1 text-xs text-text-muted">
-                              {spotsLeft} spots · {session.fieldName}
-                            </p>
-                          </div>
-                          {!isBooked ? (
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              disabled={busy}
-                              onClick={() => void handleBookLegacySession(session.id)}
-                            >
-                              {busy ? 'Saving…' : 'Book'}
-                            </Button>
-                          ) : (
-                            <span className="text-xs font-medium text-formula-volt">Booked</span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+              <p className="text-xs text-text-muted">
+                Youth blocks above are the supported booking path from the published facility schedule.
+              </p>
             </div>
 
             {/* Right: upcoming bookings */}

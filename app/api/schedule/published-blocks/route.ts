@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
-import { generateWeeklySchedule, startOfScheduleWeek } from '@/lib/schedule/generator'
+import { startOfScheduleWeek } from '@/lib/schedule/generator'
+import { fetchFacilityScheduleConfig } from '@/lib/schedule/facility-schedule-config-server'
+import { buildPublishedWeek } from '@/lib/schedule/published-week'
 import { getBookableYouthSlots } from '@/lib/schedule/parent'
 import { fetchYouthBlockEnrollmentBySlotRef } from '@/lib/schedule/youth-block-enrollment'
 import type { ScheduleAgeBand } from '@/types/schedule'
@@ -18,8 +20,8 @@ export async function GET(req: Request) {
     const weekStartRaw = searchParams.get('weekStart')?.trim()
     const base = weekStartRaw ? new Date(`${weekStartRaw}T12:00:00`) : new Date()
     const sun = startOfScheduleWeek(base)
-    const wix = Math.floor(sun.getTime() / (7 * 86400000)) % 52
-    const week = generateWeeklySchedule(base, [], wix)
+    const config = await fetchFacilityScheduleConfig()
+    const week = buildPublishedWeek(sun, config)
     const enrollment = await fetchYouthBlockEnrollmentBySlotRef(week.weekStart)
 
     const bands: Record<string, ReturnType<typeof getBookableYouthSlots>> = {}
@@ -27,7 +29,16 @@ export async function GET(req: Request) {
       bands[b] = getBookableYouthSlots(week, b, enrollment)
     }
 
-    return NextResponse.json({ weekStart: week.weekStart, bands })
+    return NextResponse.json({
+      weekStart: week.weekStart,
+      bands,
+      cycle: {
+        currentCycleLabel: config.currentCycleLabel,
+        weekInCycle: config.weekInCycle,
+        totalWeeksInCycle: config.totalWeeksInCycle,
+        nextCycleStartDisplay: config.nextCycleStartDisplay,
+      },
+    })
   } catch (e) {
     console.error('[published-blocks]', e)
     return NextResponse.json({ error: 'Failed to load published blocks' }, { status: 500 })

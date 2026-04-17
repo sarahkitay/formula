@@ -292,8 +292,8 @@ export default function StaffPortalHubPage() {
       </header>
 
       <main className="mx-auto max-w-3xl space-y-8 px-6 py-10">
-        <section className="border border-formula-frost/15 bg-formula-paper/[0.03] p-6">
-          <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
+        <section className="border border-formula-frost/15 bg-formula-paper/[0.03] p-6 sm:p-7">
+          <h2 className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
             Players
           </h2>
 
@@ -318,7 +318,7 @@ export default function StaffPortalHubPage() {
               No players yet. Add rows in the Supabase Table Editor.
             </p>
           ) : (
-            <ul className="mt-4">
+            <ul className="mt-6">
               {players.map((pl) => {
                 const name =
                   [pl.first_name, pl.last_name].filter(Boolean).join(' ') || 'Unnamed'
@@ -356,30 +356,30 @@ export default function StaffPortalHubPage() {
                 return (
                   <li
                     key={pl.id}
-                    className="flex flex-col gap-3 border-b border-formula-frost/10 py-4 first:pt-0 last:border-b-0"
+                    className="flex flex-col gap-5 border-b border-formula-frost/10 py-6 last:border-b-0 last:pb-0"
                   >
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <div>
-                        <p className="font-medium text-formula-paper">{name}</p>
-                        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
+                    <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+                      <div className="min-w-0">
+                        <p className="text-base font-medium leading-snug text-formula-paper">{name}</p>
+                        <p className="mt-2 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-formula-mist">
                           Age group · {pl.age_group ?? 'N/A'}
                         </p>
                       </div>
 
-                      <div className="text-right text-sm text-formula-frost/75">
-                        <p>Program · {activeProgramName}</p>
-                        <p className="mt-1">Assessments · {completedAssessments.length}</p>
-                        <p className="mt-1">Latest · {latestAssessmentDate ?? 'N/A'}</p>
+                      <div className="shrink-0 text-right text-xs leading-snug text-formula-frost/80">
+                        <p className="tabular-nums">Program · {activeProgramName}</p>
+                        <p className="mt-1.5 tabular-nums">Assessments · {completedAssessments.length}</p>
+                        <p className="mt-1.5 tabular-nums">Latest · {latestAssessmentDate ?? 'N/A'}</p>
                       </div>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-5">
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-5 sm:gap-x-4">
                       {PILLAR_FIELDS.map(({ key, label }) => (
                         <label
                           key={key}
-                          className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-formula-mist"
+                          className="flex min-w-0 flex-col gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-formula-mist"
                         >
-                          <span className="mb-1.5 block text-formula-mist/90">{label} (0–100)</span>
+                          <span className="text-formula-mist/90">{label} (0–100)</span>
                           <input
                             type="number"
                             min={0}
@@ -393,15 +393,15 @@ export default function StaffPortalHubPage() {
                               }))
                             }
                             placeholder="—"
-                            className="w-full border border-formula-frost/20 bg-formula-paper/[0.04] px-2 py-2 font-sans text-[13px] font-normal normal-case tracking-normal text-formula-paper placeholder:text-formula-mist/45 outline-none focus:border-formula-volt/40"
+                            className="h-10 w-full border border-formula-frost/20 bg-formula-paper/[0.04] px-2.5 font-sans text-[13px] font-normal normal-case tracking-normal text-formula-paper placeholder:text-formula-mist/45 outline-none [-moz-appearance:textfield] focus:border-formula-volt/40 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                         </label>
                       ))}
                     </div>
 
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-                      <label className="min-w-0 flex-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-formula-mist">
-                        <span className="mb-1.5 block text-formula-mist/90">Assessment summary</span>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:gap-x-3">
+                      <label className="flex min-w-0 flex-col gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-formula-mist">
+                        <span className="text-formula-mist/90">Assessment summary</span>
                         <input
                           type="text"
                           value={summaryDraft[pl.id] ?? ''}
@@ -409,14 +409,14 @@ export default function StaffPortalHubPage() {
                             setSummaryDraft((prev) => ({ ...prev, [pl.id]: e.target.value }))
                           }
                           placeholder={DEFAULT_ASSESSMENT_SUMMARY}
-                          className="w-full border border-formula-frost/20 bg-formula-paper/[0.04] px-3 py-2.5 font-sans text-[13px] font-normal normal-case tracking-normal text-formula-paper placeholder:text-formula-mist/45 outline-none focus:border-formula-volt/40"
+                          className="h-10 w-full border border-formula-frost/20 bg-formula-paper/[0.04] px-3 font-sans text-[13px] font-normal normal-case tracking-normal text-formula-paper placeholder:text-formula-mist/45 outline-none focus:border-formula-volt/40"
                         />
                       </label>
                       <button
                         type="button"
                         disabled={creatingFor === pl.id}
                         onClick={() => void handleCreateAssessment(pl.id)}
-                        className="shrink-0 border border-formula-volt/50 bg-formula-volt px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-formula-base transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="h-10 min-w-[10.5rem] shrink-0 border border-formula-volt/50 bg-formula-volt px-4 font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.14em] text-formula-base transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-0"
                       >
                         {creatingFor === pl.id ? 'Saving…' : 'Create assessment'}
                       </button>

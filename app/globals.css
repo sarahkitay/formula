@@ -137,9 +137,18 @@
 .admin-os .stat-module--signal,
 .coach-os .stat-module,
 .coach-os .stat-module--signal {
-  background: #111111 !important;
-  border-color: rgb(255 255 255 / 0.1) !important;
-  box-shadow: none !important;
+  background: rgb(28 44 40 / 0.82) !important;
+  border-color: rgb(205 225 225 / 0.12) !important;
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04) !important;
+}
+
+/* Soften StatCard corner / full washes on facility OS (avoid flat #111 / harsh light centers). */
+.admin-os .stat-module::before,
+.admin-os .stat-module--signal::before,
+.coach-os .stat-module::before,
+.coach-os .stat-module--signal::before {
+  background: radial-gradient(ellipse 95% 72% at 100% -8%, rgb(0 87 0 / 0.22) 0%, transparent 62%) !important;
+  opacity: 1 !important;
 }
 
 /* Parent portal: green-tinted cards on gradient (avoid flat #111) */
@@ -161,15 +170,27 @@
 
 .admin-os .panel-technical,
 .coach-os .panel-technical {
-  background: #111111;
-  border-color: rgb(255 255 255 / 0.1);
-  box-shadow: none;
+  background: rgb(24 38 34 / 0.78);
+  border-color: rgb(205 225 225 / 0.12);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
 }
 
 .parent-os .panel-technical {
   background: rgb(24 38 34 / 0.78);
   border-color: rgb(205 225 225 / 0.12);
   box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
+}
+
+/* Cards (e.g. check-in) inherit light `.card-surface` from theme; tint on facility OS. */
+.admin-os .card-surface,
+.admin-os .card-surface-sm,
+.coach-os .card-surface,
+.coach-os .card-surface-sm,
+.parent-os .card-surface,
+.parent-os .card-surface-sm {
+  background: rgb(28 44 40 / 0.55);
+  border-color: rgb(205 225 225 / 0.12);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04), var(--shadow-depth-val);
 }
 
 .dark {

@@ -9,8 +9,7 @@ import { StatusPill } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getTodaysSessions } from '@/lib/mock-data/sessions'
 import { getTodaysCheckIns } from '@/lib/mock-data/checkins'
-import { getRecentPayments, getTotalRevenue } from '@/lib/mock-data/payments'
-import { mockPlayers } from '@/lib/mock-data/players'
+import { getStripeRevenueSummary } from '@/lib/billing/stripe-purchases-server'
 import { formatCurrency, formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
 import { SITE } from '@/lib/site-config'
 import { CountUp } from '@/components/ui/count-up'
@@ -24,15 +23,18 @@ import {
   revenueByCategory,
   computeRevenueThresholds,
 } from '@/lib/mock-data/admin-operating-system'
+import { getRosterStats } from '@/lib/facility/roster-stats-server'
 
-export default function AdminOverviewPage() {
+export default async function AdminOverviewPage() {
+  const rosterStats = await getRosterStats()
+  const stripeSummary = await getStripeRevenueSummary()
   const todaysSessions = getTodaysSessions()
   const recentCheckIns = getTodaysCheckIns()
-  const recentPayments = getRecentPayments(5)
-  const activePlayers = mockPlayers.filter(p => p.status === 'active').length
-  const expiredMemberships = mockPlayers.filter(p => p.sessionsRemaining === 0).length
+  const recentPayments = stripeSummary.recent
+  const activePlayers = rosterStats.configured ? rosterStats.total : 0
+  const expiredMemberships = 0
   const currentBlockCount = todaysSessions.filter(s => s.status === 'in-progress').length
-  const revenueMtd = getTotalRevenue()
+  const revenueMtd = stripeSummary.totalRevenue
 
   return (
     <PageContainer fullWidth>
@@ -57,14 +59,13 @@ export default function AdminOverviewPage() {
           <StatCard
             label="Live check-ins"
             value={<CountUp end={recentCheckIns.length} format="integer" />}
-            delta={{ value: '+3 vs prior day', direction: 'up' }}
             accent
             href="/admin/check-in"
           />
           <StatCard
-            label="Active athletes"
+            label="Roster (Supabase)"
             value={<CountUp end={activePlayers} format="integer" />}
-            delta={{ value: '2 renewal risk', direction: 'neutral' }}
+            sublabel={rosterStats.configured ? undefined : 'Connect Supabase to load players'}
             href="/admin/players"
           />
           <StatCard
@@ -80,44 +81,43 @@ export default function AdminOverviewPage() {
           <StatCard
             label="Revenue (MTD)"
             value={<CountUp end={revenueMtd} format="currency" />}
-            delta={{ value: '+12% vs prior', direction: 'up' }}
             href="/admin/payments"
           />
         </div>
 
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-          <div className="border border-white/10 bg-[#0f0f0f] p-4">
-            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Alerts</p>
+          <div className="border border-formula-frost/12 bg-formula-paper/[0.04] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-formula-mist">Alerts</p>
             <ul className="mt-2 space-y-2">
               {adminAlerts.map(a => (
-                <li key={a.id} className="flex gap-2 font-mono text-[11px] text-zinc-300">
+                <li key={a.id} className="flex gap-2 font-mono text-[11px] text-formula-frost/90">
                   <AlertTriangle
                     className={cn(
                       'mt-0.5 h-3.5 w-3.5 shrink-0',
                       a.severity === 'critical' && 'text-red-400',
                       a.severity === 'warning' && 'text-amber-500',
-                      a.severity === 'info' && 'text-zinc-500'
+                      a.severity === 'info' && 'text-formula-mist'
                     )}
                   />
                   <span>
-                    <span className="text-zinc-500">[{a.code}]</span> {a.message}
+                    <span className="text-formula-mist">[{a.code}]</span> {a.message}
                   </span>
                 </li>
               ))}
             </ul>
-            <Link href="/admin/revenue-strategy" className="mt-3 inline-block font-mono text-[10px] text-zinc-500 underline decoration-white/20">
+            <Link href="/admin/revenue-strategy" className="mt-3 inline-block font-mono text-[10px] text-formula-mist underline decoration-formula-frost/25 hover:text-formula-paper">
               Revenue thresholds →
             </Link>
           </div>
-          <div className="border border-white/10 bg-[#0f0f0f] p-4 font-mono text-[11px] text-zinc-300">
-            <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500">Check-in / attendance</p>
+          <div className="border border-formula-frost/12 bg-formula-paper/[0.04] p-4 font-mono text-[11px] text-formula-frost/90 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+            <p className="text-[9px] uppercase tracking-[0.2em] text-formula-mist">Check-in / attendance</p>
             <p className="mt-2">
               Checked in{' '}
-              <span className="tabular-nums text-zinc-100">{checkInAttendanceSnapshot.checkedIn}</span> /{' '}
+              <span className="tabular-nums text-formula-paper">{checkInAttendanceSnapshot.checkedIn}</span> /{' '}
               {checkInAttendanceSnapshot.expected} expected · no-show risk{' '}
               {checkInAttendanceSnapshot.noShowRisk} · late {checkInAttendanceSnapshot.lateArrival}
             </p>
-            <Link href="/admin/check-in" className="mt-2 inline-block text-[10px] text-zinc-500 underline decoration-white/20">
+            <Link href="/admin/check-in" className="mt-2 inline-block text-[10px] text-formula-mist underline decoration-formula-frost/25 hover:text-formula-paper">
               Open console →
             </Link>
           </div>
@@ -356,6 +356,13 @@ export default function AdminOverviewPage() {
             }
           />
           <div className="divide-y divide-border">
+            {recentPayments.length === 0 && (
+              <p className="py-6 text-center text-[13px] text-text-muted">
+                {stripeSummary.configured
+                  ? 'No Stripe Checkout rows yet. Webhook writes to stripe_purchases when payments complete.'
+                  : 'Connect Supabase service role to load Stripe purchase history.'}
+              </p>
+            )}
             {recentPayments.map(payment => (
               <Link
                 key={payment.id}

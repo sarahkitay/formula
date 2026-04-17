@@ -2,29 +2,6 @@ import type { GeneratedWeek, ScheduleSlot } from '@/types/schedule'
 import { SCHEDULE_ASSETS } from '@/lib/schedule/assets'
 import { YOUTH_BLOCK_CAPACITY } from '@/lib/schedule/rules'
 
-const DEMO_NAMES = [
-  'Ethan Cross',
-  'Sofia Martinez',
-  'Aiden Thompson',
-  'Liam Chen',
-  'Zoe Williams',
-  'Carlos Reyes',
-  'Isabelle Park',
-  'James Okafor',
-  'Alex Nguyen',
-  'Taylor Brooks',
-  'Kai Hernandez',
-  'Jordan Lee',
-  'Riley Santos',
-  'Oliver Davis',
-  'Ella Moore',
-  'Lucas Wilson',
-  'Noah Patel',
-  'Maya Singh',
-  'Ben Carter',
-  'Sam Rivera',
-]
-
 export function stableInt(seed: string, lo: number, hi: number): number {
   let h = 0
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0
@@ -87,19 +64,10 @@ export function buildAdminBlockDemo(weekStart: string, anchor: ScheduleSlot): Ad
   const seed = `${weekStart}|${blockKey}`
 
   const capacity =
-  anchor.kind === 'open_gym' ? 24 : anchor.kind === 'preschool' ? 16 : YOUTH_BLOCK_CAPACITY
-
-  const soldOut = stableInt(`${seed}|full`, 0, 9) < 2
-  const enrolled = soldOut ? capacity : stableInt(`${seed}|enr`, 0, Math.max(0, capacity - 1))
-
+    anchor.kind === 'open_gym' ? 24 : anchor.kind === 'preschool' ? 16 : YOUTH_BLOCK_CAPACITY
+  const enrolled = 0
+  const soldOut = false
   const players: AdminRosterPlayerDemo[] = []
-  for (let i = 0; i < enrolled; i++) {
-  const rosterId = `${weekStart}|${blockKey}|p${i}`
-  const nameIdx = stableInt(`${seed}|name|${i}`, 0, DEMO_NAMES.length - 1)
-  const name = DEMO_NAMES[(nameIdx + i) % DEMO_NAMES.length]
-  const checkedInDefault = stableInt(`${seed}|ci|${i}`, 0, 1) === 1
-  players.push({ rosterId, name, checkedInDefault })
-  }
 
   return { blockKey, capacity, enrolled, soldOut, players }
 }

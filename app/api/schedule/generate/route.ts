@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
-import { generate12WeekCycle, generateWeeklySchedule, startOfScheduleWeek } from '@/lib/schedule/generator'
+import { generate12WeekCycle, startOfScheduleWeek } from '@/lib/schedule/generator'
+import { fetchFacilityScheduleConfig } from '@/lib/schedule/facility-schedule-config-server'
+import { buildPublishedWeek } from '@/lib/schedule/published-week'
 import type { ScheduleOverride } from '@/types/schedule'
 
 /**
  * GET /api/schedule/generate?weekStart=YYYY-MM-DD&weeks=1|12
- * Returns system-generated facility schedule (no drag/drop authoring).
+ * Returns facility schedule merged with saved config (unless `overrides` query replaces overrides only).
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -15,7 +17,8 @@ export async function GET(request: Request) {
   const sun = startOfScheduleWeek(base)
   const weeks = Math.min(12, Math.max(1, parseInt(weeksRaw, 10) || 1))
 
-  let overrides: ScheduleOverride[] = []
+  const dbConfig = await fetchFacilityScheduleConfig()
+  let overrides = dbConfig.overrides
   const ov = searchParams.get('overrides')
   if (ov) {
     try {
@@ -25,11 +28,13 @@ export async function GET(request: Request) {
     }
   }
 
+  const mergedConfig = { ...dbConfig, overrides }
+
   if (weeks === 1) {
-    const week = generateWeeklySchedule(sun, overrides, 0)
+    const week = buildPublishedWeek(sun, mergedConfig)
     return NextResponse.json({ mode: 'single', week })
   }
 
-  const multi = generate12WeekCycle(sun, overrides)
+  const multi = generate12WeekCycle(sun, mergedConfig.overrides, mergedConfig.blockedDates)
   return NextResponse.json({ mode: 'cycle', ...multi })
 }

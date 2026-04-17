@@ -199,7 +199,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title="Home"
           summary={item.description ?? ''}
           href={item.href}
@@ -216,7 +215,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title={item.label}
           summary={item.description ?? ''}
           href={item.href}
@@ -233,7 +231,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title={item.label}
           summary={item.description ?? ''}
           href={item.href}
@@ -250,7 +247,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title={item.label}
           summary={item.description ?? ''}
           href={item.href}
@@ -267,7 +263,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title="Billing"
           summary={item.description ?? ''}
           href={item.href}
@@ -284,7 +279,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title={item.label}
           summary={item.description ?? ''}
           href={item.href}
@@ -301,7 +295,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title="FPI report"
           summary={item.description ?? ''}
           href={item.href}
@@ -318,7 +311,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title={item.label}
           summary={item.description ?? ''}
           href={item.href}
@@ -335,7 +327,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title={item.label}
           summary={item.description ?? ''}
           href={item.href}
@@ -352,7 +343,6 @@ export function ParentDashboardPageClient() {
         <ModuleBlock
           key={item.href}
           id={id}
-          surface="portal"
           title={item.label}
           summary={item.description ?? ''}
           href={item.href}
@@ -368,7 +358,6 @@ export function ParentDashboardPageClient() {
       <ModuleBlock
         key={item.href}
         id={id}
-        surface="portal"
         title={item.label}
         summary={item.description ?? ''}
         href={item.href}

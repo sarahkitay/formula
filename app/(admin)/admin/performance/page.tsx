@@ -6,8 +6,8 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { StatCard } from '@/components/ui/stat-card'
 import { CountUp } from '@/components/ui/count-up'
 import { Badge } from '@/components/ui/badge'
-import { mockPlayers } from '@/lib/mock-data/players'
 import { getInitials, getAvatarColor, cn } from '@/lib/utils'
+import { listFacilityPlayers } from '@/lib/facility/roster-list-server'
 import { SITE } from '@/lib/site-config'
 import { Button } from '@/components/ui/button'
 
@@ -21,11 +21,15 @@ function PerformanceBar({ value, max = 100, color }: { value: number; max?: numb
   )
 }
 
-export default function PerformancePage() {
-  const playersWithPerf = mockPlayers.filter(p => p.performance)
-  const avgTechnical = Math.round(playersWithPerf.reduce((s, p) => s + (p.performance?.technicalScore ?? 0), 0) / playersWithPerf.length)
-  const avgSpeed = Math.round(playersWithPerf.reduce((s, p) => s + (p.performance?.speed ?? 0), 0) / playersWithPerf.length)
-  const topPerformer = [...playersWithPerf].sort((a, b) => (b.performance?.technicalScore ?? 0) - (a.performance?.technicalScore ?? 0))[0]
+export default async function PerformancePage() {
+  const roster = await listFacilityPlayers(500)
+  const playersWithPerf = roster.filter(p => p.performance)
+  const n = playersWithPerf.length
+  const avgTechnical = n > 0 ? Math.round(playersWithPerf.reduce((s, p) => s + (p.performance?.technicalScore ?? 0), 0) / n) : 0
+  const avgSpeed = n > 0 ? Math.round(playersWithPerf.reduce((s, p) => s + (p.performance?.speed ?? 0), 0) / n) : 0
+  const topPerformer = [...playersWithPerf].sort(
+    (a, b) => (b.performance?.technicalScore ?? 0) - (a.performance?.technicalScore ?? 0)
+  )[0]
 
   return (
     <PageContainer>
@@ -57,7 +61,6 @@ export default function PerformancePage() {
                 <CountUp end={avgTechnical} format="integer" />%
               </>
             }
-            delta={{ value: '+4% this quarter', direction: 'up' }}
             href="/admin/performance"
           />
           <StatCard
@@ -67,7 +70,6 @@ export default function PerformancePage() {
                 <CountUp end={avgSpeed} format="integer" />%
               </>
             }
-            delta={{ value: '+2% this quarter', direction: 'up' }}
             href="/admin/performance"
           />
           <StatCard
@@ -94,8 +96,13 @@ export default function PerformancePage() {
 
         {/* Player performance cards */}
         <div className="space-y-4">
-          <SectionHeader title="Player Assessments" description={`${playersWithPerf.length} players assessed`} />
+          <SectionHeader title="Player Assessments" description={`${playersWithPerf.length} players with FPI scores in app`} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {playersWithPerf.length === 0 && (
+              <p className="text-sm text-text-muted lg:col-span-2">
+                No in-app performance summaries yet. Open a player from the roster below once assessments are stored, or wire lab feeds per the integration notice.
+              </p>
+            )}
             {playersWithPerf.map(player => {
               const perf = player.performance!
               return (

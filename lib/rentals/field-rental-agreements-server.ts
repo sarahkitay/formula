@@ -20,7 +20,7 @@ export type FieldRentalAgreementInsert = {
 
 export type FieldRentalAgreementRow = {
   id: string
-  submitted_at: string
+  submitted_at: string | null
   rental_type: string
   participant_name: string
   participant_email: string

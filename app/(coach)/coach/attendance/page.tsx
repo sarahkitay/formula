@@ -1,21 +1,19 @@
 import React from 'react'
-import { ClipboardList, CheckCircle2, XCircle } from 'lucide-react'
+import { ClipboardList } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { SectionHeader } from '@/components/ui/section-header'
-import { Badge, StatusPill } from '@/components/ui/badge'
 import { StatCard } from '@/components/ui/stat-card'
 import { CountUp } from '@/components/ui/count-up'
 import { getTodaysSessions } from '@/lib/mock-data/sessions'
 import { getBookingsBySession } from '@/lib/mock-data/bookings'
-import { getPlayerById } from '@/lib/mock-data/players'
 import { getCheckInsBySession } from '@/lib/mock-data/checkins'
-import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
+import { getInitials, getAvatarColor, cn } from '@/lib/utils'
+import { listFacilityPlayers } from '@/lib/facility/roster-list-server'
 
-const COACH_ID = 'coach-1'
-
-export default function CoachAttendancePage() {
-  const todaysSessions = getTodaysSessions().filter(s => s.coachId === COACH_ID)
+export default async function CoachAttendancePage() {
+  const roster = await listFacilityPlayers(300)
+  const todaysSessions = getTodaysSessions()
   const totalBookings = todaysSessions.reduce((n, s) => n + getBookingsBySession(s.id).length, 0)
   const totalCheckedIn = todaysSessions.reduce((n, s) => n + getCheckInsBySession(s.id).length, 0)
   const attendanceRatePct = totalBookings ? Math.round((totalCheckedIn / totalBookings) * 100) : 0
@@ -29,10 +27,10 @@ export default function CoachAttendancePage() {
           subtitle={`Today · ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`}
         />
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatCard label="Sessions Today" value={<CountUp end={todaysSessions.length} format="integer" />} accent />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+          <StatCard label="Sessions today" value={<CountUp end={todaysSessions.length} format="integer" />} accent />
           <StatCard
-            label="Checked In"
+            label="Checked in"
             value={<CountUp end={totalCheckedIn} format="integer" />}
             sublabel={
               <>
@@ -41,7 +39,7 @@ export default function CoachAttendancePage() {
             }
           />
           <StatCard
-            label="Attendance Rate"
+            label="Attendance rate"
             value={
               totalBookings ? (
                 <>
@@ -67,73 +65,44 @@ export default function CoachAttendancePage() {
           />
         </div>
 
-        {todaysSessions.map(session => {
-          const bookings = getBookingsBySession(session.id)
-          const checkIns = getCheckInsBySession(session.id)
-          const checkedInPlayerIds = new Set(checkIns.map(c => c.playerId))
-
-          return (
-            <div key={session.id} className="rounded-xl border border-border bg-surface overflow-hidden">
-              {/* Session header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-surface-raised">
-                <div>
-                  <p className="font-bold text-text-primary">{session.title}</p>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    {new Date(session.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} –{' '}
-                    {new Date(session.endTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                    {' · '}{session.fieldName}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-text-secondary">{checkedInPlayerIds.size}/{bookings.length}</span>
-                  <StatusPill status={session.status} />
-                </div>
-              </div>
-
-              {/* Attendance list */}
-              <div className="divide-y divide-border">
-                {bookings.length === 0 ? (
-                  <p className="px-5 py-4 text-sm text-text-muted">No bookings for this session</p>
-                ) : (
-                  bookings.map(booking => {
-                    const player = getPlayerById(booking.playerId)
-                    if (!player) return null
-                    const present = checkedInPlayerIds.has(booking.playerId)
-                    return (
-                      <div key={booking.id} className={cn('flex items-center gap-4 px-5 py-3', present && 'bg-success/3')}>
-                        <div className={cn('h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0', getAvatarColor(player.id))}>
-                          {getInitials(player.firstName, player.lastName)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-text-primary">{player.firstName} {player.lastName}</p>
-                          <p className="text-xs text-text-muted">#{player.jerseyNumber} · {player.position}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {present ? (
-                            <span className="flex items-center gap-1 text-xs text-success font-medium">
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                              Present
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-1 text-xs text-text-muted">
-                              <XCircle className="h-3.5 w-3.5" />
-                              Not yet
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })
-                )}
-              </div>
-            </div>
-          )
-        })}
+        <SectionHeader
+          title="Roster (Supabase)"
+          description="Session-level attendance will tie to bookings when that pipeline is connected."
+        />
+        {roster.length === 0 ? (
+          <p className="text-sm text-text-muted">No athletes loaded. Configure Supabase service role on the server.</p>
+        ) : (
+          <div className="rounded-xl border border-border bg-surface p-4">
+            <ul className="divide-y divide-border">
+              {roster.slice(0, 40).map(p => (
+                <li key={p.id} className="flex items-center gap-3 py-2">
+                  <div
+                    className={cn(
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold',
+                      getAvatarColor(p.id)
+                    )}
+                  >
+                    {getInitials(p.firstName, p.lastName)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-text-primary">
+                      {p.firstName} {p.lastName}
+                    </p>
+                    <p className="text-xs text-text-muted">{p.ageGroup}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {roster.length > 40 && (
+              <p className="mt-2 text-xs text-text-muted">Showing 40 of {roster.length}. Use Admin → Players for full list.</p>
+            )}
+          </div>
+        )}
 
         {todaysSessions.length === 0 && (
-          <div className="text-center py-16 text-text-muted">
-            <ClipboardList className="h-8 w-8 mx-auto mb-3 opacity-40" />
-            <p className="text-sm">No sessions scheduled for today</p>
+          <div className="flex items-start gap-2 rounded-xl border border-border bg-muted/20 p-4 text-sm text-text-secondary">
+            <ClipboardList className="mt-0.5 h-4 w-4 shrink-0" />
+            <p>No coach sessions on file for today. When schedule + bookings sync, attendance rolls up here.</p>
           </div>
         )}
       </div>

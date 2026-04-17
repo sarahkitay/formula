@@ -7,31 +7,56 @@ import { PageHeader } from '@/components/ui/page-header'
 import { Button } from '@/components/ui/button'
 import { CoachGuardrailsStrip } from '@/components/coach/coach-guardrails'
 import { coachGuardrails, coachSessionsToday } from '@/lib/mock-data/coach-operating'
-import { mockPlayers } from '@/lib/mock-data/players'
 import { cn } from '@/lib/utils'
+import type { Player } from '@/types'
 
 type Mark = 'present' | 'late' | 'absent'
 
 export default function CoachCheckInPage() {
-  const session = coachSessionsToday.find(s => s.status === 'in-progress') ?? coachSessionsToday[1]
-  const roster = mockPlayers.filter(p => p.groupIds?.includes('group-2')).slice(0, 12)
-  const [marks, setMarks] = React.useState<Record<string, Mark>>(() =>
-    Object.fromEntries(roster.map((p, i) => [p.id, i < 10 ? 'present' : 'late'] as const))
-  )
+  const session =
+    coachSessionsToday.find(s => s.status === 'in-progress') ?? coachSessionsToday[0] ?? undefined
+  const cap = session?.capacity ?? 0
+  const sessionTitle = session?.title ?? 'No live block linked'
+
+  const [roster, setRoster] = React.useState<Player[]>([])
+  React.useEffect(() => {
+    let cancelled = false
+    void fetch('/api/facility/players')
+      .then(r => r.json() as Promise<{ players?: Player[] }>)
+      .then(body => {
+        if (!cancelled) setRoster(body.players ?? [])
+      })
+      .catch(() => {
+        if (!cancelled) setRoster([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const [marks, setMarks] = React.useState<Record<string, Mark>>({})
+  React.useEffect(() => {
+    setMarks(prev => {
+      const next = { ...prev }
+      for (const p of roster) {
+        if (next[p.id] == null) next[p.id] = 'present'
+      }
+      return next
+    })
+  }, [roster])
 
   const setMark = (id: string, m: Mark) => {
     setMarks(prev => ({ ...prev, [id]: m }))
   }
 
-  const present = Object.values(marks).filter(m => m === 'present').length
-  const cap = session.capacity
+  const present = roster.filter(p => marks[p.id] === 'present').length
 
   return (
     <PageContainer fullWidth>
       <div className="space-y-5">
         <PageHeader
           title="Check-in"
-          subtitle={`${session.title} · fast roster · ${present}/${cap} toward capacity`}
+          subtitle={`${sessionTitle} · fast roster · ${cap > 0 ? `${present}/${cap} toward capacity` : 'capacity when block is linked'}`}
           actions={
             <Link href="/coach/today">
               <Button variant="ghost" size="sm">
@@ -44,7 +69,7 @@ export default function CoachCheckInPage() {
         <CoachGuardrailsStrip items={coachGuardrails.slice(0, 3)} />
 
         <div className="border border-white/10 bg-[#0f0f0f] p-4 font-mono text-[11px] text-zinc-400">
-          Waitlist / no-shows surface here when connected to admin roster. Parent contact flag: tap athlete row (demo).
+          Roster loads from Supabase <code className="text-zinc-300">players</code>. Waitlist / no-shows surface here when bookings are wired.
         </div>
 
         <div className="overflow-x-auto border border-white/10">
@@ -59,6 +84,13 @@ export default function CoachCheckInPage() {
               </tr>
             </thead>
             <tbody>
+              {roster.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-3 py-6 text-center text-zinc-500">
+                    No athletes in roster yet, or Supabase is not configured.
+                  </td>
+                </tr>
+              )}
               {roster.map(p => {
                 const m = marks[p.id] ?? 'present'
                 return (

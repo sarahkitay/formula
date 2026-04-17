@@ -8,19 +8,21 @@ import { Button } from '@/components/ui/button'
 import { AdminFacilityMap, AdminFacilityMapLegend } from '@/components/admin/admin-facility-map'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
 import { facilityAssets, sampleAuditLog } from '@/lib/mock-data/admin-operating-system'
+import { defaultIdleFacilityAssets } from '@/lib/facility/default-facility-assets'
 import { SITE } from '@/lib/site-config'
 import { ChevronRight } from 'lucide-react'
 
 export default function AdminFacilityMapPage() {
-  const [selectedId, setSelectedId] = React.useState<string | null>('field-2')
-  const selected = facilityAssets.find(a => a.id === selectedId)
+  const mapAssets = facilityAssets.length > 0 ? facilityAssets : defaultIdleFacilityAssets()
+  const [selectedId, setSelectedId] = React.useState<string | null>(() => mapAssets[0]?.id ?? null)
+  const selected = mapAssets.find(a => a.id === selectedId)
 
   return (
     <PageContainer fullWidth>
       <div className="space-y-6">
         <PageHeader
           title="Operations map"
-          subtitle={`${SITE.facilityName} · live asset grid · inventory-protected scheduling (demo)`}
+          subtitle={`${SITE.facilityName} · asset grid · inventory-protected scheduling`}
           breadcrumb={[
             { label: 'Dashboard', href: '/admin/dashboard' },
             { label: 'Ops map' },
@@ -38,7 +40,7 @@ export default function AdminFacilityMapPage() {
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
           <AdminFacilityMap
-            assets={facilityAssets}
+            assets={mapAssets}
             selectedId={selectedId}
             onSelect={id => setSelectedId(id)}
           />

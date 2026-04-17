@@ -307,6 +307,7 @@ function applyOverrides(slots: ScheduleSlot[], overrides: ScheduleOverride[]): S
   let next = [...slots]
   for (const o of overrides) {
     const day = new Date(o.date + 'T12:00:00').getDay() as DayIndex
+    const mode = o.mode ?? 'replace'
     next = next.filter(
       s =>
         !(
@@ -316,6 +317,7 @@ function applyOverrides(slots: ScheduleSlot[], overrides: ScheduleOverride[]): S
           s.endMinute > o.startMinute
         )
     )
+    if (mode === 'clear') continue
     add(next, {
       assetId: o.assetId,
       dayIndex: day,
@@ -324,9 +326,27 @@ function applyOverrides(slots: ScheduleSlot[], overrides: ScheduleOverride[]): S
       kind: o.kind,
       label: o.label,
       id: `ov-${o.id}`,
+      ageBand: o.ageBand,
+      youthBlockId: o.youthBlockId,
     })
   }
   return next
+}
+
+export function isoDateForWeekDay(weekStart: string, dayIndex: DayIndex): string {
+  const sun = new Date(`${weekStart}T12:00:00`)
+  const d = new Date(sun)
+  d.setDate(sun.getDate() + dayIndex)
+  return toISODateLocal(d)
+}
+
+export function applyBlockedDates(week: GeneratedWeek, blockedDates: string[]): GeneratedWeek {
+  if (!blockedDates.length) return week
+  const blocked = new Set(blockedDates)
+  return {
+    ...week,
+    slots: week.slots.filter(s => !blocked.has(isoDateForWeekDay(week.weekStart, s.dayIndex))),
+  }
 }
 
 export function generateWeeklySchedule(
@@ -347,13 +367,19 @@ export function generateWeeklySchedule(
   }
 }
 
-export function generate12WeekCycle(weekStartInput: Date, overrides: ScheduleOverride[] = []): GeneratedMultiWeek {
+export function generate12WeekCycle(
+  weekStartInput: Date,
+  overrides: ScheduleOverride[] = [],
+  blockedDates: string[] = []
+): GeneratedMultiWeek {
   const sun = startOfScheduleWeek(weekStartInput)
   const weeks: GeneratedWeek[] = []
   for (let w = 0; w < 12; w++) {
     const d = new Date(sun)
     d.setDate(sun.getDate() + w * 7)
-    weeks.push(generateWeeklySchedule(d, overrides, w))
+    let week = generateWeeklySchedule(d, overrides, w)
+    week = applyBlockedDates(week, blockedDates)
+    weeks.push(week)
   }
   return { weeks, overridesApplied: overrides.length }
 }

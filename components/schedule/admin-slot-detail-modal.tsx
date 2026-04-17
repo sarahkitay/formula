@@ -61,7 +61,7 @@ export function AdminSlotDetailModal({
   </div>
 
   {!meta && (
-  <p className="rounded border border-black/10 bg-zinc-50 px-3 py-2 text-xs text-text-secondary">
+  <p className="rounded border border-formula-frost/12 bg-formula-paper/[0.05] px-3 py-2 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
   No demo roster is attached to this program slot (rentals, flex blocks, etc.). Only enrollable youth,
   preschool, gym youth, and open-gym blocks include a student list.
   </p>
@@ -69,7 +69,7 @@ export function AdminSlotDetailModal({
 
   {meta && (
   <>
-  <div className="flex flex-wrap items-center gap-3 rounded border border-black/10 bg-zinc-50 px-3 py-2 font-mono text-[11px]">
+  <div className="flex flex-wrap items-center gap-3 rounded border border-formula-frost/12 bg-formula-paper/[0.05] px-3 py-2 font-mono text-[11px] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
   <span className={cn('font-bold', meta.soldOut ? 'text-red-800' : 'text-text-primary')}>
   {meta.enrolled}/{meta.capacity} booked
   {meta.soldOut ? ' · FULL' : ` · ${meta.capacity - meta.enrolled} open`}

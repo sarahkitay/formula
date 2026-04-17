@@ -77,6 +77,12 @@ export function YouthBlocksWeekPanel() {
   const [hasPackage, setHasPackage] = useState(false)
   const [gateOpen, setGateOpen] = useState(false)
   const [gateBand, setGateBand] = useState<{ label: string; hint: string } | null>(null)
+  const [publishedCycle, setPublishedCycle] = useState<{
+    currentCycleLabel: string
+    weekInCycle: number
+    totalWeeksInCycle: number
+    nextCycleStartDisplay: string
+  } | null>(null)
 
   useEffect(() => {
     setHasPackage(readHasYouthTrainingPackage())
@@ -91,17 +97,25 @@ export function YouthBlocksWeekPanel() {
       const data = (await res.json()) as {
         weekStart?: string
         bands?: Record<string, SerializedSlot[]>
+        cycle?: {
+          currentCycleLabel: string
+          weekInCycle: number
+          totalWeeksInCycle: number
+          nextCycleStartDisplay: string
+        }
         error?: string
       }
       if (!res.ok) throw new Error(data.error ?? 'Failed to load')
       if (data.weekStart) {
         setWeekStart(data.weekStart)
       }
+      setPublishedCycle(data.cycle ?? null)
       const list = data.bands?.[band] ?? []
       setRows(list)
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Failed to load')
       setRows([])
+      setPublishedCycle(null)
     } finally {
       setLoading(false)
     }
@@ -149,6 +163,15 @@ export function YouthBlocksWeekPanel() {
             </div>
           ) : null}
         </div>
+
+        {publishedCycle ? (
+          <p className="mt-3 font-mono text-[10px] text-formula-frost/75">
+            <span className="text-formula-mist">12-week cycle · </span>
+            {publishedCycle.currentCycleLabel} · week {publishedCycle.weekInCycle}/{publishedCycle.totalWeeksInCycle}
+            <span className="text-formula-mist"> · next </span>
+            {publishedCycle.nextCycleStartDisplay}
+          </p>
+        ) : null}
 
         <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-formula-frost/80">
           Blocks reflect the published Performance Center ladder for each band. Selecting a block without a package opens age confirmation, then sends you to

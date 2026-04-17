@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import type { FloorSectionId } from '@/lib/mock-data/coach-floor-program'
+import type { FloorSectionId } from '@/lib/coach/floor-layout'
 import { cn } from '@/lib/utils'
 
 export type FloorFieldStatus = 'available' | 'occupied' | 'checkin'

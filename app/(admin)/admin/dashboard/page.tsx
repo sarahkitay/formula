@@ -5,13 +5,12 @@ import { adminNav } from '@/lib/nav/admin'
 import { facilityAssets, computeRevenueThresholds, revenueByCategory } from '@/lib/mock-data/admin-operating-system'
 import { getTodaysSessions } from '@/lib/mock-data/sessions'
 import { getTodaysCheckIns } from '@/lib/mock-data/checkins'
-import { getTotalRevenue, mockPayments } from '@/lib/mock-data/payments'
-import { mockPlayers } from '@/lib/mock-data/players'
+import { getStripeRevenueSummary } from '@/lib/billing/stripe-purchases-server'
 import { mockMembershipInstances } from '@/lib/mock-data/memberships'
 import { formatCurrency } from '@/lib/utils'
-import type { Session } from '@/types'
-
-const MS_45D = 45 * 24 * 60 * 60 * 1000
+import type { Player, Session } from '@/types'
+import { getRosterStats } from '@/lib/facility/roster-stats-server'
+import { defaultIdleFacilityAssets } from '@/lib/facility/default-facility-assets'
 
 function blockStaffAndTime(sessions: Session[]) {
   const now = Date.now()
@@ -20,16 +19,18 @@ function blockStaffAndTime(sessions: Session[]) {
   )
   const live = sorted.find(s => s.status === 'in-progress')
   if (live) {
+    const coach = live.coachName?.trim()
     return {
       nextTime: new Date(live.startTime).toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true,
       }),
-      staff: live.coachName.split(' ').pop() ?? live.coachName,
+      staff: coach ? coach.split(/\s+/).pop() ?? coach : 'N/A',
     }
   }
   const upcoming = sorted.find(s => new Date(s.endTime).getTime() > now)
+  const upcomingCoach = upcoming?.coachName?.trim()
   return {
     nextTime: upcoming
       ? new Date(upcoming.startTime).toLocaleTimeString('en-US', {
@@ -38,7 +39,7 @@ function blockStaffAndTime(sessions: Session[]) {
           hour12: true,
         })
       : 'N/A',
-    staff: upcoming?.coachName.split(' ').pop() ?? 'N/A',
+    staff: upcomingCoach ? upcomingCoach.split(/\s+/).pop() ?? upcomingCoach : 'N/A',
   }
 }
 
@@ -46,20 +47,20 @@ const BLOCK_TITLE: Record<string, string> = {
   Performance: 'Data / Lab',
 }
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const rosterStats = await getRosterStats()
+  const stripeSummary = await getStripeRevenueSummary()
   const todaysSessions = getTodaysSessions()
   const recentCheckIns = getTodaysCheckIns()
-  const activePlayers = mockPlayers.filter(p => p.status === 'active').length
-  const pendingDocs = mockPlayers.filter(p => p.sessionsRemaining === 0).length
-  const pendingFees = mockPayments.filter(p => p.status === 'pending').length
-  const newEnrolls = mockPlayers.filter(
-    p => Date.now() - new Date(p.joinedAt).getTime() < MS_45D
-  ).length
+  const activePlayers = rosterStats.configured ? rosterStats.total : 0
+  const pendingDocs = 0
+  const pendingFees = stripeSummary.pendingCount
+  const newEnrolls = rosterStats.joinedLast45Days
   const activeMemberships = mockMembershipInstances.filter(m => m.status === 'active').length
   const autoRenewNext = mockMembershipInstances.find(m => m.autoRenew && m.status === 'active')
   const { nextTime, staff } = blockStaffAndTime(todaysSessions)
 
-  const playersWithPerf = mockPlayers.filter(p => p.performance)
+  const playersWithPerf: Player[] = []
   const avgTechnical =
     playersWithPerf.length > 0
       ? Math.round(
@@ -71,7 +72,9 @@ export default function AdminDashboardPage() {
     (a, b) => (b.performance?.technicalScore ?? 0) - (a.performance?.technicalScore ?? 0)
   )[0]
 
-  const availableFields = 2
+  const mapAssets = facilityAssets.length > 0 ? facilityAssets : defaultIdleFacilityAssets()
+  const youthShareRow = revenueByCategory.find(r => r.category.startsWith('Youth'))
+  const youthShareLabel = youthShareRow != null ? `${Math.round(youthShareRow.pct)}%` : '—'
 
   const navTiles = adminNav.filter(item => item.href !== '/admin/dashboard')
 
@@ -91,7 +94,7 @@ export default function AdminDashboardPage() {
           dataPoints={[
             { label: 'Check-ins today', value: recentCheckIns.length, highlight: 'green' },
             { label: 'Blocks today', value: todaysSessions.length },
-            { label: 'MTD revenue', value: formatCurrency(getTotalRevenue()) },
+            { label: 'MTD revenue', value: formatCurrency(stripeSummary.totalRevenue) },
           ]}
         />
       )
@@ -142,7 +145,11 @@ export default function AdminDashboardPage() {
           href={item.href}
           dataPoints={[
             { label: 'Total active', value: activePlayers },
-            { label: 'New enrolls', value: `+${newEnrolls}`, highlight: 'green' },
+            {
+              label: rosterStats.configured ? 'New (45d)' : 'Roster',
+              value: rosterStats.configured ? `+${newEnrolls}` : '—',
+              highlight: rosterStats.configured && newEnrolls > 0 ? 'green' : undefined,
+            },
             { label: 'Pending docs', value: pendingDocs, highlight: pendingDocs ? 'volt' : undefined },
           ]}
         />
@@ -175,9 +182,9 @@ export default function AdminDashboardPage() {
           summary={summary}
           href={item.href}
           dataPoints={[
-            { label: 'MTD revenue', value: formatCurrency(getTotalRevenue()) },
+            { label: 'MTD revenue', value: formatCurrency(stripeSummary.totalRevenue) },
             { label: 'Unpaid fees', value: pendingFees, highlight: pendingFees ? 'volt' : undefined },
-            { label: 'Ledger rows', value: mockPayments.length },
+            { label: 'Ledger rows', value: stripeSummary.rowCount },
           ]}
         />
       )
@@ -192,9 +199,9 @@ export default function AdminDashboardPage() {
           summary={summary}
           href={item.href}
           dataPoints={[
-            { label: 'Pitches free', value: availableFields, highlight: 'green' },
-            { label: 'Ext. bookings', value: 5 },
-            { label: 'Today revenue', value: '$400' },
+            { label: 'Zones (map)', value: mapAssets.length },
+            { label: 'Ext. bookings', value: '—' },
+            { label: 'Today revenue', value: '—' },
           ]}
         />
       )
@@ -238,7 +245,7 @@ export default function AdminDashboardPage() {
     }
 
     if (item.href === '/admin/facility-map') {
-      const hot = facilityAssets.filter(a => a.utilizationPct > 80).length
+      const hot = mapAssets.filter(a => a.utilizationPct > 80).length
       return (
         <ModuleBlock
           key={item.href}
@@ -247,9 +254,9 @@ export default function AdminDashboardPage() {
           summary={summary}
           href={item.href}
           dataPoints={[
-            { label: 'Assets live', value: facilityAssets.length },
+            { label: 'Assets live', value: mapAssets.length },
             { label: 'Hot zones', value: hot, highlight: hot ? 'volt' : undefined },
-            { label: 'Fields', value: '3 + arena' },
+            { label: 'Telemetry', value: facilityAssets.length > 0 ? 'live' : 'layout' },
           ]}
         />
       )
@@ -265,7 +272,7 @@ export default function AdminDashboardPage() {
           href={item.href}
           dataPoints={[
             { label: 'Pillars', value: '5' },
-            { label: 'QC queue', value: '3', highlight: 'volt' },
+            { label: 'QC queue', value: '0' },
             { label: 'Public boards', value: 'OFF' },
           ]}
         />
@@ -282,7 +289,7 @@ export default function AdminDashboardPage() {
           summary={summary}
           href={item.href}
           dataPoints={[
-            { label: 'Youth share', value: '46%', highlight: 'green' },
+            { label: 'Youth share', value: youthShareLabel, highlight: youthShareRow ? 'green' : undefined },
             { label: 'Threshold flags', value: breached, highlight: breached ? 'volt' : undefined },
             { label: 'Phase', value: 'P1' },
           ]}
@@ -340,17 +347,17 @@ export default function AdminDashboardPage() {
   })
 
   const lastCheck = recentCheckIns[0]
-  const lastPay = mockPayments.find(p => p.status === 'completed')
+  const lastPay = stripeSummary.lastCompleted
 
   return (
     <PageContainer>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">{modules}</div>
 
-      <div className="mt-12 border border-black bg-zinc-50 p-8 font-mono">
-        <h4 className="mb-4 text-xs font-black uppercase tracking-widest text-[#1a1a1a]">
+      <div className="mt-12 border border-formula-frost/14 bg-formula-paper/[0.04] p-8 font-mono shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+        <h4 className="mb-4 text-xs font-black uppercase tracking-widest text-formula-paper">
           Live System Feed // logs.txt
         </h4>
-        <div className="space-y-1 text-[11px] text-zinc-500">
+        <div className="space-y-1 text-[11px] text-formula-mist">
           {lastCheck && (
             <p>
               [{new Date(lastCheck.checkedInAt).toLocaleTimeString('en-GB')}] - CHECK_IN SUCCESS:{' '}
@@ -365,7 +372,7 @@ export default function AdminDashboardPage() {
               )
             </p>
           )}
-          <p className="font-bold text-[#1a1a1a]">
+          <p className="font-bold text-formula-frost/95">
             [{new Date().toLocaleTimeString('en-GB')}] - SYSTEM_READY: WAITING FOR WRISTBAND_BUFFER...
           </p>
         </div>

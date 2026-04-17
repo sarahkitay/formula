@@ -27,8 +27,8 @@ export default function FridayCircuitPage() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {['Rotation', 'Rosters locked', 'Field windows'].map((label, i) => (
-            <div key={label} className="border border-white/10 bg-[#0f0f0f] px-4 py-3 font-mono text-[11px] text-zinc-400">
-              <span className="text-zinc-600">0{i + 1}</span> · {label}
+            <div key={label} className="border border-formula-frost/12 bg-formula-paper/[0.04] px-4 py-3 font-mono text-[11px] text-formula-frost/85 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+              <span className="text-formula-mist">0{i + 1}</span> · {label}
             </div>
           ))}
         </div>

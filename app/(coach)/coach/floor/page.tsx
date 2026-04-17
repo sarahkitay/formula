@@ -10,14 +10,12 @@ import {
   FLOOR_PROGRAM_BY_SECTION,
   FLOOR_SECTION_IDS,
   type FloorSectionId,
-} from '@/lib/mock-data/coach-floor-program'
+} from '@/lib/coach/floor-layout'
 import { cn } from '@/lib/utils'
 import { SITE } from '@/lib/site-config'
 import { assignedFloorSection, getCoachSessionForFloorSection } from '@/lib/mock-data/coach-operating'
 
-const COACH_NAME = 'Marcus Rivera'
-
-const PEER_COACHES = ['Marcus Rivera', 'Elena Vasquez', 'Jordan Kim', 'Alex Okonkwo']
+const PEER_COACHES = ['Staff']
 
 function initialFieldMap<T>(factory: (id: FloorSectionId) => T): Record<FloorSectionId, T> {
   return Object.fromEntries(FLOOR_SECTION_IDS.map(id => [id, factory(id)])) as Record<FloorSectionId, T>
@@ -34,9 +32,9 @@ export default function CoachFloorPage() {
   initialFieldMap(() => null)
   )
   const [selectedId, setSelectedId] = useState<FloorSectionId | null>(null)
-  const [actingAs, setActingAs] = useState(COACH_NAME)
+  const [actingAs, setActingAs] = useState(PEER_COACHES[0] ?? 'Staff')
   const [log, setLog] = useState<{ time: string; message: string }[]>([
-  { time: new Date().toLocaleTimeString(), message: 'Floor map loaded - select a section to check in (demo).' },
+    { time: new Date().toLocaleTimeString(), message: 'Floor map loaded — select a section to update status.' },
   ])
 
   const selected = selectedId ? FLOOR_PROGRAM_BY_SECTION[selectedId] : null
@@ -100,7 +98,7 @@ export default function CoachFloorPage() {
   <div className="space-y-6">
   <PageHeader
   title="Training floor"
-  subtitle={`${SITE.facilityName} · ${COACH_NAME} · Your assignment: Field ${assignedFloorSection} · tap zones for live context (demo)`}
+  subtitle={`${SITE.facilityName} · assignment Field ${assignedFloorSection} · tap zones for section context`}
   />
 
   <div className="flex flex-wrap items-center justify-center gap-4 border border-border bg-surface px-4 py-3 font-mono text-[11px]">
@@ -236,8 +234,8 @@ export default function CoachFloorPage() {
   </Button>
   </div>
   <p className="text-[10px] text-text-muted">
-  Demo flow: <strong>Check in</strong> marks you present (gold). <strong>End check-in</strong> hands the
-  space to a session (red). <strong>Clear</strong> resets for the next block.
+  <strong>Check in</strong> marks staff present (gold). <strong>End check-in</strong> moves the space to in-session
+  (red). <strong>Clear</strong> resets for the next block.
   </p>
   </div>
   )}

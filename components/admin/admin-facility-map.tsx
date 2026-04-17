@@ -113,10 +113,10 @@ export function AdminFacilityMap({ assets, selectedId, onSelect }: AdminFacility
   }
 
   return (
-    <div className="border border-white/10 bg-[#0f0f0f] p-4">
+    <div className="border border-formula-frost/12 bg-formula-paper/[0.04] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
       <svg viewBox="0 0 1000 520" className="h-auto w-full" aria-label="Facility operations map">
-        <rect x="8" y="8" width="984" height="504" fill="none" stroke="rgb(255 255 255 / 0.06)" strokeWidth="1" />
-        <text x="24" y="36" className="fill-zinc-500 font-mono text-[10px] uppercase tracking-[0.2em]">
+        <rect x="8" y="8" width="984" height="504" fill="none" stroke="rgb(205 225 225 / 0.12)" strokeWidth="1" />
+        <text x="24" y="36" className="fill-formula-mist font-mono text-[10px] uppercase tracking-[0.2em]">
           OPERATIONS_GRID // LIVE
         </text>
 

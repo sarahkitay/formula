@@ -3,26 +3,27 @@
 import { Search, CheckCircle2, ChevronRight } from 'lucide-react'
 import { TabSwitcher } from '@/components/ui/tab-switcher'
 import { EmptyState } from '@/components/ui/empty-state'
-import { getPlayerById } from '@/lib/mock-data/players'
 import { getSessionById } from '@/lib/mock-data/sessions'
 import { cn, getInitials, getAvatarColor } from '@/lib/utils'
-import type { Booking, Session } from '@/types'
+import type { Booking, Player, Session } from '@/types'
 import type { Tab } from '@/components/ui/tab-switcher'
 
 function BookingRow({
   booking,
   session,
+  roster,
   isCheckedIn,
   isSelected,
   onClick,
 }: {
   booking: Booking
   session: Session | undefined
+  roster: Player[]
   isCheckedIn: boolean
   isSelected: boolean
   onClick: () => void
 }) {
-  const player = getPlayerById(booking.playerId)
+  const player = roster.find(p => p.id === booking.playerId)
   if (!player) return null
 
   return (
@@ -77,6 +78,7 @@ export function CheckInBookingList({
   query,
   onQueryChange,
   bookingRows,
+  roster,
   checkedInIds,
   selectedPlayerId,
   onSelectPlayer,
@@ -88,6 +90,7 @@ export function CheckInBookingList({
   query: string
   onQueryChange: (q: string) => void
   bookingRows: Booking[]
+  roster: Player[]
   checkedInIds: Set<string>
   selectedPlayerId: string | null
   onSelectPlayer: (id: string) => void
@@ -134,6 +137,7 @@ export function CheckInBookingList({
             <BookingRow
               key={booking.id}
               booking={booking}
+              roster={roster}
               session={getSessionById(booking.sessionId)}
               isCheckedIn={checkedInIds.has(booking.playerId)}
               isSelected={selectedPlayerId === booking.playerId}

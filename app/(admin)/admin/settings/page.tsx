@@ -28,14 +28,14 @@ function FieldRow({
   readOnly?: boolean
 }) {
   return (
-    <div className="grid grid-cols-1 items-center gap-2 border-b border-black/10 py-3 last:border-0 sm:grid-cols-3 sm:gap-4">
+    <div className="grid grid-cols-1 items-center gap-2 border-b border-formula-frost/10 py-3 last:border-0 sm:grid-cols-3 sm:gap-4">
       <label className="text-sm font-medium text-text-secondary">{label}</label>
       <div className="sm:col-span-2">
         <input
           type={type}
           defaultValue={value}
           readOnly={readOnly}
-          className="h-9 w-full border border-black/10 bg-[#f9f9f9] px-3 text-sm text-text-primary focus:border-[#005700] focus:outline-none read-only:cursor-default read-only:bg-zinc-100/80"
+          className="h-9 w-full border border-formula-frost/16 bg-formula-paper/[0.05] px-3 text-sm text-text-primary focus:border-formula-volt/40 focus:outline-none read-only:cursor-default read-only:bg-formula-paper/[0.03]"
         />
       </div>
     </div>
@@ -58,9 +58,9 @@ function IntegrationCard({
   primaryLabel?: string
 }) {
   return (
-    <div className="flex flex-col gap-4 border border-black/10 bg-white p-4 sm:flex-row sm:items-start">
+    <div className="flex flex-col gap-4 border border-formula-frost/12 bg-formula-paper/[0.04] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] sm:flex-row sm:items-start">
       {icon != null && (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-black/10 bg-[#f9f9f9] text-text-muted">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-formula-frost/14 bg-formula-paper/[0.06] text-text-muted">
           {icon}
         </div>
       )}
@@ -126,19 +126,19 @@ export default function SettingsPage() {
         <PageHeader title="Settings" subtitle="Facility configuration and system preferences" />
 
         {demoAction && (
-          <p className="rounded border border-black/10 bg-[#f4fe00]/20 px-3 py-2 font-mono text-xs text-text-primary">
+          <p className="rounded border border-formula-volt/25 bg-formula-volt/10 px-3 py-2 font-mono text-xs text-formula-paper">
             {demoAction}
           </p>
         )}
 
-        <div className="border-b border-black">
+        <div className="border-b border-formula-frost/12">
           <TabSwitcher tabs={TABS} activeTab={activeTab} onChange={setActiveTab} variant="underline" />
         </div>
 
         {activeTab === 'facility' && (
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-            <div className="border border-black/10 bg-white p-6 xl:col-span-2">
-              <div className="mb-4 border-b border-black/10 pb-4">
+            <div className="border border-formula-frost/12 bg-formula-paper/[0.04] p-6 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] xl:col-span-2">
+              <div className="mb-4 border-b border-formula-frost/10 pb-4">
                 <p className="font-mono text-xs font-bold uppercase tracking-widest text-text-primary">
                   Facility information
                 </p>
@@ -153,7 +153,7 @@ export default function SettingsPage() {
               {facilitySavedAt && (
                 <p className="mt-4 font-mono text-[11px] text-[#005700]">Saved at {facilitySavedAt} (demo: local only).</p>
               )}
-              <div className="mt-6 flex justify-end border-t border-black/10 pt-4">
+              <div className="mt-6 flex justify-end border-t border-formula-frost/10 pt-4">
                 <Button
                   variant="primary"
                   size="sm"
@@ -164,8 +164,8 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </div>
-            <div className="border border-black/10 bg-zinc-50 p-6 font-mono text-[11px] text-zinc-500">
-              <p className="mb-2 font-bold uppercase tracking-wider text-[#1a1a1a]">Config notes</p>
+            <div className="border border-formula-frost/12 bg-formula-deep/35 p-6 font-mono text-[11px] text-formula-mist">
+              <p className="mb-2 font-bold uppercase tracking-wider text-formula-paper">Config notes</p>
               <p>Changes sync to facility profile. Role edits require owner approval in production.</p>
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function SettingsPage() {
 
         {activeTab === 'users' && (
           <div className="space-y-4">
-            <div className="overflow-hidden border border-black/10 bg-white">
+            <div className="overflow-hidden border border-formula-frost/12 bg-formula-paper/[0.04] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
               {[
                 { name: 'Front Desk Staff', email: 'desk@formulafc.com', role: 'Admin', status: 'Active' },
                 { name: 'Marcus Rivera', email: 'marcus.rivera@formulafc.com', role: 'Coach', status: 'Active' },
@@ -182,9 +182,9 @@ export default function SettingsPage() {
               ].map((user, i) => (
                 <div
                   key={i}
-                  className="flex flex-col gap-3 border-b border-black/10 px-4 py-3 last:border-b-0 sm:flex-row sm:items-center"
+                  className="flex flex-col gap-3 border-b border-formula-frost/10 px-4 py-3 last:border-b-0 sm:flex-row sm:items-center"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-black/10 bg-[#f9f9f9] text-xs font-bold text-text-secondary">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-formula-frost/14 bg-formula-paper/[0.06] text-xs font-bold text-text-secondary">
                     {user.name.charAt(0)}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -212,7 +212,7 @@ export default function SettingsPage() {
         )}
 
         {activeTab === 'notifications' && (
-          <div className="overflow-hidden border border-black/10 bg-white">
+          <div className="overflow-hidden border border-formula-frost/12 bg-formula-paper/[0.04] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
             {[
               {
                 label: 'Session check-in reminders',
@@ -230,7 +230,7 @@ export default function SettingsPage() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex flex-col gap-3 border-b border-black/10 px-4 py-3.5 last:border-b-0 sm:flex-row sm:items-center"
+                className="flex flex-col gap-3 border-b border-formula-frost/10 px-4 py-3.5 last:border-b-0 sm:flex-row sm:items-center"
               >
                 <div className="flex-1">
                   <p className="text-sm font-medium text-text-primary">{item.label}</p>
@@ -241,15 +241,17 @@ export default function SettingsPage() {
                   onClick={() => flipNotify(i)}
                   className={cn(
                     'h-6 w-11 shrink-0 cursor-pointer border transition-colors',
-                    notifyToggles[i] ? 'border-[#005700] bg-[#005700]' : 'border-black/15 bg-[#f9f9f9]'
+                    notifyToggles[i] ? 'border-formula-volt/60 bg-formula-volt' : 'border-formula-frost/20 bg-formula-paper/[0.08]'
                   )}
                   role="switch"
                   aria-checked={notifyToggles[i]}
                 >
                   <div
                     className={cn(
-                      'mt-0.5 h-4 w-4 border border-black/10 bg-white shadow-sm transition-transform',
-                      notifyToggles[i] ? 'translate-x-5' : 'translate-x-0.5'
+                      'mt-0.5 h-4 w-4 border shadow-sm transition-transform',
+                      notifyToggles[i]
+                        ? 'translate-x-5 border-formula-base/40 bg-formula-base'
+                        : 'translate-x-0.5 border-formula-frost/20 bg-formula-paper/[0.12]'
                     )}
                   />
                 </button>
@@ -261,7 +263,7 @@ export default function SettingsPage() {
         {activeTab === 'integrations' && (
           <div className="space-y-3">
             {integrationNote && (
-              <p className="rounded border border-black/10 bg-zinc-50 px-3 py-2 font-mono text-xs text-text-secondary">
+              <p className="rounded border border-formula-frost/12 bg-formula-deep/35 px-3 py-2 font-mono text-xs text-formula-frost/90">
                 {integrationNote}
               </p>
             )}
@@ -283,7 +285,7 @@ export default function SettingsPage() {
               status="coming-soon"
               onPrimaryAction={() => setIntegrationNote('Performance machines: vendor handshake queued (demo).')}
             />
-            <div className="border border-black/10 bg-zinc-50 p-4 text-center">
+            <div className="border border-formula-frost/12 bg-formula-deep/35 p-4 text-center">
               <p className="text-xs text-text-muted">
                 More integrations coming in Phase 2. Contact support to request a specific integration.
               </p>

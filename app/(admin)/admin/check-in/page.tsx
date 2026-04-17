@@ -1,15 +1,15 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import { UserCheck } from 'lucide-react'
 import { ScannerPanel } from '@/components/check-in/scanner-panel'
 import { FacilityLoadPanel } from '@/components/check-in/facility-load-panel'
 import { CheckInBookingList } from '@/components/check-in/check-in-booking-list'
 import { PlayerCheckInDetail } from '@/components/check-in/player-check-in-detail'
-import { searchPlayers, getPlayerById } from '@/lib/mock-data/players'
+import { searchPlayers } from '@/lib/mock-data/players'
+import type { Player } from '@/types'
 import { getTodaysSessions, getSessionById } from '@/lib/mock-data/sessions'
 import { getBookingsBySession, getPlayerTodayBooking } from '@/lib/mock-data/bookings'
-import { getTodaysCheckIns } from '@/lib/mock-data/checkins'
 import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
 import { decrementSession } from '@/lib/booking-engine'
 import { Card } from '@/components/ui/card'
@@ -18,9 +18,26 @@ export default function CheckInPage() {
   const [query, setQuery] = useState('')
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null)
   const [activeSession, setActiveSession] = useState<string>('all')
-  const [checkedInIds, setCheckedInIds] = useState<Set<string>>(
-    () => new Set(getTodaysCheckIns().map(c => c.playerId))
-  )
+  const [checkedInIds, setCheckedInIds] = useState<Set<string>>(() => new Set())
+  const [rosterPlayers, setRosterPlayers] = useState<Player[]>([])
+  const [rosterError, setRosterError] = useState<string | null>(null)
+
+  const loadRoster = useCallback(async () => {
+    setRosterError(null)
+    try {
+      const res = await fetch('/api/facility/players')
+      const body = (await res.json()) as { players?: Player[]; error?: string }
+      if (!res.ok) throw new Error(body.error ?? 'Failed to load roster')
+      setRosterPlayers(body.players ?? [])
+    } catch (e) {
+      setRosterPlayers([])
+      setRosterError(e instanceof Error ? e.message : 'Failed to load roster')
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadRoster()
+  }, [loadRoster])
 
   const todaysSessions = useMemo(() => getTodaysSessions(), [])
 
@@ -55,11 +72,11 @@ export default function CheckInPage() {
     const sessionIds = activeSession === 'all' ? todaysSessions.map(s => s.id) : [activeSession]
     const allBookings = sessionIds.flatMap(sid => getBookingsBySession(sid))
     if (!query.trim()) return allBookings
-    const matched = searchPlayers(query).map(p => p.id)
+    const matched = searchPlayers(query, rosterPlayers).map(p => p.id)
     return allBookings.filter(b => matched.includes(b.playerId))
-  }, [activeSession, query, todaysSessions])
+  }, [activeSession, query, todaysSessions, rosterPlayers])
 
-  const selectedPlayer = selectedPlayerId ? getPlayerById(selectedPlayerId) : undefined
+  const selectedPlayer = selectedPlayerId ? rosterPlayers.find(p => p.id === selectedPlayerId) : undefined
   const playerBooking = selectedPlayer ? getPlayerTodayBooking(selectedPlayer.id) : undefined
   const playerSession = playerBooking ? getSessionById(playerBooking.sessionId) : undefined
   const membership = selectedPlayer ? getMembershipByPlayer(selectedPlayer.id) : undefined
@@ -91,7 +108,7 @@ export default function CheckInPage() {
   const handleVerifySearch = () => {
     const q = query.trim()
     if (!q) return
-    const first = searchPlayers(q)[0]
+    const first = searchPlayers(q, rosterPlayers)[0]
     if (first) setSelectedPlayerId(first.id)
   }
 
@@ -107,8 +124,13 @@ export default function CheckInPage() {
         <header className="shrink-0">
           <h1 className="text-2xl font-black uppercase tracking-tight text-white">Active check-in</h1>
           <p className="mt-1 font-mono text-sm uppercase tracking-[0.18em] text-zinc-500">
-            {stamp.toUpperCase()} // SYSTEM STANDBY
+            {stamp.toUpperCase()} // ROSTER FROM SUPABASE PLAYERS TABLE
           </p>
+          {rosterError ? (
+            <p className="mt-2 font-mono text-xs text-amber-200/90">{rosterError}</p>
+          ) : (
+            <p className="mt-2 font-mono text-xs text-zinc-500">{rosterPlayers.length} athletes loaded</p>
+          )}
         </header>
 
         <CheckInBookingList
@@ -118,6 +140,7 @@ export default function CheckInPage() {
           query={query}
           onQueryChange={setQuery}
           bookingRows={bookingRows}
+          roster={rosterPlayers}
           checkedInIds={checkedInIds}
           selectedPlayerId={selectedPlayerId}
           onSelectPlayer={setSelectedPlayerId}
@@ -136,12 +159,12 @@ export default function CheckInPage() {
         />
 
         {!selectedPlayer ? (
-          <Card className="border border-black/10 bg-white p-6 text-center shadow-lab">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center border border-black/10 bg-[#f9f9f9] text-zinc-400">
+          <Card className="p-6 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center border border-formula-frost/14 bg-formula-paper/[0.06] text-formula-mist">
               <UserCheck className="h-7 w-7" strokeWidth={1.5} />
             </div>
-            <p className="mt-4 text-sm font-medium text-[#1a1a1a]">Select athlete</p>
-            <p className="mt-1 font-mono text-xs text-zinc-500">
+            <p className="mt-4 text-sm font-medium text-formula-paper">Select athlete</p>
+            <p className="mt-1 font-mono text-xs text-formula-mist">
               List or verify search // detail panel loads here
             </p>
           </Card>

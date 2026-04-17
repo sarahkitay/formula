@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Users, Plus } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
@@ -11,12 +11,12 @@ import { Badge, StatusPill } from '@/components/ui/badge'
 import { DataTable, Column } from '@/components/ui/data-table'
 import { EmptyState } from '@/components/ui/empty-state'
 import { TabSwitcher } from '@/components/ui/tab-switcher'
-import { mockPlayers, searchPlayers } from '@/lib/mock-data/players'
+import { searchPlayers } from '@/lib/mock-data/players'
 import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
 import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
 import { Player, AgeGroup } from '@/types'
 
-const AGE_GROUPS: Array<AgeGroup | 'All'> = ['All', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
+const AGE_GROUPS: Array<AgeGroup | 'All'> = ['All', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
 
 export default function PlayersPage() {
   const router = useRouter()
@@ -24,13 +24,39 @@ export default function PlayersPage() {
   const [addHint, setAddHint] = useState(false)
   const [ageFilter, setAgeFilter] = useState<AgeGroup | 'All'>('All')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
+  const [roster, setRoster] = useState<Player[]>([])
+  const [configured, setConfigured] = useState<boolean | null>(null)
+  const [rosterError, setRosterError] = useState<string | null>(null)
+
+  const loadRoster = useCallback(async () => {
+    setRosterError(null)
+    try {
+      const res = await fetch('/api/facility/players')
+      const body = (await res.json()) as {
+        players?: Player[]
+        configured?: boolean
+        error?: string
+      }
+      setConfigured(body.configured ?? true)
+      if (body.error) setRosterError(body.error)
+      setRoster(body.players ?? [])
+    } catch {
+      setConfigured(false)
+      setRoster([])
+      setRosterError('Failed to load roster')
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadRoster()
+  }, [loadRoster])
 
   const filtered = useMemo(() => {
-    let players = query ? searchPlayers(query) : mockPlayers
+    let players = query ? searchPlayers(query, roster) : roster
     if (ageFilter !== 'All') players = players.filter(p => p.ageGroup === ageFilter)
     if (statusFilter !== 'all') players = players.filter(p => p.status === statusFilter)
     return players
-  }, [query, ageFilter, statusFilter])
+  }, [query, ageFilter, statusFilter, roster])
 
   const columns: Column<Player>[] = [
     {
@@ -89,12 +115,20 @@ export default function PlayersPage() {
     },
   ]
 
+  const activeCount = roster.filter(p => p.status === 'active').length
+  const subtitle =
+    configured === false
+      ? 'Connect Supabase (service role) to load players from the database.'
+      : rosterError
+        ? rosterError
+        : `${activeCount} active in roster`
+
   return (
     <PageContainer>
       <div className="space-y-6">
         <PageHeader
           title="Players"
-          subtitle={`${mockPlayers.filter(p => p.status === 'active').length} active players`}
+          subtitle={subtitle}
           actions={
             <Button
               variant="primary"
@@ -109,7 +143,7 @@ export default function PlayersPage() {
 
         {addHint && (
           <p className="rounded-lg border border-border bg-muted px-3 py-2 text-sm text-text-secondary">
-            Add player intake would open here in production (demo build).
+            Add-player intake is not wired yet; create rows in Supabase or use your intake flow when ready.
           </p>
         )}
 
@@ -143,10 +177,10 @@ export default function PlayersPage() {
 
         {/* Summary pills */}
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="outline">{mockPlayers.filter(p => p.status === 'active').length} active</Badge>
-          <Badge variant="error">{mockPlayers.filter(p => p.sessionsRemaining === 0).length} no sessions remaining</Badge>
-          <Badge variant="warning">{mockPlayers.filter(p => p.sessionsRemaining > 0 && p.sessionsRemaining <= 2).length} low sessions</Badge>
-          <Badge variant="default">{mockPlayers.filter(p => !p.membershipId).length} no membership</Badge>
+          <Badge variant="outline">{roster.filter(p => p.status === 'active').length} active</Badge>
+          <Badge variant="error">{roster.filter(p => p.sessionsRemaining === 0).length} no sessions remaining</Badge>
+          <Badge variant="warning">{roster.filter(p => p.sessionsRemaining > 0 && p.sessionsRemaining <= 2).length} low sessions</Badge>
+          <Badge variant="default">{roster.filter(p => !p.membershipId).length} no membership</Badge>
         </div>
 
         <DataTable

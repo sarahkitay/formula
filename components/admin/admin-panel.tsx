@@ -17,16 +17,16 @@ export function AdminPanel({
   return (
     <section
       className={cn(
-        'border border-white/10 bg-[#0f0f0f] p-5',
+        'border border-formula-frost/12 bg-formula-paper/[0.04] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]',
         className
       )}
     >
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           {eyebrow && (
-            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">{eyebrow}</p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-formula-mist">{eyebrow}</p>
           )}
-          <h2 className="font-mono text-xs font-bold uppercase tracking-wide text-zinc-100">{title}</h2>
+          <h2 className="font-mono text-xs font-bold uppercase tracking-wide text-formula-paper">{title}</h2>
         </div>
         {actions}
       </div>
@@ -46,7 +46,7 @@ export function AdminMonoTable({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse font-mono text-[11px]">
         <thead>
-          <tr className="border-b border-white/10 text-left text-zinc-500 uppercase tracking-wide">
+          <tr className="border-b border-formula-frost/12 text-left text-formula-mist uppercase tracking-wide">
             {headers.map(h => (
               <th key={h} className="pb-2 pr-4 font-medium">
                 {h}
@@ -56,7 +56,7 @@ export function AdminMonoTable({
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-b border-white/[0.06] text-zinc-300">
+            <tr key={i} className="border-b border-formula-frost/[0.08] text-formula-frost/90">
               {row.map((cell, j) => (
                 <td key={j} className="py-2 pr-4 align-top">
                   {cell}

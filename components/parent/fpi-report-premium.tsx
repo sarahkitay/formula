@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { ParentPanel } from '@/components/parent/parent-panel'
-import { fpiReportDemo } from '@/lib/mock-data/parent-portal'
+import { parentFpiReportEmpty, type ParentFpiReportContent } from '@/lib/parent/fpi-report-shell'
 import { parentPortalDashedCallout, parentPortalPanel } from '@/lib/parent/portal-surface'
 import { cn } from '@/lib/utils'
 export type FpiReportAthlete = {
@@ -11,8 +11,16 @@ export type FpiReportAthlete = {
   ageGroup: string
 }
 
-export function FpiReportPremium({ player, backHref }: { player: FpiReportAthlete; backHref: string }) {
-  const r = fpiReportDemo
+export function FpiReportPremium({
+  player,
+  backHref,
+  report,
+}: {
+  player: FpiReportAthlete
+  backHref: string
+  report?: ParentFpiReportContent
+}) {
+  const r = report ?? parentFpiReportEmpty
 
   return (
   <PageContainer fullWidth>

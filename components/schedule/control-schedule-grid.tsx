@@ -34,9 +34,9 @@ function slotStyle(
   return {
     left,
     width: Math.max(w, 2),
-    backgroundColor: emphasizeGreen ? 'rgb(0 87 0 / 0.9)' : neutral ? 'rgb(245 245 245 / 0.95)' : ui.bg,
-    borderColor: emphasizeGreen ? 'rgb(0 87 0)' : neutral ? 'rgb(212 212 212)' : ui.border,
-    color: emphasizeGreen ? '#ffffff' : neutral ? '#3f3f46' : ui.text,
+    backgroundColor: emphasizeGreen ? 'rgb(0 87 0 / 0.9)' : neutral ? 'rgb(42 58 54 / 0.88)' : ui.bg,
+    borderColor: emphasizeGreen ? 'rgb(0 87 0)' : neutral ? 'rgb(100 120 115 / 0.55)' : ui.border,
+    color: emphasizeGreen ? '#ffffff' : neutral ? 'rgb(220 230 225)' : ui.text,
     borderWidth: soldOut ? 2 : 1,
     borderStyle: 'solid',
     boxShadow: soldOut ? 'inset 0 0 0 1px rgb(254 202 202)' : undefined,
@@ -137,9 +137,14 @@ export function ControlScheduleGrid({
   }, [week.slots, dayIndex, scheduleAgeBand, assetFilter, parentMode])
 
   return (
-    <div className={cn('border border-black/10 bg-white font-mono text-[10px]', className)}>
-      <div className="flex items-end border-b border-black/10 bg-zinc-50">
-        <div className="w-[140px] shrink-0 border-r border-black/10 p-2 text-[9px] font-bold uppercase tracking-wider text-zinc-500">
+    <div
+      className={cn(
+        'border border-formula-frost/12 bg-formula-paper/[0.04] font-mono text-[10px] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]',
+        className
+      )}
+    >
+      <div className="flex items-end border-b border-formula-frost/12 bg-formula-deep/35">
+        <div className="w-[140px] shrink-0 border-r border-formula-frost/12 p-2 text-[9px] font-bold uppercase tracking-wider text-formula-mist">
           Asset \ Time
         </div>
         <div
@@ -153,7 +158,7 @@ export function ControlScheduleGrid({
             return (
               <div
                 key={h}
-                className="absolute bottom-0 top-0 border-l border-black/10 text-[9px] text-zinc-400"
+                className="absolute bottom-0 top-0 border-l border-formula-frost/10 text-[9px] text-formula-mist"
                 style={{ left }}
               >
                 <span className="ml-0.5 whitespace-nowrap pl-0.5">{formatMinute(minute)}</span>
@@ -164,12 +169,15 @@ export function ControlScheduleGrid({
       </div>
 
       {assets.map(asset => (
-        <div key={asset.id} className="flex border-b border-black/10 last:border-b-0">
-          <div className="flex w-[140px] shrink-0 items-center border-r border-black/10 bg-[#fafafa] px-2 py-1.5 text-[10px] font-bold uppercase leading-tight text-[#1a1a1a]">
+        <div key={asset.id} className="flex border-b border-formula-frost/10 last:border-b-0">
+          <div className="flex w-[140px] shrink-0 items-center border-r border-formula-frost/12 bg-formula-paper/[0.06] px-2 py-1.5 text-[10px] font-bold uppercase leading-tight text-formula-paper">
             {asset.label}
           </div>
           <div
-            className={cn('relative flex-1 bg-white', adminFillMode ? 'min-h-[4.25rem]' : 'h-14')}
+            className={cn(
+              'relative flex-1 bg-formula-deep/20',
+              adminFillMode ? 'min-h-[4.25rem]' : 'h-14'
+            )}
             style={{ minWidth: TRACK_WIDTH }}
           >
             {byAsset.get(asset.id)?.map(s => {
@@ -193,7 +201,8 @@ export function ControlScheduleGrid({
                   }
                   className={cn(
                     'absolute top-1 bottom-1 flex items-center overflow-hidden px-1.5 text-[10px] font-bold uppercase leading-none',
-                    canClick && 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#005700]'
+                    canClick &&
+                      'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-formula-volt'
                   )}
                   style={slotStyle(s, {
                     neutral: parentMode,
@@ -221,7 +230,7 @@ export function ControlScheduleGrid({
                         className={cn(
                           'mt-1 font-mono text-[7px] font-bold normal-case leading-tight tracking-tight',
                           parentMode
-                            ? 'text-zinc-600'
+                            ? 'text-formula-frost/90'
                             : 'text-white/95 drop-shadow-[0_1px_1px_rgb(0_0_0_/_0.5)]'
                         )}
                       >
@@ -244,37 +253,37 @@ export function ControlScheduleGrid({
         </div>
       ))}
 
-      <div className="border-t border-black/10 bg-zinc-50 p-3">
-        <p className="mb-2 text-[9px] font-bold uppercase tracking-widest text-zinc-500">Program legend</p>
+      <div className="border-t border-formula-frost/12 bg-formula-deep/35 p-3">
+        <p className="mb-2 text-[9px] font-bold uppercase tracking-widest text-formula-mist">Program legend</p>
         <div className="flex flex-wrap gap-x-4 gap-y-2">
           {kindsUsed.map(k => (
             <div key={k} className="flex items-center gap-1.5">
               <span
-                className="h-2.5 w-2.5 shrink-0 border border-black/20"
+                className="h-2.5 w-2.5 shrink-0 border border-formula-frost/25"
                 style={{
                   backgroundColor:
                     parentMode
                       ? k === 'open_gym' || (scheduleAgeBand != null && (k === 'youth_training' || k === 'preschool'))
                         ? 'rgb(0 87 0 / 0.9)'
-                        : 'rgb(212 212 216 / 0.9)'
+                        : 'rgb(42 58 54 / 0.9)'
                       : PROGRAM_UI[k].bg,
                 }}
               />
-              <span className="text-[9px] text-zinc-600">{PROGRAM_UI[k].key}</span>
+              <span className="text-[9px] text-formula-frost/85">{PROGRAM_UI[k].key}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <p className="border-t border-black/10 px-3 py-2 text-[9px] text-zinc-500">
+      <p className="border-t border-formula-frost/12 px-3 py-2 text-[9px] text-formula-mist">
         {DAY_LABELS[dayIndex]} · Week of {week.weekStart}: pre-generated facility program (read-only)
         {scheduleAgeBand != null && !parentMode && (
-          <span className="mt-1 block font-bold text-[#005700]">
+          <span className="mt-1 block font-bold text-formula-volt">
             Showing only {scheduleAgeBand} youth / preschool blocks (matches your athlete&apos;s training band).
           </span>
         )}
         {scheduleAgeBand != null && parentMode && (
-          <span className="mt-1 block font-bold text-[#005700]">
+          <span className="mt-1 block font-bold text-formula-volt">
             Green highlights Open Gym + {scheduleAgeBand} slots your athlete can attend.
           </span>
         )}

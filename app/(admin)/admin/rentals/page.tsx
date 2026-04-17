@@ -8,7 +8,8 @@ import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agre
 import { formatCurrency } from '@/lib/utils'
 import { SITE } from '@/lib/site-config'
 
-function formatSubmittedAt(iso: string) {
+function formatSubmittedAt(iso: string | null) {
+  if (!iso) return '—'
   try {
     return new Date(iso).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })
   } catch {

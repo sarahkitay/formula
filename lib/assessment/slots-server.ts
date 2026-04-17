@@ -104,11 +104,7 @@ export async function fetchSlotsWithAvailability(): Promise<AssessmentSlotRow[]>
     .limit(200)
 
   if (slotErr || !slots?.length) {
-    const booked = new Map<string, number>()
-    for (const [id, n] of memoryBookedKidsByJuneSlot) booked.set(id, n)
-    return rowsFromSpecsAndBooked(specs, booked)
-      .filter(r => r.starts_at > nowIso)
-      .slice(0, 200)
+    return []
   }
 
   const { data: bookings, error: bookErr } = await sb.from('assessment_bookings').select('assessment_slot_id, num_kids')

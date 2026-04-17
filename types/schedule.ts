@@ -59,8 +59,10 @@ export interface ScheduleOverride {
   endMinute: number
   kind: ScheduleProgramKind
   label: string
-  /** Replace any overlapping generated slots on this asset/day */
-  mode: 'replace'
+  /** `replace` swaps window with this block; `clear` removes generated slots in the window only */
+  mode: 'replace' | 'clear'
+  ageBand?: ScheduleAgeBand
+  youthBlockId?: string
 }
 
 export interface GeneratedWeek {

@@ -5,13 +5,14 @@ import { PageContainer } from '@/components/layout/app-shell'
 import { Badge } from '@/components/ui/badge'
 import { SectionHeader } from '@/components/ui/section-header'
 import type { Player } from '@/types'
+import type { AssessmentHistoryRow } from '@/lib/performance/assessment-display'
 import {
   getAveragePercentile,
   getDemoGender,
   getFacilityCohortStats,
   getPlayerAssessmentHistory,
   getScoreHistorySeries,
-} from '@/lib/mock-data/performance-detail'
+} from '@/lib/performance/assessment-display'
 import { cn, getAvatarColor, getInitials } from '@/lib/utils'
 
 function Bar({ value, max = 100, color }: { value: number; max?: number; color: string }) {
@@ -43,15 +44,18 @@ export function PlayerPerformanceDashboard({
   player,
   backHref,
   backLabel,
+  assessmentHistory,
 }: {
   player: Player
   backHref: string
   backLabel: string
+  /** When omitted, uses empty in-memory history until a caller passes Supabase rows. */
+  assessmentHistory?: AssessmentHistoryRow[]
 }) {
   const perf = player.performance
   const cohort = getFacilityCohortStats(player.ageGroup)
   const avgPct = perf ? getAveragePercentile(player) : 0
-  const assessments = getPlayerAssessmentHistory(player.id)
+  const assessments = assessmentHistory ?? getPlayerAssessmentHistory(player.id)
   const scoreSeries = getScoreHistorySeries(player.id)
   const gender = getDemoGender(player.id)
 
@@ -121,8 +125,8 @@ export function PlayerPerformanceDashboard({
           <>
             <div className="rounded-xl border border-border bg-surface px-4 py-3">
               <p className="text-[11px] text-text-muted">
-                Avg pct and overall are the mean of five percentile-style metrics (demo). Latest tech is the most recent
-                scheduled technical run. Assessed timestamp includes seconds (local time).
+                Avg pct and overall are the mean of five percentile-style metrics when present on the athlete profile.
+                Latest tech reflects the stored technical score. Assessed timestamp is local time.
               </p>
             </div>
 
@@ -137,7 +141,7 @@ export function PlayerPerformanceDashboard({
                   <p className="mt-1 text-sm font-semibold text-text-primary">{player.ageGroup}</p>
                 </div>
                 <div className="rounded-lg border border-border bg-surface-raised p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-text-muted">Gender (demo)</p>
+                  <p className="text-[10px] uppercase tracking-wider text-text-muted">Gender (record)</p>
                   <p className="mt-1 text-sm font-semibold text-text-primary">{gender}</p>
                 </div>
                 <div className="rounded-lg border border-border bg-surface-raised p-3">
@@ -163,7 +167,7 @@ export function PlayerPerformanceDashboard({
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="rounded-xl border border-border bg-surface p-5">
-                <SectionHeader title="Score history" description="Rolling technical trend (demo series)" />
+                <SectionHeader title="Score history" description="Rolling technical trend when time series is connected" />
                 <ul className="mt-4 space-y-2">
                   {scoreSeries.map(row => (
                     <li

@@ -11,11 +11,11 @@ import { ChevronRight } from 'lucide-react'
 function WeightRow({ band }: { band: AgeBandId }) {
   const w = FPI_WEIGHTS_BY_AGE[band]
   return (
-  <div className="grid grid-cols-5 gap-2 font-mono text-[11px] text-zinc-300">
+  <div className="grid grid-cols-5 gap-2 font-mono text-[11px] text-formula-frost/90">
   {FPI_PILLARS.map(p => (
-  <div key={p} className="border border-white/10 bg-black/20 px-2 py-2 text-center">
-  <p className="text-[9px] uppercase text-zinc-500">{p}</p>
-  <p className="tabular-nums text-zinc-100">{(w[p] * 100).toFixed(0)}%</p>
+  <div key={p} className="border border-formula-frost/12 bg-formula-paper/[0.05] px-2 py-2 text-center shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+  <p className="text-[9px] uppercase text-formula-mist">{p}</p>
+  <p className="tabular-nums text-formula-paper">{(w[p] * 100).toFixed(0)}%</p>
   </div>
   ))}
   </div>

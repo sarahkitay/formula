@@ -54,11 +54,11 @@ export function AdminWeeklyRoster({ week, checkedInIds, onToggleCheckedIn, class
             <div
               key={blockKey}
               className={cn(
-                'border border-black/10 bg-white',
-                meta.soldOut && 'border-red-800/40 bg-red-50/40'
+                'border border-formula-frost/12 bg-formula-paper/[0.04] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]',
+                meta.soldOut && 'border-red-800/40 bg-red-950/25'
               )}
             >
-              <div className="flex flex-wrap items-start justify-between gap-2 border-b border-black/10 bg-zinc-50 px-4 py-3">
+              <div className="flex flex-wrap items-start justify-between gap-2 border-b border-formula-frost/12 bg-formula-deep/35 px-4 py-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wide text-text-primary">
                     {DAY_LABELS[anchor.dayIndex]} · {formatMinuteRange(anchor.startMinute, anchor.endMinute)}
@@ -77,7 +77,7 @@ export function AdminWeeklyRoster({ week, checkedInIds, onToggleCheckedIn, class
                   </p>
                 </div>
               </div>
-              <ul className="divide-y divide-black/10">
+              <ul className="divide-y divide-formula-frost/10">
                 {meta.players.map(p => {
                   const on = checkedInIds.has(p.rosterId)
                   return (
@@ -89,8 +89,8 @@ export function AdminWeeklyRoster({ week, checkedInIds, onToggleCheckedIn, class
                         className={cn(
                           'shrink-0 rounded border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide transition-colors',
                           on
-                            ? 'border-[#005700] bg-[#005700] text-white'
-                            : 'border-black/15 bg-white text-text-muted hover:border-black/30 hover:text-text-primary'
+                            ? 'border-formula-volt/50 bg-formula-volt text-formula-base'
+                            : 'border-formula-frost/16 bg-formula-paper/[0.06] text-text-muted hover:border-formula-volt/35 hover:text-text-primary'
                         )}
                       >
                         {on ? 'Checked in' : 'Mark in'}
