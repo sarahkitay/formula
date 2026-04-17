@@ -68,7 +68,7 @@ export function CheckoutLaunchButton({
   }
 
   return (
-    <span className="inline-flex max-w-md flex-col gap-3">
+    <div className="inline-flex max-w-md flex-col gap-3">
       {!hideSmsConsent ? (
         <div
           className="cursor-pointer rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-4 transition-colors hover:border-formula-frost/22"
@@ -165,6 +165,6 @@ export function CheckoutLaunchButton({
         {loading ? 'Redirecting…' : label}
       </button>
       {error ? <span className="max-w-xs font-mono text-[10px] text-red-300/95">{error}</span> : null}
-    </span>
+    </div>
   )
 }

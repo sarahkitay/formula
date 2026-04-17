@@ -54,9 +54,9 @@ export default function YouthMembershipPage() {
           <strong>10-session package</strong> · ${SESSION_PACKAGE_10.priceUsd}
         </p>
         <p>{SESSION_PACKAGE_10.purchaseNote}</p>
-        <p className="not-prose">
+        <div className="not-prose">
           <CheckoutLaunchButton checkoutType="package-10" label="Buy the 10-session package" />
-        </p>
+        </div>
         <YouthPackageAckStrip />
         <p className="text-sm text-formula-frost/70">Session expiration window: confirm with the desk before launch.</p>
 

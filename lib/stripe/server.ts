@@ -1,4 +1,14 @@
+import dns from 'node:dns'
+import https from 'node:https'
 import Stripe from 'stripe'
+
+/** Prefer IPv4 for outbound HTTPS — avoids flaky IPv6 routes that often surface as StripeConnectionError. */
+dns.setDefaultResultOrder('ipv4first')
+
+const stripeHttpsAgent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 50,
+})
 
 /** Base URL for Stripe success/cancel redirects (no trailing slash). */
 export function getSiteOrigin(): string {
@@ -18,6 +28,9 @@ export function getStripe(): Stripe | null {
     stripeSingleton = new Stripe(key, {
       apiVersion: '2025-02-24.acacia',
       typescript: true,
+      httpAgent: stripeHttpsAgent,
+      maxNetworkRetries: 6,
+      timeout: 120_000,
     })
   }
   return stripeSingleton

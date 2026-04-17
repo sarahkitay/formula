@@ -178,6 +178,15 @@ export async function POST(req: Request) {
       await releasePendingSlotByRef(rentalSlot.ref)
     }
     console.error('[checkout/session]', e)
+    if (e instanceof Stripe.errors.StripeConnectionError) {
+      return NextResponse.json(
+        {
+          error:
+            'Payment service could not be reached from the server (network). Wait a minute and try again. If this keeps happening, confirm STRIPE_SECRET_KEY is set on Vercel and the deployment can reach api.stripe.com (firewall / IPv6 issues).',
+        },
+        { status: 502 }
+      )
+    }
     const stripeDetail = e instanceof Stripe.errors.StripeError ? e.message : null
     return NextResponse.json(
       { error: stripeDetail ?? 'Failed to create checkout session' },
