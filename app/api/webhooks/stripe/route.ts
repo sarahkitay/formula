@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
+import { sendStripeCheckoutPaidAdminEmail } from '@/lib/email/stripe-checkout-paid-email'
 import { confirmSlotFromPaidCheckout } from '@/lib/rentals/rental-slots'
 import { recordAssessmentBookingFromCheckout } from '@/lib/stripe/record-assessment-booking'
 import { recordCheckoutSessionCompleted } from '@/lib/stripe/record-purchase'
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
           console.error('[stripe webhook] assessment booking insert:', e)
         }
         await confirmSlotFromPaidCheckout(session)
+        await sendStripeCheckoutPaidAdminEmail(session)
       } catch {
         return NextResponse.json({ error: 'Failed to persist purchase' }, { status: 500 })
       }

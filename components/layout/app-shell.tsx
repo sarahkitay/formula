@@ -22,6 +22,8 @@ export interface AppShellProps {
   athletesSummary?: string
   /** Parent: real Supabase sign-out vs marketing link to /login */
   endSessionVariant?: 'login-link' | 'logout-button'
+  /** Passed to `LogoutButton` when `endSessionVariant` is `logout-button` */
+  logoutRedirectTo?: string
   /** Header logo destination (parent portal: public site `/`) */
   logoHref?: string
   /** Rendered at top of `<main>` (e.g. parent portal quick search) */
@@ -39,6 +41,7 @@ export function AppShell({
   identityEmail,
   athletesSummary,
   endSessionVariant = 'login-link',
+  logoutRedirectTo = '/login',
   logoHref,
   mainTop,
 }: AppShellProps) {
@@ -66,6 +69,7 @@ export function AppShell({
         identityEmail={identityEmail}
         athletesSummary={athletesSummary}
         endSessionVariant={endSessionVariant}
+        logoutRedirectTo={logoutRedirectTo}
       />
       <main className="lab-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-10">
         {mainTop}

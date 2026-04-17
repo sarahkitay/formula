@@ -1,5 +1,6 @@
 'use server'
 
+import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
 import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
 
 export type RentalAgreementState = {
@@ -74,6 +75,24 @@ export async function submitFieldRentalAgreement(
   if (!saved.ok) {
     return { ok: false, message: saved.message }
   }
+
+  await sendAdminNotification({
+    subject: `[Formula] Field rental agreement · ${participantName}`,
+    html: `
+      <p><strong>Field rental waiver submitted</strong></p>
+      <ul>
+        <li><strong>Agreement id</strong>: ${escapeHtml(saved.id)}</li>
+        <li><strong>Rental type</strong>: ${escapeHtml(rentalType)}</li>
+        <li><strong>Participant</strong>: ${escapeHtml(participantName)}</li>
+        <li><strong>Email</strong>: ${escapeHtml(participantEmail)}</li>
+        <li><strong>DOB</strong>: ${escapeHtml(participantDob)}</li>
+        <li><strong>Printed signer</strong>: ${escapeHtml(signatureName)}</li>
+        <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '—'}</li>
+      </ul>
+      <p>Signature image is stored in Supabase (<code>field_rental_agreements.signature_data_url</code>).</p>
+    `,
+    text: `Field rental agreement saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`,
+  })
 
   return {
     ok: true,

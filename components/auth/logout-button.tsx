@@ -4,12 +4,21 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
-export function LogoutButton({ className, label = 'Log out' }: { className?: string; label?: string }) {
+export function LogoutButton({
+  className,
+  label = 'Log out',
+  /** After sign-out, e.g. `/login?role=admin` so the correct portal tab is selected */
+  redirectTo = '/login',
+}: {
+  className?: string
+  label?: string
+  redirectTo?: string
+}) {
   const router = useRouter()
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    router.push('/login')
+    router.push(redirectTo)
     router.refresh()
   }
 

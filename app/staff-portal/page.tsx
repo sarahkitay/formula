@@ -281,7 +281,13 @@ export default function StaffPortalHubPage() {
           >
             Full dashboard →
           </Link>
-          <LogoutButton />
+          <LogoutButton
+            redirectTo={
+              profile.role === 'coach'
+                ? '/login?role=coach'
+                : '/login?role=admin'
+            }
+          />
         </div>
       </header>
 

@@ -12,6 +12,8 @@ export default function CoachLayout({ children }: { children: React.ReactNode })
       operatorLine="COACH_STATION // M_RIVERA"
       operatorContextLabel="OPERATOR_CONTEXT"
       surface="coach-os"
+      endSessionVariant="logout-button"
+      logoutRedirectTo="/login?role=coach"
     >
       {children}
     </AppShell>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
 import { isValidPortalSignupAgeGroup } from '@/lib/parent/portal-signup-age-groups'
 import { getServiceSupabase } from '@/lib/supabase/service'
 import { getStripe } from '@/lib/stripe/server'
@@ -190,6 +191,23 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
+
+  const kidsSummary = kids.map(k => `${k.firstName} ${k.lastName} (${k.ageGroup}, DOB ${k.dateOfBirth})`).join('; ')
+
+  await sendAdminNotification({
+    subject: `[Formula] Parent portal created · ${email}`,
+    html: `
+      <p><strong>New guardian account + player(s)</strong></p>
+      <ul>
+        <li><strong>Email</strong>: ${escapeHtml(email)}</li>
+        <li><strong>Guardian name</strong>: ${escapeHtml(parentFullName)}</li>
+        <li><strong>Stripe session</strong>: ${escapeHtml(sessionId)}</li>
+        <li><strong>User id</strong>: ${escapeHtml(userId)}</li>
+        <li><strong>Athletes</strong>: ${escapeHtml(kidsSummary)}</li>
+      </ul>
+    `,
+    text: `Portal signup: ${email} · ${kids.length} athlete(s) · session ${sessionId}`,
+  })
 
   return NextResponse.json({ ok: true, userId })
 }

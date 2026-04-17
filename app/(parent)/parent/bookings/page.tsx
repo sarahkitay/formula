@@ -28,6 +28,7 @@ import {
   fetchParentBlockBookings,
   type ParentBlockBookingRow,
 } from '@/lib/parent/parent-block-bookings'
+import { notifyParentBlockBookingCreated } from '@/lib/parent/notify-block-booking-client'
 
 const AGE_GROUPS: AgeGroup[] = ['U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
 
@@ -197,7 +198,7 @@ export default function ParentBookingsPage() {
 
   const persistPayload = useCallback(
     async (p: PendingGridPayload) => {
-      const { error } = await createParentBlockBooking({
+      const { data, error } = await createParentBlockBooking({
         player_id: p.playerId,
         slot_ref: p.slotRef,
         week_start: p.weekStart,
@@ -206,6 +207,7 @@ export default function ParentBookingsPage() {
         ends_at: p.endsAt,
       })
       if (!error) {
+        if (data?.id) void notifyParentBlockBookingCreated(data.id)
         await reloadBookingState()
         return { ok: true as const }
       }

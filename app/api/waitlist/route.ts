@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -48,6 +49,20 @@ export async function POST(req: Request) {
   } else {
     console.info('[waitlist] capture (set WAITLIST_WEBHOOK_URL to persist)', payload)
   }
+
+  await sendAdminNotification({
+    subject: `[Formula] Waitlist · ${payload.email}`,
+    html: `
+      <p><strong>Waitlist / email capture</strong></p>
+      <ul>
+        <li><strong>Email</strong>: ${escapeHtml(payload.email)}</li>
+        <li><strong>Name</strong>: ${escapeHtml(payload.name ?? '—')}</li>
+        <li><strong>Source</strong>: ${escapeHtml(payload.source)}</li>
+        <li><strong>At</strong>: ${escapeHtml(payload.at)}</li>
+      </ul>
+    `,
+    text: `Waitlist: ${payload.email} · ${payload.source}`,
+  })
 
   return NextResponse.json({ ok: true })
 }

@@ -12,6 +12,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       operatorLine="FACILITY_OS // ADMIN"
       operatorContextLabel="OPERATOR_CONTEXT"
       surface="admin-os"
+      endSessionVariant="logout-button"
+      logoutRedirectTo="/login?role=admin"
     >
       {children}
     </AppShell>

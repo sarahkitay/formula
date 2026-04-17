@@ -86,10 +86,6 @@ export function LoginPageClient() {
 
     const { profile, error: profileErr } = await loadProfileForUser(user.id)
 
-    if (profile) {
-      console.log(profile)
-    }
-
     if (profileErr || !profile) {
       setFormError(profileErr?.message ?? 'No profile row for this user. Create one in Supabase `profiles` with matching `id`.')
       await supabase.auth.signOut()
@@ -105,9 +101,24 @@ export function LoginPageClient() {
       return
     }
 
+    const staffRoles = new Set(['admin', 'coach', 'staff'])
+    const roleNorm = (profile.role ?? '').toLowerCase().trim()
+    if (portal === 'staff' && !staffRoles.has(roleNorm)) {
+      setFormError(
+        'This account is a guardian (parent) profile in the database, so it cannot use staff sign-in. Use Parent portal, or in Supabase set `profiles.role` to `admin`, `coach`, or `staff` for this user.'
+      )
+      await supabase.auth.signOut()
+      setLoading(false)
+      return
+    }
+
     setLoading(false)
     const redirectTarget = sanitizePostLoginPath(searchParams.get('next'))
-    router.push(redirectTarget ?? next)
+    let destination = redirectTarget ?? next
+    if (portal === 'staff' && destination.startsWith('/parent')) {
+      destination = next
+    }
+    router.push(destination)
     router.refresh()
   }
 

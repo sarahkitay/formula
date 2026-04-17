@@ -21,6 +21,8 @@ export interface TechnicalHeaderProps {
   logoHref?: string
   /** Optional sign-out target when endSessionVariant is login-link */
   signOutHref?: string
+  /** After logout-button sign-out (default `/login`) */
+  logoutRedirectTo?: string
   /** Admin facility OS: dark chrome */
   variant?: 'light' | 'dark'
   /** Readable name (parent / staff demo) */
@@ -51,6 +53,7 @@ export function TechnicalHeader({
   homeHref,
   logoHref: logoHrefProp,
   signOutHref = '/login',
+  logoutRedirectTo = '/login',
   variant = 'light',
   identityName,
   identityEmail,
@@ -133,6 +136,7 @@ export function TechnicalHeader({
             ) : null}
             {endSessionVariant === 'logout-button' ? (
               <LogoutButton
+                redirectTo={logoutRedirectTo}
                 label="End session"
                 className={cn(
                   'mt-3 border-transparent bg-transparent p-0 font-mono text-[10px] font-bold uppercase tracking-wider underline underline-offset-2',

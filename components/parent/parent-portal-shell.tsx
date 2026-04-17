@@ -140,6 +140,7 @@ export function ParentPortalShell({ children }: { children: React.ReactNode }) {
         identityEmail={email}
         athletesSummary={athletesSummary}
         endSessionVariant="logout-button"
+        logoutRedirectTo="/login?role=parent"
         mainTop={<ParentPortalQuickSearch />}
       >
         <ParentLinkedPlayersProvider>{children}</ParentLinkedPlayersProvider>
