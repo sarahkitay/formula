@@ -212,7 +212,7 @@ export function YouthBlocksWeekPanel() {
                     {formatBlockWhen(slot.weekStart, slot.dayIndex, slot.startMinute)} · ends {formatEndMinute(slot.endMinute)}
                   </p>
                   <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-formula-volt/80">
-                    Band {slot.ageBand} · {slot.enrolled}/{slot.capacity} roster (demo cap)
+                    Band {slot.ageBand} · {slot.enrolled}/{slot.capacity} roster spots filled
                   </p>
                 </button>
               </li>

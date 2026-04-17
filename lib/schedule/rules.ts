@@ -105,5 +105,5 @@ export const YOUTH_BLOCK_MINUTES = 55
 export const YOUTH_GAP_MINUTES = 15
 export const YOUTH_BLOCK_TOTAL = YOUTH_BLOCK_MINUTES + YOUTH_GAP_MINUTES
 
-/** Default roster model */
-export const YOUTH_BLOCK_CAPACITY = 20
+/** Max athletes per youth training block (Performance Center anchor roster) */
+export const YOUTH_BLOCK_CAPACITY = 6

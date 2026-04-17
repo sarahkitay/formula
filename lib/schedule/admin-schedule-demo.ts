@@ -90,9 +90,7 @@ export function buildAdminBlockDemo(weekStart: string, anchor: ScheduleSlot): Ad
   anchor.kind === 'open_gym' ? 24 : anchor.kind === 'preschool' ? 16 : YOUTH_BLOCK_CAPACITY
 
   const soldOut = stableInt(`${seed}|full`, 0, 9) < 2
-  const enrolled = soldOut
-  ? capacity
-  : stableInt(`${seed}|enr`, Math.max(8, Math.floor(capacity * 0.45)), capacity - 1)
+  const enrolled = soldOut ? capacity : stableInt(`${seed}|enr`, 0, Math.max(0, capacity - 1))
 
   const players: AdminRosterPlayerDemo[] = []
   for (let i = 0; i < enrolled; i++) {

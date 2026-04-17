@@ -63,8 +63,8 @@ export const SITE = {
   youthCycleWeeks: 12,
   /** FPI reassessment rhythm */
   fpiReassessmentMonths: 6,
-  youthBlockCapacityMin: 20,
-  youthBlockCapacityMax: 24,
+  youthBlockCapacityMin: 6,
+  youthBlockCapacityMax: 6,
   coachGroupsPerBlock: 4,
   cancellationPolicy:
   'Cancel at least 24 hours before session start. Late cancellations may incur a fee for spots you reserved.',

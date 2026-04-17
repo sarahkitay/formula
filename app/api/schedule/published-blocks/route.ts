@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { generateWeeklySchedule, startOfScheduleWeek } from '@/lib/schedule/generator'
 import { getBookableYouthSlots } from '@/lib/schedule/parent'
+import { fetchYouthBlockEnrollmentBySlotRef } from '@/lib/schedule/youth-block-enrollment'
 import type { ScheduleAgeBand } from '@/types/schedule'
 
 export const runtime = 'nodejs'
@@ -19,10 +20,11 @@ export async function GET(req: Request) {
     const sun = startOfScheduleWeek(base)
     const wix = Math.floor(sun.getTime() / (7 * 86400000)) % 52
     const week = generateWeeklySchedule(base, [], wix)
+    const enrollment = await fetchYouthBlockEnrollmentBySlotRef(week.weekStart)
 
     const bands: Record<string, ReturnType<typeof getBookableYouthSlots>> = {}
     for (const b of BANDS) {
-      bands[b] = getBookableYouthSlots(week, b)
+      bands[b] = getBookableYouthSlots(week, b, enrollment)
     }
 
     return NextResponse.json({ weekStart: week.weekStart, bands })

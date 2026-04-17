@@ -103,8 +103,8 @@ export const YOUTH_BLOCK_MODEL: YouthBlockModel = {
   station1Min: 25,
   transitionMin: 5,
   station2Min: 25,
-  athletesPerBlock: 20,
-  groupSizeMin: 5,
+  athletesPerBlock: 6,
+  groupSizeMin: 3,
   groupSizeMax: 6,
   stationsActive: 2,
 }

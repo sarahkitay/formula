@@ -81,7 +81,7 @@ function pushYouthDay(slots: ScheduleSlot[], day: DayIndex) {
   blocks.forEach((b, idx) => {
     const youthBlockId = `youth-${day}-${b.ageBand}-${b.startMinute}-${idx}`
     const rotation =
-      'Rot A: S1→S2 · B: S2→S1 · C: S3→S4 · D: S4→S3 · 20 athletes / 4×5'
+      'Rot A: S1→S2 · B: S2→S1 · C: S3→S4 · D: S4→S3 · up to 6 athletes / 4 stations'
 
     add(slots, {
       assetId: 'performance-center',

@@ -1,5 +1,7 @@
 'use server'
 
+import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
+
 export type RentalAgreementState = {
   ok: boolean
   message: string
@@ -30,10 +32,11 @@ export async function submitFieldRentalAgreement(
   const riskAccepted = formData.get('riskAccepted') === 'on'
   const rulesAccepted = formData.get('rulesAccepted') === 'on'
 
-  if (!rentalType || !participantName || !participantEmail || !participantDob || !signatureDataUrl) {
+  const signatureName = getRequiredString(formData, 'signatureName')
+  if (!rentalType || !participantName || !participantEmail || !participantDob || !signatureDataUrl || !signatureName) {
     return {
       ok: false,
-      message: 'Missing required fields. Name, email, date of birth, and signature are required.',
+      message: 'Missing required fields. Name, email, date of birth, printed signature name, and signature are required.',
     }
   }
 
@@ -44,27 +47,37 @@ export async function submitFieldRentalAgreement(
     }
   }
 
-  // TODO(db): replace with persistent write once rentals table is connected.
-  // Keep payload shape stable so wiring to DB later is straightforward.
-  const payload = {
-    submittedAtIso: new Date().toISOString(),
-    rentalType,
-    participantName,
-    participantEmail,
-    participantPhone: getRequiredString(formData, 'participantPhone') ?? null,
-    participantDob,
-    parentGuardianName: getRequiredString(formData, 'parentGuardianName') ?? null,
-    participantCount: getRequiredString(formData, 'participantCount') ?? null,
-    organizationName: getRequiredString(formData, 'organizationName') ?? null,
-    signatureName: getRequiredString(formData, 'signatureName') ?? null,
-    signatureDataUrl,
-    notes: getRequiredString(formData, 'notes') ?? null,
+  const participantCountRaw = getRequiredString(formData, 'participantCount')
+  let participant_count: number | null = null
+  if (participantCountRaw) {
+    const n = parseInt(participantCountRaw, 10)
+    if (Number.isFinite(n) && n > 0) participant_count = n
   }
 
-  console.info('Field rental agreement captured (pending DB):', payload)
+  const saved = await insertFieldRentalAgreement({
+    rental_type: rentalType,
+    participant_name: participantName,
+    participant_email: participantEmail,
+    participant_phone: getRequiredString(formData, 'participantPhone') ?? null,
+    participant_dob: participantDob,
+    parent_guardian_name: getRequiredString(formData, 'parentGuardianName') ?? null,
+    participant_count,
+    organization_name: getRequiredString(formData, 'organizationName') ?? null,
+    signature_name: signatureName,
+    signature_data_url: signatureDataUrl,
+    notes: getRequiredString(formData, 'notes') ?? null,
+    agreement_accepted: agreementAccepted,
+    risk_accepted: riskAccepted,
+    rules_accepted: rulesAccepted,
+  })
+
+  if (!saved.ok) {
+    return { ok: false, message: saved.message }
+  }
 
   return {
     ok: true,
-    message: 'Agreement submitted. Saved for now and ready for DB persistence once connected.',
+    message:
+      'Agreement saved. Staff can review it under Admin → Rentals. Complete checkout separately if you are also placing a field hold.',
   }
 }

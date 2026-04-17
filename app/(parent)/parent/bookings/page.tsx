@@ -88,6 +88,7 @@ export default function ParentBookingsPage() {
 
   const [selectedPlayerId, setSelectedPlayerId] = useState('')
   const [dbBookings, setDbBookings] = useState<ParentBlockBookingRow[]>([])
+  const [enrollmentBySlotRef, setEnrollmentBySlotRef] = useState<Map<string, number>>(() => new Map())
   const [bookingsLoadError, setBookingsLoadError] = useState<string | null>(null)
   const [gridDay, setGridDay] = useState<DayIndex>(() => new Date().getDay() as DayIndex)
   const [pendingGridEnroll, setPendingGridEnroll] = useState<{
@@ -97,6 +98,14 @@ export default function ParentBookingsPage() {
   const [gridConfirmBusy, setGridConfirmBusy] = useState(false)
   const [rowActionId, setRowActionId] = useState<string | null>(null)
   const [bookingFlash, setBookingFlash] = useState<string | null>(null)
+
+  const generatedWeek = useMemo(() => {
+    const sun = startOfScheduleWeek(new Date())
+    const wix = Math.floor(sun.getTime() / (7 * 86400000)) % 52
+    return generateWeeklySchedule(new Date(), [], wix)
+  }, [])
+
+  const weekStartStr = generatedWeek.weekStart
 
   const reloadBookings = useCallback(async () => {
     setBookingsLoadError(null)
@@ -108,9 +117,30 @@ export default function ParentBookingsPage() {
     setDbBookings(data ?? [])
   }, [])
 
+  const reloadYouthEnrollment = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/schedule/youth-enrollment?weekStart=${encodeURIComponent(weekStartStr)}`)
+      const body = (await res.json()) as { counts?: Record<string, number>; error?: string }
+      if (!res.ok) return
+      const m = new Map<string, number>()
+      if (body.counts) {
+        for (const [k, v] of Object.entries(body.counts)) {
+          if (typeof v === 'number' && Number.isFinite(v)) m.set(k, v)
+        }
+      }
+      setEnrollmentBySlotRef(m)
+    } catch {
+      setEnrollmentBySlotRef(new Map())
+    }
+  }, [weekStartStr])
+
+  const reloadBookingState = useCallback(async () => {
+    await Promise.all([reloadBookings(), reloadYouthEnrollment()])
+  }, [reloadBookings, reloadYouthEnrollment])
+
   useEffect(() => {
-    void reloadBookings()
-  }, [reloadBookings])
+    void reloadBookingState()
+  }, [reloadBookingState])
 
   useEffect(() => {
     if (roster.length === 0) return
@@ -128,17 +158,9 @@ export default function ParentBookingsPage() {
 
   const scheduleBand = selectedPlayer ? ageGroupToScheduleBand(selectedPlayer.ageGroup) : null
 
-  const generatedWeek = useMemo(() => {
-    const sun = startOfScheduleWeek(new Date())
-    const wix = Math.floor(sun.getTime() / (7 * 86400000)) % 52
-    return generateWeeklySchedule(new Date(), [], wix)
-  }, [])
-
-  const weekStartStr = generatedWeek.weekStart
-
   const bookableSlots = useMemo(
-    () => getBookableYouthSlots(generatedWeek, scheduleBand),
-    [generatedWeek, scheduleBand]
+    () => getBookableYouthSlots(generatedWeek, scheduleBand, enrollmentBySlotRef),
+    [generatedWeek, scheduleBand, enrollmentBySlotRef]
   )
   const bookableByYouthBlock = useMemo(
     () => new Map(bookableSlots.map((slot) => [slot.youthBlockId, slot.id] as const)),
@@ -184,17 +206,17 @@ export default function ParentBookingsPage() {
         ends_at: p.endsAt,
       })
       if (!error) {
-        await reloadBookings()
+        await reloadBookingState()
         return { ok: true as const }
       }
       const code = (error as { code?: string }).code
       if (code === '23505') {
-        await reloadBookings()
+        await reloadBookingState()
         return { ok: false as const, duplicate: true }
       }
       return { ok: false as const, message: error.message }
     },
-    [reloadBookings]
+    [reloadBookingState]
   )
 
   const formatBandSlotWhen = (dayIndex: DayIndex, startMinute: number) => {
@@ -268,6 +290,11 @@ export default function ParentBookingsPage() {
     if (!canBookGridSlot(slot) || !selectedPlayer) return
     const slotRef = resolveGridBookId(slot)
     if (!slotRef) return
+    const blockRow = bookableSlots.find((b) => b.id === slotRef)
+    if (blockRow && blockRow.enrolled >= blockRow.capacity) {
+      setBookingFlash('This block is full.')
+      return
+    }
     if (isYouthSlotBooked(slotRef)) {
       setBookingFlash('That block is already saved for this athlete this week.')
       return
@@ -294,6 +321,10 @@ export default function ParentBookingsPage() {
 
   const handleBookBookableRow = async (slot: BookableYouthSlot) => {
     if (!selectedPlayer) return
+    if (slot.enrolled >= slot.capacity) {
+      setBookingFlash('This block is full.')
+      return
+    }
     if (isYouthSlotBooked(slot.id)) {
       setBookingFlash('Already enrolled for this week.')
       return
@@ -462,7 +493,10 @@ export default function ParentBookingsPage() {
                         if (!canBookGridSlot(slot)) return false
                         const ref = resolveGridBookId(slot)
                         if (!ref) return false
-                        return !isYouthSlotBooked(ref)
+                        if (isYouthSlotBooked(ref)) return false
+                        const row = bookableSlots.find((b) => b.id === ref)
+                        if (row && row.enrolled >= row.capacity) return false
+                        return true
                       }}
                     />
                   </div>
@@ -536,7 +570,7 @@ export default function ParentBookingsPage() {
                     const when = formatBandSlotWhen(slot.dayIndex, slot.startMinute)
                     const isBooked = isYouthSlotBooked(slot.id)
                     const spotsLeft = slot.capacity - slot.enrolled
-                    const almostFull = spotsLeft <= 4
+                    const almostFull = spotsLeft > 0 && spotsLeft <= 2
                     const busy = rowActionId === slot.id
                     return (
                       <div
@@ -596,10 +630,10 @@ export default function ParentBookingsPage() {
                                 <Button
                                   variant="primary"
                                   size="sm"
-                                  disabled={busy}
+                                  disabled={busy || slot.enrolled >= slot.capacity}
                                   onClick={() => void handleBookBookableRow(slot)}
                                 >
-                                  {busy ? 'Saving…' : 'Enroll'}
+                                  {busy ? 'Saving…' : slot.enrolled >= slot.capacity ? 'Full' : 'Enroll'}
                                 </Button>
                               </>
                             )}

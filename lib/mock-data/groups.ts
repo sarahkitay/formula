@@ -1,4 +1,4 @@
-// TEMPORARY DATA LAYER (V1) · youth blocks: 55 min sessions, 15 min turnover; 20–24 athletes / 4 coach pods
+// TEMPORARY DATA LAYER (V1) · youth blocks: 55 min sessions, 15 min turnover; up to 6 athletes per Performance Center block
 import { Group } from '@/types'
 
 export const mockGroups: Group[] = [

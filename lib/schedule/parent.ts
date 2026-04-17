@@ -2,16 +2,15 @@ import type { BookableYouthSlot, DayIndex, GeneratedWeek, ScheduleAgeBand, Sched
 import { scheduleSlotMatchesChildBand } from '@/lib/schedule/age-map'
 import { YOUTH_BLOCK_CAPACITY } from '@/lib/schedule/rules'
 
-function hashEnrollment(seed: string): number {
-  let h = 0
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0
-  return h % 14
-}
-
 /**
  * One bookable row per youth block (Performance Center anchor only, system-generated roster).
+ * @param enrollmentBySlotRef — counts from `parent_block_bookings` keyed by bookable id (`book-${youthBlockId}`); omit for zeros.
  */
-export function getBookableYouthSlots(week: GeneratedWeek, band: ScheduleAgeBand | null): BookableYouthSlot[] {
+export function getBookableYouthSlots(
+  week: GeneratedWeek,
+  band: ScheduleAgeBand | null,
+  enrollmentBySlotRef?: ReadonlyMap<string, number>
+): BookableYouthSlot[] {
   if (!band) return []
   const anchors = week.slots.filter(
     (s): s is ScheduleSlot & { youthBlockId: string } =>
@@ -24,9 +23,10 @@ export function getBookableYouthSlots(week: GeneratedWeek, band: ScheduleAgeBand
   for (const s of anchors) {
     if (seen.has(s.youthBlockId)) continue
     seen.add(s.youthBlockId)
-    const enrolled = hashEnrollment(s.youthBlockId)
+    const bookId = `book-${s.youthBlockId}`
+    const enrolled = Math.min(YOUTH_BLOCK_CAPACITY, enrollmentBySlotRef?.get(bookId) ?? 0)
     out.push({
-      id: `book-${s.youthBlockId}`,
+      id: bookId,
       youthBlockId: s.youthBlockId,
       dayIndex: s.dayIndex as DayIndex,
       weekStart: week.weekStart,
