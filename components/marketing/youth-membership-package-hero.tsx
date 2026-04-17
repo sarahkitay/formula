@@ -2,10 +2,10 @@ import Link from 'next/link'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
 import { MembershipWaitlistCapture } from '@/components/marketing/membership-waitlist-capture'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
+import { SESSION_PACKAGE_5, SESSION_PACKAGE_10, SESSION_PACKAGE_EARLY_BIRD } from '@/lib/marketing/public-pricing'
 
 /**
- * Top-of-page hero: session package + memberships coming soon. Keeps youth membership
+ * Top-of-page hero: early bird session packages + memberships coming soon. Keeps youth membership
  * feeling product-led rather than long-form doc.
  */
 export function YouthMembershipPackageHero() {
@@ -22,49 +22,60 @@ export function YouthMembershipPackageHero() {
           }}
         />
         <div className="relative px-6 py-10 md:px-10 md:py-12">
-          <div className="flex flex-wrap items-start justify-between gap-8">
-            <div className="min-w-0 flex-1">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-formula-volt">
-                10-session package · Available now
-              </p>
-              <div className="mt-6 flex flex-wrap items-start gap-x-5 gap-y-4 md:gap-x-8">
-                <div className="flex min-w-0 items-start gap-4 md:gap-6">
-                  <div className="flex flex-col items-start">
-                    <p className="font-mono text-[clamp(3rem,8vw,4rem)] font-bold leading-none tracking-[-0.03em] text-formula-paper tabular-nums">
-                      {SESSION_PACKAGE_10.sessions}
-                    </p>
-                    <p className="mt-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-formula-mist">
-                      sessions
-                    </p>
-                  </div>
-                  <div
-                    className="mt-1 hidden h-[clamp(2.75rem,7vw,3.75rem)] w-px shrink-0 bg-gradient-to-b from-formula-volt/55 to-transparent md:block"
-                    aria-hidden
-                  />
-                  <p className="font-mono text-[clamp(3rem,8vw,4rem)] font-bold leading-none tracking-[-0.03em] text-formula-paper tabular-nums">
-                    ${SESSION_PACKAGE_10.priceUsd}
-                  </p>
-                </div>
-                <p className="min-w-0 max-w-none flex-1 basis-[min(100%,18rem)] text-[15px] leading-relaxed text-formula-frost/88 md:pt-1 lg:max-w-[42ch]">
-                  {SESSION_PACKAGE_10.purchaseNote}
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-formula-volt">
+            {SESSION_PACKAGE_EARLY_BIRD.headline} · {SESSION_PACKAGE_EARLY_BIRD.validThrough}
+          </p>
+          <p className="mt-2 max-w-[52ch] text-[14px] leading-relaxed text-formula-frost/88">{SESSION_PACKAGE_EARLY_BIRD.validityNote}</p>
+
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="rounded-sm border border-formula-frost/16 bg-formula-base/40 p-5">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">{SESSION_PACKAGE_5.label}</p>
+              <div className="mt-4 flex flex-wrap items-end gap-4">
+                <p className="font-mono text-[clamp(2.25rem,6vw,3.25rem)] font-bold leading-none tracking-[-0.03em] text-formula-paper tabular-nums">
+                  {SESSION_PACKAGE_5.sessions}
+                  <span className="ml-2 text-[11px] font-medium uppercase tracking-[0.18em] text-formula-mist">sessions</span>
+                </p>
+                <p className="font-mono text-[clamp(2rem,5vw,2.75rem)] font-bold leading-none text-formula-paper tabular-nums">
+                  ${SESSION_PACKAGE_5.priceUsd}
                 </p>
               </div>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <CheckoutLaunchButton checkoutType="package-10" label="Buy the 10-session package" />
-                <Link
-                  href={MARKETING_HREF.bookAssessmentPortal}
-                  className="inline-flex h-11 items-center justify-center border border-black/25 bg-formula-volt/[0.14] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt shadow-[inset_0_0_0_1px_rgb(220_255_0_/_0.08)] transition-[filter,background-color] hover:bg-formula-volt/[0.2] hover:brightness-105"
-                >
-                  Book an assessment
-                </Link>
-                <Link
-                  href={MARKETING_HREF.clinics}
-                  className="inline-flex h-11 items-center border border-formula-frost/18 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/28"
-                >
-                  Clinics & programs
-                </Link>
+              <p className="mt-3 text-[13px] leading-relaxed text-formula-frost/85">{SESSION_PACKAGE_5.purchaseNote}</p>
+              <div className="mt-5">
+                <CheckoutLaunchButton checkoutType="package-5" label={`Buy ${SESSION_PACKAGE_5.sessions}-session package`} />
               </div>
             </div>
+
+            <div className="rounded-sm border border-formula-volt/25 bg-formula-volt/[0.04] p-5">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt">{SESSION_PACKAGE_10.label}</p>
+              <div className="mt-4 flex flex-wrap items-end gap-4">
+                <p className="font-mono text-[clamp(2.25rem,6vw,3.25rem)] font-bold leading-none tracking-[-0.03em] text-formula-paper tabular-nums">
+                  {SESSION_PACKAGE_10.sessions}
+                  <span className="ml-2 text-[11px] font-medium uppercase tracking-[0.18em] text-formula-mist">sessions</span>
+                </p>
+                <p className="font-mono text-[clamp(2rem,5vw,2.75rem)] font-bold leading-none text-formula-paper tabular-nums">
+                  ${SESSION_PACKAGE_10.priceUsd}
+                </p>
+              </div>
+              <p className="mt-3 text-[13px] leading-relaxed text-formula-frost/85">{SESSION_PACKAGE_10.purchaseNote}</p>
+              <div className="mt-5">
+                <CheckoutLaunchButton checkoutType="package-10" label={`Buy ${SESSION_PACKAGE_10.sessions}-session package`} />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link
+              href={MARKETING_HREF.bookAssessmentPortal}
+              className="inline-flex h-11 items-center justify-center border border-black/25 bg-formula-volt/[0.14] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt shadow-[inset_0_0_0_1px_rgb(220_255_0_/_0.08)] transition-[filter,background-color] hover:bg-formula-volt/[0.2] hover:brightness-105"
+            >
+              Book an assessment
+            </Link>
+            <Link
+              href={MARKETING_HREF.clinics}
+              className="inline-flex h-11 items-center border border-formula-frost/18 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/28"
+            >
+              Clinics & programs
+            </Link>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { SectionHeader } from '@/components/ui/section-header'
-import { SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
+import { SESSION_PACKAGE_10, SESSION_PACKAGE_5, SESSION_PACKAGE_EARLY_BIRD } from '@/lib/marketing/public-pricing'
 import { useParentLinkedPlayers } from '@/components/parent/parent-linked-players-context'
 
 export function ParentMembershipsLinkedAthletes() {
@@ -45,8 +45,7 @@ export function ParentMembershipsLinkedAthletes() {
               </p>
               <p className="mt-1 text-xs text-text-muted">{player.ageGroup}</p>
               <p className="mt-2 text-sm text-text-secondary">
-                No membership details in the portal yet. The {SESSION_PACKAGE_10.sessions}-session package (${SESSION_PACKAGE_10.priceUsd}) is our current
-                offer. Ask staff at your next visit or assessment to purchase or redeem sessions.
+                {`No membership details in the portal yet. ${SESSION_PACKAGE_EARLY_BIRD.headline}: ${SESSION_PACKAGE_5.sessions} sessions ($${SESSION_PACKAGE_5.priceUsd}) or ${SESSION_PACKAGE_10.sessions} ($${SESSION_PACKAGE_10.priceUsd}) — ${SESSION_PACKAGE_EARLY_BIRD.validThrough} Ask staff at your next visit or assessment to purchase or redeem sessions.`}
               </p>
             </div>
           ))

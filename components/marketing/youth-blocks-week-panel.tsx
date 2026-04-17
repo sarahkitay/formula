@@ -124,100 +124,102 @@ export function YouthBlocksWeekPanel() {
 
   return (
     <section id="youth-training-blocks" className="space-y-5 scroll-mt-24" aria-labelledby="youth-blocks-heading">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h3 id="youth-blocks-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
-          Youth training blocks (sample week)
-        </h3>
-        {weekStart ? (
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setWeekStart((w) => (w ? addDaysToWeekStart(w, -1) : w))}
-              className="border border-formula-frost/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-formula-paper hover:border-formula-volt/35"
-            >
-              ← Week
-            </button>
-            <span className="font-mono text-[10px] text-formula-frost/70">Week of {weekStart}</span>
-            <button
-              type="button"
-              onClick={() => setWeekStart((w) => (w ? addDaysToWeekStart(w, 1) : w))}
-              className="border border-formula-frost/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-formula-paper hover:border-formula-volt/35"
-            >
-              Week →
-            </button>
-          </div>
-        ) : null}
-      </div>
-
-      <p className="max-w-2xl text-[13px] leading-relaxed text-formula-frost/75">
-        Blocks reflect the published Performance Center ladder for each band. Selecting a block without a package opens age confirmation, then sends you to
-        packages. With a package on file (confirm below after purchase), use the parent portal to finalize holds.
-      </p>
-
-      <div className="flex flex-wrap gap-2">
-        {BAND_TABS.map((t) => (
-          <button
-            key={t.band}
-            type="button"
-            onClick={() => setBand(t.band)}
-            className={cn(
-              'border px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors',
-              band === t.band
-                ? 'border-formula-volt/45 bg-formula-volt/12 text-formula-paper'
-                : 'border-formula-frost/14 text-formula-frost/80 hover:border-formula-frost/28'
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {!hasPackage ? (
-        <p className="rounded-sm border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-100/90">
-          Package not marked on this device — block picks open the confirmation flow. After you buy a package, use &quot;I purchased a package&quot; on the{' '}
-          <Link href={MARKETING_HREF.youthMembership} className="underline underline-offset-2">
-            programs page
-          </Link>{' '}
-          to unlock portal-first booking.
-        </p>
-      ) : (
-        <p className="rounded-sm border border-formula-volt/25 bg-formula-volt/10 px-3 py-2 text-xs text-formula-paper">
-          Package flag set — book blocks in the{' '}
-          <Link href="/parent/bookings" className="font-semibold text-formula-volt underline-offset-2 hover:underline">
-            parent portal schedule
-          </Link>
-          .
-        </p>
-      )}
-
-      {loading ? (
-        <p className="font-mono text-[10px] text-formula-frost/50">Loading published blocks…</p>
-      ) : err ? (
-        <p className="text-sm text-amber-200/90">{err}</p>
-      ) : rows.length === 0 ? (
-        <p className="text-sm text-formula-frost/70">No generated blocks for this band this week.</p>
-      ) : (
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {rows.map((slot) => (
-            <li key={slot.id}>
+      <div className="rounded-sm border border-black/12 bg-white p-5 text-black shadow-sm">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h3 id="youth-blocks-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-black">
+            Youth training blocks (sample week)
+          </h3>
+          {weekStart ? (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={onBlockClick}
-                className="w-full border border-formula-frost/14 bg-formula-paper/[0.03] p-4 text-left transition-colors hover:border-formula-volt/30"
+                onClick={() => setWeekStart((w) => (w ? addDaysToWeekStart(w, -1) : w))}
+                className="border border-black/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-black hover:border-black/40"
               >
-                <p className="font-semibold text-formula-paper">{slot.label}</p>
-                <p className="mt-1 text-xs text-formula-frost/80">
-                  {DAY_LABELS[slot.dayIndex] ?? 'Day'}{' '}
-                  {formatBlockWhen(slot.weekStart, slot.dayIndex, slot.startMinute)} · ends {formatEndMinute(slot.endMinute)}
-                </p>
-                <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-formula-volt/80">
-                  Band {slot.ageBand} · {slot.enrolled}/{slot.capacity} roster (demo cap)
-                </p>
+                ← Week
               </button>
-            </li>
+              <span className="font-mono text-[10px] text-black/70">Week of {weekStart}</span>
+              <button
+                type="button"
+                onClick={() => setWeekStart((w) => (w ? addDaysToWeekStart(w, 1) : w))}
+                className="border border-black/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-black hover:border-black/40"
+              >
+                Week →
+              </button>
+            </div>
+          ) : null}
+        </div>
+
+        <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-black/85">
+          Blocks reflect the published Performance Center ladder for each band. Selecting a block without a package opens age confirmation, then sends you to
+          packages. With a package on file (confirm below after purchase), use the parent portal to finalize holds.
+        </p>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {BAND_TABS.map((t) => (
+            <button
+              key={t.band}
+              type="button"
+              onClick={() => setBand(t.band)}
+              className={cn(
+                'border px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors',
+                band === t.band
+                  ? 'border-black bg-neutral-100 text-black'
+                  : 'border-black/20 text-black/80 hover:border-black/35 hover:text-black'
+              )}
+            >
+              {t.label}
+            </button>
           ))}
-        </ul>
-      )}
+        </div>
+
+        {!hasPackage ? (
+          <p className="mt-4 rounded-sm border border-amber-300/70 bg-amber-50 px-3 py-2 text-xs text-black">
+            Package not marked on this device — block picks open the confirmation flow. After you buy a package, use &quot;I purchased a package&quot; on the{' '}
+            <Link href={MARKETING_HREF.youthMembership} className="font-semibold text-black underline underline-offset-2">
+              programs page
+            </Link>{' '}
+            to unlock portal-first booking.
+          </p>
+        ) : (
+          <p className="mt-4 rounded-sm border border-emerald-600/25 bg-emerald-50 px-3 py-2 text-xs text-black">
+            Package flag set — book blocks in the{' '}
+            <Link href="/parent/bookings" className="font-semibold text-black underline underline-offset-2 hover:underline">
+              parent portal schedule
+            </Link>
+            .
+          </p>
+        )}
+
+        {loading ? (
+          <p className="mt-4 font-mono text-[10px] text-black/55">Loading published blocks…</p>
+        ) : err ? (
+          <p className="mt-4 text-sm text-red-800">{err}</p>
+        ) : rows.length === 0 ? (
+          <p className="mt-4 text-sm text-black/70">No generated blocks for this band this week.</p>
+        ) : (
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {rows.map((slot) => (
+              <li key={slot.id}>
+                <button
+                  type="button"
+                  onClick={onBlockClick}
+                  className="w-full border border-black/12 bg-neutral-50 p-4 text-left text-black transition-colors hover:border-black/30 hover:bg-white"
+                >
+                  <p className="font-semibold text-black">{slot.label}</p>
+                  <p className="mt-1 text-xs text-black/80">
+                    {DAY_LABELS[slot.dayIndex] ?? 'Day'}{' '}
+                    {formatBlockWhen(slot.weekStart, slot.dayIndex, slot.startMinute)} · ends {formatEndMinute(slot.endMinute)}
+                  </p>
+                  <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-black/70">
+                    Band {slot.ageBand} · {slot.enrolled}/{slot.capacity} roster (demo cap)
+                  </p>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       {gateOpen && gateBand ? (
         <PackageGateModal

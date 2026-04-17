@@ -1,15 +1,31 @@
 /**
  * Published public pricing and fee notes. Adjust here when rates change; amounts are operational defaults until finance confirms.
  */
-/** Prepaid session package (public). Monthly membership tiers are paused until launched. */
+/** Early bird window for session packages (marketing + Stripe descriptions). */
+export const SESSION_PACKAGE_EARLY_BIRD = {
+  headline: 'Early bird pricing',
+  /** Shorter line for product names / Stripe */
+  validThrough: 'Valid through June only.',
+  /** Full sentence for web copy */
+  validityNote: 'Early bird pricing is only valid through June; standard rates apply after.',
+} as const
+
+/** Prepaid 5-session package (early bird). */
+export const SESSION_PACKAGE_5 = {
+  sessions: 5,
+  priceUsd: 150,
+  label: '5-session package',
+  summary: `5 sessions for $150. ${SESSION_PACKAGE_EARLY_BIRD.headline} — ${SESSION_PACKAGE_EARLY_BIRD.validThrough}`,
+  purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
+} as const
+
+/** Prepaid 10-session package (early bird). */
 export const SESSION_PACKAGE_10 = {
   sessions: 10,
-  priceUsd: 300,
+  priceUsd: 250,
   label: '10-session package',
-  summary: '10 sessions for $300: our current package offering.',
-  /** Hero / inline layouts where the numerals are shown separately */
-  purchaseNote:
-    'Our current training package, available now. Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.',
+  summary: `10 sessions for $250. ${SESSION_PACKAGE_EARLY_BIRD.headline} — ${SESSION_PACKAGE_EARLY_BIRD.validThrough}`,
+  purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
 } as const
 
 export const FORMULA_SKILLS_CHECK = {

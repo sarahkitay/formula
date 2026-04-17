@@ -15,8 +15,8 @@ const CLUB_VS_FORMULA: [string, string][] = [
 
 const OFFER_NOW: { title: string; body: string }[] = [
   {
-    title: '10-session package',
-    body: '$300. Start immediately after your assessment.',
+    title: 'Session packages (early bird)',
+    body: '5 for $150 or 10 for $250 — valid through June. Start after your assessment.',
   },
   {
     title: 'Friday Youth Game Circuit',

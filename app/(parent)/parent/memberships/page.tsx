@@ -3,7 +3,7 @@ import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { ParentMembershipsLinkedAthletes } from '@/components/parent/parent-memberships-linked-athletes'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
+import { SESSION_PACKAGE_10, SESSION_PACKAGE_5, SESSION_PACKAGE_EARLY_BIRD } from '@/lib/marketing/public-pricing'
 import { cn } from '@/lib/utils'
 
 export default function ParentMembershipsPage() {
@@ -23,27 +23,30 @@ export default function ParentMembershipsPage() {
           />
           <div className="relative px-6 py-9 md:px-10 md:py-11">
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.26em] text-primary">
-              Available now
+              {SESSION_PACKAGE_EARLY_BIRD.headline}
             </p>
-            <div className="mt-6 flex flex-wrap items-end gap-8 md:gap-12">
-              <div>
-                <p className="text-[clamp(2.75rem,8vw,4rem)] font-bold leading-[0.9] tracking-tight text-text-primary">
-                  {SESSION_PACKAGE_10.sessions}
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">{SESSION_PACKAGE_EARLY_BIRD.validityNote}</p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+              <div className="rounded-control border border-border bg-surface-raised/80 p-5">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-text-muted">{SESSION_PACKAGE_5.label}</p>
+                <p className="mt-2 text-3xl font-bold tabular-nums text-text-primary md:text-4xl">
+                  {SESSION_PACKAGE_5.sessions} <span className="text-lg font-semibold text-text-muted">sessions</span>
                 </p>
-                <p className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-text-muted">
-                  sessions
-                </p>
+                <p className="mt-1 text-2xl font-bold tabular-nums text-text-primary">${SESSION_PACKAGE_5.priceUsd}</p>
+                <p className="mt-3 text-xs leading-relaxed text-text-secondary">{SESSION_PACKAGE_5.summary}</p>
               </div>
-              <div className="hidden h-14 w-px shrink-0 bg-gradient-to-b from-primary/50 to-transparent md:block" />
-              <div className="min-w-0">
-                <p className="text-[clamp(2rem,5vw,2.75rem)] font-bold leading-none tracking-tight text-text-primary">
-                  ${SESSION_PACKAGE_10.priceUsd}
+              <div className="rounded-control border border-primary/30 bg-primary/5 p-5">
+                <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-text-muted">{SESSION_PACKAGE_10.label}</p>
+                <p className="mt-2 text-3xl font-bold tabular-nums text-text-primary md:text-4xl">
+                  {SESSION_PACKAGE_10.sessions} <span className="text-lg font-semibold text-text-muted">sessions</span>
                 </p>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-text-secondary">
-                  {SESSION_PACKAGE_10.summary} Purchase and scheduling are handled at the front desk or during your assessment, not in this portal yet.
-                </p>
+                <p className="mt-1 text-2xl font-bold tabular-nums text-text-primary">${SESSION_PACKAGE_10.priceUsd}</p>
+                <p className="mt-3 text-xs leading-relaxed text-text-secondary">{SESSION_PACKAGE_10.summary}</p>
               </div>
             </div>
+            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-text-secondary">
+              Purchase and scheduling are handled at the front desk, on the public programs page, or during your assessment — not in this portal yet.
+            </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/parent/bookings"

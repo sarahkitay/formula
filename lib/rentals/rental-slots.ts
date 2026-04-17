@@ -80,16 +80,15 @@ export async function listUnavailableSlotsForDate(sessionDate: string): Promise<
   return out
 }
 
-/** Claim the same field + time window on consecutive weekly dates (anchor = first session). Rolls back all on any failure. */
-export async function tryClaimRecurringWeeklySlots(params: {
+/** Claim the same field + time window on each listed session date (same weekday/time). Rolls back all on any failure. */
+export async function tryClaimRecurringWeeklySlotsForDates(params: {
   fieldId: string
   timeSlot: string
   rentalRef: string
-  anchorDateYmd: string
-  weekCount: number
+  sessionDatesYmd: string[]
 }): Promise<boolean> {
-  const dates = weeklyOccurrenceDatesIso(params.anchorDateYmd, params.weekCount)
-  for (const sessionDate of dates) {
+  const sorted = [...new Set(params.sessionDatesYmd.map(d => d.trim()))].filter(Boolean).sort()
+  for (const sessionDate of sorted) {
     const ok = await tryClaimSlotForCheckout({
       fieldId: params.fieldId,
       sessionDate,
@@ -102,6 +101,23 @@ export async function tryClaimRecurringWeeklySlots(params: {
     }
   }
   return true
+}
+
+/** Consecutive weeks from anchor (same as N calls to weekly anchor). */
+export async function tryClaimRecurringWeeklySlots(params: {
+  fieldId: string
+  timeSlot: string
+  rentalRef: string
+  anchorDateYmd: string
+  weekCount: number
+}): Promise<boolean> {
+  const dates = weeklyOccurrenceDatesIso(params.anchorDateYmd, params.weekCount)
+  return tryClaimRecurringWeeklySlotsForDates({
+    fieldId: params.fieldId,
+    timeSlot: params.timeSlot,
+    rentalRef: params.rentalRef,
+    sessionDatesYmd: dates,
+  })
 }
 
 /** Returns false if the slot is already held or confirmed. */

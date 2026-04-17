@@ -1,5 +1,10 @@
 import type Stripe from 'stripe'
-import { FIELD_RENTAL_BOOKING_CHECKOUT, FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
+import {
+  FIELD_RENTAL_BOOKING_CHECKOUT,
+  FORMULA_SKILLS_CHECK,
+  SESSION_PACKAGE_5,
+  SESSION_PACKAGE_10,
+} from '@/lib/marketing/public-pricing'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
 export type LineItemsOptions = {
@@ -37,6 +42,23 @@ export function lineItemsForCheckoutType(
     ]
   }
 
+  if (type === 'package-5') {
+    return [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          tax_behavior: 'exclusive',
+          product_data: {
+            name: `${SESSION_PACKAGE_5.sessions}-session package (early bird)`,
+            description: SESSION_PACKAGE_5.summary,
+          },
+          unit_amount: Math.round(SESSION_PACKAGE_5.priceUsd * 100),
+        },
+      },
+    ]
+  }
+
   if (type === 'package-10') {
     return [
       {
@@ -45,7 +67,7 @@ export function lineItemsForCheckoutType(
           currency: 'usd',
           tax_behavior: 'exclusive',
           product_data: {
-            name: `${SESSION_PACKAGE_10.sessions}-session package`,
+            name: `${SESSION_PACKAGE_10.sessions}-session package (early bird)`,
             description: SESSION_PACKAGE_10.summary,
           },
           unit_amount: Math.round(SESSION_PACKAGE_10.priceUsd * 100),
@@ -71,7 +93,7 @@ export function lineItemsForCheckoutType(
             description:
               weeks === 1
                 ? FIELD_RENTAL_BOOKING_CHECKOUT.summary
-                : `${weeks} sessions (same field & time window, consecutive weeks) at $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} each. Non-refundable booking hold; staff may reconcile any balance vs published rates.`,
+                : `${weeks} sessions (same field & time window · chosen weekly dates) at $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} each. Non-refundable booking hold; staff may reconcile any balance vs published rates.`,
           },
           unit_amount: unitCents,
         },

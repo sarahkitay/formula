@@ -23,22 +23,22 @@ export function PackageGateModal({ open, onClose, bandLabel, rosterAgeHint }: Pr
   }, [open])
 
   return (
-    <Modal open={open} onClose={onClose} title="Training block" size="sm">
+    <Modal open={open} onClose={onClose} title="Training block" size="sm" className="text-black [&_h2]:text-black">
       <ModalBody>
-        <p className="text-sm text-formula-frost/85">
-          Published youth blocks on the calendar are <strong className="text-formula-paper">band {bandLabel}</strong> ({rosterAgeHint}). Spots are held for
-          families with an active training package.
+        <p className="text-sm text-black">
+          Published youth blocks on the calendar are <strong className="font-semibold text-black">band {bandLabel}</strong> ({rosterAgeHint}). Spots are held
+          for families with an active training package.
         </p>
-        <label className="mt-4 flex items-start gap-3">
+        <label className="mt-4 flex cursor-pointer items-start gap-3">
           <input
             type="checkbox"
             checked={confirmed}
             onChange={(e) => setConfirmed(e.target.checked)}
-            className="mt-1 h-4 w-4 accent-formula-volt"
+            className="mt-1 h-4 w-4 shrink-0 border-black/30 accent-black"
           />
-          <span className="text-sm text-formula-paper">I confirm my athlete falls in this age band.</span>
+          <span className="text-sm text-black">I confirm my athlete falls in this age band.</span>
         </label>
-        <p className="mt-3 text-xs text-formula-mist">Misrepresentation may void scheduling; staff verify at check-in.</p>
+        <p className="mt-3 text-xs text-black/75">Misrepresentation may void scheduling; staff verify at check-in.</p>
       </ModalBody>
       <ModalFooter>
         <Button variant="ghost" size="sm" type="button" onClick={onClose}>

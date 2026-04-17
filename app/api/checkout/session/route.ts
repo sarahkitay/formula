@@ -2,14 +2,11 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
 import { slotHasRoom } from '@/lib/assessment/slots-server'
-import {
-  attachStripeSessionToSlot,
-  releasePendingSlotByRef,
-  tryClaimRecurringWeeklySlots,
-} from '@/lib/rentals/rental-slots'
+import { encodeRentalDatesCompact, resolveFieldRentalSessionDatesFromMetadata } from '@/lib/rentals/rental-weekly-dates'
+import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWeeklySlotsForDates } from '@/lib/rentals/rental-slots'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
-import { getSiteOrigin, getStripe } from '@/lib/stripe/server'
+import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
 
 export const runtime = 'nodejs'
 
@@ -30,13 +27,17 @@ function sanitizeMetadataExtra(raw: unknown): Record<string, string> {
     if (k.toLowerCase().startsWith('twilio_')) continue
     if (typeof v !== 'string') continue
     const trimmed = v.trim()
-    if (!trimmed || trimmed.length > 450) continue
+    if (!trimmed || trimmed.length > 500) continue
     out[k] = trimmed
   }
   return out
 }
 
 export async function POST(req: Request) {
+  const keyCheck = checkStripeServerSecretKey()
+  if (!keyCheck.ok) {
+    return NextResponse.json({ error: keyCheck.message }, { status: 503 })
+  }
   const stripe = getStripe()
   if (!stripe) {
     return NextResponse.json(
@@ -65,6 +66,9 @@ export async function POST(req: Request) {
 
   let line_items = lineItemsForCheckoutType(type)
   let fieldRentalWeeks = 1
+  let fieldRentalStripeDates: { rental_weeks: string; rental_dates_compact: string; rental_date: string } | null = null
+  /** Set for field-rental so attach + Stripe metadata stay aligned after checkout.create. */
+  let fieldRentalSessionDatesYmd: string[] | null = null
 
   if (type === 'assessment') {
     const slotId = metadataExtra.assessment_slot_id?.trim()
@@ -111,15 +115,27 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
-    const rw = parseInt(metadataExtra.rental_weeks ?? '1', 10)
-    fieldRentalWeeks = Number.isFinite(rw) ? Math.min(52, Math.max(1, Math.floor(rw))) : 1
+    const resolvedDates = resolveFieldRentalSessionDatesFromMetadata(metadataExtra, rentalSlot.date)
+    if (!resolvedDates.ok) {
+      return NextResponse.json({ error: resolvedDates.message }, { status: 400 })
+    }
+    const sessionDatesYmd = resolvedDates.dates
+    if (sessionDatesYmd.length === 0) {
+      return NextResponse.json({ error: 'Select at least one rental session date.' }, { status: 400 })
+    }
+    fieldRentalSessionDatesYmd = sessionDatesYmd
+    fieldRentalWeeks = sessionDatesYmd.length
     line_items = lineItemsForCheckoutType(type, { fieldRentalSessionWeeks: fieldRentalWeeks })
-    const claimed = await tryClaimRecurringWeeklySlots({
+    fieldRentalStripeDates = {
+      rental_weeks: String(fieldRentalWeeks),
+      rental_dates_compact: encodeRentalDatesCompact(sessionDatesYmd),
+      rental_date: sessionDatesYmd[0],
+    }
+    const claimed = await tryClaimRecurringWeeklySlotsForDates({
       fieldId: rentalSlot.field,
-      anchorDateYmd: rentalSlot.date,
       timeSlot: rentalSlot.window,
       rentalRef: rentalSlot.ref,
-      weekCount: fieldRentalWeeks,
+      sessionDatesYmd,
     })
     if (!claimed) {
       return NextResponse.json(
@@ -146,7 +162,7 @@ export async function POST(req: Request) {
         type,
         twilio_sms_opt_in: smsConsent ? 'true' : 'false',
         ...metadataExtra,
-        ...(type === 'field-rental-booking' ? { rental_weeks: String(fieldRentalWeeks) } : {}),
+        ...(fieldRentalStripeDates ?? {}),
       },
       ...(prefillEmail ? { customer_email: prefillEmail } : {}),
       customer_creation: 'always',
@@ -160,11 +176,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Checkout session missing URL' }, { status: 500 })
     }
 
-    if (type === 'field-rental-booking' && rentalSlot) {
+    if (type === 'field-rental-booking' && rentalSlot && fieldRentalSessionDatesYmd?.length) {
       await attachStripeSessionToSlot(
         {
           fieldId: rentalSlot.field,
-          sessionDate: rentalSlot.date,
+          sessionDate: fieldRentalSessionDatesYmd[0],
           timeSlot: rentalSlot.window,
           rentalRef: rentalSlot.ref,
         },
@@ -178,6 +194,16 @@ export async function POST(req: Request) {
       await releasePendingSlotByRef(rentalSlot.ref)
     }
     console.error('[checkout/session]', e)
+    if (e instanceof Stripe.errors.StripeAuthenticationError) {
+      return NextResponse.json(
+        {
+          error:
+            'Stripe rejected the server API key (401). For checkout, set STRIPE_SECRET_KEY to your standard Secret key (sk_live_… or sk_test_…) from Stripe Dashboard → Developers → API keys — use Reveal secret key, not Publishable. If you intend to use a restricted key (rk_…), it must be valid, not revoked, and allowed to create Checkout Sessions; otherwise Stripe returns invalid key. Details: ' +
+            e.message,
+        },
+        { status: 503 }
+      )
+    }
     if (e instanceof Stripe.errors.StripeConnectionError) {
       return NextResponse.json(
         {

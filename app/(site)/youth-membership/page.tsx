@@ -6,12 +6,12 @@ import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inn
 import { YouthMembershipPackageHero } from '@/components/marketing/youth-membership-package-hero'
 import { YouthPackageAckStrip } from '@/components/marketing/youth-package-ack-strip'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10 } from '@/lib/marketing/public-pricing'
+import { FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10, SESSION_PACKAGE_5, SESSION_PACKAGE_EARLY_BIRD } from '@/lib/marketing/public-pricing'
 
 export const metadata: Metadata = {
   title: 'Programs and pricing',
   description:
-    'Start with a Formula Skills Check. 10-session package $300. Youth memberships launching soon. Programs, clinics, Friday circuit, and adult programming at Formula Soccer Center.',
+    'Start with a Formula Skills Check. Early bird session packages: 5 for $150, 10 for $250 through June. Youth memberships launching soon. Programs, clinics, Friday circuit, and adult programming at Formula Soccer Center.',
 }
 
 export default function YouthMembershipPage() {
@@ -29,7 +29,7 @@ export default function YouthMembershipPage() {
         articleClassName="!pt-12 md:!pt-16"
         eyebrow="Programs and pricing"
         title="Start with an assessment. <br> Everything else follows."
-        intro={`Every athlete at Formula starts with a Formula Skills Check: a one-hour assessment that scores your player across six performance pillars and determines which program and training focus is right for them. Our live training package is the ${SESSION_PACKAGE_10.sessions}-session block at $${SESSION_PACKAGE_10.priceUsd}. Youth membership tiers are opening within the next month; join the waitlist on this page for first access.`}
+        intro={`Every athlete at Formula starts with a Formula Skills Check: a one-hour assessment that scores your player across six performance pillars and determines which program and training focus is right for them. ${SESSION_PACKAGE_EARLY_BIRD.headline}: ${SESSION_PACKAGE_5.sessions} sessions for $${SESSION_PACKAGE_5.priceUsd} or ${SESSION_PACKAGE_10.sessions} sessions for $${SESSION_PACKAGE_10.priceUsd} (${SESSION_PACKAGE_EARLY_BIRD.validThrough}). Youth membership tiers are opening within the next month; join the waitlist on this page for first access.`}
       >
         <h2>Assessment</h2>
         <p>
@@ -51,11 +51,20 @@ export default function YouthMembershipPage() {
 
         <h2 className="!mt-14">Current offering</h2>
         <p>
-          <strong>10-session package</strong> · ${SESSION_PACKAGE_10.priceUsd}
+          <strong>{SESSION_PACKAGE_EARLY_BIRD.headline}</strong> ({SESSION_PACKAGE_EARLY_BIRD.validThrough}) — choose a session block:
         </p>
+        <ul>
+          <li>
+            <strong>{SESSION_PACKAGE_5.sessions}-session package</strong> · ${SESSION_PACKAGE_5.priceUsd}
+          </li>
+          <li>
+            <strong>{SESSION_PACKAGE_10.sessions}-session package</strong> · ${SESSION_PACKAGE_10.priceUsd}
+          </li>
+        </ul>
         <p>{SESSION_PACKAGE_10.purchaseNote}</p>
-        <div className="not-prose">
-          <CheckoutLaunchButton checkoutType="package-10" label="Buy the 10-session package" />
+        <div className="not-prose flex flex-wrap gap-3">
+          <CheckoutLaunchButton checkoutType="package-5" label={`Buy ${SESSION_PACKAGE_5.sessions}-session package ($${SESSION_PACKAGE_5.priceUsd})`} />
+          <CheckoutLaunchButton checkoutType="package-10" label={`Buy ${SESSION_PACKAGE_10.sessions}-session package ($${SESSION_PACKAGE_10.priceUsd})`} />
         </div>
         <YouthPackageAckStrip />
         <p className="text-sm text-formula-frost/70">Session expiration window: confirm with the desk before launch.</p>
