@@ -25,9 +25,19 @@ type Props = {
   selectedId: string | null
   onSelectId: (id: string | null) => void
   formatWhen: (iso: string) => string
+  /** Open the calendar on this month (e.g. June pre-book). Requires both year and month. */
+  initialCalendarYear?: number
+  initialCalendarMonth?: number
 }
 
-export function AssessmentMonthCalendar({ slots, selectedId, onSelectId, formatWhen }: Props) {
+export function AssessmentMonthCalendar({
+  slots,
+  selectedId,
+  onSelectId,
+  formatWhen,
+  initialCalendarYear,
+  initialCalendarMonth,
+}: Props) {
   const slotsByDay = useMemo(() => {
     const m = new Map<string, AssessmentCalendarSlot[]>()
     for (const s of slots) {
@@ -44,13 +54,16 @@ export function AssessmentMonthCalendar({ slots, selectedId, onSelectId, formatW
 
   const todayKey = useMemo(() => new Date().toLocaleDateString('en-CA', { timeZone: LA }), [])
 
-  const initial = useMemo(() => {
-    const [y, mo] = todayKey.split('-').map(Number)
-    return { y, m: mo }
-  }, [todayKey])
-
-  const [viewY, setViewY] = useState(initial.y)
-  const [viewM, setViewM] = useState(initial.m)
+  const [viewY, setViewY] = useState(() => {
+    if (initialCalendarYear != null && initialCalendarMonth != null) return initialCalendarYear
+    const sk = new Date().toLocaleDateString('en-CA', { timeZone: LA })
+    return Number(sk.split('-')[0])
+  })
+  const [viewM, setViewM] = useState(() => {
+    if (initialCalendarYear != null && initialCalendarMonth != null) return initialCalendarMonth
+    const sk = new Date().toLocaleDateString('en-CA', { timeZone: LA })
+    return Number(sk.split('-')[1])
+  })
 
   const { year, monthIndex, daysInMonth, startWeekdaySun0 } = useMemo(() => {
     const monthIndex = viewM - 1

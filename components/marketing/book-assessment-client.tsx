@@ -8,6 +8,7 @@ import { FieldRentalAgreementForm } from '@/components/marketing/field-rental-ag
 import { FieldRentalBookingFlow } from '@/components/marketing/field-rental-booking-flow'
 import { YouthBlocksWeekPanel } from '@/components/marketing/youth-blocks-week-panel'
 import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
+import { ASSESSMENT_JUNE_PREBOOK_MONTH, ASSESSMENT_JUNE_PREBOOK_YEAR } from '@/lib/assessment/june-2026-slots'
 import { BOOKING_HUB_DIRECTORY_ID, MARKETING_HREF } from '@/lib/marketing/nav'
 import { cn } from '@/lib/utils'
 
@@ -97,7 +98,7 @@ export function BookAssessmentClient({
     ...(isPortal
       ? [{ href: '#booking-account', label: 'Account' as const }]
       : [{ href: '#booking-contact', label: 'Guardian contact' as const }]),
-    { href: '#skills-check', label: 'Skills Check' as const },
+    { href: '#skills-check', label: 'June pre-book' as const },
     { href: '#youth-training-blocks', label: 'Youth training blocks' as const },
     { href: '#field-rental-on-hub', label: 'Field rental' as const },
     { href: '#participant-waiver', label: 'Rental agreement & waiver' as const },
@@ -108,13 +109,13 @@ export function BookAssessmentClient({
       <p className="max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
         {isPortal ? (
           <>
-            Use the calendar to pick a Skills Check window, book field time with deposit + agreement, and preview youth training blocks. Receipts use the email
-            on your portal account.
+            Use the calendar to pre-book a June Skills Check window, book field time with deposit + agreement, and preview youth training blocks. Receipts use the
+            email on your portal account.
           </>
         ) : (
           <>
-            One hub: Skills Check calendar, youth block preview (package required to finalize in portal), and field rentals with the same anti-overlap calendar
-            rules. After checkout you can create a parent login for athlete names.
+            One hub: Skills Check pre-book for June, youth block preview (package required to finalize in portal), and field rentals with the same anti-overlap
+            calendar rules. After checkout you can create a parent login for athlete names.
           </>
         )}
       </p>
@@ -126,7 +127,7 @@ export function BookAssessmentClient({
       >
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Book by type</p>
         <p className="mt-2 max-w-2xl text-[12px] leading-relaxed text-formula-frost/70">
-          Jump to the section you need — Skills Check calendar, youth block preview, field rental hold, or the rental agreement.
+          Jump to the section you need — June Skills Check pre-book, youth block preview, field rental hold, or the rental agreement.
         </p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {bookingDirectoryLinks.map((item) => (
@@ -193,24 +194,30 @@ export function BookAssessmentClient({
 
       <section id="skills-check" className="scroll-mt-24 space-y-4" aria-labelledby="ba-slots-heading">
         <h2 id="ba-slots-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
-          Skills Check — month calendar
+          Skills Check — June pre-book
         </h2>
         <p className="max-w-2xl text-[13px] leading-relaxed text-formula-frost/70">
-          Times shown in Pacific. Each window has up to four athlete spots total across families. Pick a day, then a time.
+          Assessment slots open <strong className="font-medium text-formula-paper">June {ASSESSMENT_JUNE_PREBOOK_YEAR}</strong> — pre-book now. Times are
+          Pacific. Each hour is capped at <strong className="font-medium text-formula-paper">four athletes total</strong> across all families (you can book 1–4
+          in one checkout if space allows). Pick a June day, then an open hour.
         </p>
 
         {loadingSlots ? (
-          <p className="font-mono text-[11px] text-formula-frost/50">Loading availability…</p>
+          <p className="font-mono text-[11px] text-formula-frost/50">Loading June availability…</p>
         ) : slotsError ? (
           <p className="text-sm text-amber-300/95">{slotsError}</p>
         ) : slots.length === 0 ? (
-          <p className="text-sm text-formula-frost/70">No upcoming windows published yet. Check back soon or call the front desk.</p>
+          <p className="text-sm text-formula-frost/70">
+            No June windows available yet. If you expected to see times, confirm Supabase is connected or call the front desk.
+          </p>
         ) : (
           <AssessmentMonthCalendar
             slots={slots}
             selectedId={selectedId}
             onSelectId={setSelectedId}
             formatWhen={formatWhen}
+            initialCalendarYear={ASSESSMENT_JUNE_PREBOOK_YEAR}
+            initialCalendarMonth={ASSESSMENT_JUNE_PREBOOK_MONTH}
           />
         )}
       </section>

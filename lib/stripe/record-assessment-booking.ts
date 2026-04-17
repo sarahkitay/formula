@@ -1,4 +1,6 @@
 import type Stripe from 'stripe'
+import { isJunePrebookSlotId } from '@/lib/assessment/june-2026-slots'
+import { applyJunePrebookMemoryBooking } from '@/lib/assessment/slots-server'
 import { getServiceSupabase } from '@/lib/supabase/service'
 
 /**
@@ -22,7 +24,12 @@ export async function recordAssessmentBookingFromCheckout(session: Stripe.Checko
 
   const sb = getServiceSupabase()
   if (!sb) {
-    console.warn('[assessment booking] No service Supabase; skipping booking row')
+    if (isJunePrebookSlotId(slotId)) {
+      const ok = applyJunePrebookMemoryBooking(slotId, numKids)
+      if (!ok) console.warn('[assessment booking] June memory booking rejected (capacity or invalid slot)', session.id)
+    } else {
+      console.warn('[assessment booking] No service Supabase; skipping booking row')
+    }
     return
   }
 

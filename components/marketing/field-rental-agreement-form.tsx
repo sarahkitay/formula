@@ -6,6 +6,20 @@ import { submitFieldRentalAgreement } from '@/app/(site)/rentals/actions'
 
 const INITIAL_STATE = { ok: false, message: '' }
 
+/** Map pointer position to canvas bitmap pixels (fixes CSS-sized canvas vs width/height attributes). */
+function pointerToCanvasCoords(
+  canvas: HTMLCanvasElement,
+  event: ReactPointerEvent<HTMLCanvasElement>
+): { x: number; y: number } {
+  const rect = canvas.getBoundingClientRect()
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
+  return {
+    x: (event.clientX - rect.left) * scaleX,
+    y: (event.clientY - rect.top) * scaleY,
+  }
+}
+
 export function FieldRentalAgreementForm() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
@@ -21,9 +35,7 @@ export function FieldRentalAgreementForm() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
+    const { x, y } = pointerToCanvasCoords(canvas, event)
 
     ctx.lineWidth = 2
     ctx.lineCap = 'round'

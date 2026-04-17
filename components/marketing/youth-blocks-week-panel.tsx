@@ -124,25 +124,25 @@ export function YouthBlocksWeekPanel() {
 
   return (
     <section id="youth-training-blocks" className="space-y-5 scroll-mt-24" aria-labelledby="youth-blocks-heading">
-      <div className="rounded-sm border border-black/12 bg-white p-5 text-black shadow-sm">
+      <div className="rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h3 id="youth-blocks-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-black">
-            Youth training blocks (sample week)
+          <h3 id="youth-blocks-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
+            Youth training blocks
           </h3>
           {weekStart ? (
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setWeekStart((w) => (w ? addDaysToWeekStart(w, -1) : w))}
-                className="border border-black/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-black hover:border-black/40"
+                className="border border-formula-frost/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-formula-paper hover:border-formula-volt/35"
               >
                 ← Week
               </button>
-              <span className="font-mono text-[10px] text-black/70">Week of {weekStart}</span>
+              <span className="font-mono text-[10px] text-formula-frost/70">Week of {weekStart}</span>
               <button
                 type="button"
                 onClick={() => setWeekStart((w) => (w ? addDaysToWeekStart(w, 1) : w))}
-                className="border border-black/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-black hover:border-black/40"
+                className="border border-formula-frost/20 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-formula-paper hover:border-formula-volt/35"
               >
                 Week →
               </button>
@@ -150,7 +150,7 @@ export function YouthBlocksWeekPanel() {
           ) : null}
         </div>
 
-        <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-black/85">
+        <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-formula-frost/80">
           Blocks reflect the published Performance Center ladder for each band. Selecting a block without a package opens age confirmation, then sends you to
           packages. With a package on file (confirm below after purchase), use the parent portal to finalize holds.
         </p>
@@ -164,8 +164,8 @@ export function YouthBlocksWeekPanel() {
               className={cn(
                 'border px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors',
                 band === t.band
-                  ? 'border-black bg-neutral-100 text-black'
-                  : 'border-black/20 text-black/80 hover:border-black/35 hover:text-black'
+                  ? 'border-formula-volt/45 bg-formula-volt/12 text-formula-paper'
+                  : 'border-formula-frost/14 text-formula-frost/80 hover:border-formula-frost/28 hover:text-formula-paper'
               )}
             >
               {t.label}
@@ -174,17 +174,17 @@ export function YouthBlocksWeekPanel() {
         </div>
 
         {!hasPackage ? (
-          <p className="mt-4 rounded-sm border border-amber-300/70 bg-amber-50 px-3 py-2 text-xs text-black">
+          <p className="mt-4 rounded-sm border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-formula-frost/90">
             Package not marked on this device — block picks open the confirmation flow. After you buy a package, use &quot;I purchased a package&quot; on the{' '}
-            <Link href={MARKETING_HREF.youthMembership} className="font-semibold text-black underline underline-offset-2">
+            <Link href={MARKETING_HREF.youthMembership} className="font-semibold text-formula-volt underline underline-offset-2 hover:underline">
               programs page
             </Link>{' '}
             to unlock portal-first booking.
           </p>
         ) : (
-          <p className="mt-4 rounded-sm border border-emerald-600/25 bg-emerald-50 px-3 py-2 text-xs text-black">
+          <p className="mt-4 rounded-sm border border-formula-volt/25 bg-formula-volt/10 px-3 py-2 text-xs text-formula-paper">
             Package flag set — book blocks in the{' '}
-            <Link href="/parent/bookings" className="font-semibold text-black underline underline-offset-2 hover:underline">
+            <Link href="/parent/bookings" className="font-semibold text-formula-volt underline-offset-2 hover:underline">
               parent portal schedule
             </Link>
             .
@@ -192,11 +192,11 @@ export function YouthBlocksWeekPanel() {
         )}
 
         {loading ? (
-          <p className="mt-4 font-mono text-[10px] text-black/55">Loading published blocks…</p>
+          <p className="mt-4 font-mono text-[10px] text-formula-frost/50">Loading published blocks…</p>
         ) : err ? (
-          <p className="mt-4 text-sm text-red-800">{err}</p>
+          <p className="mt-4 text-sm text-amber-200/90">{err}</p>
         ) : rows.length === 0 ? (
-          <p className="mt-4 text-sm text-black/70">No generated blocks for this band this week.</p>
+          <p className="mt-4 text-sm text-formula-frost/70">No generated blocks for this band this week.</p>
         ) : (
           <ul className="mt-4 grid gap-2 sm:grid-cols-2">
             {rows.map((slot) => (
@@ -204,14 +204,14 @@ export function YouthBlocksWeekPanel() {
                 <button
                   type="button"
                   onClick={onBlockClick}
-                  className="w-full border border-black/12 bg-neutral-50 p-4 text-left text-black transition-colors hover:border-black/30 hover:bg-white"
+                  className="w-full border border-formula-frost/14 bg-formula-deep/50 p-4 text-left text-formula-paper transition-colors hover:border-formula-volt/30 hover:bg-formula-paper/[0.04]"
                 >
-                  <p className="font-semibold text-black">{slot.label}</p>
-                  <p className="mt-1 text-xs text-black/80">
+                  <p className="font-semibold text-formula-paper">{slot.label}</p>
+                  <p className="mt-1 text-xs text-formula-frost/80">
                     {DAY_LABELS[slot.dayIndex] ?? 'Day'}{' '}
                     {formatBlockWhen(slot.weekStart, slot.dayIndex, slot.startMinute)} · ends {formatEndMinute(slot.endMinute)}
                   </p>
-                  <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-black/70">
+                  <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-formula-volt/80">
                     Band {slot.ageBand} · {slot.enrolled}/{slot.capacity} roster (demo cap)
                   </p>
                 </button>
