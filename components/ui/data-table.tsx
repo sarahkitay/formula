@@ -61,7 +61,7 @@ export function DataTable<T>({
       <table className="w-full text-[13px]">
         <thead
           className={cn(
-            'border-b border-white/[0.06] bg-black/15',
+            'border-b border-border bg-muted/60',
             stickyHeader && 'sticky top-0 z-10 backdrop-blur-md'
           )}
         >
@@ -86,8 +86,8 @@ export function DataTable<T>({
               key={String(row[keyField]) || i}
               onClick={() => onRowClick?.(row)}
               className={cn(
-                'border-b border-white/[0.04] transition-colors duration-150 last:border-b-0',
-                onRowClick && 'cursor-pointer hover:bg-muted/80'
+                'border-b border-border/80 transition-colors duration-150 last:border-b-0',
+                onRowClick && 'cursor-pointer hover:bg-muted/90'
               )}
             >
               {columns.map(col => (

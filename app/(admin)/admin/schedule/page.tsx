@@ -10,8 +10,8 @@ import { ControlScheduleGrid, DAY_LABELS } from '@/components/schedule/control-s
 import { AdminWeeklyRoster } from '@/components/schedule/admin-weekly-roster'
 import { AdminSlotDetailModal } from '@/components/schedule/admin-slot-detail-modal'
 import { buildPublishedWeek } from '@/lib/schedule/published-week'
-import { startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
-import type { DayIndex, ScheduleSlot } from '@/types/schedule'
+import { isoDateForWeekDay, startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
+import type { DayIndex, ScheduleOverride, ScheduleSlot } from '@/types/schedule'
 import {
   buildAdminBlockMap,
   getAdminBlockKey,
@@ -25,6 +25,7 @@ import { FacilityScheduleEditor } from '@/components/admin/facility-schedule-edi
 import { loadFacilityScheduleConfigAction, saveFacilityScheduleConfigAction } from './actions'
 import { Button } from '@/components/ui/button'
 import { FacilityWeekCalendar } from '@/components/schedule/facility-week-calendar'
+import { AdminCalendarFeedModal } from '@/components/schedule/admin-calendar-feed-modal'
 import type { CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
 
 export default function SchedulePage() {
@@ -40,6 +41,7 @@ export default function SchedulePage() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [calendarBlocks, setCalendarBlocks] = useState<CalendarFeedBlock[]>([])
   const [calendarError, setCalendarError] = useState<string | null>(null)
+  const [feedDetailBlock, setFeedDetailBlock] = useState<CalendarFeedBlock | null>(null)
 
   const reloadConfig = useCallback(async () => {
     setConfigLoadError(null)
@@ -138,6 +140,27 @@ export default function SchedulePage() {
       soldOut: meta.soldOut,
     }
   }
+
+  const appendOverrideFromCalendar = useCallback(
+    ({ dayIndex, startMinute, endMinute }: { dayIndex: DayIndex; startMinute: number; endMinute: number }) => {
+      if (!facilityConfig || !week) return
+      const id = `ov-cal-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+      const date = isoDateForWeekDay(week.weekStart, dayIndex)
+      const row: ScheduleOverride = {
+        id,
+        date,
+        assetId: 'performance-center',
+        startMinute,
+        endMinute,
+        kind: 'flex_ops',
+        label: 'Calendar override',
+        mode: 'replace',
+      }
+      setFacilityConfig({ ...facilityConfig, overrides: [...facilityConfig.overrides, row] })
+      setActiveTab('publish')
+    },
+    [facilityConfig, week]
+  )
 
   const onSavePublish = async () => {
     if (!facilityConfig) return
@@ -244,7 +267,20 @@ export default function SchedulePage() {
                 {calendarError ? (
                   <p className="font-mono text-xs text-amber-200/90">{calendarError}</p>
                 ) : null}
-                <FacilityWeekCalendar weekStart={week.weekStart} blocks={calendarBlocks} />
+                <FacilityWeekCalendar
+                  weekStart={week.weekStart}
+                  blocks={calendarBlocks}
+                  week={week}
+                  onProgramSlotClick={s => {
+                    setFeedDetailBlock(null)
+                    setDetailSlot(s)
+                  }}
+                  onFeedBlockClick={b => {
+                    setDetailSlot(null)
+                    setFeedDetailBlock(b)
+                  }}
+                  onEmptySlotClick={appendOverrideFromCalendar}
+                />
               </div>
             )}
 
@@ -336,7 +372,10 @@ export default function SchedulePage() {
                     week={week}
                     dayIndex={dayIndex}
                     adminSlotFill={adminSlotFill}
-                    onSlotClick={s => setDetailSlot(s)}
+                    onSlotClick={s => {
+                      setFeedDetailBlock(null)
+                      setDetailSlot(s)
+                    }}
                   />
                 </div>
               </>
@@ -354,6 +393,17 @@ export default function SchedulePage() {
               meta={detailMeta}
               checkedInIds={checkedInIds}
               onToggleCheckedIn={toggleCheckedIn}
+            />
+
+            <AdminCalendarFeedModal
+              open={feedDetailBlock != null}
+              onClose={() => setFeedDetailBlock(null)}
+              weekStart={week.weekStart}
+              block={feedDetailBlock}
+              onOpenPublishTab={() => {
+                setFeedDetailBlock(null)
+                setActiveTab('publish')
+              }}
             />
           </>
         )}

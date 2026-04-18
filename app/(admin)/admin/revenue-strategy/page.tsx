@@ -30,7 +30,7 @@ export default function RevenueStrategyPage() {
                 className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wide ${
                   p.active
                     ? 'border-[#f4fe00] text-[#f4fe00]'
-                    : 'border-white/10 text-zinc-500'
+                    : 'border-formula-frost/12 text-formula-mist'
                 }`}
               >
                 {p.name}
@@ -64,13 +64,13 @@ export default function RevenueStrategyPage() {
               ),
             ])}
           />
-          <p className="mt-3 font-mono text-[10px] text-zinc-500">
+          <p className="mt-3 font-mono text-[10px] text-formula-mist">
             Rental &gt;35% · adult &gt;20% · camps &gt;20% · youth membership &lt;40% trigger review.
           </p>
         </AdminPanel>
 
         <AdminPanel title="Analytics backlog" eyebrow="STRATEGY">
-          <ul className="list-inside list-disc space-y-2 font-mono text-[11px] text-zinc-400">
+          <ul className="list-inside list-disc space-y-2 font-mono text-[11px] text-formula-mist">
             <li>Utilization by asset + hour/day heatmaps</li>
             <li>Membership share vs rental / adult / camps</li>
             <li>Attendance → revenue correlation</li>

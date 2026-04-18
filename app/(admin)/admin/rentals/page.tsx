@@ -48,12 +48,12 @@ export default async function RentalsPage() {
         <AdminPanel title="Signed rental waivers" eyebrow="FIELD RENTAL">
           {!serviceConfigured ? (
             <p className="font-mono text-[11px] text-amber-200/90">
-              Set <code className="text-zinc-300">SUPABASE_SERVICE_ROLE_KEY</code> on the server so submissions can be
+              Set <code className="text-formula-frost/90">SUPABASE_SERVICE_ROLE_KEY</code> on the server so submissions can be
               saved and listed here.
             </p>
           ) : waiverRows.length === 0 ? (
-            <p className="font-mono text-[11px] text-zinc-500">
-              No rows yet. Run <code className="text-zinc-400">supabase/field_rental_agreements.sql</code> in the
+            <p className="font-mono text-[11px] text-formula-mist">
+              No rows yet. Run <code className="text-formula-mist">supabase/field_rental_agreements.sql</code> in the
               Supabase SQL editor, then submit the form on the public rentals / book-assessment page.
             </p>
           ) : (
@@ -84,8 +84,8 @@ export default async function RentalsPage() {
               ])}
             />
           )}
-          <p className="mt-3 font-mono text-[10px] text-zinc-600">
-            Full signature images live in <code className="text-zinc-500">signature_data_url</code> (not shown in
+          <p className="mt-3 font-mono text-[10px] text-formula-mist/80">
+            Full signature images live in <code className="text-formula-mist">signature_data_url</code> (not shown in
             this table). Open a row in Supabase Table Editor to view or export.
           </p>
         </AdminPanel>
@@ -97,7 +97,7 @@ export default async function RentalsPage() {
           />
         </AdminPanel>
 
-        <p className="font-mono text-[10px] text-zinc-500">
+        <p className="font-mono text-[10px] text-formula-mist">
           {SITE.membershipPolicy} · Rental share monitored vs threshold in Revenue console.
         </p>
       </div>

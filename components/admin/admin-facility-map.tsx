@@ -144,14 +144,14 @@ export function AdminFacilityMapLegend({ className }: { className?: string }) {
     { label: 'Closed', status: 'closed' },
   ]
   return (
-    <div className={cn('flex flex-wrap gap-4 font-mono text-[10px] uppercase tracking-wide text-zinc-400', className)}>
+    <div className={cn('flex flex-wrap gap-4 font-mono text-[10px] uppercase tracking-wide text-formula-mist', className)}>
       {items.map(i => (
         <div key={i.status} className="flex items-center gap-2">
           <span className="h-2 w-4 border" style={{ borderColor: STATUS_STROKE[i.status], background: STATUS_FILL[i.status] }} />
           {i.label}
         </div>
       ))}
-      <span className="text-zinc-600">· Heat = load</span>
+      <span className="text-formula-mist/80">· Heat = load</span>
     </div>
   )
 }

@@ -12,8 +12,8 @@ export function SectionHeader({ title, description, action, className }: Section
   return (
     <div className={cn('flex items-start justify-between gap-4', className)}>
       <div className="min-w-0 space-y-0.5">
-        <h2 className="text-[11px] font-medium uppercase tracking-[0.12em] text-text-muted">{title}</h2>
-        {description && <p className="text-[12px] text-text-muted">{description}</p>}
+        <h2 className="text-[11px] font-medium uppercase tracking-[0.12em] text-text-secondary">{title}</h2>
+        {description && <p className="text-[12px] leading-snug text-text-muted">{description}</p>}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </div>

@@ -49,7 +49,7 @@ export default function FridayCircuitPage() {
 
         <AdminPanel title="Match ops" eyebrow="CAPTURE">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <ul className="space-y-2 font-mono text-[11px] text-zinc-400">
+            <ul className="space-y-2 font-mono text-[11px] text-formula-mist">
               <li>• Coach observation rubric (structured)</li>
               <li>• Actions-per-minute + competitive telemetry</li>
               <li>• Social post / winner photo workflow (opt-in, non-ranking)</li>

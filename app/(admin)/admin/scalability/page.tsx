@@ -17,7 +17,7 @@ export default function ScalabilityPage() {
         />
 
         <AdminPanel title="Design targets" eyebrow="SYSTEM">
-          <ol className="list-inside list-decimal space-y-3 font-mono text-[11px] leading-relaxed text-zinc-300">
+          <ol className="list-inside list-decimal space-y-3 font-mono text-[11px] leading-relaxed text-formula-frost/90">
             {scalabilityLayer.map((line, i) => (
               <li key={i}>{line}</li>
             ))}
@@ -25,7 +25,7 @@ export default function ScalabilityPage() {
         </AdminPanel>
 
         <AdminPanel title="RBAC + audit" eyebrow="SECURITY">
-          <p className="font-mono text-[11px] text-zinc-400">
+          <p className="font-mono text-[11px] text-formula-mist">
             All schedule overrides, roster locks, revenue reclassifications, and FPI QC actions require signed
             actor + role + immutable log entry. Demo UI surfaces audit samples on Operations map and Schedule
             flows.

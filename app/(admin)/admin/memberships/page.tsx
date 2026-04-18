@@ -49,7 +49,7 @@ export default async function MembershipsPage() {
         <div className="border border-formula-frost/12 bg-formula-paper/[0.04] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-formula-mist">Age bands · scarcity</p>
           {membershipByAge.length === 0 ? (
-            <p className="mt-3 font-mono text-[11px] text-zinc-500">
+            <p className="mt-3 font-mono text-[11px] text-formula-mist">
               No live membership mix loaded. Wire billing + roster caps when ready.
             </p>
           ) : (

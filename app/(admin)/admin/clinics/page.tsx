@@ -33,7 +33,7 @@ export default function ClinicsPage() {
         </AdminPanel>
 
         <AdminPanel title="Operating rules" eyebrow="CLINIC_OS">
-          <ul className="list-inside list-disc space-y-2 font-mono text-[11px] text-zinc-400">
+          <ul className="list-inside list-disc space-y-2 font-mono text-[11px] text-formula-mist">
             <li>Standard + specialty labs; rotation across age groups</li>
             <li>Attendance + outcome correlation to reassessment (dashboard tie-in)</li>
             <li>Early access for recommended athletes from FPI queue</li>

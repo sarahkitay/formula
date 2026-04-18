@@ -118,6 +118,16 @@
   --text-secondary: var(--color-formula-frost);
   --text-muted: var(--color-formula-mist);
   --border-bright: rgb(220 255 0 / 0.28);
+  /* Align with parent portal: no fall-through to marketing white secondary */
+  --secondary: rgb(38 52 48 / 0.88);
+  --secondary-foreground: var(--color-formula-paper);
+  --accent: rgb(220 255 0 / 0.07);
+  --accent-foreground: var(--color-formula-volt);
+  --sidebar: rgb(28 38 35 / 0.95);
+  --sidebar-foreground: var(--color-formula-paper);
+  --sidebar-accent: rgb(36 52 48 / 0.9);
+  --sidebar-accent-foreground: var(--color-formula-frost);
+  --sidebar-border: rgb(205 225 225 / 0.1);
 }
 
 /* Dark OS canvas: h1 stays paper-bright on the green/grey gradient. */
@@ -146,8 +156,16 @@
 .admin-os .stat-module::before,
 .admin-os .stat-module--signal::before,
 .coach-os .stat-module::before,
-.coach-os .stat-module--signal::before {
+.coach-os .stat-module--signal::before,
+.parent-os .stat-module::before,
+.parent-os .stat-module--signal::before {
   background: radial-gradient(ellipse 95% 72% at 100% -8%, rgb(0 87 0 / 0.22) 0%, transparent 62%) !important;
+}
+
+.admin-os .stat-module::before,
+.admin-os .stat-module--signal::before,
+.coach-os .stat-module::before,
+.coach-os .stat-module--signal::before {
   opacity: 1 !important;
 }
 
@@ -159,13 +177,9 @@
   box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04) !important;
 }
 
-.admin-os .stat-module::before,
-.admin-os .stat-module--signal::before,
-.coach-os .stat-module::before,
-.coach-os .stat-module--signal::before,
 .parent-os .stat-module::before,
 .parent-os .stat-module--signal::before {
-  opacity: 0.12;
+  opacity: 0.12 !important;
 }
 
 .admin-os .panel-technical,

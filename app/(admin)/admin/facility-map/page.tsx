@@ -47,30 +47,30 @@ export default function AdminFacilityMapPage() {
           <div className="space-y-4">
             <AdminPanel title="Asset detail" eyebrow="SELECTED">
               {selected ? (
-                <dl className="space-y-3 font-mono text-[11px] text-zinc-300">
-                  <div className="flex justify-between gap-4 border-b border-white/10 pb-2">
-                    <dt className="text-zinc-500">Asset</dt>
-                    <dd className="text-right text-zinc-100">{selected.label}</dd>
+                <dl className="space-y-3 font-mono text-[11px] text-formula-frost/90">
+                  <div className="flex justify-between gap-4 border-b border-formula-frost/12 pb-2">
+                    <dt className="text-formula-mist">Asset</dt>
+                    <dd className="text-right text-formula-paper">{selected.label}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt className="text-zinc-500">Status</dt>
+                    <dt className="text-formula-mist">Status</dt>
                     <dd className="text-right uppercase">{selected.status.replace('-', ' ')}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt className="text-zinc-500">Current</dt>
+                    <dt className="text-formula-mist">Current</dt>
                     <dd className="max-w-[220px] text-right">{selected.currentProgram}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt className="text-zinc-500">Next</dt>
+                    <dt className="text-formula-mist">Next</dt>
                     <dd className="max-w-[220px] text-right">{selected.nextProgram}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt className="text-zinc-500">Utilization</dt>
+                    <dt className="text-formula-mist">Utilization</dt>
                     <dd className="tabular-nums text-warning">{selected.utilizationPct}%</dd>
                   </div>
                 </dl>
               ) : (
-                <p className="font-mono text-[11px] text-zinc-500">Select a zone on the grid.</p>
+                <p className="font-mono text-[11px] text-formula-mist">Select a zone on the grid.</p>
               )}
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button variant="primary" size="sm" disabled>
@@ -83,7 +83,7 @@ export default function AdminFacilityMapPage() {
                   Open in schedule
                 </Button>
               </div>
-              <p className="mt-3 font-mono text-[9px] text-zinc-600">
+              <p className="mt-3 font-mono text-[9px] text-formula-mist/80">
                 RBAC: actions require scheduler + director roles. All overrides logged.
               </p>
             </AdminPanel>

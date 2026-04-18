@@ -41,7 +41,7 @@ export default function AdultProgrammingPage() {
   `${s.totalWeeks} wk`,
   ])}
   />
-  <p className="mt-3 font-mono text-[10px] text-zinc-500">
+  <p className="mt-3 font-mono text-[10px] text-formula-mist">
   Promotion / relegation: bracket-ready - connect standings feed (future).
   </p>
   </AdminPanel>

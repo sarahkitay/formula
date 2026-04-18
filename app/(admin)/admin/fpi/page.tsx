@@ -42,16 +42,16 @@ export default function AdminFpiPage() {
   }
   />
 
-  <div className="border border-amber-500/20 bg-amber-500/5 px-4 py-3 font-mono text-[11px] text-zinc-300">
+  <div className="border border-amber-500/20 bg-amber-500/5 px-4 py-3 font-mono text-[11px] text-formula-frost/90">
   <span className="text-amber-500/90">POLICY</span> · FPI is not merchandised. Display tiers, trends, and
   priorities to staff only. {SITE.performanceDataPolicy}
   </div>
 
   <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
   <AdminPanel title="Age-based weighting" eyebrow="FIVE_PILLARS">
-  <p className="mb-4 font-mono text-[10px] text-zinc-500">Ages 6–11</p>
+  <p className="mb-4 font-mono text-[10px] text-formula-mist">Ages 6–11</p>
   <WeightRow band="6-11" />
-  <p className="mb-4 mt-6 font-mono text-[10px] text-zinc-500">Ages 12–19</p>
+  <p className="mb-4 mt-6 font-mono text-[10px] text-formula-mist">Ages 12–19</p>
   <WeightRow band="12-19" />
   </AdminPanel>
 
@@ -75,7 +75,7 @@ export default function AdminFpiPage() {
   </div>
 
   <AdminPanel title="Quality controls" eyebrow="FPI_LAB">
-  <ul className="list-inside list-disc space-y-2 font-mono text-[11px] text-zinc-400">
+  <ul className="list-inside list-disc space-y-2 font-mono text-[11px] text-formula-mist">
   <li>Baseline + 6-month reassessment cadence; off-cycle exceptions flagged</li>
   <li>Historical trend + percentile within age band (staff view)</li>
   <li>Clinic recommendations tied to pillar gaps - conversion tracked in Clinics console</li>

@@ -123,13 +123,13 @@ export default function CheckInPage() {
       <div className="flex min-h-[min(70vh,720px)] flex-col gap-6 xl:col-span-8">
         <header className="shrink-0">
           <h1 className="text-2xl font-black uppercase tracking-tight text-white">Active check-in</h1>
-          <p className="mt-1 font-mono text-sm uppercase tracking-[0.18em] text-zinc-500">
+          <p className="mt-1 font-mono text-sm uppercase tracking-[0.18em] text-formula-mist">
             {stamp.toUpperCase()} // ROSTER FROM SUPABASE PLAYERS TABLE
           </p>
           {rosterError ? (
             <p className="mt-2 font-mono text-xs text-amber-200/90">{rosterError}</p>
           ) : (
-            <p className="mt-2 font-mono text-xs text-zinc-500">{rosterPlayers.length} athletes loaded</p>
+            <p className="mt-2 font-mono text-xs text-formula-mist">{rosterPlayers.length} athletes loaded</p>
           )}
         </header>
 

@@ -36,11 +36,11 @@ export function PageHeader({ title, subtitle, breadcrumb, actions, className }: 
             ))}
           </nav>
         )}
-        <h1 className="truncate text-2xl font-semibold uppercase tracking-tight text-text-primary md:text-[1.65rem] md:leading-tight">
+        <h1 className="truncate text-2xl font-semibold uppercase tracking-tight text-formula-paper md:text-[1.65rem] md:leading-tight">
           {title}
         </h1>
         {subtitle != null && subtitle !== '' ? (
-          <p className="max-w-2xl text-[13px] leading-relaxed text-text-secondary">{subtitle}</p>
+          <p className="max-w-2xl text-[13px] leading-relaxed text-formula-frost/85">{subtitle}</p>
         ) : null}
       </div>
 

@@ -50,9 +50,9 @@ function cornerGlowClass(accent: boolean | undefined, dataModule: StatDataModule
 const FULL_LAYER =
   'before:pointer-events-none before:absolute before:inset-0 before:z-0 before:rounded-[inherit]'
 
-/** One shared full-tile wash: pitch green (#005700) only, light center for legibility (low-opacity corners). */
+/** Full-tile wash: pitch corners + center from theme `muted` so admin/parent OS stay charcoal-cohesive (no white blob). */
 const FULL_SURFACE_GREEN =
-  `${FULL_LAYER} before:bg-gradient-to-br before:from-[#005700]/22 before:via-[#f6fbf6] before:via-44% before:to-[#005700]/12`
+  `${FULL_LAYER} before:bg-gradient-to-br before:from-primary/20 before:via-muted/80 before:via-44% before:to-primary/10`
 
 export function StatCard({
   label,
