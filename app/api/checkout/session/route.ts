@@ -4,6 +4,7 @@ import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
 import { slotHasRoom } from '@/lib/assessment/slots-server'
 import { encodeRentalDatesCompact, resolveFieldRentalSessionDatesFromMetadata } from '@/lib/rentals/rental-weekly-dates'
 import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWeeklySlotsForDates } from '@/lib/rentals/rental-slots'
+import { RENTAL_FIELD_OPTIONS, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
@@ -93,6 +94,46 @@ export async function POST(req: Request) {
     line_items = lineItemsForCheckoutType(type, { assessmentQuantity: numKids })
   }
 
+  if (type === 'party-booking-1k') {
+    const name = metadataExtra.party_contact_name?.trim()
+    const em = metadataExtra.party_contact_email?.trim().toLowerCase()
+    const pref = metadataExtra.party_preferred_date?.trim()
+    const guests = parseInt(metadataExtra.party_guest_count ?? '', 10)
+    const field = metadataExtra.rental_field?.trim()
+    const rDate = metadataExtra.rental_date?.trim()
+    const window = metadataExtra.rental_time_slot?.trim()
+    const rHead = parseInt(metadataExtra.rental_headcount ?? '', 10)
+    const rules = metadataExtra.party_rules_ok?.trim()
+    const ymd = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s)
+    if (!name || name.length < 2) {
+      return NextResponse.json({ error: 'party_contact_name is required (full name).' }, { status: 400 })
+    }
+    if (!em || !em.includes('@') || !em.includes('.')) {
+      return NextResponse.json({ error: 'party_contact_email must be a valid email.' }, { status: 400 })
+    }
+    if (!pref || !ymd(pref)) {
+      return NextResponse.json({ error: 'party_preferred_date must be YYYY-MM-DD.' }, { status: 400 })
+    }
+    if (!Number.isInteger(guests) || guests < 1 || guests > 200) {
+      return NextResponse.json({ error: 'party_guest_count must be an integer from 1 to 200.' }, { status: 400 })
+    }
+    if (!field || !RENTAL_FIELD_OPTIONS.some(f => f.value === field)) {
+      return NextResponse.json({ error: 'rental_field must be a known field id (field_a, field_b, field_indoor).' }, { status: 400 })
+    }
+    if (!rDate || !ymd(rDate)) {
+      return NextResponse.json({ error: 'rental_date must be YYYY-MM-DD (field session date).' }, { status: 400 })
+    }
+    if (!window || !(RENTAL_TIME_SLOTS as readonly string[]).includes(window)) {
+      return NextResponse.json({ error: 'rental_time_slot must match a published time window.' }, { status: 400 })
+    }
+    if (!Number.isInteger(rHead) || rHead < 1 || rHead > 200) {
+      return NextResponse.json({ error: 'rental_headcount must be an integer from 1 to 200.' }, { status: 400 })
+    }
+    if (rules !== 'true') {
+      return NextResponse.json({ error: 'Accept party and facility terms (party_rules_ok) before checkout.' }, { status: 400 })
+    }
+  }
+
   const successQuery =
     successNext != null
       ? `session_id={CHECKOUT_SESSION_ID}&next=${encodeURIComponent(successNext)}`
@@ -149,8 +190,13 @@ export async function POST(req: Request) {
   }
 
   const emailHint = metadataExtra.parent_email_hint?.trim().toLowerCase() ?? ''
+  const partyEmail = metadataExtra.party_contact_email?.trim().toLowerCase() ?? ''
   const prefillEmail =
-    type === 'assessment' && emailHint.length > 3 && emailHint.includes('@') && emailHint.includes('.') ? emailHint : undefined
+    type === 'assessment' && emailHint.length > 3 && emailHint.includes('@') && emailHint.includes('.')
+      ? emailHint
+      : type === 'party-booking-1k' && partyEmail.length > 3 && partyEmail.includes('@') && partyEmail.includes('.')
+        ? partyEmail
+        : undefined
 
   try {
     const session = await stripe.checkout.sessions.create({

@@ -59,6 +59,34 @@ export async function sendAdminNotification(params: {
   }
 }
 
+/** One-off transactional send (e.g. customer receipt). Same Resend + from as admin notify. */
+export async function sendTransactionalEmail(params: {
+  to: string
+  subject: string
+  html: string
+  text?: string
+}): Promise<void> {
+  const resend = getResend()
+  const from = process.env.RESEND_FROM_EMAIL?.trim() || 'onboarding@resend.dev'
+  const to = params.to.trim()
+  if (!resend || !to.includes('@')) {
+    console.warn('[email] Skipped transactional send (no Resend or invalid to):', params.subject)
+    return
+  }
+  try {
+    const { error } = await resend.emails.send({
+      from,
+      to,
+      subject: params.subject,
+      html: params.html,
+      ...(params.text ? { text: params.text } : {}),
+    })
+    if (error) console.error('[email] Resend transactional error:', error.message)
+  } catch (e) {
+    console.error('[email] Transactional send failed:', e)
+  }
+}
+
 export function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')

@@ -2,6 +2,7 @@ import type Stripe from 'stripe'
 import {
   FIELD_RENTAL_BOOKING_CHECKOUT,
   FORMULA_SKILLS_CHECK,
+  PARTY_BOOKING_1K_CHECKOUT,
   SESSION_PACKAGE_5,
   SESSION_PACKAGE_10,
 } from '@/lib/marketing/public-pricing'
@@ -71,6 +72,23 @@ export function lineItemsForCheckoutType(
             description: SESSION_PACKAGE_10.summary,
           },
           unit_amount: Math.round(SESSION_PACKAGE_10.priceUsd * 100),
+        },
+      },
+    ]
+  }
+
+  if (type === 'party-booking-1k') {
+    return [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          tax_behavior: 'exclusive',
+          product_data: {
+            name: PARTY_BOOKING_1K_CHECKOUT.productName,
+            description: PARTY_BOOKING_1K_CHECKOUT.summary,
+          },
+          unit_amount: Math.round(PARTY_BOOKING_1K_CHECKOUT.priceUsd * 100),
         },
       },
     ]

@@ -87,7 +87,10 @@ export function LoginPageClient() {
     const { profile, error: profileErr } = await loadProfileForUser(user.id)
 
     if (profileErr || !profile) {
-      setFormError(profileErr?.message ?? 'No profile row for this user. Create one in Supabase `profiles` with matching `id`.')
+      setFormError(
+        profileErr?.message ??
+          'No account profile is set up for this sign-in yet. Please contact Formula staff so they can finish your access.'
+      )
       await supabase.auth.signOut()
       setLoading(false)
       return
@@ -95,7 +98,7 @@ export function LoginPageClient() {
 
     const next = getPortalRoute(profile.role)
     if (next === '/login') {
-      setFormError(`Unknown role “${profile.role}”. Set role to parent, staff, coach, or admin.`)
+      setFormError(`We couldn't route this account (role: “${profile.role}”). Contact Formula support for access help.`)
       await supabase.auth.signOut()
       setLoading(false)
       return
@@ -105,7 +108,7 @@ export function LoginPageClient() {
     const roleNorm = (profile.role ?? '').toLowerCase().trim()
     if (portal === 'staff' && !staffRoles.has(roleNorm)) {
       setFormError(
-        'This account is a guardian (parent) profile in the database, so it cannot use staff sign-in. Use Parent portal, or in Supabase set `profiles.role` to `admin`, `coach`, or `staff` for this user.'
+        'This sign-in is for a parent or guardian account. Open the Parent portal instead, or ask an administrator to grant staff access if you work at the facility.'
       )
       await supabase.auth.signOut()
       setLoading(false)

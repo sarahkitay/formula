@@ -9,6 +9,7 @@ import type { FacilitySchedulePublishedConfig } from '@/lib/schedule/facility-sc
 import { DAY_LABELS } from '@/components/schedule/control-schedule-grid'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { clampDayMinutes, formatWallTimeForInput, parseWallTimeToMinutes } from '@/lib/schedule/wall-time'
 
 const PROGRAM_KINDS = Object.keys(PROGRAM_UI) as ScheduleProgramKind[]
 
@@ -47,6 +48,47 @@ function patchOverride(
     ...config,
     overrides: config.overrides.map(o => (o.id === id ? { ...o, ...patch } : o)),
   }
+}
+
+function OverrideWallTimeInput({
+  fieldKey,
+  label,
+  hint,
+  placeholder,
+  minuteValue,
+  onCommit,
+}: {
+  fieldKey: string
+  label: string
+  hint: string
+  placeholder: string
+  minuteValue: number
+  onCommit: (m: number) => void
+}) {
+  const [text, setText] = React.useState(() => formatWallTimeForInput(minuteValue))
+  React.useEffect(() => {
+    setText(formatWallTimeForInput(minuteValue))
+  }, [minuteValue, fieldKey])
+
+  return (
+    <label className="text-formula-mist md:col-span-1">
+      <span className="block">{label}</span>
+      <input
+        className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1.5 py-1 text-formula-paper"
+        value={text}
+        placeholder={placeholder}
+        onChange={e => setText(e.target.value)}
+        onBlur={() => {
+          const p = parseWallTimeToMinutes(text.trim())
+          if (p != null) onCommit(clampDayMinutes(p))
+          else setText(formatWallTimeForInput(minuteValue))
+        }}
+        spellCheck={false}
+        autoComplete="off"
+      />
+      <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">{hint}</span>
+    </label>
+  )
 }
 
 export interface FacilityScheduleEditorProps {
@@ -168,15 +210,21 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                 className="grid grid-cols-1 gap-2 border border-formula-frost/10 bg-formula-deep/25 p-3 font-mono text-[11px] md:grid-cols-[1fr_1fr_1fr_auto]"
               >
                 <label className="text-formula-mist">
-                  Date (YYYY-MM-DD)
+                  <span className="block">Date (YYYY-MM-DD)</span>
                   <input
                     className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1.5 py-1 text-formula-paper"
                     value={o.date}
+                    placeholder="2026-04-13"
                     onChange={e => onChange(patchOverride(config, o.id, { date: e.target.value }))}
+                    spellCheck={false}
+                    autoComplete="off"
                   />
+                  <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
+                    Example: 2026-04-13 · facility local calendar day
+                  </span>
                 </label>
                 <label className="text-formula-mist">
-                  Asset
+                  <span className="block">Asset</span>
                   <select
                     className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1 py-1 text-formula-paper"
                     value={o.assetId}
@@ -188,9 +236,12 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                       </option>
                     ))}
                   </select>
+                  <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
+                    e.g. Performance Center — which space this window applies to
+                  </span>
                 </label>
                 <label className="text-formula-mist">
-                  Mode
+                  <span className="block">Mode</span>
                   <select
                     className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1 py-1 text-formula-paper"
                     value={o.mode}
@@ -201,34 +252,42 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                     <option value="replace">Replace window</option>
                     <option value="clear">Clear only</option>
                   </select>
+                  <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
+                    Replace = insert this block; Clear = remove generated slots only
+                  </span>
                 </label>
                 <div className="flex items-end justify-end">
                   <Button type="button" variant="ghost" size="sm" onClick={() => onChange(removeOverride(config, o.id))}>
                     Remove
                   </Button>
                 </div>
+                <OverrideWallTimeInput
+                  fieldKey={`${o.id}-start`}
+                  label="Start time"
+                  hint="Type 6:30 pm, 630pm, 18:30, etc. Stored internally as minutes from midnight (0–1440)."
+                  placeholder="6:30 pm"
+                  minuteValue={o.startMinute}
+                  onCommit={m => {
+                    let start = clampDayMinutes(m)
+                    let end = o.endMinute
+                    if (start >= end) end = Math.min(24 * 60, start + 60)
+                    onChange(patchOverride(config, o.id, { startMinute: start, endMinute: end }))
+                  }}
+                />
+                <OverrideWallTimeInput
+                  fieldKey={`${o.id}-end`}
+                  label="End time"
+                  hint="Must be after start. Invalid blur restores the last valid time."
+                  placeholder="9:00 pm"
+                  minuteValue={o.endMinute}
+                  onCommit={m => {
+                    let end = clampDayMinutes(m)
+                    if (end <= o.startMinute) end = Math.min(24 * 60, o.startMinute + 60)
+                    onChange(patchOverride(config, o.id, { endMinute: end }))
+                  }}
+                />
                 <label className="text-formula-mist md:col-span-1">
-                  Start minute (0–1440)
-                  <input
-                    type="number"
-                    className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1.5 py-1 text-formula-paper"
-                    value={o.startMinute}
-                    onChange={e =>
-                      onChange(patchOverride(config, o.id, { startMinute: parseInt(e.target.value, 10) || 0 }))
-                    }
-                  />
-                </label>
-                <label className="text-formula-mist md:col-span-1">
-                  End minute
-                  <input
-                    type="number"
-                    className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1.5 py-1 text-formula-paper"
-                    value={o.endMinute}
-                    onChange={e => onChange(patchOverride(config, o.id, { endMinute: parseInt(e.target.value, 10) || 0 }))}
-                  />
-                </label>
-                <label className="text-formula-mist md:col-span-1">
-                  Program kind
+                  <span className="block">Program kind</span>
                   <select
                     className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1 py-1 text-formula-paper"
                     value={o.kind}
@@ -242,17 +301,21 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                       </option>
                     ))}
                   </select>
+                  <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
+                    e.g. Flex: ops / misc — drives generator behavior + parent labels
+                  </span>
                 </label>
                 <label className="text-formula-mist md:col-span-3">
-                  Label
+                  <span className="block">Label</span>
                   <input
                     className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1.5 py-1 text-formula-paper"
                     value={o.label}
+                    placeholder="Calendar override"
                     onChange={e => onChange(patchOverride(config, o.id, { label: e.target.value }))}
                   />
                 </label>
                 <label className="text-formula-mist md:col-span-2">
-                  youthBlockId (optional, preserve bookings)
+                  <span className="block">youthBlockId (optional, preserve bookings)</span>
                   <input
                     className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1.5 py-1 text-formula-paper"
                     value={o.youthBlockId ?? ''}
@@ -264,7 +327,13 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                       )
                     }
                   />
+                  <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
+                    Match an existing anchor id so parent bookings stay attached when you replace a window.
+                  </span>
                 </label>
+                <p className="font-mono text-[9px] text-formula-frost/55 md:col-span-4">
+                  Internal: start {o.startMinute} min · end {o.endMinute} min (read-only; edit times above)
+                </p>
               </li>
             ))}
           </ul>

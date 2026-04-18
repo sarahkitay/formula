@@ -208,7 +208,7 @@ export function BookAssessmentClient({
           <p className="text-sm text-amber-300/95">{slotsError}</p>
         ) : slots.length === 0 ? (
           <p className="text-sm text-formula-frost/70">
-            No June windows available yet. If you expected to see times, confirm Supabase is connected or call the front desk.
+            No June windows available yet. If you expected to see times, try again later or call the front desk — we may still be opening that month.
           </p>
         ) : (
           <AssessmentMonthCalendar

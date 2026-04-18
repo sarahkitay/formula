@@ -124,10 +124,7 @@ export default function CoachNotesPage() {
     })
   }
 
-  const subtitle = useMemo(
-    () => 'Saved to Supabase (coach_notes) · staff role required',
-    []
-  )
+  const subtitle = useMemo(() => 'Saved for all coaches to read · staff sign-in required', [])
 
   return (
     <PageContainer fullWidth className="flex h-[calc(100vh-3.5rem)] flex-col">
@@ -145,7 +142,7 @@ export default function CoachNotesPage() {
                 <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading roster…
               </p>
             ) : roster.length === 0 ? (
-              <p className="p-4 text-center text-xs text-text-muted">No players from Supabase.</p>
+              <p className="p-4 text-center text-xs text-text-muted">No roster loaded yet.</p>
             ) : (
               roster.map(player => {
                 const noteCount = noteCounts.get(player.id) ?? 0

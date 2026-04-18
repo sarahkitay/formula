@@ -41,6 +41,12 @@ function formatHm(minute: number) {
   return m === 0 ? `${hr}${am}` : `${hr}:${m.toString().padStart(2, '0')}${am}`
 }
 
+/** Native tooltip: full label + details (line breaks show in many browsers). */
+function calendarBlockHoverTitle(b: CalendarFeedBlock): string {
+  const time = `${formatHm(b.startMinute)} – ${formatHm(b.endMinute)}`
+  return [b.label.trim(), b.sublabel?.trim(), time].filter(Boolean).join('\n')
+}
+
 const SNAP_MIN = 15
 
 export interface FacilityWeekCalendarProps {
@@ -200,7 +206,7 @@ export function FacilityWeekCalendar({
                         categoryStyle(b.category)
                       )}
                       style={{ top, height: h, left, width: w }}
-                      title={`${b.label}${b.sublabel ? ` · ${b.sublabel}` : ''}`}
+                      title={calendarBlockHoverTitle(b)}
                       aria-label={`${b.label} ${formatHm(b.startMinute)} to ${formatHm(b.endMinute)}`}
                       onClick={e => {
                         e.stopPropagation()

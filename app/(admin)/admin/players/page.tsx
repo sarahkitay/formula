@@ -118,7 +118,7 @@ export default function PlayersPage() {
   const activeCount = roster.filter(p => p.status === 'active').length
   const subtitle =
     configured === false
-      ? 'Connect Supabase (service role) to load players from the database.'
+      ? 'Roster could not be loaded. Try again later or contact support.'
       : rosterError
         ? rosterError
         : `${activeCount} active in roster`
@@ -143,7 +143,7 @@ export default function PlayersPage() {
 
         {addHint && (
           <p className="rounded-lg border border-border bg-muted px-3 py-2 text-sm text-text-secondary">
-            Add-player intake is not wired yet; create rows in Supabase or use your intake flow when ready.
+            Add-player intake from this screen is not available yet. Use your usual intake process until it is enabled here.
           </p>
         )}
 

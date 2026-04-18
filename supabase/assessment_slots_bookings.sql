@@ -30,6 +30,7 @@ alter table public.assessment_slots enable row level security;
 alter table public.assessment_bookings enable row level security;
 
 -- Slots are not sensitive; allow read for anon (optional if you only use service API).
+drop policy if exists "assessment_slots_select_all" on public.assessment_slots;
 create policy "assessment_slots_select_all"
   on public.assessment_slots for select
   using (true);

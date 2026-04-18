@@ -63,9 +63,9 @@ export default async function AdminOverviewPage() {
             href="/admin/check-in"
           />
           <StatCard
-            label="Roster (Supabase)"
+            label="Roster"
             value={<CountUp end={activePlayers} format="integer" />}
-            sublabel={rosterStats.configured ? undefined : 'Connect Supabase to load players'}
+            sublabel={rosterStats.configured ? undefined : 'Roster data is unavailable right now'}
             href="/admin/players"
           />
           <StatCard
@@ -359,8 +359,8 @@ export default async function AdminOverviewPage() {
             {recentPayments.length === 0 && (
               <p className="py-6 text-center text-[13px] text-text-muted">
                 {stripeSummary.configured
-                  ? 'No Stripe Checkout rows yet. Webhook writes to stripe_purchases when payments complete.'
-                  : 'Connect Supabase service role to load Stripe purchase history.'}
+                  ? 'No online payments recorded yet. Completed checkouts will show here automatically.'
+                  : 'Payment history is unavailable right now. Try again later or contact support.'}
               </p>
             )}
             {recentPayments.map(payment => (

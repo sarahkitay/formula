@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
+import { PartyBookingFlow } from '@/components/marketing/party-booking-flow'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { PARTIES_PRICING_STATUS } from '@/lib/marketing/public-pricing'
 
@@ -29,9 +30,12 @@ export default function PartiesPage() {
   <p>
   <strong>{PARTIES_PRICING_STATUS}</strong>
   </p>
-  <h2>Inquire</h2>
+  <h2>Book a party</h2>
+  <p>Deposit secures your spot in the queue. You must complete the field rental window section so operations can match turf or indoor inventory.</p>
+  <PartyBookingFlow />
+  <h2>Questions first?</h2>
   <p>
-  Send dates, age band, headcount - availability + packages aligned to scheduling cycles.
+  Send dates, age band, headcount — availability + packages aligned to scheduling cycles.
   </p>
   <p>
   Return to <Link href={MARKETING_HREF.events}>events hub</Link> or explore <Link href={MARKETING_HREF.facility}>facility</Link>.

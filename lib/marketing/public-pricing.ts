@@ -67,6 +67,15 @@ export const FIELD_RENTAL_PUBLISHED_RATES = {
   packages: 'Package pricing is available with a 3-month minimum commitment.',
 } as const
 
-export const PARTIES_PRICING_STATUS = 'Pricing TBA. Inquire for packages and availability.' as const
+/** Stripe Checkout: hosted party deposit (public parties page). */
+export const PARTY_BOOKING_1K_CHECKOUT = {
+  priceUsd: 1000,
+  productName: 'Hosted birthday party · deposit',
+  summary:
+    '$1,000 party deposit. Staff confirms date, headcount, and field window after payment; final balance or adjustments per your package agreement.',
+} as const
+
+export const PARTIES_PRICING_STATUS =
+  'Party deposit $1,000 online (Stripe). Book below — include field rental window so ops can schedule.' as const
 
 export const GENERAL_EVENTS_PRICING_STATUS = 'Hosted event pricing TBA. See parties, Footbot, and tournaments for paths.' as const

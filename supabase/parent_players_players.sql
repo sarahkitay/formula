@@ -24,11 +24,13 @@ alter table public.players enable row level security;
 alter table public.parent_players enable row level security;
 
 -- Parent: read own links
+drop policy if exists "parent_players_select_own" on public.parent_players;
 create policy "parent_players_select_own"
   on public.parent_players for select
   using (auth.uid() = parent_user_id);
 
 -- Parent: read players linked to them
+drop policy if exists "players_select_for_linked_parent" on public.players;
 create policy "players_select_for_linked_parent"
   on public.players for select
   using (

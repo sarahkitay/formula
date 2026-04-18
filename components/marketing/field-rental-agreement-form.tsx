@@ -92,7 +92,7 @@ export function FieldRentalAgreementForm() {
       </h3>
       <p className="mt-3 max-w-3xl text-sm leading-relaxed text-formula-mist">
         Required per participant: name, email, date of birth, and signed waiver before field access. Minors: parent or legal guardian completes the
-        waiver. Submitting saves the waiver for staff once your Supabase migration for rental agreements is applied; use checkout for paid field holds.
+        waiver. Submitting sends a copy to our team and saves the waiver for staff review. Use the field rental checkout when you are also placing a paid hold.
       </p>
 
       <div className="mt-8 space-y-4 border border-formula-frost/10 bg-formula-paper/[0.02] p-4 text-sm leading-relaxed text-formula-mist md:p-5">

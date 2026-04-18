@@ -17,15 +17,13 @@ export default async function CoachGroupsPage() {
           title="Facility roster"
           subtitle={
             roster.length > 0
-              ? `${roster.length} athletes from Supabase · training groups UI pending group tables`
-              : 'No players in Supabase yet, or service role is not configured'
+              ? `${roster.length} athletes on file · training groups view (assignments coming soon)`
+              : 'No roster loaded yet, or the roster service is temporarily unavailable'
           }
         />
 
         {roster.length === 0 ? (
-          <p className="text-sm text-text-muted">
-            When `players` is populated, the full roster appears here for session planning.
-          </p>
+          <p className="text-sm text-text-muted">When the roster is available, the full athlete list appears here for session planning.</p>
         ) : (
           <div className="rounded-xl border border-border bg-surface overflow-hidden">
             <div className="flex items-center justify-between border-b border-border bg-surface-raised px-5 py-4">

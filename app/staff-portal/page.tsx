@@ -315,7 +315,7 @@ export default function StaffPortalHubPage() {
             </p>
           ) : players.length === 0 ? (
             <p className="mt-4 text-sm text-formula-frost/80">
-              No players yet. Add rows in the Supabase Table Editor.
+              No players listed yet. Ask an administrator to add athletes, or try again later.
             </p>
           ) : (
             <ul className="mt-6">

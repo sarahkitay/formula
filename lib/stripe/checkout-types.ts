@@ -1,4 +1,10 @@
-export const CHECKOUT_TYPES = ['assessment', 'package-5', 'package-10', 'field-rental-booking'] as const
+export const CHECKOUT_TYPES = [
+  'assessment',
+  'package-5',
+  'package-10',
+  'field-rental-booking',
+  'party-booking-1k',
+] as const
 
 export type CheckoutType = (typeof CHECKOUT_TYPES)[number]
 

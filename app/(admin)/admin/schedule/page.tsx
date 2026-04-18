@@ -169,7 +169,7 @@ export default function SchedulePage() {
     const r = await saveFacilityScheduleConfigAction(facilityConfig)
     if (r.ok) {
       setSaveState('ok')
-      setSaveMessage('Published. Parent portal and marketing APIs will use this on the next request.')
+      setSaveMessage('Published. The parent portal and public site pick up changes on their next refresh.')
     } else {
       setSaveState('err')
       setSaveMessage(r.error)
@@ -205,7 +205,7 @@ export default function SchedulePage() {
                 rel="noreferrer"
                 className="inline-flex h-7 items-center gap-1.5 border border-formula-frost/16 bg-formula-paper/[0.06] px-2.5 text-xs font-medium text-formula-paper transition-colors hover:border-formula-volt/35"
               >
-                API: 12-week JSON
+                12-week schedule export
               </a>
             </div>
           }
@@ -359,11 +359,10 @@ export default function SchedulePage() {
                 <div className="flex items-start gap-2 border border-formula-volt/20 bg-formula-volt/[0.06] p-3 font-mono text-[10px] text-formula-frost/90">
                   <Radio className="mt-0.5 h-3.5 w-3.5 shrink-0 text-formula-volt" />
                   <p>
-                    Same published week as the parent portal and{' '}
-                    <code className="text-formula-volt">/api/schedule/published-blocks</code>. Full week view (assessments
-                    + rentals + parties + programs) is on the <strong className="text-formula-paper">Full calendar</strong>{' '}
-                    tab. Publish overrides in <strong className="text-formula-paper">Publish & overrides</strong> (Supabase{' '}
-                    <code className="text-formula-volt">facility_schedule_config</code>).
+                    This grid matches the same published week families see in the parent portal. Open the{' '}
+                    <strong className="text-formula-paper">Full calendar</strong> tab for assessments, rentals, parties, and
+                    programs together. Use <strong className="text-formula-paper">Publish & overrides</strong> to edit what is
+                    published site-wide.
                   </p>
                 </div>
 

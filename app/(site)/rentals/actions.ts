@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
 import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
 
@@ -76,6 +77,8 @@ export async function submitFieldRentalAgreement(
     return { ok: false, message: saved.message }
   }
 
+  revalidatePath('/admin/rentals')
+
   await sendAdminNotification({
     subject: `[Formula] Field rental agreement · ${participantName}`,
     html: `
@@ -89,14 +92,13 @@ export async function submitFieldRentalAgreement(
         <li><strong>Printed signer</strong>: ${escapeHtml(signatureName)}</li>
         <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '—'}</li>
       </ul>
-      <p>Signature image is stored in Supabase (<code>field_rental_agreements.signature_data_url</code>).</p>
+      <p>Signature image is stored securely with this waiver for staff review.</p>
     `,
     text: `Field rental agreement saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`,
   })
 
   return {
     ok: true,
-    message:
-      'Agreement saved. Staff can review it under Admin → Rentals. Complete checkout separately if you are also placing a field hold.',
+    message: 'Agreement saved.',
   }
 }

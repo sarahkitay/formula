@@ -101,11 +101,11 @@ export default async function CoachAttendancePage() {
         )}
 
         <SectionHeader
-          title="Roster (Supabase)"
+          title="Facility roster"
           description="Full facility roster slice; cross-check names with bookings above."
         />
         {roster.length === 0 ? (
-          <p className="text-sm text-text-muted">No athletes loaded. Configure Supabase service role on the server.</p>
+          <p className="text-sm text-text-muted">No athletes loaded yet. Try refreshing, or contact support if this continues.</p>
         ) : (
           <div className="rounded-xl border border-border bg-surface p-4">
             <ul className="divide-y divide-border">

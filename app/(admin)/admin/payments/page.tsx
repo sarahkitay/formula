@@ -107,7 +107,7 @@ export default function PaymentsPage() {
       <div className="space-y-6">
         <PageHeader
           title="Payments"
-          subtitle="Stripe Checkout completions (stripe_purchases) · written by webhook only"
+          subtitle="Online payments completed through checkout (read-only ledger)"
           actions={
             <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />} type="button" disabled>
               Export CSV
@@ -134,7 +134,7 @@ export default function PaymentsPage() {
 
         {pending.length > 0 && (
           <div className="space-y-2 rounded-xl border border-warning/25 bg-warning/5 p-4">
-            <p className="text-sm font-semibold text-warning">{pending.length} checkouts not marked paid in Stripe</p>
+            <p className="text-sm font-semibold text-warning">{pending.length} payments still completing</p>
             {pending.map(p => (
               <div key={p.id} className="flex items-center justify-between text-sm">
                 <span className="text-text-secondary">
@@ -151,7 +151,7 @@ export default function PaymentsPage() {
           data={sorted}
           keyField="id"
           emptyTitle="No Stripe purchases yet"
-          emptyDescription="Complete a Checkout session with the webhook configured, or verify SUPABASE_SERVICE_ROLE_KEY."
+          emptyDescription="When guests complete a paid checkout, entries appear here. If you expect to see data already, try refreshing or contact support."
           emptyIcon={<DollarSign />}
         />
       </div>

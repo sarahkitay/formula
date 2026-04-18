@@ -69,7 +69,7 @@ export default function CoachCheckInPage() {
         <CoachGuardrailsStrip items={coachGuardrails.slice(0, 3)} />
 
         <div className="border border-white/10 bg-[#0f0f0f] p-4 font-mono text-[11px] text-zinc-400">
-          Roster loads from Supabase <code className="text-zinc-300">players</code>. Waitlist / no-shows surface here when bookings are wired.
+          Roster matches the facility athlete list. Waitlists and no-shows will show here when bookings are connected to check-in.
         </div>
 
         <div className="overflow-x-auto border border-white/10">
@@ -87,7 +87,7 @@ export default function CoachCheckInPage() {
               {roster.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-3 py-6 text-center text-zinc-500">
-                    No athletes in roster yet, or Supabase is not configured.
+                    No athletes in roster yet, or the roster could not be loaded.
                   </td>
                 </tr>
               )}

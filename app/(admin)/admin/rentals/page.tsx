@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
 import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
 import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
+import { listPartyBookingsRecent } from '@/lib/party/party-bookings-server'
 import { formatCurrency } from '@/lib/utils'
 import { SITE } from '@/lib/site-config'
 
@@ -24,6 +25,7 @@ function clip(s: string | null, max: number) {
 
 export default async function RentalsPage() {
   const waiverRows = await listFieldRentalAgreementsRecent(100)
+  const partyRows = await listPartyBookingsRecent(80)
   const serviceConfigured = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim())
 
   return (
@@ -45,16 +47,71 @@ export default async function RentalsPage() {
           }
         />
 
+        <AdminPanel title="Party deposits (Stripe)" eyebrow="PARTIES · $1K">
+          {!serviceConfigured ? (
+            <p className="font-mono text-[11px] text-amber-200/90">
+              Paid party bookings can’t be loaded right now. Try again in a few minutes; if this keeps happening, contact
+              support.
+            </p>
+          ) : partyRows.length === 0 ? (
+            <p className="font-mono text-[11px] text-formula-mist">
+              No party deposits on file yet. When guests pay the deposit on the{' '}
+              <Link className="text-formula-volt underline" href="/events/parties">
+                birthday parties
+              </Link>{' '}
+              page, confirmations show up here.
+            </p>
+          ) : (
+            <AdminMonoTable
+              headers={[
+                'Paid at',
+                'Contact',
+                'Email',
+                'Party date',
+                'Guests',
+                'Field',
+                'Rental date',
+                'Window',
+                'Rental HC',
+                'Amount',
+                'Stripe',
+              ]}
+              rows={partyRows.map(r => [
+                formatSubmittedAt(r.created_at),
+                r.contact_name,
+                r.customer_email ?? '—',
+                r.party_preferred_date,
+                String(r.party_guest_count),
+                r.rental_field_id,
+                r.rental_session_date,
+                clip(r.rental_time_slot, 28),
+                String(r.rental_headcount),
+                `$${(r.amount_total_cents / 100).toFixed(0)}`,
+                clip(r.stripe_checkout_session_id, 20),
+              ])}
+            />
+          )}
+          <p className="mt-2 font-mono text-[10px] text-formula-mist/80">
+            Ops and the guest each get a confirmation email when outbound mail is enabled for this site.
+          </p>
+        </AdminPanel>
+
         <AdminPanel title="Signed rental waivers" eyebrow="FIELD RENTAL">
           {!serviceConfigured ? (
             <p className="font-mono text-[11px] text-amber-200/90">
-              Set <code className="text-formula-frost/90">SUPABASE_SERVICE_ROLE_KEY</code> on the server so submissions can be
-              saved and listed here.
+              Signed waivers can’t be loaded right now. Try again in a few minutes; if this keeps happening, contact support.
             </p>
           ) : waiverRows.length === 0 ? (
             <p className="font-mono text-[11px] text-formula-mist">
-              No rows yet. Run <code className="text-formula-mist">supabase/field_rental_agreements.sql</code> in the
-              Supabase SQL editor, then submit the form on the public rentals / book-assessment page.
+              No signed waivers on file yet. Completed rental waivers from the public{' '}
+              <Link className="text-formula-volt underline" href="/rentals">
+                Rentals
+              </Link>{' '}
+              or{' '}
+              <Link className="text-formula-volt underline" href="/book-assessment">
+                Book assessment
+              </Link>{' '}
+              flow will appear here after guests submit them.
             </p>
           ) : (
             <AdminMonoTable
@@ -85,8 +142,8 @@ export default async function RentalsPage() {
             />
           )}
           <p className="mt-3 font-mono text-[10px] text-formula-mist/80">
-            Full signature images live in <code className="text-formula-mist">signature_data_url</code> (not shown in
-            this table). Open a row in Supabase Table Editor to view or export.
+            This grid is a summary only. Full signature images are kept with each waiver for compliance—request an export
+            from Formula support if you need the files.
           </p>
         </AdminPanel>
 

@@ -3,6 +3,7 @@ import type Stripe from 'stripe'
 import { sendStripeCheckoutPaidAdminEmail } from '@/lib/email/stripe-checkout-paid-email'
 import { confirmSlotFromPaidCheckout } from '@/lib/rentals/rental-slots'
 import { recordAssessmentBookingFromCheckout } from '@/lib/stripe/record-assessment-booking'
+import { recordPartyBookingFromCheckout } from '@/lib/stripe/record-party-booking'
 import { recordCheckoutSessionCompleted } from '@/lib/stripe/record-purchase'
 import { getStripe } from '@/lib/stripe/server'
 
@@ -41,8 +42,15 @@ export async function POST(req: Request) {
         } catch (e) {
           console.error('[stripe webhook] assessment booking insert:', e)
         }
+        try {
+          await recordPartyBookingFromCheckout(session)
+        } catch (e) {
+          console.error('[stripe webhook] party booking insert:', e)
+        }
         await confirmSlotFromPaidCheckout(session)
-        await sendStripeCheckoutPaidAdminEmail(session)
+        if (session.metadata?.type !== 'party-booking-1k') {
+          await sendStripeCheckoutPaidAdminEmail(session)
+        }
       } catch {
         return NextResponse.json({ error: 'Failed to persist purchase' }, { status: 500 })
       }

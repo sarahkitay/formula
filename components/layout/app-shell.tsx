@@ -20,7 +20,7 @@ export interface AppShellProps {
   identityEmail?: string
   /** Parent portal: linked athletes, e.g. "Alex M. · Jordan M." */
   athletesSummary?: string
-  /** Parent: real Supabase sign-out vs marketing link to /login */
+  /** Parent: authenticated sign-out vs marketing link to /login */
   endSessionVariant?: 'login-link' | 'logout-button'
   /** Passed to `LogoutButton` when `endSessionVariant` is `logout-button` */
   logoutRedirectTo?: string
