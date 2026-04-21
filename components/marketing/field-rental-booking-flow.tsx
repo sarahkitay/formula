@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
-import { FIELD_RENTAL_BOOKING_CHECKOUT } from '@/lib/marketing/public-pricing'
+import { FIELD_RENTAL_BOOKING_CHECKOUT, FIELD_RENTAL_PUBLISHED_RATES, fieldRentalDepositUsd } from '@/lib/marketing/public-pricing'
 import {
   type Classification,
   type RentalType,
@@ -10,13 +10,23 @@ import {
   classifyRentalBooking,
   insuranceMayBeRequired,
 } from '@/lib/rentals/booking-classification'
+import {
+  FIELD_RENTAL_DURATION_OPTIONS_MINUTES,
+  FIELD_RENTAL_SLOT_STARTS,
+  FIELD_RENTAL_WINDOW_CLOSE_MINUTES,
+  RENTAL_FIELD_OPTIONS,
+} from '@/lib/rentals/field-rental-picker-constants'
 import { encodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
-import { RENTAL_FIELD_OPTIONS, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
+import {
+  encodeRentalWindow,
+  humanRentalWindowSummary,
+  parseUsTimeToMinutesFromMidnight,
+  rentalWindowsOverlap,
+} from '@/lib/rentals/rental-time-window'
 
 const PAYMENT_STEP = 6
 const STEP_LABELS = ['Type', 'Slot', 'Headcount', 'Tier', 'Rules', 'Pay'] as const
 
-const TIME_SLOTS = [...RENTAL_TIME_SLOTS]
 const FIELDS = [...RENTAL_FIELD_OPTIONS]
 
 function classificationSummary(c: Classification): string {
@@ -57,7 +67,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   const [step, setStep] = useState(1)
   const [rentalType, setRentalType] = useState<RentalType | ''>('')
   const [sessionDate, setSessionDate] = useState('')
-  const [timeSlot, setTimeSlot] = useState('')
+  const [slotStart, setSlotStart] = useState('')
+  const [durationMinutes, setDurationMinutes] = useState(60)
   const [fieldId, setFieldId] = useState('')
   const [participantCount, setParticipantCount] = useState<string>('')
   const [renterName, setRenterName] = useState('')
@@ -93,8 +104,23 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   const step3Valid =
     rentalType !== '' && Number.isFinite(countNum) && countNum >= 1 && canProceedBooking && classification !== null
 
-  const isSlotBooked = useCallback(
-    (field: string, slot: string) => bookedSlots.some(b => b.fieldId === field && b.timeSlot === slot),
+  const rentalWindow = useMemo(() => {
+    if (!slotStart) return ''
+    return encodeRentalWindow(slotStart, durationMinutes)
+  }, [slotStart, durationMinutes])
+
+  const allowedDurations: number[] = useMemo(() => {
+    if (!slotStart) return [...FIELD_RENTAL_DURATION_OPTIONS_MINUTES]
+    const startM = parseUsTimeToMinutesFromMidnight(slotStart)
+    if (startM == null) return [...FIELD_RENTAL_DURATION_OPTIONS_MINUTES]
+    return FIELD_RENTAL_DURATION_OPTIONS_MINUTES.filter(d => startM + d <= FIELD_RENTAL_WINDOW_CLOSE_MINUTES)
+  }, [slotStart])
+
+  const isWindowUnavailable = useCallback(
+    (field: string, windowKey: string) => {
+      if (!windowKey) return false
+      return bookedSlots.some(b => b.fieldId === field && rentalWindowsOverlap(windowKey, b.timeSlot))
+    },
     [bookedSlots]
   )
 
@@ -112,7 +138,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   }, [sessionDate, parsedWeekHorizon])
 
   useEffect(() => {
-    if (!fieldId || !timeSlot || candidateDates.length === 0) {
+    if (!fieldId || !rentalWindow || candidateDates.length === 0) {
       setSlotTakenByDate({})
       setRecurringChecking(false)
       return
@@ -131,7 +157,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
         const taken: Record<string, boolean> = {}
         candidateDates.forEach((d, i) => {
           const booked = bookLists[i] ?? []
-          taken[d] = booked.some(b => b.fieldId === fieldId && b.timeSlot === timeSlot)
+          taken[d] = booked.some(b => b.fieldId === fieldId && rentalWindowsOverlap(rentalWindow, b.timeSlot))
         })
         setSlotTakenByDate(taken)
       })
@@ -144,7 +170,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
     return () => {
       cancelled = true
     }
-  }, [candidateDates, fieldId, timeSlot])
+  }, [candidateDates, fieldId, rentalWindow])
 
   useEffect(() => {
     if (candidateDates.length === 0) {
@@ -201,23 +227,25 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   }, [sessionDate])
 
   useEffect(() => {
-    if (fieldId && timeSlot && isSlotBooked(fieldId, timeSlot)) {
-      setTimeSlot('')
+    if (allowedDurations.length === 0) return
+    if (!allowedDurations.includes(durationMinutes)) {
+      setDurationMinutes(allowedDurations[0]!)
     }
-  }, [fieldId, timeSlot, isSlotBooked])
+  }, [allowedDurations, durationMinutes])
 
   const step2Valid =
     sessionDate !== '' &&
-    timeSlot !== '' &&
+    rentalWindow !== '' &&
     fieldId !== '' &&
-    !isSlotBooked(fieldId, timeSlot) &&
+    !isWindowUnavailable(fieldId, rentalWindow) &&
     !recurringConflict &&
     !recurringChecking &&
     parsedWeekHorizon >= 1 &&
     sessionCount >= 1 &&
     sessionCount <= 52
 
-  const rentalCheckoutCents = FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * sessionCount
+  const depositPerSessionUsd = fieldRentalDepositUsd(durationMinutes)
+  const rentalCheckoutCents = Math.round(depositPerSessionUsd * sessionCount * 100) / 100
 
   const goToPaymentStep = () => {
     const ref = `FR-${Date.now().toString(36).toUpperCase()}`
@@ -228,7 +256,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   return (
     <section
       id={sectionId}
-      className="not-prose my-14 scroll-mt-24 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8"
+      className="not-prose my-14 scroll-mt-28 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8"
     >
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Booking flow</p>
       <h3 className="mt-4 font-mono text-xl font-semibold tracking-tight text-formula-paper md:text-2xl">
@@ -298,9 +326,9 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
         <div className="mt-8 space-y-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 2  -  Date, time, and field</p>
           <p className="text-sm text-formula-mist">
-            Fixed session windows. Booked combinations for your date are disabled. All sessions end on time. Overstay is billed in 30-minute increments.
+            Start times are every 30 minutes. Choose how long you need (30-minute steps). Deposit follows the published hourly rate (${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr): 1 hour = $180, 90 minutes = $270, 2 hours = $360, and so on per session. Anything that overlaps an existing hold is blocked.
           </p>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-2">
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Date *</span>
               <input
@@ -326,26 +354,51 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               </select>
             </label>
             <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Window *</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Start time *</span>
               <select
-                value={timeSlot}
-                onChange={e => setTimeSlot(e.target.value)}
+                value={slotStart}
+                onChange={e => setSlotStart(e.target.value)}
                 className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
                 disabled={!fieldId}
               >
-                <option value="">{fieldId ? 'Select window' : 'Choose a field first'}</option>
-                {TIME_SLOTS.map(t => {
-                  const taken = fieldId ? isSlotBooked(fieldId, t) : false
+                <option value="">{fieldId ? 'Select start' : 'Choose a field first'}</option>
+                {FIELD_RENTAL_SLOT_STARTS.map(s => {
+                  const key = encodeRentalWindow(s, durationMinutes)
+                  const taken = fieldId ? isWindowUnavailable(fieldId, key) : false
                   return (
-                    <option key={t} value={t} disabled={taken}>
-                      {t}
+                    <option key={s} value={s} disabled={taken}>
+                      {s}
                       {taken ? ' (booked)' : ''}
                     </option>
                   )
                 })}
               </select>
             </label>
+            <label className="flex flex-col gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Duration *</span>
+              <select
+                value={String(durationMinutes)}
+                onChange={e => setDurationMinutes(parseInt(e.target.value, 10))}
+                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                disabled={!slotStart}
+              >
+                {!slotStart ? (
+                  <option value="">Pick a start time first</option>
+                ) : (
+                  allowedDurations.map(m => (
+                    <option key={m} value={m}>
+                      {m} min · ${fieldRentalDepositUsd(m).toFixed(0)} deposit
+                    </option>
+                  ))
+                )}
+              </select>
+            </label>
           </div>
+          {slotStart ? (
+            <p className="font-mono text-[11px] text-formula-frost/80">
+              Window: {humanRentalWindowSummary(rentalWindow) || '—'}
+            </p>
+          ) : null}
           <div className="max-w-xl space-y-3">
             <label className="flex max-w-md flex-col gap-2">
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">
@@ -418,8 +471,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               <p className="text-xs text-formula-mist">Enter how many weeks to list (1–52), or choose an anchor date first.</p>
             ) : null}
             <p className="text-xs text-formula-mist">
-              {sessionCount} session{sessionCount === 1 ? '' : 's'} × ${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} ={' '}
-              <strong className="text-formula-paper">${rentalCheckoutCents}</strong> charged at checkout (Stripe).
+              {sessionCount} session{sessionCount === 1 ? '' : 's'} × ${depositPerSessionUsd.toFixed(0)} ={' '}
+              <strong className="text-formula-paper">${rentalCheckoutCents.toFixed(0)}</strong> charged at checkout (Stripe).
             </p>
           </div>
           {recurringChecking ? (
@@ -509,14 +562,15 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             <p className="text-sm font-medium text-formula-paper">{classificationSummary(classification)}</p>
             {classification.status === 'private_tier1' ? (
               <p className="mt-3 text-sm text-formula-mist">
-                Tier 1 rate applies for published windows. You&apos;ll place a <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong>{' '}
-                deposit at checkout to lock this slot if it is still available.
+                Tier 1 rate applies for published windows. You&apos;ll place a{' '}
+                <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> deposit per session at checkout (scales with the duration you
+                chose) if the slot is still available.
               </p>
             ) : null}
             {classification.status === 'group_training_ok' ? (
               <p className="mt-3 text-sm text-formula-mist">
                 Group / clinic use on one field (up to {classification.maxParticipants} participants). COI may still be required. Deposit{' '}
-                <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong> locks the calendar slot at checkout.
+                <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> per session locks the calendar slot at checkout.
               </p>
             ) : null}
             {needsInsurance ? (
@@ -527,8 +581,9 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             ) : null}
             {(classification.status === 'club_ok' || classification.status === 'general_ok') && (
               <p className="mt-3 text-sm text-formula-mist">
-                After rules and agreement, you&apos;ll pay a <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong> booking
-                deposit via Stripe. The calendar prevents double booking for this field and window.
+                After rules and agreement, you&apos;ll pay a{' '}
+                <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> booking deposit per session via Stripe (based on your
+                selected duration). The calendar prevents overlapping bookings on the same field.
               </p>
             )}
           </div>
@@ -615,7 +670,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               onClick={goToPaymentStep}
               className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black disabled:opacity-40"
             >
-              {`Pay $${rentalCheckoutCents} deposit (Stripe)`}
+              {`Pay $${rentalCheckoutCents.toFixed(0)} deposit (Stripe)`}
             </button>
           </div>
         </div>
@@ -634,7 +689,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               <li>Type: {rentalType.replace(/_/g, ' ')}</li>
               <li>Anchor date (series): {sessionDate}</li>
               <li>Sessions booked: {sessionCount}</li>
-              <li>Window: {timeSlot}</li>
+              <li>Window: {humanRentalWindowSummary(rentalWindow)}</li>
               <li>Field: {FIELDS.find(f => f.value === fieldId)?.label ?? fieldId}</li>
               <li>Participants: {countNum}</li>
               <li>Renter: {renterName.trim()}</li>
@@ -648,19 +703,19 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               </ul>
             </div>
             <p className="mt-4 text-formula-paper">
-              Total due now: <strong>${rentalCheckoutCents}</strong> ({sessionCount} × ${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} per session)
+              Total due now: <strong>${rentalCheckoutCents.toFixed(0)}</strong> ({sessionCount} × ${depositPerSessionUsd.toFixed(0)} per session)
             </p>
             <p className="mt-2 text-xs">{FIELD_RENTAL_BOOKING_CHECKOUT.summary}</p>
           </div>
           <CheckoutLaunchButton
             checkoutType="field-rental-booking"
-            label={`Pay $${rentalCheckoutCents} with Stripe`}
+            label={`Pay $${rentalCheckoutCents.toFixed(0)} with Stripe`}
             successNext="field-rental"
             metadata={{
               rental_ref: confirmedRef,
               rental_type: rentalType,
               rental_date: sessionDate.slice(0, 40),
-              rental_window: timeSlot.slice(0, 80),
+              rental_window: rentalWindow.slice(0, 120),
               rental_field: fieldId.slice(0, 40),
               rental_weeks: String(sessionCount),
               rental_dates_compact: encodeRentalDatesCompact(selectedSessionDates),

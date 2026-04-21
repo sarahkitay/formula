@@ -34,7 +34,7 @@ export function TabSwitcher({ tabs, activeTab, onChange, variant = 'underline', 
             className={cn(
               'inline-flex min-h-8 items-center gap-1.5 rounded-[0.2rem] px-2.5 py-1 text-[11px] font-medium transition-colors duration-150',
               tab.id === activeTab
-                ? 'bg-card text-text-primary shadow-[inset_0_-2px_0_0_#f4fe00]'
+                ? 'bg-card text-text-primary shadow-[inset_0_-2px_0_0_var(--color-formula-volt)]'
                 : 'text-text-secondary hover:bg-card hover:text-text-primary'
             )}
           >

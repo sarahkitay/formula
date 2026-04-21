@@ -5,6 +5,8 @@ import { slotHasRoom } from '@/lib/assessment/slots-server'
 import { encodeRentalDatesCompact, resolveFieldRentalSessionDatesFromMetadata } from '@/lib/rentals/rental-weekly-dates'
 import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWeeklySlotsForDates } from '@/lib/rentals/rental-slots'
 import { RENTAL_FIELD_OPTIONS, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
+import { fieldRentalDepositUsd } from '@/lib/marketing/public-pricing'
+import { isValidFieldRentalWindow, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
@@ -70,6 +72,7 @@ export async function POST(req: Request) {
   let fieldRentalStripeDates: { rental_weeks: string; rental_dates_compact: string; rental_date: string } | null = null
   /** Set for field-rental so attach + Stripe metadata stay aligned after checkout.create. */
   let fieldRentalSessionDatesYmd: string[] | null = null
+  let fieldRentalStripeMeta: Record<string, string> = {}
 
   if (type === 'assessment') {
     const slotId = metadataExtra.assessment_slot_id?.trim()
@@ -156,6 +159,28 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
+    if (!RENTAL_FIELD_OPTIONS.some(f => f.value === rentalSlot.field)) {
+      return NextResponse.json({ error: 'rental_field must be a known field id.' }, { status: 400 })
+    }
+    const windowTrimmed = rentalSlot.window.trim()
+    if (!isValidFieldRentalWindow(windowTrimmed)) {
+      return NextResponse.json(
+        {
+          error:
+            'Invalid rental_window. Use a published start time with a duration in 30-minute steps (e.g. 6:00 AM|90 for 90 minutes), ending by 10:00 PM.',
+        },
+        { status: 400 }
+      )
+    }
+    const parsedWindow = parseRentalTimeSlot(windowTrimmed)
+    if (!parsedWindow) {
+      return NextResponse.json({ error: 'Could not parse rental_window.' }, { status: 400 })
+    }
+    const depositUsd = fieldRentalDepositUsd(parsedWindow.durationMinutes)
+    const unitCents = Math.round(depositUsd * 100)
+    if (unitCents < 50) {
+      return NextResponse.json({ error: 'Computed deposit is too small; check duration and pricing.' }, { status: 400 })
+    }
     const resolvedDates = resolveFieldRentalSessionDatesFromMetadata(metadataExtra, rentalSlot.date)
     if (!resolvedDates.ok) {
       return NextResponse.json({ error: resolvedDates.message }, { status: 400 })
@@ -166,11 +191,18 @@ export async function POST(req: Request) {
     }
     fieldRentalSessionDatesYmd = sessionDatesYmd
     fieldRentalWeeks = sessionDatesYmd.length
-    line_items = lineItemsForCheckoutType(type, { fieldRentalSessionWeeks: fieldRentalWeeks })
+    line_items = lineItemsForCheckoutType(type, {
+      fieldRentalSessionWeeks: fieldRentalWeeks,
+      fieldRentalUnitAmountCents: unitCents,
+    })
     fieldRentalStripeDates = {
       rental_weeks: String(fieldRentalWeeks),
       rental_dates_compact: encodeRentalDatesCompact(sessionDatesYmd),
       rental_date: sessionDatesYmd[0],
+    }
+    fieldRentalStripeMeta = {
+      rental_duration_minutes: String(parsedWindow.durationMinutes),
+      rental_deposit_per_session_usd: depositUsd.toFixed(2),
     }
     const claimed = await tryClaimRecurringWeeklySlotsForDates({
       fieldId: rentalSlot.field,
@@ -209,6 +241,7 @@ export async function POST(req: Request) {
         twilio_sms_opt_in: smsConsent ? 'true' : 'false',
         ...metadataExtra,
         ...(fieldRentalStripeDates ?? {}),
+        ...fieldRentalStripeMeta,
       },
       ...(prefillEmail ? { customer_email: prefillEmail } : {}),
       customer_creation: 'always',

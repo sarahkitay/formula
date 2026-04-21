@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CheckoutFieldRentalWaiverLink } from '@/components/marketing/checkout-field-rental-waiver-link'
 import { CheckoutSuccessPortalModal } from './checkout-success-portal-modal'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 
@@ -70,6 +71,10 @@ export default async function CheckoutSuccessPage({
           </Link>
         ) : null}
       </div>
+
+      {nextStep === 'field-rental' && sessionId && sessionId.length > 0 ? (
+        <CheckoutFieldRentalWaiverLink sessionId={sessionId} />
+      ) : null}
 
       <CheckoutSuccessPortalModal nextStep={nextStep} sessionId={sessionId} />
     </article>

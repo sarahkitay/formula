@@ -4,7 +4,10 @@ import { PageHeader } from '@/components/ui/page-header'
 import { Button } from '@/components/ui/button'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
 import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
+import { ManualWaiverInviteForm } from '@/components/admin/manual-waiver-invite-form'
 import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
+import { listWaiverInvitesWithProgress } from '@/lib/rentals/waiver-invites-server'
+import { getSiteOrigin } from '@/lib/stripe/server'
 import { listPartyBookingsRecent } from '@/lib/party/party-bookings-server'
 import { formatCurrency } from '@/lib/utils'
 import { SITE } from '@/lib/site-config'
@@ -26,6 +29,8 @@ function clip(s: string | null, max: number) {
 export default async function RentalsPage() {
   const waiverRows = await listFieldRentalAgreementsRecent(100)
   const partyRows = await listPartyBookingsRecent(80)
+  const waiverInvites = await listWaiverInvitesWithProgress(50)
+  const siteOrigin = getSiteOrigin()
   const serviceConfigured = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim())
 
   return (
@@ -96,6 +101,40 @@ export default async function RentalsPage() {
           </p>
         </AdminPanel>
 
+        <AdminPanel title="Roster waiver links" eyebrow="FIELD RENTAL">
+          {!serviceConfigured ? (
+            <p className="font-mono text-[11px] text-amber-200/90">Invite progress requires Supabase service role.</p>
+          ) : (
+            <>
+              <p className="mb-4 font-mono text-[11px] text-formula-mist">
+                Paid field-rental checkouts get a link on the checkout success page. Manual links (walk-ins, comps) can be created below. Each signed waiver
+                through the link increments the count until the expected number is reached.
+              </p>
+              <ManualWaiverInviteForm />
+              {waiverInvites.length === 0 ? (
+                <p className="mt-6 font-mono text-[11px] text-formula-mist">No roster links yet.</p>
+              ) : (
+                <div className="mt-6">
+                  <AdminMonoTable
+                  headers={['Created', 'Done / expected', 'Left', 'Ref', 'Type', 'Stripe session', 'URL']}
+                  rows={waiverInvites.map(inv => [
+                    formatSubmittedAt(inv.created_at),
+                    `${inv.completed_count} / ${inv.expected_waiver_count}`,
+                    String(inv.remaining_count),
+                    clip(inv.rental_ref, 24),
+                    clip(inv.rental_type, 20),
+                    clip(inv.stripe_checkout_session_id, 18),
+                    <span key={inv.id} className="font-mono text-[9px] text-formula-frost/85">
+                      {siteOrigin}/rentals/waiver/{inv.token.slice(0, 10)}…
+                    </span>,
+                  ])}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </AdminPanel>
+
         <AdminPanel title="Signed rental waivers" eyebrow="FIELD RENTAL">
           {!serviceConfigured ? (
             <p className="font-mono text-[11px] text-amber-200/90">
@@ -130,7 +169,13 @@ export default async function RentalsPage() {
               rows={waiverRows.map((r) => [
                 formatSubmittedAt(r.submitted_at),
                 r.rental_type,
-                r.participant_name,
+                <Link
+                  key={`${r.id}-name`}
+                  href={`/admin/rentals/waivers/${r.id}`}
+                  className="text-formula-volt underline-offset-2 hover:underline"
+                >
+                  {r.participant_name}
+                </Link>,
                 r.participant_email,
                 r.participant_dob,
                 r.participant_count != null ? String(r.participant_count) : '—',
@@ -142,8 +187,8 @@ export default async function RentalsPage() {
             />
           )}
           <p className="mt-3 font-mono text-[10px] text-formula-mist/80">
-            This grid is a summary only. Full signature images are kept with each waiver for compliance—request an export
-            from Formula support if you need the files.
+            Click a participant name to open the full waiver (all answers, acknowledgments, and signature). From there you
+            can download a PDF or use your browser’s print dialog to save as PDF.
           </p>
         </AdminPanel>
 

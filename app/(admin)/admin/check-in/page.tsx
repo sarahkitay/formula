@@ -13,6 +13,8 @@ import { getBookingsBySession, getPlayerTodayBooking } from '@/lib/mock-data/boo
 import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
 import { decrementSession } from '@/lib/booking-engine'
 import { Card } from '@/components/ui/card'
+import { PageContainer } from '@/components/layout/app-shell'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function CheckInPage() {
   const [query, setQuery] = useState('')
@@ -119,66 +121,70 @@ export default function CheckInPage() {
   })
 
   return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-      <div className="flex min-h-[min(70vh,720px)] flex-col gap-6 xl:col-span-8">
-        <header className="shrink-0">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-white">Active check-in</h1>
-          <p className="mt-1 font-mono text-sm uppercase tracking-[0.18em] text-formula-mist">
-            {stamp.toUpperCase()} // ROSTER FROM SUPABASE PLAYERS TABLE
-          </p>
-          {rosterError ? (
-            <p className="mt-2 font-mono text-xs text-amber-200/90">{rosterError}</p>
-          ) : (
-            <p className="mt-2 font-mono text-xs text-formula-mist">{rosterPlayers.length} athletes loaded</p>
-          )}
-        </header>
-
-        <CheckInBookingList
-          sessionTabs={sessionTabs}
-          activeSession={activeSession}
-          onSessionChange={setActiveSession}
-          query={query}
-          onQueryChange={setQuery}
-          bookingRows={bookingRows}
-          roster={rosterPlayers}
-          checkedInIds={checkedInIds}
-          selectedPlayerId={selectedPlayerId}
-          onSelectPlayer={setSelectedPlayerId}
-          onVerifySearch={handleVerifySearch}
-        />
-      </div>
-
-      <div className="flex flex-col gap-6 xl:col-span-4">
-        <ScannerPanel />
-        <FacilityLoadPanel
-          checkedInCount={checkedInIds.size}
-          bookingCount={allTodaysBookings.length}
-          nextBlockLabel={nextBlockLabel}
-          nextBlockBooked={nextBlockBooked}
-          nextBlockCapacity={nextSession?.capacity ?? 22}
-        />
-
-        {!selectedPlayer ? (
-          <Card className="p-6 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center border border-formula-frost/14 bg-formula-paper/[0.06] text-formula-mist">
-              <UserCheck className="h-7 w-7" strokeWidth={1.5} />
-            </div>
-            <p className="mt-4 text-sm font-medium text-formula-paper">Select athlete</p>
-            <p className="mt-1 font-mono text-xs text-formula-mist">
-              List or verify search // detail panel loads here
-            </p>
-          </Card>
-        ) : (
-          <PlayerCheckInDetail
-            player={selectedPlayer}
-            booking={playerBooking}
-            session={playerSession}
-            membership={membership}
-            isCheckedIn={isCheckedIn}
-            onCheckIn={handleCheckIn}
+    <PageContainer fullWidth>
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <div className="flex min-h-[min(70vh,720px)] flex-col gap-8 xl:col-span-8">
+          <PageHeader
+            title="Check-in"
+            subtitle={
+              rosterError
+                ? `${stamp} · roster from Supabase`
+                : `${stamp} · ${rosterPlayers.length} athletes loaded · roster from Supabase`
+            }
+            breadcrumb={[
+              { label: 'Dashboard', href: '/admin/dashboard' },
+              { label: 'Check-in' },
+            ]}
           />
-        )}
+          {rosterError ? <p className="font-mono text-xs text-amber-200/90">{rosterError}</p> : null}
+
+          <CheckInBookingList
+            sessionTabs={sessionTabs}
+            activeSession={activeSession}
+            onSessionChange={setActiveSession}
+            query={query}
+            onQueryChange={setQuery}
+            bookingRows={bookingRows}
+            roster={rosterPlayers}
+            checkedInIds={checkedInIds}
+            selectedPlayerId={selectedPlayerId}
+            onSelectPlayer={setSelectedPlayerId}
+            onVerifySearch={handleVerifySearch}
+          />
+        </div>
+
+        <div className="flex flex-col gap-6 xl:col-span-4">
+          <ScannerPanel />
+          <FacilityLoadPanel
+            checkedInCount={checkedInIds.size}
+            bookingCount={allTodaysBookings.length}
+            nextBlockLabel={nextBlockLabel}
+            nextBlockBooked={nextBlockBooked}
+            nextBlockCapacity={nextSession?.capacity ?? 22}
+          />
+
+          {!selectedPlayer ? (
+            <Card className="border-formula-frost/12 bg-formula-paper/[0.04] p-6 text-center text-formula-paper shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center border border-formula-frost/14 bg-formula-deep/50 text-formula-mist">
+                <UserCheck className="h-7 w-7" strokeWidth={1.5} />
+              </div>
+              <p className="mt-4 text-sm font-medium text-formula-paper">Select athlete</p>
+              <p className="mt-1 font-mono text-xs text-formula-mist">
+                List or verify search // detail panel loads here
+              </p>
+            </Card>
+          ) : (
+            <PlayerCheckInDetail
+              player={selectedPlayer}
+              booking={playerBooking}
+              session={playerSession}
+              membership={membership}
+              isCheckedIn={isCheckedIn}
+              onCheckIn={handleCheckIn}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }

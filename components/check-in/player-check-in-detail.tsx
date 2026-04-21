@@ -37,12 +37,12 @@ export function PlayerCheckInDetail({
   return (
     <div className="mx-auto max-w-lg space-y-4">
       {hasNoBooking && (
-        <div className="border border-warning/30 bg-warning/[0.07] p-4 shadow-lab">
+        <div className="border border-warning/30 bg-warning/[0.07] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]">
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
             <div>
               <p className="text-sm font-semibold text-warning">No booking</p>
-              <p className="mt-0.5 text-xs text-zinc-500">
+              <p className="mt-0.5 text-xs text-formula-frost/75">
                 No booking for today // confirm with athlete before override.
               </p>
             </div>
@@ -50,12 +50,12 @@ export function PlayerCheckInDetail({
         </div>
       )}
       {hasNoSessions && (
-        <div className="border border-error/40 bg-error/[0.08] p-4 shadow-lab">
+        <div className="border border-error/40 bg-error/[0.08] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]">
           <div className="flex items-start gap-3">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-error" />
             <div>
               <p className="text-sm font-semibold text-error">No credits</p>
-              <p className="mt-0.5 text-xs text-zinc-500">
+              <p className="mt-0.5 text-xs text-formula-frost/75">
                 0 sessions remaining // collect payment or renew before check-in.
               </p>
             </div>
@@ -63,7 +63,7 @@ export function PlayerCheckInDetail({
         </div>
       )}
 
-      <Card className="border border-black/10 bg-white p-5">
+      <Card className="border border-formula-frost/12 bg-formula-paper/[0.04] p-5 text-formula-paper shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]">
         <div className="flex items-start gap-4">
           <div
             className={cn(
@@ -75,22 +75,22 @@ export function PlayerCheckInDetail({
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-xl font-bold text-[#1a1a1a]">
+              <h3 className="text-xl font-bold text-formula-paper">
                 {player.firstName} {player.lastName}
               </h3>
               <StatusPill status={player.status} />
             </div>
-            <p className="mt-1 font-mono text-sm text-zinc-500">
+            <p className="mt-1 font-mono text-sm text-formula-frost/80">
               #{player.jerseyNumber} | {player.ageGroup} | {player.position}
             </p>
-            <p className="mt-0.5 font-mono text-xs text-zinc-500">ID {player.id}</p>
+            <p className="mt-0.5 font-mono text-xs text-formula-mist">ID {player.id}</p>
           </div>
         </div>
       </Card>
 
       <div
         className={cn(
-          'flex items-center gap-4 border border-black/10 bg-white p-4 shadow-lab',
+          'flex items-center gap-4 border border-formula-frost/12 bg-formula-paper/[0.04] p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]',
           sessionsLeft === 0 && 'ring-1 ring-error/30',
           sessionsLeft > 0 && sessionsLeft <= 2 && 'ring-1 ring-warning/25'
         )}
@@ -104,15 +104,15 @@ export function PlayerCheckInDetail({
           >
             {sessionsLeft}
           </p>
-          <p className="mt-1 font-mono text-xs text-zinc-500">credits</p>
+          <p className="mt-1 font-mono text-xs text-formula-mist">credits</p>
         </div>
         <div className="min-w-0 flex-1 space-y-1.5">
-          <p className="text-sm font-medium text-[#1a1a1a]">
+          <p className="text-sm font-medium text-formula-paper">
             {membership ? membership.planName : 'No active membership'}
           </p>
           {membership && (
             <>
-              <div className="h-1.5 overflow-hidden bg-zinc-200">
+              <div className="h-1.5 overflow-hidden bg-formula-frost/15">
                 <div
                   className={cn(
                     'h-full',
@@ -126,7 +126,7 @@ export function PlayerCheckInDetail({
                   }}
                 />
               </div>
-              <p className="font-mono text-xs text-zinc-500">
+              <p className="font-mono text-xs text-formula-frost/75">
                 {sessionsLeft} of {membership.sessionsTotal === 'unlimited' ? '∞' : membership.sessionsTotal}{' '}
                 // expires {formatDate(membership.expiryDate)}
               </p>
@@ -136,14 +136,14 @@ export function PlayerCheckInDetail({
       </div>
 
       {session && (
-        <Card className="space-y-3 border border-black/10 bg-white p-4" size="md">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+        <Card className="space-y-3 border border-formula-frost/12 bg-formula-paper/[0.04] p-4 text-formula-paper shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]" size="md">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
             Session // today
           </p>
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">
-              <p className="text-sm font-semibold text-[#1a1a1a]">{session.title}</p>
-              <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-zinc-500">
+              <p className="text-sm font-semibold text-formula-paper">{session.title}</p>
+              <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-formula-frost/75">
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {new Date(session.startTime).toLocaleTimeString('en-US', {
@@ -160,7 +160,7 @@ export function PlayerCheckInDetail({
                 </span>
                 <span>{session.fieldName}</span>
               </div>
-              <p className="font-mono text-xs text-zinc-500">Coach {session.coachName}</p>
+              <p className="font-mono text-xs text-formula-mist">Coach {session.coachName}</p>
             </div>
             <div className="flex flex-col items-end gap-1.5">
               <SessionTypeBadge type={session.sessionType} />
@@ -170,15 +170,15 @@ export function PlayerCheckInDetail({
         </Card>
       )}
 
-      <Card className="border border-black/10 bg-white p-4" size="md">
+      <Card className="border border-formula-frost/12 bg-formula-paper/[0.04] p-4 text-formula-paper shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]" size="md">
         {isCheckedIn ? (
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#005700] bg-[#005700]/10 text-[#005700] shadow-lab">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-success/40 bg-success/10 text-success">
               <CheckCircle2 className="h-5 w-5" />
             </div>
             <div>
               <p className="text-sm font-semibold text-success">Checked in</p>
-              <p className="font-mono text-xs text-zinc-500">
+              <p className="font-mono text-xs text-formula-frost/75">
                 {new Date().toLocaleTimeString('en-US', {
                   hour: 'numeric',
                   minute: '2-digit',
@@ -190,8 +190,8 @@ export function PlayerCheckInDetail({
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 font-mono text-xs text-zinc-500">
-              <Zap className="h-3.5 w-3.5 text-[#f4fe00]" />
+            <div className="flex items-center gap-2 font-mono text-xs text-formula-frost/75">
+              <Zap className="h-3.5 w-3.5 text-formula-volt" />
               <span>Manual check-in // wristband sync pending</span>
             </div>
             <Button
@@ -213,18 +213,18 @@ export function PlayerCheckInDetail({
         )}
       </Card>
 
-      <Card className="space-y-2 border border-black/10 bg-white p-4" size="md">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+      <Card className="space-y-2 border border-formula-frost/12 bg-formula-paper/[0.04] p-4 text-formula-paper shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]" size="md">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
           Attendance
         </p>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-zinc-500">Sessions attended</span>
-          <span className="font-mono font-semibold text-[#1a1a1a]">{player.totalSessionsAttended}</span>
+          <span className="text-formula-frost/75">Sessions attended</span>
+          <span className="font-mono font-semibold text-formula-paper">{player.totalSessionsAttended}</span>
         </div>
         {membership && (
           <div className="flex items-center justify-between text-sm">
-            <span className="text-zinc-500">Used this plan</span>
-            <span className="font-mono font-semibold text-[#1a1a1a]">{membership.sessionsUsed}</span>
+            <span className="text-formula-frost/75">Used this plan</span>
+            <span className="font-mono font-semibold text-formula-paper">{membership.sessionsUsed}</span>
           </div>
         )}
       </Card>

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
 import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
+import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
 
 export type RentalAgreementState = {
   ok: boolean
@@ -21,11 +22,39 @@ function getRequiredString(formData: FormData, key: string): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
+const RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
+
 export async function submitFieldRentalAgreement(
   _prevState: RentalAgreementState = INITIAL_STATE,
   formData: FormData
 ): Promise<RentalAgreementState> {
-  const rentalType = getRequiredString(formData, 'rentalType')
+  const waiverInviteToken = getRequiredString(formData, 'waiverInviteToken')
+  let waiverInviteId: string | null = null
+  let rosterExpected: number | null = null
+  let rosterTokenForRevalidate: string | null = null
+  let rosterInvite: Awaited<ReturnType<typeof getWaiverInviteByToken>> = null
+
+  if (waiverInviteToken) {
+    rosterTokenForRevalidate = waiverInviteToken
+    rosterInvite = await getWaiverInviteByToken(waiverInviteToken)
+    if (!rosterInvite) {
+      return { ok: false, message: 'This roster waiver link is invalid or expired. Ask the organizer for a current link.' }
+    }
+    waiverInviteId = rosterInvite.id
+    rosterExpected = rosterInvite.expected_waiver_count
+    const done = await countWaiversForInviteId(rosterInvite.id)
+    if (done >= rosterInvite.expected_waiver_count) {
+      return {
+        ok: false,
+        message: 'All roster spots for this link are already filled. If you still need to sign, contact the organizer.',
+      }
+    }
+  }
+
+  let rentalType = getRequiredString(formData, 'rentalType')
+  if (rosterInvite?.rental_type && RENTAL_TYPES.has(rosterInvite.rental_type)) {
+    rentalType = rosterInvite.rental_type
+  }
   const participantName = getRequiredString(formData, 'participantName')
   const participantEmail = getRequiredString(formData, 'participantEmail')
   const participantDob = getRequiredString(formData, 'participantDob')
@@ -35,7 +64,13 @@ export async function submitFieldRentalAgreement(
   const rulesAccepted = formData.get('rulesAccepted') === 'on'
 
   const signatureName = getRequiredString(formData, 'signatureName')
-  if (!rentalType || !participantName || !participantEmail || !participantDob || !signatureDataUrl || !signatureName) {
+  if (!rentalType || !RENTAL_TYPES.has(rentalType)) {
+    return {
+      ok: false,
+      message: 'Choose a valid rental type (or use the link your organizer sent, which may lock the type).',
+    }
+  }
+  if (!participantName || !participantEmail || !participantDob || !signatureDataUrl || !signatureName) {
     return {
       ok: false,
       message: 'Missing required fields. Name, email, date of birth, printed signature name, and signature are required.',
@@ -51,7 +86,9 @@ export async function submitFieldRentalAgreement(
 
   const participantCountRaw = getRequiredString(formData, 'participantCount')
   let participant_count: number | null = null
-  if (participantCountRaw) {
+  if (waiverInviteToken) {
+    participant_count = 1
+  } else if (participantCountRaw) {
     const n = parseInt(participantCountRaw, 10)
     if (Number.isFinite(n) && n > 0) participant_count = n
   }
@@ -71,6 +108,7 @@ export async function submitFieldRentalAgreement(
     agreement_accepted: agreementAccepted,
     risk_accepted: riskAccepted,
     rules_accepted: rulesAccepted,
+    waiver_invite_id: waiverInviteId,
   })
 
   if (!saved.ok) {
@@ -78,6 +116,14 @@ export async function submitFieldRentalAgreement(
   }
 
   revalidatePath('/admin/rentals')
+  if (rosterTokenForRevalidate) {
+    revalidatePath(`/rentals/waiver/${rosterTokenForRevalidate}`)
+  }
+
+  const rosterLine =
+    waiverInviteId && rosterExpected != null
+      ? `<li><strong>Roster link</strong>: invite in use · expected ${rosterExpected} waivers (counts in admin Rentals)</li>`
+      : ''
 
   await sendAdminNotification({
     subject: `[Formula] Field rental agreement · ${participantName}`,
@@ -91,6 +137,7 @@ export async function submitFieldRentalAgreement(
         <li><strong>DOB</strong>: ${escapeHtml(participantDob)}</li>
         <li><strong>Printed signer</strong>: ${escapeHtml(signatureName)}</li>
         <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '—'}</li>
+        ${rosterLine}
       </ul>
       <p>Signature image is stored securely with this waiver for staff review.</p>
     `,
@@ -99,6 +146,8 @@ export async function submitFieldRentalAgreement(
 
   return {
     ok: true,
-    message: 'Agreement saved.',
+    message: waiverInviteId
+      ? 'Waiver saved. The roster count updates on this page — share the same link with anyone who has not signed yet.'
+      : 'Agreement saved.',
   }
 }

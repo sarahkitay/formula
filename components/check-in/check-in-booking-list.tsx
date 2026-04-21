@@ -31,9 +31,9 @@ function BookingRow({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-3 border border-black/10 bg-white px-3 py-2.5 text-left shadow-lab transition-all duration-200',
-        'hover:border-black/20 hover:shadow-lab-hover',
-        isSelected && 'border-[#005700]/40 ring-1 ring-[#005700]/25'
+        'flex w-full items-center gap-3 border border-formula-frost/12 bg-formula-paper/[0.03] px-3 py-2.5 text-left shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.03)] transition-all duration-200',
+        'hover:border-formula-volt/30 hover:bg-formula-paper/[0.06]',
+        isSelected && 'border-formula-volt/40 ring-1 ring-formula-volt/25'
       )}
     >
       <div
@@ -46,13 +46,13 @@ function BookingRow({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center gap-1.5">
-          <span className="truncate text-sm font-medium text-[#1a1a1a]">
+          <span className="truncate text-sm font-medium text-formula-paper">
             {player.firstName} {player.lastName}
           </span>
-          <span className="shrink-0 font-mono text-xs text-zinc-500">{player.ageGroup}</span>
+          <span className="shrink-0 font-mono text-xs text-formula-mist">{player.ageGroup}</span>
         </div>
         {session && (
-          <p className="truncate font-mono text-[11px] text-zinc-500">
+          <p className="truncate font-mono text-[11px] text-formula-frost/75">
             {new Date(session.startTime).toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
@@ -65,7 +65,7 @@ function BookingRow({
       {isCheckedIn ? (
         <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
       ) : (
-        <ChevronRight className="h-4 w-4 shrink-0 text-zinc-400" />
+        <ChevronRight className="h-4 w-4 shrink-0 text-formula-mist" />
       )}
     </button>
   )
@@ -97,20 +97,20 @@ export function CheckInBookingList({
   onVerifySearch: () => void
 }) {
   return (
-    <div className="flex min-h-0 flex-1 flex-col border border-black/10 bg-white">
-      <div className="border-b border-black/10 p-4">
+    <div className="flex min-h-0 flex-1 flex-col border border-formula-frost/12 bg-formula-paper/[0.04] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]">
+      <div className="border-b border-formula-frost/12 p-4">
         <div className="mb-4 flex flex-wrap gap-3">
           <input
             type="text"
             value={query}
             onChange={e => onQueryChange(e.target.value)}
             placeholder="SEARCH BY PLAYER NAME OR ID…"
-            className="min-w-[200px] flex-1 border border-black/15 bg-[#f9f9f9] px-3 py-2.5 font-mono text-sm text-[#1a1a1a] outline-none transition-colors focus:border-[#005700]"
+            className="min-w-[200px] flex-1 border border-formula-frost/16 bg-formula-deep/40 px-3 py-2.5 font-mono text-sm text-formula-paper placeholder:text-formula-mist/60 outline-none transition-colors focus:border-formula-volt/50"
           />
           <button
             type="button"
             onClick={onVerifySearch}
-            className="border border-black bg-[#f4fe00] px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.15em] text-black shadow-lab transition-colors hover:bg-white"
+            className="border border-formula-volt/50 bg-formula-volt px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-[0.15em] text-formula-base transition-[filter,background-color] hover:brightness-105"
           >
             Verify
           </button>

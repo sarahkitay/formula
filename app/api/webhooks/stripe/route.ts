@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { sendStripeCheckoutPaidAdminEmail } from '@/lib/email/stripe-checkout-paid-email'
 import { confirmSlotFromPaidCheckout } from '@/lib/rentals/rental-slots'
+import { ensureWaiverInviteForPaidFieldRental } from '@/lib/rentals/waiver-invites-server'
 import { recordAssessmentBookingFromCheckout } from '@/lib/stripe/record-assessment-booking'
 import { recordPartyBookingFromCheckout } from '@/lib/stripe/record-party-booking'
 import { recordCheckoutSessionCompleted } from '@/lib/stripe/record-purchase'
@@ -48,6 +49,11 @@ export async function POST(req: Request) {
           console.error('[stripe webhook] party booking insert:', e)
         }
         await confirmSlotFromPaidCheckout(session)
+        try {
+          await ensureWaiverInviteForPaidFieldRental(session)
+        } catch (e) {
+          console.error('[stripe webhook] waiver invite:', e)
+        }
         if (session.metadata?.type !== 'party-booking-1k') {
           await sendStripeCheckoutPaidAdminEmail(session)
         }

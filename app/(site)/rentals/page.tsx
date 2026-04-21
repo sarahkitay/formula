@@ -37,7 +37,9 @@ export default function RentalsPage() {
 
   <h2>Published hourly rate</h2>
   <p>
-  <strong className="text-zinc-200">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> for all rental windows. No separate peak or non-peak pricing.
+  <strong className="text-zinc-200">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> for all rental windows (book in 30-minute steps; deposit scales with
+  length, e.g. 90 min = ${(FIELD_RENTAL_PUBLISHED_RATES.perHourUsd * 1.5).toFixed(0)}, 2 hr = ${(FIELD_RENTAL_PUBLISHED_RATES.perHourUsd * 2).toFixed(0)}). No
+  separate peak or non-peak pricing.
   </p>
   <p>
   {FIELD_RENTAL_PUBLISHED_RATES.packages}

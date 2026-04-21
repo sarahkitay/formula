@@ -6,10 +6,12 @@ import { AssessmentMonthCalendar } from '@/components/marketing/assessment-month
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
 import { FieldRentalAgreementForm } from '@/components/marketing/field-rental-agreement-form'
 import { FieldRentalBookingFlow } from '@/components/marketing/field-rental-booking-flow'
+import { PartyBookingFlow } from '@/components/marketing/party-booking-flow'
 import { YouthBlocksWeekPanel } from '@/components/marketing/youth-blocks-week-panel'
 import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
 import { ASSESSMENT_JUNE_PREBOOK_MONTH, ASSESSMENT_JUNE_PREBOOK_YEAR } from '@/lib/assessment/june-2026-slots'
 import { BOOKING_HUB_DIRECTORY_ID, MARKETING_HREF } from '@/lib/marketing/nav'
+import { PARTIES_PRICING_STATUS } from '@/lib/marketing/public-pricing'
 import { cn } from '@/lib/utils'
 
 type Slot = {
@@ -94,28 +96,29 @@ export function BookAssessmentClient({
     billingName.length > 1 &&
     billingEmail.includes('@')
 
-  const bookingDirectoryLinks = [
+  const bookingDirectoryLinks: { href: string; label: string }[] = [
     ...(isPortal
-      ? [{ href: '#booking-account', label: 'Account' as const }]
-      : [{ href: '#booking-contact', label: 'Guardian contact' as const }]),
-    { href: '#skills-check', label: 'June pre-book' as const },
-    { href: '#youth-training-blocks', label: 'Youth training blocks' as const },
-    { href: '#field-rental-on-hub', label: 'Field rental' as const },
-    { href: '#participant-waiver', label: 'Rental agreement & waiver' as const },
+      ? [{ href: '#booking-account', label: 'Account' }]
+      : [{ href: '#booking-contact', label: 'Guardian contact' }]),
+    { href: '#skills-check', label: 'June pre-book' },
+    { href: '#youth-training-blocks', label: 'Youth training blocks' },
+    { href: '#field-rental-on-hub', label: 'Field rental' },
+    { href: '#birthday-party-booking', label: 'Birthday party' },
+    { href: '#participant-waiver', label: 'Rental waiver' },
   ]
 
   return (
-    <div className="not-prose space-y-14">
+    <div className="not-prose space-y-16 md:space-y-20">
       <p className="max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
         {isPortal ? (
           <>
-            Use the calendar to pre-book a June Skills Check window, book field time with deposit + agreement, and preview youth training blocks. Receipts use the
-            email on your portal account.
+            Use the calendar to pre-book a June Skills Check window, preview youth blocks, book field time or a birthday party deposit, and sign the rental
+            waiver when needed. Receipts use the email on your portal account.
           </>
         ) : (
           <>
-            One hub: Skills Check pre-book for June, youth block preview (package required to finalize in portal), and field rentals with the same anti-overlap
-            calendar rules. After checkout you can create a parent login for athlete names.
+            One hub: June Skills Check pre-book, youth block preview (package required to finalize in portal), field rentals, hosted birthday party deposits, and
+            the rental waiver when you need it on file. After checkout you can create a parent login for athlete names.
           </>
         )}
       </p>
@@ -123,31 +126,38 @@ export function BookAssessmentClient({
       <nav
         id={BOOKING_HUB_DIRECTORY_ID}
         aria-label="Jump to booking type"
-        className="scroll-mt-24 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-4 md:p-5"
+        className="scroll-mt-28 sticky top-14 z-40 rounded-sm border border-formula-frost/14 bg-formula-base/90 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-md md:top-16 md:p-6"
       >
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Book by type</p>
-        <p className="mt-2 max-w-2xl text-[12px] leading-relaxed text-formula-frost/70">
-          Jump to the section you need — June Skills Check pre-book, youth block preview, field rental hold, or the rental agreement.
+        <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-formula-frost/75">
+          Jump to a section — each block below lines up with these shortcuts. Stays pinned while you scroll on larger screens.
         </p>
-        <ul className="mt-4 flex flex-wrap gap-2">
+        <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {bookingDirectoryLinks.map((item) => (
-            <li key={item.href}>
+            <li key={item.href} className="min-w-0">
               <a
                 href={item.href}
-                className="inline-flex border border-formula-frost/18 bg-formula-deep/50 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-paper transition-colors hover:border-formula-volt/40 hover:text-formula-volt"
+                className="flex min-h-[3rem] w-full items-center justify-center text-balance border border-formula-frost/18 bg-formula-deep/55 px-4 py-3 text-center font-mono text-[10px] font-semibold uppercase leading-snug tracking-[0.1em] text-formula-paper transition-colors hover:border-formula-volt/45 hover:text-formula-volt focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-formula-volt/70 sm:min-h-[3.25rem] sm:text-[11px] sm:tracking-[0.12em]"
               >
                 {item.label}
               </a>
             </li>
           ))}
         </ul>
+        <p className="mt-4 font-mono text-[10px] leading-relaxed text-formula-frost/55">
+          Full party story + policies:{' '}
+          <Link href={MARKETING_HREF.parties} className="text-formula-volt underline-offset-2 hover:underline">
+            Birthday parties page
+          </Link>
+          .
+        </p>
       </nav>
 
       {isPortal ? (
         <section
           id="booking-account"
           aria-labelledby="ba-account-heading"
-          className="scroll-mt-24 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.04] p-4"
+          className="scroll-mt-28 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.04] p-5 md:p-6"
         >
           <h2 id="ba-account-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
             Your account
@@ -156,11 +166,11 @@ export function BookAssessmentClient({
           <p className="mt-1 text-[13px] text-formula-frost/75">{billingEmail}</p>
         </section>
       ) : (
-        <section id="booking-contact" aria-labelledby="ba-contact-heading" className="scroll-mt-24">
+        <section id="booking-contact" aria-labelledby="ba-contact-heading" className="scroll-mt-28 space-y-4">
           <h2 id="ba-contact-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
             Guardian contact
           </h2>
-          <div className="mt-4 grid max-w-xl gap-4 sm:grid-cols-2">
+          <div className="grid max-w-xl gap-5 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <label htmlFor="ba-parent-name" className="block font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">
                 Full name
@@ -192,7 +202,7 @@ export function BookAssessmentClient({
         </section>
       )}
 
-      <section id="skills-check" className="scroll-mt-24 space-y-4" aria-labelledby="ba-slots-heading">
+      <section id="skills-check" className="scroll-mt-28 space-y-5" aria-labelledby="ba-slots-heading">
         <h2 id="ba-slots-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
           Skills Check — June pre-book
         </h2>
@@ -223,7 +233,7 @@ export function BookAssessmentClient({
       </section>
 
       {selected && selected.available > 0 ? (
-        <section className="border border-formula-frost/14 bg-formula-paper/[0.03] p-5 md:p-6" aria-labelledby="ba-kids-heading">
+        <section className="space-y-3 border border-formula-frost/14 bg-formula-paper/[0.03] p-5 md:p-6" aria-labelledby="ba-kids-heading">
           <h2 id="ba-kids-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
             Athletes this booking
           </h2>
@@ -255,7 +265,7 @@ export function BookAssessmentClient({
       ) : null}
 
       {canPay ? (
-        <section className="border border-formula-frost/14 bg-formula-deep/60 p-5 md:p-6" aria-labelledby="ba-pay-heading">
+        <section className="space-y-3 border border-formula-frost/14 bg-formula-deep/60 p-5 md:p-6" aria-labelledby="ba-pay-heading">
           <h2 id="ba-pay-heading" className="text-lg font-semibold text-formula-paper">
             Pay to hold this window
           </h2>
@@ -285,6 +295,35 @@ export function BookAssessmentClient({
       <div className="marketing-section-divider" aria-hidden />
 
       <FieldRentalBookingFlow sectionId="field-rental-on-hub" />
+
+      <div className="marketing-section-divider" aria-hidden />
+
+      <section
+        id="birthday-party-booking"
+        className="scroll-mt-28 space-y-5 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-5 md:p-7"
+        aria-labelledby="ba-party-heading"
+      >
+        <div className="space-y-2">
+          <h2 id="ba-party-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
+            Birthday party — deposit
+          </h2>
+          <p className="max-w-2xl text-[13px] leading-relaxed text-formula-frost/75">
+            Hosted parties use the same ops discipline as training. <strong className="font-medium text-formula-paper">{PARTIES_PRICING_STATUS}</strong> Secure
+            your date with the deposit below; field window details help match turf or indoor inventory.
+          </p>
+          <p className="text-[12px] text-formula-frost/60">
+            Prefer the full marketing page?{' '}
+            <Link href={MARKETING_HREF.parties} className="text-formula-volt underline-offset-2 hover:underline">
+              Birthday parties
+            </Link>
+          </p>
+        </div>
+        <div className="not-prose mt-2 border-t border-formula-frost/10 pt-6">
+          <PartyBookingFlow />
+        </div>
+      </section>
+
+      <div className="marketing-section-divider" aria-hidden />
 
       <FieldRentalAgreementForm />
 

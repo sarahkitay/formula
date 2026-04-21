@@ -1,0 +1,5 @@
+@media print {
+  .waiver-no-print {
+    display: none !important;
+  }
+}

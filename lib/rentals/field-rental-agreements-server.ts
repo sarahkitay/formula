@@ -1,4 +1,5 @@
 import { getServiceSupabase } from '@/lib/supabase/service'
+import { isUuid } from '@/lib/rentals/field-rental-waiver-labels'
 
 export type FieldRentalAgreementInsert = {
   rental_type: string
@@ -16,6 +17,8 @@ export type FieldRentalAgreementInsert = {
   risk_accepted: boolean
   rules_accepted: boolean
   stripe_checkout_session_id?: string | null
+  /** When set, this waiver counts toward roster progress for that invite link. */
+  waiver_invite_id?: string | null
 }
 
 export type FieldRentalAgreementRow = {
@@ -31,6 +34,16 @@ export type FieldRentalAgreementRow = {
   organization_name: string | null
   signature_name: string
   notes: string | null
+}
+
+/** Full row for admin detail + PDF (includes signature image data URL). */
+export type FieldRentalAgreementFull = FieldRentalAgreementRow & {
+  signature_data_url: string
+  agreement_accepted: boolean
+  risk_accepted: boolean
+  rules_accepted: boolean
+  stripe_checkout_session_id: string | null
+  source: string
 }
 
 export async function insertFieldRentalAgreement(
@@ -59,6 +72,7 @@ export async function insertFieldRentalAgreement(
       risk_accepted: row.risk_accepted,
       rules_accepted: row.rules_accepted,
       stripe_checkout_session_id: row.stripe_checkout_session_id ?? null,
+      waiver_invite_id: row.waiver_invite_id ?? null,
     })
     .select('id')
     .single()
@@ -87,4 +101,19 @@ export async function listFieldRentalAgreementsRecent(limit = 100): Promise<Fiel
     return []
   }
   return (data ?? []) as FieldRentalAgreementRow[]
+}
+
+export async function getFieldRentalAgreementById(id: string): Promise<FieldRentalAgreementFull | null> {
+  if (!isUuid(id)) return null
+  const supabase = getServiceSupabase()
+  if (!supabase) return null
+
+  const { data, error } = await supabase.from('field_rental_agreements').select('*').eq('id', id).maybeSingle()
+
+  if (error) {
+    console.warn('[field-rental-agreements] get by id:', error.message)
+    return null
+  }
+  if (!data) return null
+  return data as FieldRentalAgreementFull
 }

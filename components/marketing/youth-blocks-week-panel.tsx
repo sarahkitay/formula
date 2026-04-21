@@ -137,7 +137,7 @@ export function YouthBlocksWeekPanel() {
   }
 
   return (
-    <section id="youth-training-blocks" className="space-y-5 scroll-mt-24" aria-labelledby="youth-blocks-heading">
+    <section id="youth-training-blocks" className="space-y-6 scroll-mt-28" aria-labelledby="youth-blocks-heading">
       <div className="rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-5 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)]">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h3 id="youth-blocks-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">

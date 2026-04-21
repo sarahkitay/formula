@@ -11,8 +11,10 @@ import type { CheckoutType } from '@/lib/stripe/checkout-types'
 export type LineItemsOptions = {
   /** Skills Check: one line item per athlete (quantity 1–4). */
   assessmentQuantity?: number
-  /** Field rental: number of weekly sessions at published per-session price (default 1). */
+  /** Field rental: number of weekly sessions (quantity). */
   fieldRentalSessionWeeks?: number
+  /** Field rental: Stripe unit_amount (cents) for one session deposit (duration-priced on server). */
+  fieldRentalUnitAmountCents?: number
 }
 
 /**
@@ -96,7 +98,10 @@ export function lineItemsForCheckoutType(
 
   if (type === 'field-rental-booking') {
     const weeks = Math.min(52, Math.max(1, Math.floor(options?.fieldRentalSessionWeeks ?? 1)))
-    const unitCents = Math.round(FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * 100)
+    const unitCents = Math.round(
+      Math.max(1, options?.fieldRentalUnitAmountCents ?? FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * 100)
+    )
+    const perSessionUsd = unitCents / 100
     return [
       {
         quantity: weeks,
@@ -111,7 +116,7 @@ export function lineItemsForCheckoutType(
             description:
               weeks === 1
                 ? FIELD_RENTAL_BOOKING_CHECKOUT.summary
-                : `${weeks} sessions (same field & time window · chosen weekly dates) at $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} each. Non-refundable booking hold; staff may reconcile any balance vs published rates.`,
+                : `${weeks} weekly session(s), same field & window · $${perSessionUsd.toFixed(0)} deposit per session (30 min increments at published hourly rate). Non-refundable booking hold; staff may reconcile any balance vs published rates.`,
           },
           unit_amount: unitCents,
         },

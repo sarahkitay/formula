@@ -6,7 +6,7 @@ import { FORMULA_SKILLS_CHECK } from '@/lib/marketing/public-pricing'
 export const metadata: Metadata = {
   title: 'Book an assessment',
   description:
-    'Book a Formula Skills Check online: choose an open window, number of athletes, and pay securely. Optional parent portal signup after checkout.',
+    'Booking hub: Formula Skills Check (June pre-book), youth block preview, field rental holds, birthday party deposit, and rental waiver — pay securely; optional parent portal after checkout.',
 }
 
 export default function BookAssessmentPage() {

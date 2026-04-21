@@ -53,19 +53,31 @@ export const YOUTH_MEMBERSHIP_PRICING = {
   ] as const,
 } as const
 
-/** Flat Stripe Checkout amount for a standard field rental booking hold (public site flow). */
+/** Field rental checkout uses published hourly rate × (duration in hours); increments are 30 minutes ($90 per half hour at $180/hr). */
 export const FIELD_RENTAL_BOOKING_CHECKOUT = {
+  /** Kept for backward-compat labels; deposit is derived from duration via `fieldRentalDepositUsd`. */
   priceUsd: 180,
   productName: 'Field rental booking deposit',
   summary:
-    'Non-refundable booking deposit for a classified field rental window. Staff confirms inventory and may apply published hourly or package rates to any balance.',
+    'Non-refundable booking deposit for a classified field rental window. Charged in 30-minute increments at the published hourly rate (e.g. 1 hr = $180, 90 min = $270, 2 hr = $360). Staff may reconcile any balance vs package agreements.',
 } as const
 
 /** Published field rental hourly rate (same for all windows until ops publishes a change). */
 export const FIELD_RENTAL_PUBLISHED_RATES = {
   perHourUsd: 180,
+  /** Billable step on the public booking flow (minutes). */
+  incrementMinutes: 30,
   packages: 'Package pricing is available with a 3-month minimum commitment.',
 } as const
+
+/** Deposit USD for one rental session of `durationMinutes` (must be a multiple of 30). */
+export function fieldRentalDepositUsd(
+  durationMinutes: number,
+  perHourUsd: number = FIELD_RENTAL_PUBLISHED_RATES.perHourUsd
+): number {
+  if (!Number.isFinite(durationMinutes) || durationMinutes <= 0 || durationMinutes % 30 !== 0) return 0
+  return (durationMinutes / 60) * perHourUsd
+}
 
 /** Stripe Checkout: hosted party deposit (public parties page). */
 export const PARTY_BOOKING_1K_CHECKOUT = {

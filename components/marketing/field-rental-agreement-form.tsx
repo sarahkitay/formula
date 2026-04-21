@@ -1,7 +1,8 @@
 'use client'
 
-import { useActionState, useMemo, useRef, useState } from 'react'
+import { useActionState, useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { submitFieldRentalAgreement } from '@/app/(site)/rentals/actions'
 
 const INITIAL_STATE = { ok: false, message: '' }
@@ -20,7 +21,20 @@ function pointerToCanvasCoords(
   }
 }
 
-export function FieldRentalAgreementForm() {
+export type FieldRentalRosterInvite = {
+  token: string
+  expected: number
+  completed: number
+  /** When set, rental type is fixed for this booking and hidden on the form. */
+  lockedRentalType: 'club_team_practice' | 'private_semi_private' | 'general_pickup' | null
+}
+
+type FormProps = {
+  rosterInvite?: FieldRentalRosterInvite
+}
+
+export function FieldRentalAgreementForm({ rosterInvite }: FormProps) {
+  const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [signatureDataUrl, setSignatureDataUrl] = useState('')
@@ -28,6 +42,10 @@ export function FieldRentalAgreementForm() {
   const [state, action, pending] = useActionState(submitFieldRentalAgreement, INITIAL_STATE)
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), [])
+
+  useEffect(() => {
+    if (state.ok) router.refresh()
+  }, [state.ok, router])
 
   const drawPoint = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
@@ -84,15 +102,25 @@ export function FieldRentalAgreementForm() {
   return (
     <section
       id="participant-waiver"
-      className="not-prose my-14 scroll-mt-24 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8"
+      className="not-prose my-14 scroll-mt-28 border border-formula-frost/12 bg-formula-base/70 p-6 md:p-9"
     >
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Field rental agreement</p>
       <h3 className="mt-4 font-mono text-xl font-semibold tracking-tight text-formula-paper md:text-2xl">
         Field Rental Agreement and Facility Use Waiver
       </h3>
       <p className="mt-3 max-w-3xl text-sm leading-relaxed text-formula-mist">
-        Required per participant: name, email, date of birth, and signed waiver before field access. Minors: parent or legal guardian completes the
-        waiver. Submitting sends a copy to our team and saves the waiver for staff review. Use the field rental checkout when you are also placing a paid hold.
+        {rosterInvite ? (
+          <>
+            You are signing for <strong className="text-formula-paper">one participant</strong> on this roster link. Each person should submit their own
+            waiver using the same link until the booking is complete. Minors: a parent or legal guardian completes the waiver.
+          </>
+        ) : (
+          <>
+            Required per participant: name, email, date of birth, and signed waiver before field access. Minors: parent or legal guardian completes the
+            waiver. Submitting sends a copy to our team and saves the waiver for staff review. Use the field rental checkout when you are also placing a paid
+            hold.
+          </>
+        )}
       </p>
 
       <div className="mt-8 space-y-4 border border-formula-frost/10 bg-formula-paper/[0.02] p-4 text-sm leading-relaxed text-formula-mist md:p-5">
@@ -116,35 +144,46 @@ export function FieldRentalAgreementForm() {
 
       <form action={action} className="mt-8 grid gap-5 md:grid-cols-2">
         <input type="hidden" name="signatureDataUrl" value={signatureDataUrl} />
+        {rosterInvite ? <input type="hidden" name="waiverInviteToken" value={rosterInvite.token} /> : null}
+        {rosterInvite ? <input type="hidden" name="participantCount" value={1} /> : null}
+        {rosterInvite?.lockedRentalType ? (
+          <input type="hidden" name="rentalType" value={rosterInvite.lockedRentalType} />
+        ) : null}
 
-        <label className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Rental type *</span>
-          <select
-            name="rentalType"
-            required
-            className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-            defaultValue=""
+        {rosterInvite?.lockedRentalType ? null : (
+          <label
+            className={`flex flex-col gap-2${rosterInvite && !rosterInvite.lockedRentalType ? ' md:col-span-2' : ''}`}
           >
-            <option value="" disabled>
-              Select rental type
-            </option>
-            <option value="club_team_practice">Club / Team Practice</option>
-            <option value="private_semi_private">Private / Semi-Private Training</option>
-            <option value="general_pickup">General Use / Pick-Up Play</option>
-          </select>
-        </label>
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Rental type *</span>
+            <select
+              name="rentalType"
+              required
+              className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Select rental type
+              </option>
+              <option value="club_team_practice">Club / Team Practice</option>
+              <option value="private_semi_private">Private / Semi-Private Training</option>
+              <option value="general_pickup">General Use / Pick-Up Play</option>
+            </select>
+          </label>
+        )}
 
-        <label className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Participant count *</span>
-          <input
-            name="participantCount"
-            required
-            type="number"
-            min={1}
-            className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-            placeholder="e.g. 12"
-          />
-        </label>
+        {rosterInvite ? null : (
+          <label className="flex flex-col gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Participant count *</span>
+            <input
+              name="participantCount"
+              required
+              type="number"
+              min={1}
+              className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+              placeholder="e.g. 12"
+            />
+          </label>
+        )}
 
         <label className="flex flex-col gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Participant name *</span>
