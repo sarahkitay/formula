@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
 import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
+import { PARTICIPANT_SELF_WAIVER_RENTAL_TYPE } from '@/lib/rentals/field-rental-waiver-labels'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
 
 export type RentalAgreementState = {
@@ -22,13 +23,17 @@ function getRequiredString(formData: FormData, key: string): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
-const RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
+/** Coach / renter booking waiver — must match form values. */
+const COACH_BOOKING_RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
 
 export async function submitFieldRentalAgreement(
   _prevState: RentalAgreementState = INITIAL_STATE,
   formData: FormData
 ): Promise<RentalAgreementState> {
   const waiverInviteToken = getRequiredString(formData, 'waiverInviteToken')
+  const waiverFormRole = getRequiredString(formData, 'waiverFormRole')
+  const isCoachBookingWaiver = waiverFormRole === 'coach'
+
   let waiverInviteId: string | null = null
   let rosterExpected: number | null = null
   let rosterTokenForRevalidate: string | null = null
@@ -51,10 +56,33 @@ export async function submitFieldRentalAgreement(
     }
   }
 
-  let rentalType = getRequiredString(formData, 'rentalType')
-  if (rosterInvite?.rental_type && RENTAL_TYPES.has(rosterInvite.rental_type)) {
-    rentalType = rosterInvite.rental_type
+  let rentalType: string
+  let participant_count: number | null
+
+  if (waiverInviteToken && rosterInvite) {
+    if (rosterInvite.rental_type && COACH_BOOKING_RENTAL_TYPES.has(rosterInvite.rental_type)) {
+      rentalType = rosterInvite.rental_type
+    } else {
+      rentalType = PARTICIPANT_SELF_WAIVER_RENTAL_TYPE
+    }
+    participant_count = 1
+  } else if (isCoachBookingWaiver) {
+    const rt = getRequiredString(formData, 'rentalType')
+    if (!rt || !COACH_BOOKING_RENTAL_TYPES.has(rt)) {
+      return { ok: false, message: 'Choose rental type and headcount for this booking waiver.' }
+    }
+    rentalType = rt
+    const participantCountRaw = getRequiredString(formData, 'participantCount')
+    const n = participantCountRaw ? parseInt(participantCountRaw, 10) : NaN
+    if (!Number.isFinite(n) || n < 1 || n > 500) {
+      return { ok: false, message: 'Enter participant count for this booking (1–500).' }
+    }
+    participant_count = n
+  } else {
+    rentalType = PARTICIPANT_SELF_WAIVER_RENTAL_TYPE
+    participant_count = null
   }
+
   const participantName = getRequiredString(formData, 'participantName')
   const participantEmail = getRequiredString(formData, 'participantEmail')
   const participantDob = getRequiredString(formData, 'participantDob')
@@ -64,12 +92,6 @@ export async function submitFieldRentalAgreement(
   const rulesAccepted = formData.get('rulesAccepted') === 'on'
 
   const signatureName = getRequiredString(formData, 'signatureName')
-  if (!rentalType || !RENTAL_TYPES.has(rentalType)) {
-    return {
-      ok: false,
-      message: 'Choose a valid rental type (or use the link your organizer sent, which may lock the type).',
-    }
-  }
   if (!participantName || !participantEmail || !participantDob || !signatureDataUrl || !signatureName) {
     return {
       ok: false,
@@ -82,15 +104,6 @@ export async function submitFieldRentalAgreement(
       ok: false,
       message: 'Please accept all required agreement statements before submitting.',
     }
-  }
-
-  const participantCountRaw = getRequiredString(formData, 'participantCount')
-  let participant_count: number | null = null
-  if (waiverInviteToken) {
-    participant_count = 1
-  } else if (participantCountRaw) {
-    const n = parseInt(participantCountRaw, 10)
-    if (Number.isFinite(n) && n > 0) participant_count = n
   }
 
   const saved = await insertFieldRentalAgreement({

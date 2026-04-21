@@ -26,6 +26,13 @@ export const coachNav: NavItem[] = [
   gridStatus: 'active',
   },
   {
+    label: 'Field rental waiver',
+    href: '/coach/field-rental-waiver',
+    icon: 'FileText',
+    description: 'Booking type + headcount (not on public roster links)',
+    gridStatus: 'neutral',
+  },
+  {
   label: 'Youth block',
   href: '/coach/block',
   icon: 'Timer',

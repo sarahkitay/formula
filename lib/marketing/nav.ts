@@ -1,7 +1,5 @@
 /** Public marketing site navigation - URLs are stable for SEO and deep links. */
 
-import { isEventsHubPublished } from '@/lib/marketing/events-public'
-
 /** Element `id` on the booking hub + hash for deep links (`/book-assessment#…`). */
 export const BOOKING_HUB_DIRECTORY_ID = 'booking-hub-directory' as const
 
@@ -25,7 +23,7 @@ export const MARKETING_HREF = {
   terms: '/terms',
   /** Public booking hub path only (compose hashes yourself, e.g. field rental). */
   bookAssessment: '/book-assessment',
-  /** Booking hub “Book by type” directory — public. */
+  /** Booking hub directory — public. */
   bookAssessmentDirectory: `/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
   /** Same directory on the parent portal hub. */
   parentBookAssessmentDirectory: `/parent/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
@@ -41,7 +39,7 @@ export const HEADER_MAIN: { label: string; href: string }[] = [
   { label: 'Membership', href: MARKETING_HREF.youthMembership },
   { label: 'The Formula', href: MARKETING_HREF.fpi },
   { label: 'Facility', href: MARKETING_HREF.facility },
-  { label: 'Field rentals', href: MARKETING_HREF.rentals },
+  { label: 'Events', href: MARKETING_HREF.events },
   { label: 'Assessments', href: MARKETING_HREF.assessment },
 ]
 
@@ -51,24 +49,20 @@ export const HEADER_MORE: { label: string; href: string }[] = [
   { label: 'Clinics', href: MARKETING_HREF.clinics },
   { label: 'Camps', href: MARKETING_HREF.camps },
   { label: 'Adults', href: MARKETING_HREF.adults },
-  { label: 'Events', href: MARKETING_HREF.events },
   { label: 'Parties', href: MARKETING_HREF.parties },
   { label: 'Footbot', href: MARKETING_HREF.footbot },
   { label: 'Tournaments', href: MARKETING_HREF.tournaments },
 ]
 
-/** “More” links with /events hidden until `SUMMER_EVENT_SECTIONS` has content. */
 export function getHeaderMoreNav(): { label: string; href: string }[] {
-  return HEADER_MORE.filter(item => item.href !== MARKETING_HREF.events || isEventsHubPublished())
+  return [...HEADER_MORE]
 }
 
-/** Main strip + optional Events when the hub is published (matches footer visibility). */
 export function getSiteHeaderPrimaryNav(): { label: string; href: string }[] {
-  if (!isEventsHubPublished()) return [...HEADER_MAIN]
-  return [...HEADER_MAIN, { label: 'Events', href: MARKETING_HREF.events }]
+  return [...HEADER_MAIN]
 }
 
-/** Full list for footer / sitemap strip (respects events hub gate). */
+/** Full list for footer / sitemap strip. */
 export function getPrimaryNav(): { label: string; href: string }[] {
   return [...HEADER_MAIN, ...getHeaderMoreNav()]
 }

@@ -29,7 +29,8 @@ export default function TournamentsPage() {
   Proposed dates, ages, field needs - we reply with feasibility + package fit.
   </p>
   <p>
-  Rentals context: <Link href={MARKETING_HREF.rentals}>Structured rentals</Link>. Facility: <Link href={MARKETING_HREF.facility}>Asset model</Link>.
+  Inquire via <Link href={`${MARKETING_HREF.events}#event-request`}>Events</Link>. Field inventory: <Link href={MARKETING_HREF.rentals}>Rentals</Link>.{' '}
+  <Link href={MARKETING_HREF.facility}>Facility</Link>.
   </p>
   </MarketingInnerPage>
   )

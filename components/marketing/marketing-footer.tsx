@@ -14,15 +14,15 @@ const COLS: { title: string; links: { label: string; href: string }[] }[] = [
   ],
   },
   {
-  title: 'Facility & events',
-  links: [
-  { label: 'Facility', href: MARKETING_HREF.facility },
-  { label: 'Field rentals', href: MARKETING_HREF.rentals },
-  { label: 'Birthday parties', href: MARKETING_HREF.parties },
-  { label: 'Footbot', href: MARKETING_HREF.footbot },
-  { label: 'Tournaments', href: MARKETING_HREF.tournaments },
-  { label: 'Events hub', href: MARKETING_HREF.events },
-  ],
+    title: 'Facility & events',
+    links: [
+      { label: 'Facility', href: MARKETING_HREF.facility },
+      { label: 'Events', href: MARKETING_HREF.events },
+      { label: 'Field rentals', href: MARKETING_HREF.rentals },
+      { label: 'Birthday parties', href: MARKETING_HREF.parties },
+      { label: 'Footbot', href: MARKETING_HREF.footbot },
+      { label: 'Tournaments', href: MARKETING_HREF.tournaments },
+    ],
   },
   {
   title: 'Formula',
@@ -41,10 +41,10 @@ export function MarketingFooter() {
   <div>
   <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-formula-olive">Formula Soccer Center</p>
   <p className="mt-4 max-w-xs text-sm leading-relaxed text-formula-mist">
-  Indoor training built on scheduled blocks, coached standards, and a real facility layout, not open-gym noise.
+    Scheduled blocks, coached standards, real layout — not open-gym noise.
   </p>
   <p className="mt-4 max-w-sm text-xs leading-relaxed text-formula-olive/90">
-  Visit and enrollment details are confirmed when you book. No walk-in sales floor: assessment and staff coordination keep the floor disciplined.
+    Booking confirms visit details. Assessment + staff coordination keep the floor disciplined.
   </p>
   <Link
   href={MARKETING_HREF.bookAssessmentPortal}

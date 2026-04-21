@@ -1,25 +1,30 @@
 /**
- * Public /events hub: “Events” stays out of the header/footer until you add at least one
- * entry to `SUMMER_EVENT_SECTIONS` below. Sub-routes (/events/parties, etc.) stay reachable
- * from their own links elsewhere.
+ * Public /events hub: upcoming cards + nav visibility.
+ * Add rows to `UPCOMING_PUBLIC_EVENTS` to show dated announcements on `/events#upcoming`.
  */
-export type SummerEventSection = {
-  /** Stable id for keys / future anchors */
+
+export type PublicUpcomingEvent = {
+  /** Stable id for keys / anchors */
   id: string
   title: string
   summary: string
 }
 
+/** @deprecated Use UPCOMING_PUBLIC_EVENTS (same array). */
+export type SummerEventSection = PublicUpcomingEvent
+
 /**
- * Add rows here to show “Events” in the marketing header + footer and to render summer cards on /events.
- *
  * @example
- * export const SUMMER_EVENT_SECTIONS: SummerEventSection[] = [
- *   { id: 'camp-week-1', title: 'July skills week', summary: 'Half-day blocks, capped enrollment. Registration opens June 1.' },
+ * export const UPCOMING_PUBLIC_EVENTS: PublicUpcomingEvent[] = [
+ *   { id: 'open-house-march', title: 'March open house', summary: 'Tour + Q&A. RSVP opens Feb 1.' },
  * ]
  */
-export const SUMMER_EVENT_SECTIONS: SummerEventSection[] = []
+export const UPCOMING_PUBLIC_EVENTS: PublicUpcomingEvent[] = []
 
+/** Backward-compatible alias — edit `UPCOMING_PUBLIC_EVENTS` only. */
+export const SUMMER_EVENT_SECTIONS = UPCOMING_PUBLIC_EVENTS
+
+/** Events hub is always published (request form + paths); use `UPCOMING_PUBLIC_EVENTS.length` for empty state UI only. */
 export function isEventsHubPublished(): boolean {
-  return SUMMER_EVENT_SECTIONS.length > 0
+  return true
 }

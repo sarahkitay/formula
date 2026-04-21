@@ -11,7 +11,7 @@ import { YouthBlocksWeekPanel } from '@/components/marketing/youth-blocks-week-p
 import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
 import { ASSESSMENT_JUNE_PREBOOK_MONTH, ASSESSMENT_JUNE_PREBOOK_YEAR } from '@/lib/assessment/june-2026-slots'
 import { BOOKING_HUB_DIRECTORY_ID, MARKETING_HREF } from '@/lib/marketing/nav'
-import { PARTIES_PRICING_STATUS } from '@/lib/marketing/public-pricing'
+import { FORMULA_SKILLS_CHECK, PARTIES_PRICING_STATUS } from '@/lib/marketing/public-pricing'
 import { cn } from '@/lib/utils'
 
 type Slot = {
@@ -29,12 +29,17 @@ type BookAssessmentClientProps = {
   variant?: BookAssessmentVariant
   guardianFullName?: string
   guardianEmail?: string
+  /** Shown in hub intro (public page passes from server pricing). */
+  skillsCheckPriceUsd?: number
 }
+
+type DirectoryTile = { href: string; label: string; description: string }
 
 export function BookAssessmentClient({
   variant = 'public',
   guardianFullName = '',
   guardianEmail = '',
+  skillsCheckPriceUsd = 0,
 }: BookAssessmentClientProps) {
   const [slots, setSlots] = useState<Slot[]>([])
   const [slotsError, setSlotsError] = useState<string | null>(null)
@@ -47,6 +52,7 @@ export function BookAssessmentClient({
   const isPortal = variant === 'portal'
   const billingName = isPortal ? guardianFullName.trim() : parentFullName.trim()
   const billingEmail = isPortal ? guardianEmail.trim() : parentEmail.trim()
+  const skillsCheckUsd = skillsCheckPriceUsd > 0 ? skillsCheckPriceUsd : FORMULA_SKILLS_CHECK.priceUsd
 
   useEffect(() => {
     let cancelled = false
@@ -96,62 +102,85 @@ export function BookAssessmentClient({
     billingName.length > 1 &&
     billingEmail.includes('@')
 
-  const bookingDirectoryLinks: { href: string; label: string }[] = [
+  const bookingDirectoryTiles: DirectoryTile[] = [
     ...(isPortal
-      ? [{ href: '#booking-account', label: 'Account' }]
-      : [{ href: '#booking-contact', label: 'Guardian contact' }]),
-    { href: '#skills-check', label: 'June pre-book' },
-    { href: '#youth-training-blocks', label: 'Youth training blocks' },
-    { href: '#field-rental-on-hub', label: 'Field rental' },
-    { href: '#birthday-party-booking', label: 'Birthday party' },
-    { href: '#participant-waiver', label: 'Rental waiver' },
+      ? [{ href: '#booking-account', label: 'Your account', description: 'Signed-in guardian · receipts' }]
+      : [{ href: '#booking-contact', label: 'Guardian contact', description: 'Name & email for receipts' }]),
+    { href: '#skills-check', label: 'June pre-book', description: 'Skills Check calendar & pay' },
+    { href: '#youth-training-blocks', label: 'Youth training blocks', description: 'Preview published weeks' },
+    { href: '#field-rental-on-hub', label: 'Field rental', description: 'Deposit & hold a window' },
+    { href: '#birthday-party-booking', label: 'Birthday party', description: 'Party deposit checkout' },
+    { href: '#participant-waiver', label: 'Rental waiver', description: 'Sign agreement on file' },
   ]
 
   return (
     <div className="not-prose space-y-16 md:space-y-20">
-      <p className="max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
-        {isPortal ? (
-          <>
-            Use the calendar to pre-book a June Skills Check window, preview youth blocks, book field time or a birthday party deposit, and sign the rental
-            waiver when needed. Receipts use the email on your portal account.
-          </>
-        ) : (
-          <>
-            One hub: June Skills Check pre-book, youth block preview (package required to finalize in portal), field rentals, hosted birthday party deposits, and
-            the rental waiver when you need it on file. After checkout you can create a parent login for athlete names.
-          </>
-        )}
-      </p>
-
-      <nav
+      <section
         id={BOOKING_HUB_DIRECTORY_ID}
-        aria-label="Jump to booking type"
-        className="scroll-mt-28 sticky top-14 z-40 rounded-sm border border-formula-frost/14 bg-formula-base/90 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-md md:top-16 md:p-6"
+        aria-label="Reserve by category"
+        className="scroll-mt-28 space-y-5"
       >
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Book by type</p>
-        <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-formula-frost/75">
-          Jump to a section — each block below lines up with these shortcuts. Stays pinned while you scroll on larger screens.
-        </p>
-        <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {bookingDirectoryLinks.map((item) => (
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
+          {bookingDirectoryTiles.map((item) => (
             <li key={item.href} className="min-w-0">
               <a
                 href={item.href}
-                className="flex min-h-[3rem] w-full items-center justify-center text-balance border border-formula-frost/18 bg-formula-deep/55 px-4 py-3 text-center font-mono text-[10px] font-semibold uppercase leading-snug tracking-[0.1em] text-formula-paper transition-colors hover:border-formula-volt/45 hover:text-formula-volt focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-formula-volt/70 sm:min-h-[3.25rem] sm:text-[11px] sm:tracking-[0.12em]"
+                className={cn(
+                  'flex min-h-[7.25rem] w-full flex-col justify-between rounded-xl border-2 border-formula-frost/20 bg-gradient-to-br from-formula-paper/[0.07] to-formula-base/90 px-5 py-5 shadow-[0_12px_40px_rgba(0,0,0,0.28)] transition-[border-color,box-shadow,transform] duration-200 md:min-h-[8.25rem] md:px-6 md:py-6',
+                  'hover:-translate-y-0.5 hover:border-formula-volt/55 hover:shadow-[0_16px_48px_rgba(0,0,0,0.38),0_0_0_1px_rgba(220,255,0,0.12)]',
+                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-formula-volt/80'
+                )}
               >
-                {item.label}
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Open</span>
+                <span className="mt-3 text-balance font-mono text-lg font-semibold leading-snug tracking-tight text-formula-paper md:text-xl">
+                  {item.label}
+                </span>
+                <span className="mt-2 text-pretty text-sm leading-snug text-formula-frost/80 md:text-[15px]">{item.description}</span>
               </a>
             </li>
           ))}
         </ul>
-        <p className="mt-4 font-mono text-[10px] leading-relaxed text-formula-frost/55">
-          Full party story + policies:{' '}
-          <Link href={MARKETING_HREF.parties} className="text-formula-volt underline-offset-2 hover:underline">
-            Birthday parties page
-          </Link>
-          .
-        </p>
-      </nav>
+
+        <Link
+          href={MARKETING_HREF.parties}
+          className={cn(
+            'group mt-2 flex w-full flex-col gap-1 rounded-xl border-2 border-formula-frost/22 bg-formula-paper/[0.06] px-6 py-6 text-left transition-[border-color,transform] duration-200 md:flex-row md:items-center md:justify-between md:py-7',
+            'hover:-translate-y-0.5 hover:border-formula-volt/50 hover:bg-formula-paper/[0.09]',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-formula-volt/80'
+          )}
+        >
+          <div>
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-formula-mist">Birthday parties</p>
+            <p className="mt-2 text-xl font-semibold tracking-tight text-formula-paper md:text-2xl group-hover:text-formula-volt">
+              Full party story + policies
+            </p>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-formula-frost/80 md:text-[15px]">
+              Hosted parties, pricing context, and facility rules live on the dedicated parties page — open it before you book the deposit below.
+            </p>
+          </div>
+          <span className="mt-4 inline-flex shrink-0 items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-volt md:mt-0">
+            Go to parties page
+            <span aria-hidden className="transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </span>
+        </Link>
+      </section>
+
+      <p className="max-w-3xl border-t border-formula-frost/10 pt-10 text-[15px] leading-relaxed text-formula-frost/85 md:pt-12">
+        {isPortal ? (
+          <>
+            Pre-book a June Skills Check window, preview youth blocks, book field time or a birthday party deposit, and sign the rental waiver when needed.
+            Receipts use the email on your portal account.
+          </>
+        ) : (
+          <>
+            No portal account required to start. Choose a published Skills Check window (up to four athletes per hour), how many players you are bringing, and
+            pay <strong className="font-medium text-formula-paper">${skillsCheckUsd}</strong> per athlete. After payment you can create a parent login and add names so your kids show up in the portal. Youth block preview shows the schedule; final
+            enrollment still happens in the portal with an active package.
+          </>
+        )}
+      </p>
 
       {isPortal ? (
         <section
@@ -347,8 +376,12 @@ export function BookAssessmentClient({
             Sign in to book here
           </Link>
           {' · '}
+          <Link href={MARKETING_HREF.events} className="text-formula-volt underline-offset-2 hover:underline">
+            Events
+          </Link>
+          {' · '}
           <Link href={MARKETING_HREF.rentals} className="text-formula-volt underline-offset-2 hover:underline">
-            Rental policies
+            Field rentals
           </Link>
           {' · '}
           <Link href={MARKETING_HREF.assessment} className="text-formula-volt underline-offset-2 hover:underline">

@@ -9,7 +9,7 @@ test.describe('public smoke', () => {
   test('book assessment hub loads', async ({ page }) => {
     const res = await page.goto('/book-assessment')
     expect(res?.ok()).toBeTruthy()
-    await expect(page.getByRole('heading', { name: /skills check/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /reserve your spot/i })).toBeVisible()
   })
 })
 

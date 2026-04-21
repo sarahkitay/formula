@@ -7,109 +7,70 @@ import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { FIELD_RENTAL_PUBLISHED_RATES } from '@/lib/marketing/public-pricing'
 
 export const metadata: Metadata = {
-  title: 'Rentals',
+  title: 'Field rentals',
   description:
-    'Field rentals at Formula Soccer Center: published hourly rate, packaged inventory, 12-week alignment, and protected performance scheduling.',
+    'Structured field rentals: published hourly rate, packaged windows, deposit checkout via the booking hub.',
 }
 
 export default function RentalsPage() {
   return (
-  <MarketingInnerPage
-  eyebrow="Structured rentals"
-  title="Packaged inventory. Recurring-friendly."
-  intro="Not open-dock booking - packages, protected turnover, inventory discipline. Reliable partners, not commodity hall energy."
-  >
-  <h2>Core principle</h2>
-  <p>
-  The system <strong>classifies, enforces, and filters</strong> rentals before arrival - less on-site friction, documented compliance, and a protected
-  performance environment.
-  </p>
+    <MarketingInnerPage
+      eyebrow="Structured rentals"
+      title="Field time — packaged windows"
+      intro="Classified use, deposits, and waivers. Book through the hub below; not open-dock hourly chaos."
+    >
+      <p className="not-prose text-sm text-formula-frost/80">
+        One stop with Skills Check + party deposit:{' '}
+        <Link href={`${MARKETING_HREF.bookAssessment}#field-rental-on-hub`} className="text-formula-volt underline-offset-2 hover:underline">
+          booking hub
+        </Link>
+        . Corporate / large blocks:{' '}
+        <Link href={MARKETING_HREF.events} className="text-formula-volt underline-offset-2 hover:underline">
+          Events
+        </Link>
+        .
+      </p>
 
-  <p className="not-prose text-sm leading-relaxed text-zinc-400">
-    Prefer one stop? Book field time with deposit and sign the rental agreement on the same page as Skills Check and youth block preview:{' '}
-    <Link href={`${MARKETING_HREF.bookAssessment}#field-rental-on-hub`} className="text-formula-volt underline-offset-2 hover:underline">
-      unified booking hub
-    </Link>
-    .
-  </p>
+      <FieldRentalBookingFlow />
 
-  <FieldRentalBookingFlow />
+      <h2 className="!mt-10">Rate & deposit</h2>
+      <p className="text-sm">
+        <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> — book in 30-minute steps; deposit scales with length
+        (e.g. 90 min ≈ ${(FIELD_RENTAL_PUBLISHED_RATES.perHourUsd * 1.5).toFixed(0)}). {FIELD_RENTAL_PUBLISHED_RATES.packages}
+      </p>
 
-  <h2>Published hourly rate</h2>
-  <p>
-  <strong className="text-zinc-200">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> for all rental windows (book in 30-minute steps; deposit scales with
-  length, e.g. 90 min = ${(FIELD_RENTAL_PUBLISHED_RATES.perHourUsd * 1.5).toFixed(0)}, 2 hr = ${(FIELD_RENTAL_PUBLISHED_RATES.perHourUsd * 2).toFixed(0)}). No
-  separate peak or non-peak pricing.
-  </p>
-  <p>
-  {FIELD_RENTAL_PUBLISHED_RATES.packages}
-  </p>
+      <details className="not-prose mt-8 rounded-xl border border-formula-frost/14 bg-formula-paper/[0.03] open:border-formula-frost/22">
+        <summary className="cursor-pointer px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper md:px-5">
+          Ops model & philosophy
+        </summary>
+        <div className="space-y-4 border-t border-formula-frost/10 px-4 py-4 text-sm leading-relaxed text-formula-frost/80 md:px-5">
+          <p>
+            <strong className="text-formula-paper">Check-in:</strong> low friction — staff step in for headcount, misclassified use, or safety issues.
+          </p>
+          <p>
+            <strong className="text-formula-paper">Blocks:</strong> programmed start/stop and buffers — built for recurring clubs and trainers, not loudest
+            bidder.
+          </p>
+          <p>
+            <strong className="text-formula-paper">Packages:</strong> window + surface + expectations — 12-week alignment where recurring; youth blocks stay
+            protected.
+          </p>
+          <p>
+            <strong className="text-formula-paper">Inventory:</strong> calendar reflects programming and staffing; rentals inherit Formula tempo and transitions.
+          </p>
+        </div>
+      </details>
 
-  <h2>Check-in model</h2>
-  <p>
-  <strong>Low friction:</strong> no traditional check-in line. Staff monitor sessions and intervene only when needed: headcount over limit, use that does
-  not match classification, or unsafe / prohibited behavior.
-  </p>
+      <h2 id="participant-waiver-heading" className="!mt-12 scroll-mt-28">
+        Participant waiver
+      </h2>
+      <p className="text-sm text-formula-frost/75">One signed waiver per participant before field access.</p>
+      <FieldRentalAgreementForm />
 
-  <h2>Philosophy</h2>
-  <p>
-  Blocks run as <strong>programmed ops</strong>: start/stop, buffers, staff sync - premium for everyone on the clock. We want <strong>recurring, respectful</strong>{' '}
-  clubs, trainers, teams - not loudest hourly bidder.
-  </p>
-
-  <h2>Package-based model</h2>
-  <p>
-  <strong>Packages</strong> = window + surface + setup + inclusions - not ad-hoc hourly chaos. Aligned expectations; defensible schedule for the whole building.
-  </p>
-
-  <div className="not-prose marketing-glass my-10 border border-white/[0.08] bg-white/[0.02] p-5 md:p-6">
-  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Recurring rhythm</p>
-  <ul className="mt-4 list-none space-y-3 p-0 font-sans text-sm leading-relaxed text-zinc-400">
-  <li className="pl-0 before:hidden">
-  <strong className="text-zinc-300">12-week alignment:</strong> recurring packages lock to <strong className="text-zinc-300">12-week cycles</strong> - habits + tactical season
-  tweaks.
-  </li>
-  <li className="pl-0 before:hidden">
-  <strong className="text-zinc-300">Why:</strong> less whiplash, youth blocks protected, partnerships run pro week to week.
-  </li>
-  </ul>
-  </div>
-
-  <h2>Club packages</h2>
-  <p>
-  <strong>Recurring blocks</strong> - weekday lanes, weekend bridges, combined formats - same internal ops discipline. <strong>Continuity</strong>: fields, transitions,
-  comms that respect coaches, parents, desk.
-  </p>
-
-  <h2>Private training</h2>
-  <p>
-  Trainers get <strong>fit windows</strong> for surface need - tech, speed, constrained games - no margin improvisation. <strong>Structured use</strong>: right space,
-  duration, buffers - quality + liability managed.
-  </p>
-
-  <h2>Inventory + structured use</h2>
-  <p>
-  <strong>Protected inventory</strong> - performance environments, not “whatever’s open.” Calendar reflects youth blocks, application windows, staffing,
-  recovery between sessions. Rentals inherit Formula tempo, behavior, transitions - scale demand without eroding premium.
-  </p>
-
-  <h2 id="participant-waiver-heading">Participant waiver (each player)</h2>
-  <p>
-  One signed waiver per participant. Waivers must be complete before field access; the booking flow above describes renter dashboard progress and
-  reminder timing once email and persistence are connected.
-  </p>
-  <FieldRentalAgreementForm />
-
-  <p>
-  See the <Link href={MARKETING_HREF.facility}>facility & asset model</Link>. Youth families start with{' '}
-  <Link href={MARKETING_HREF.bookAssessmentPortal}>assessment booking</Link>; hosted weekends live in{' '}
-  <Link href={MARKETING_HREF.tournaments}>tournaments</Link> and <Link href={MARKETING_HREF.events}>events</Link>.
-  </p>
-
-  <CtaRow
-  primary={{ label: 'Facility & map', href: MARKETING_HREF.facility }}
-  secondary={{ label: 'Youth membership', href: MARKETING_HREF.youthMembership }}
-  />
-  </MarketingInnerPage>
+      <CtaRow
+        primary={{ label: 'Events & large blocks', href: MARKETING_HREF.events }}
+        secondary={{ label: 'Facility', href: MARKETING_HREF.facility }}
+      />
+    </MarketingInnerPage>
   )
 }

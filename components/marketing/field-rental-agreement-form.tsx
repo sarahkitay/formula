@@ -25,15 +25,18 @@ export type FieldRentalRosterInvite = {
   token: string
   expected: number
   completed: number
-  /** When set, rental type is fixed for this booking and hidden on the form. */
-  lockedRentalType: 'club_team_practice' | 'private_semi_private' | 'general_pickup' | null
 }
 
 type FormProps = {
   rosterInvite?: FieldRentalRosterInvite
+  /**
+   * `public` (default): participant / roster shared links — no rental type or headcount fields.
+   * `coach`: staff booking waiver — rental type + participant count required (see `/coach/field-rental-waiver`).
+   */
+  variant?: 'public' | 'coach'
 }
 
-export function FieldRentalAgreementForm({ rosterInvite }: FormProps) {
+export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: FormProps) {
   const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
@@ -46,6 +49,8 @@ export function FieldRentalAgreementForm({ rosterInvite }: FormProps) {
   useEffect(() => {
     if (state.ok) router.refresh()
   }, [state.ok, router])
+
+  const showCoachBookingFields = variant === 'coach' && !rosterInvite
 
   const drawPoint = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
@@ -145,45 +150,40 @@ export function FieldRentalAgreementForm({ rosterInvite }: FormProps) {
       <form action={action} className="mt-8 grid gap-5 md:grid-cols-2">
         <input type="hidden" name="signatureDataUrl" value={signatureDataUrl} />
         {rosterInvite ? <input type="hidden" name="waiverInviteToken" value={rosterInvite.token} /> : null}
-        {rosterInvite ? <input type="hidden" name="participantCount" value={1} /> : null}
-        {rosterInvite?.lockedRentalType ? (
-          <input type="hidden" name="rentalType" value={rosterInvite.lockedRentalType} />
+        {showCoachBookingFields ? <input type="hidden" name="waiverFormRole" value="coach" /> : null}
+
+        {showCoachBookingFields ? (
+          <>
+            <label className="flex flex-col gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Rental type (booking) *</span>
+              <select
+                name="rentalType"
+                required
+                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select rental type
+                </option>
+                <option value="club_team_practice">Club / Team Practice</option>
+                <option value="private_semi_private">Private / Semi-Private Training</option>
+                <option value="general_pickup">General Use / Pick-Up Play</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Participant count (booking) *</span>
+              <input
+                name="participantCount"
+                required
+                type="number"
+                min={1}
+                max={500}
+                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                placeholder="e.g. 12"
+              />
+            </label>
+          </>
         ) : null}
-
-        {rosterInvite?.lockedRentalType ? null : (
-          <label
-            className={`flex flex-col gap-2${rosterInvite && !rosterInvite.lockedRentalType ? ' md:col-span-2' : ''}`}
-          >
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Rental type *</span>
-            <select
-              name="rentalType"
-              required
-              className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              defaultValue=""
-            >
-              <option value="" disabled>
-                Select rental type
-              </option>
-              <option value="club_team_practice">Club / Team Practice</option>
-              <option value="private_semi_private">Private / Semi-Private Training</option>
-              <option value="general_pickup">General Use / Pick-Up Play</option>
-            </select>
-          </label>
-        )}
-
-        {rosterInvite ? null : (
-          <label className="flex flex-col gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Participant count *</span>
-            <input
-              name="participantCount"
-              required
-              type="number"
-              min={1}
-              className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              placeholder="e.g. 12"
-            />
-          </label>
-        )}
 
         <label className="flex flex-col gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Participant name *</span>

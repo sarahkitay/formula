@@ -82,13 +82,13 @@ const HIGHLIGHTS: {
     layoutClass: 'lg:col-span-2',
   },
   {
-    label: 'Rentals',
-    line: 'Premium inventory. Real cycles.',
-    more: 'Clubs · teams · private, synced to how you operate.',
-    href: MARKETING_HREF.rentals,
+    label: 'Events',
+    line: 'Host at Formula — request a block.',
+    more: 'Corporate, parties, clubs, tournaments. Field time: rentals + hub.',
+    href: MARKETING_HREF.events,
     tier: 'quiet',
     band: 'tier2',
-    cta: 'View rentals →',
+    cta: 'Events →',
     layoutClass: 'lg:col-span-2',
   },
   {
@@ -121,9 +121,9 @@ const SECONDARY_PATHS: { label: string; line: string; href: string; tier: 'defau
     tier: 'default',
   },
   {
-    label: 'Rental inquiry',
-    line: 'Clubs · teams · private - premium inventory rules.',
-    href: MARKETING_HREF.rentals,
+    label: 'Event inquiry',
+    line: 'Corporate · parties · clubs — staff follows up.',
+    href: `${MARKETING_HREF.events}#event-request`,
     tier: 'quiet',
   },
   {
@@ -194,8 +194,8 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
         </h2>
         <MarketingTextReveal>
           <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-formula-frost/85">
-            Pick your door: explore the full stack, then take one clear next step: assessment, waitlist, or clinic registration below; camps, rentals, and
-            adults under <span className="text-formula-paper/90">More ways in</span>.
+            Explore the stack, then one next step: assessment, package, waitlist, or clinics. Camps, events, and adults live under{' '}
+            <span className="text-formula-paper/90">More ways in</span>.
           </p>
         </MarketingTextReveal>
       </ScrollFadeIn>
@@ -274,7 +274,7 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
       <ScrollFadeIn className="not-prose mt-14">
         <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">More ways in</p>
         <h3 className="mt-3 max-w-2xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl">
-          Camps · rentals · adult programming
+          Camps · events · adults
         </h3>
         <ul className="mt-8 grid gap-px bg-formula-frost/10 sm:grid-cols-2 lg:grid-cols-3">
           {SECONDARY_PATHS.map(item => (

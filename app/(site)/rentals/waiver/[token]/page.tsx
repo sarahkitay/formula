@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { FieldRentalAgreementForm, type FieldRentalRosterInvite } from '@/components/marketing/field-rental-agreement-form'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { formatRentalTypeForDisplay } from '@/lib/rentals/field-rental-waiver-labels'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
 import { getSiteOrigin } from '@/lib/stripe/server'
 
@@ -31,16 +32,10 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
   const remaining = Math.max(0, invite.expected_waiver_count - completed)
   const rosterFull = completed >= invite.expected_waiver_count
 
-  const lockedRentalType =
-    invite.rental_type && VALID_RENTAL.has(invite.rental_type)
-      ? (invite.rental_type as FieldRentalRosterInvite['lockedRentalType'])
-      : null
-
   const rosterInvite: FieldRentalRosterInvite = {
     token: invite.token,
     expected: invite.expected_waiver_count,
     completed,
-    lockedRentalType,
   }
 
   const shareUrl = `${getSiteOrigin()}/rentals/waiver/${invite.token}`
@@ -69,6 +64,12 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
         {invite.rental_ref ? (
           <p className="mt-2 font-mono text-[11px] text-formula-mist">
             Booking ref: <span className="text-formula-frost/90">{invite.rental_ref}</span>
+          </p>
+        ) : null}
+        {invite.rental_type && VALID_RENTAL.has(invite.rental_type) ? (
+          <p className="mt-2 font-mono text-[11px] text-formula-mist">
+            Booking type (from checkout):{' '}
+            <span className="text-formula-frost/90">{formatRentalTypeForDisplay(invite.rental_type)}</span>
           </p>
         ) : null}
         <p className="mt-3 break-all font-mono text-[10px] text-formula-mist/90">Share: {shareUrl}</p>

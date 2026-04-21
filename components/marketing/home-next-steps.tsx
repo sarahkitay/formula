@@ -40,7 +40,7 @@ export function HomeNextSteps() {
             <strong className="font-medium text-formula-paper">Adult programming:</strong> pickup and leagues for adults. Same professional standards.
           </li>
           <li>
-            <strong className="font-medium text-formula-paper">Rentals:</strong> premium facility access for clubs, teams, and private training.
+            <strong className="font-medium text-formula-paper">Events:</strong> corporate, parties, clubs — request a block; field deposits via rentals.
           </li>
         </ul>
         <p className="mx-auto mt-6 max-w-[52ch] text-[14px] leading-relaxed text-formula-frost/70">
