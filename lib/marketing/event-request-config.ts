@@ -1,8 +1,10 @@
 /** Options for the public /events request form (labels stable for ops inbox). */
 
+/** Field rental checkout is its own flow (`/rentals`, booking hub); parties use the party deposit path — keep types distinct for ops. */
 export const EVENT_REQUEST_TYPES = [
   { value: 'corporate', label: 'Corporate / team building' },
-  { value: 'party', label: 'Birthday / private party' },
+  { value: 'hosted_birthday_party', label: 'Hosted birthday party (party deposit — not field rental checkout)' },
+  { value: 'field_rental_block', label: 'Field rental (structured deposit · default 180 min blocks)' },
   { value: 'club', label: 'Club / team event' },
   { value: 'tournament', label: 'Tournament / showcase' },
   { value: 'camp_clinic', label: 'Camp or clinic block' },

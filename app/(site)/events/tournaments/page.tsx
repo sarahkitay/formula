@@ -29,8 +29,8 @@ export default function TournamentsPage() {
   Proposed dates, ages, field needs - we reply with feasibility + package fit.
   </p>
   <p>
-  Inquire via <Link href={`${MARKETING_HREF.events}#event-request`}>Events</Link>. Field inventory: <Link href={MARKETING_HREF.rentals}>Rentals</Link>.{' '}
-  <Link href={MARKETING_HREF.facility}>Facility</Link>.
+  Field inventory: <Link href={MARKETING_HREF.rentals}>Structured field rentals</Link> (180 min default blocks). Large weekends:{' '}
+  <Link href={`${MARKETING_HREF.events}#event-request`}>Events inquiry</Link>. <Link href={MARKETING_HREF.facility}>Facility</Link>.
   </p>
   </MarketingInnerPage>
   )

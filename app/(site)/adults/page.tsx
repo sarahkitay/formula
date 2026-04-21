@@ -75,11 +75,12 @@ export default function AdultsPage() {
   </p>
 
   <p>
-  Group blocks: <Link href={MARKETING_HREF.events}>Events</Link> · field deposits: <Link href={MARKETING_HREF.rentals}>Rentals</Link>. Context:{' '}
-  <Link href={MARKETING_HREF.facility}>Facility</Link>. Youth: <Link href={MARKETING_HREF.youthMembership}>Membership</Link>.
+  Group training or recurring field blocks: <Link href={MARKETING_HREF.rentals}>Structured field rentals</Link> (default 180 min). Large hosted blocks:{' '}
+  <Link href={MARKETING_HREF.events}>Events</Link>. Context: <Link href={MARKETING_HREF.facility}>Facility</Link>. Youth:{' '}
+  <Link href={MARKETING_HREF.youthMembership}>Membership</Link>.
   </p>
 
-  <CtaRow primary={{ label: 'Facility', href: MARKETING_HREF.facility }} secondary={{ label: 'Events', href: MARKETING_HREF.events }} />
+  <CtaRow primary={{ label: 'Facility', href: MARKETING_HREF.facility }} secondary={{ label: 'Field rentals', href: MARKETING_HREF.rentals }} />
   </MarketingInnerPage>
   )
 }

@@ -82,9 +82,19 @@ const HIGHLIGHTS: {
     layoutClass: 'lg:col-span-2',
   },
   {
+    label: 'Field rentals',
+    line: 'Structured deposits · default 180 min blocks.',
+    more: 'Not the same checkout as hosted birthday parties — separate booking type.',
+    href: MARKETING_HREF.rentals,
+    tier: 'quiet',
+    band: 'tier2',
+    cta: 'Field rentals →',
+    layoutClass: 'lg:col-span-2',
+  },
+  {
     label: 'Events',
-    line: 'Host at Formula — request a block.',
-    more: 'Corporate, parties, clubs, tournaments. Field time: rentals + hub.',
+    line: 'Corporate, tournaments, large blocks.',
+    more: 'Staff inquiry — separate from field rental deposit checkout.',
     href: MARKETING_HREF.events,
     tier: 'quiet',
     band: 'tier2',
@@ -121,8 +131,14 @@ const SECONDARY_PATHS: { label: string; line: string; href: string; tier: 'defau
     tier: 'default',
   },
   {
+    label: 'Field rental booking',
+    line: 'Deposits · default 180 min — not party checkout.',
+    href: MARKETING_HREF.rentals,
+    tier: 'quiet',
+  },
+  {
     label: 'Event inquiry',
-    line: 'Corporate · parties · clubs — staff follows up.',
+    line: 'Corporate · tournaments — staff follows up.',
     href: `${MARKETING_HREF.events}#event-request`,
     tier: 'quiet',
   },
@@ -194,7 +210,7 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
         </h2>
         <MarketingTextReveal>
           <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-formula-frost/85">
-            Explore the stack, then one next step: assessment, package, waitlist, or clinics. Camps, events, and adults live under{' '}
+            Explore the stack, then one next step: assessment, package, waitlist, or clinics. Camps, field rentals, events, and adults live under{' '}
             <span className="text-formula-paper/90">More ways in</span>.
           </p>
         </MarketingTextReveal>
@@ -274,7 +290,7 @@ export function HomeProgramsAndPathways({ id = 'programs-pathways' }: { id?: str
       <ScrollFadeIn className="not-prose mt-14">
         <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">More ways in</p>
         <h3 className="mt-3 max-w-2xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl">
-          Camps · events · adults
+          Camps · field rentals · events · adults
         </h3>
         <ul className="mt-8 grid gap-px bg-formula-frost/10 sm:grid-cols-2 lg:grid-cols-3">
           {SECONDARY_PATHS.map(item => (

@@ -26,7 +26,7 @@ export default function EventsHubPage() {
     <MarketingInnerPage
       eyebrow="Events"
       title="Host at Formula"
-      intro="Request a block below. Staff replies by email with availability and next steps. Field-time deposits for recurring rentals still live in the booking hub."
+      intro="Request a block below — staff replies by email. Field rentals (default 180 min, deposit checkout) and hosted birthday parties (party deposit) are separate booking types; use the hub for those checkouts."
       wide
     >
       <section id="event-request" aria-labelledby="event-request-heading" className="not-prose scroll-mt-28">
@@ -34,7 +34,8 @@ export default function EventsHubPage() {
           Request an event
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-formula-frost/80">
-          Corporate, parties, clubs, tournaments, camps — tell us headcount, budget ($1k–$10k+), and how you want to use fields or the full facility.
+          Pick a type below — <strong className="text-formula-paper">field rental blocks</strong> and <strong className="text-formula-paper">hosted parties</strong> are
+          listed separately from each other. Headcount, budget ($1k–$10k+), and space intent.
         </p>
         <div className="mt-6 rounded-xl border border-formula-frost/16 bg-formula-paper/[0.04] p-5 md:p-8">
           <EventRequestForm />

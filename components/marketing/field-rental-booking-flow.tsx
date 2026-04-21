@@ -68,7 +68,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   const [rentalType, setRentalType] = useState<RentalType | ''>('')
   const [sessionDate, setSessionDate] = useState('')
   const [slotStart, setSlotStart] = useState('')
-  const [durationMinutes, setDurationMinutes] = useState(60)
+  /** Default field rental block: 180 minutes (3 hr) — separate product from hosted party deposits. */
+  const [durationMinutes, setDurationMinutes] = useState(180)
   const [fieldId, setFieldId] = useState('')
   const [participantCount, setParticipantCount] = useState<string>('')
   const [renterName, setRenterName] = useState('')
@@ -326,7 +327,10 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
         <div className="mt-8 space-y-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 2  -  Date, time, and field</p>
           <p className="text-sm text-formula-mist">
-            Start times are every 30 minutes. Choose how long you need (30-minute steps). Deposit follows the published hourly rate (${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr): 1 hour = $180, 90 minutes = $270, 2 hours = $360, and so on per session. Anything that overlaps an existing hold is blocked.
+            <strong className="text-formula-paper">Field rental checkout only</strong> — not the hosted birthday party deposit (that is a separate booking type in
+            the hub). Start times every 30 minutes; duration defaults to <strong className="text-formula-paper">180 minutes</strong> (change if you need less).
+            Deposit scales at ${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr (e.g. 180 min = ${fieldRentalDepositUsd(180).toFixed(0)} per session). Overlapping holds
+            are blocked.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-2">

@@ -102,8 +102,13 @@ export default function YouthMembershipPage() {
             <Link href={MARKETING_HREF.adults}>Adult programming</Link> · pickup and leagues. Professional floor standards. Live now.
           </li>
           <li>
-            <Link href={MARKETING_HREF.events}>Events</Link> · corporate, parties, clubs — request a block. Field deposits:{' '}
-            <Link href={MARKETING_HREF.rentals}>rentals</Link>.
+            <Link href={MARKETING_HREF.rentals}>Field rentals</Link> · structured field time (default 180 min blocks). Different checkout than parties.
+          </li>
+          <li>
+            <Link href={MARKETING_HREF.parties}>Birthday parties</Link> · hosted party deposit path — not field rental checkout.
+          </li>
+          <li>
+            <Link href={MARKETING_HREF.events}>Events</Link> · corporate, tournaments, large blocks — staff inquiry form.
           </li>
         </ul>
 
