@@ -36,6 +36,9 @@ export const FIELD_RENTAL_SLOT_STARTS: readonly string[] = (() => {
 /** Allowed rental lengths on the public field flow (30 min steps). */
 export const FIELD_RENTAL_DURATION_OPTIONS_MINUTES = [30, 60, 90, 120, 150, 180, 210, 240] as const
 
+/** Initial duration in the public field-rental checkout flow (2 hours). */
+export const FIELD_RENTAL_DEFAULT_DURATION_MINUTES = 120
+
 /** Bookings must end by this minute-of-day (22:00 = 10:00 PM). */
 export const FIELD_RENTAL_WINDOW_CLOSE_MINUTES = 22 * 60
 

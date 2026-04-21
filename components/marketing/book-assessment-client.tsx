@@ -108,7 +108,7 @@ export function BookAssessmentClient({
       : [{ href: '#booking-contact', label: 'Guardian contact', description: 'Name & email for receipts' }]),
     { href: '#skills-check', label: 'June pre-book', description: 'Skills Check calendar & pay' },
     { href: '#youth-training-blocks', label: 'Youth training blocks', description: 'Preview published weeks' },
-    { href: '#field-rental-on-hub', label: 'Field rental', description: 'Deposit · default 180 min blocks (not party checkout)' },
+    { href: '#field-rental-on-hub', label: 'Field rental', description: 'Deposit · default 2 hr blocks (not party checkout)' },
     { href: '#birthday-party-booking', label: 'Birthday party', description: 'Party deposit checkout' },
     { href: '#participant-waiver', label: 'Rental waiver', description: 'Sign agreement on file' },
   ]

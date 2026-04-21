@@ -145,6 +145,11 @@ export default function StaffPortalHubPage() {
         return
       }
 
+      if (hub === '/coach/today') {
+        router.replace(hub)
+        return
+      }
+
       if (hub !== '/staff-portal') {
         setPhase('error')
         setError('This account is not set up for staff access.')

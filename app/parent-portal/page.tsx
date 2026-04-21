@@ -47,6 +47,11 @@ export default function ParentPortalRedirectPage() {
         return
       }
 
+      if (hub === '/coach/today') {
+        router.replace(hub)
+        return
+      }
+
       if (hub === '/login' || p.role?.toLowerCase() !== 'parent') {
         setError('This account is not set up as a parent.')
         return

@@ -121,6 +121,12 @@ export function LoginPageClient() {
     if (portal === 'staff' && destination.startsWith('/parent')) {
       destination = next
     }
+    if (roleNorm === 'coach' && (destination.startsWith('/admin') || destination === '/staff-portal')) {
+      destination = next
+    }
+    if ((roleNorm === 'admin' || roleNorm === 'staff') && destination.startsWith('/coach')) {
+      destination = next
+    }
     router.push(destination)
     router.refresh()
   }

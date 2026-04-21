@@ -75,7 +75,7 @@ export default function AdultsPage() {
   </p>
 
   <p>
-  Group training or recurring field blocks: <Link href={MARKETING_HREF.rentals}>Structured field rentals</Link> (default 180 min). Large hosted blocks:{' '}
+  Group training or recurring field blocks: <Link href={MARKETING_HREF.rentals}>Structured field rentals</Link> (default 2 hr). Large hosted blocks:{' '}
   <Link href={MARKETING_HREF.events}>Events</Link>. Context: <Link href={MARKETING_HREF.facility}>Facility</Link>. Youth:{' '}
   <Link href={MARKETING_HREF.youthMembership}>Membership</Link>.
   </p>

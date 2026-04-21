@@ -10,13 +10,13 @@ export function EventRequestForm() {
   const [state, action, pending] = useActionState(submitEventRequest, INITIAL)
 
   return (
-    <form action={action} className="not-prose grid gap-5 md:grid-cols-2">
+    <form action={action} className="not-prose grid gap-4 sm:gap-5 md:grid-cols-2">
       <label className="flex flex-col gap-2 md:col-span-2">
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Event type *</span>
         <select
           name="eventType"
           required
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
           defaultValue=""
         >
           <option value="" disabled>
@@ -38,7 +38,7 @@ export function EventRequestForm() {
           min={1}
           max={5000}
           required
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
           placeholder="e.g. 40"
         />
       </label>
@@ -48,7 +48,7 @@ export function EventRequestForm() {
         <select
           name="budgetRange"
           required
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
           defaultValue=""
         >
           <option value="" disabled>
@@ -71,7 +71,7 @@ export function EventRequestForm() {
           max={20}
           required
           defaultValue={1}
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
         />
       </label>
 
@@ -80,7 +80,7 @@ export function EventRequestForm() {
         <select
           name="spacePreset"
           required
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
           defaultValue=""
         >
           <option value="" disabled>
@@ -100,7 +100,7 @@ export function EventRequestForm() {
           name="preferredDates"
           type="text"
           maxLength={240}
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
           placeholder="e.g. Sat in March, weekday evenings"
         />
       </label>
@@ -111,7 +111,7 @@ export function EventRequestForm() {
           name="contactName"
           required
           autoComplete="name"
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
         />
       </label>
 
@@ -122,7 +122,7 @@ export function EventRequestForm() {
           type="email"
           required
           autoComplete="email"
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
         />
       </label>
 
@@ -132,7 +132,7 @@ export function EventRequestForm() {
           name="contactPhone"
           type="tel"
           autoComplete="tel"
-          className="h-11 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
         />
       </label>
 
@@ -142,7 +142,7 @@ export function EventRequestForm() {
           name="notes"
           rows={3}
           maxLength={2000}
-          className="border border-formula-frost/18 bg-formula-paper/[0.04] px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          className="min-h-[7.5rem] border border-formula-frost/18 bg-formula-paper/[0.04] px-3 py-2.5 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:text-sm"
           placeholder="Format, catering, AV, club name, etc."
         />
       </label>
@@ -151,7 +151,7 @@ export function EventRequestForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 items-center border border-black/25 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black hover:brightness-105 disabled:opacity-50"
+          className="inline-flex min-h-12 w-full items-center justify-center border border-black/25 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black hover:brightness-105 disabled:opacity-50 sm:h-11 sm:w-auto sm:min-h-0"
         >
           {pending ? 'Sending…' : 'Submit request'}
         </button>

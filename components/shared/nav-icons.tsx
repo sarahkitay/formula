@@ -28,6 +28,7 @@ import {
   Target,
   Zap,
   MessageCircle,
+  Receipt,
 } from 'lucide-react'
 
 const MAP: Record<string, React.ReactNode> = {
@@ -58,6 +59,7 @@ const MAP: Record<string, React.ReactNode> = {
   Target: <Target className="h-4 w-4 shrink-0" strokeWidth={1.75} />,
   Zap: <Zap className="h-4 w-4 shrink-0" strokeWidth={1.75} />,
   MessageCircle: <MessageCircle className="h-4 w-4 shrink-0" strokeWidth={1.75} />,
+  Receipt: <Receipt className="h-4 w-4 shrink-0" strokeWidth={1.75} />,
 }
 
 export function NavIcon({ name, className }: { name: string; className?: string }) {

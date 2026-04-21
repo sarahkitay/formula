@@ -46,7 +46,7 @@ export function MarketingInnerPage({
   return (
     <article
       className={cn(
-        'mx-auto px-6 pb-24 pt-28 md:pb-32 md:pt-32',
+        'mx-auto px-4 pb-24 pt-24 sm:px-6 sm:pt-28 md:pb-32 md:pt-32',
         wide ? 'max-w-[1100px]' : 'max-w-[720px]',
         articleClassName
       )}
@@ -57,7 +57,9 @@ export function MarketingInnerPage({
         <h1 className={cn(marketingDisplayH1ClassName, 'mt-4')}>
           {marketingTitleContent(title)}
         </h1>
-        {intro ? <p className="mt-6 max-w-[62ch] text-[15px] leading-relaxed text-formula-frost/85">{intro}</p> : null}
+        {intro ? (
+          <p className="mt-6 max-w-[62ch] text-sm leading-relaxed text-formula-frost/85 sm:text-[15px]">{intro}</p>
+        ) : null}
         <div className="prose-marketing mt-12">{children}</div>
       </ScrollFadeIn>
     </article>

@@ -110,6 +110,13 @@ export const adminNav: NavItem[] = [
   gridStatus: 'neutral',
   },
   {
+  label: 'Invoices',
+  href: '/admin/invoices',
+  icon: 'Receipt',
+  description: 'Mail / Messages deep links',
+  gridStatus: 'neutral',
+  },
+  {
   label: 'Performance',
   href: '/admin/performance',
   icon: 'TrendingUp',

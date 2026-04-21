@@ -7,6 +7,7 @@ import { ParentPortalSessionContext } from '@/components/parent/parent-portal-co
 import { ParentLinkedPlayersProvider } from '@/components/parent/parent-linked-players-context'
 import { ParentPortalQuickSearch } from '@/components/parent/parent-portal-quick-search'
 import { loadProfileForUser } from '@/lib/auth/load-profile'
+import { getPortalRoute } from '@/lib/getPortalRoute'
 import { guardianOperatorSlug } from '@/lib/parent/guardian-operator-slug'
 import { parentNav } from '@/lib/nav/parent'
 import { supabase } from '@/lib/supabase'
@@ -67,7 +68,12 @@ export function ParentPortalShell({ children }: { children: React.ReactNode }) {
       }
 
       const role = (profile.role ?? '').toLowerCase()
-      if (role === 'staff' || role === 'admin' || role === 'coach') {
+      if (role === 'coach') {
+        router.replace(getPortalRoute(profile.role))
+        setPhase('redirect')
+        return
+      }
+      if (role === 'staff' || role === 'admin') {
         router.replace('/staff-portal')
         setPhase('redirect')
         return

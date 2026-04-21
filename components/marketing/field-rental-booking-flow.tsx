@@ -11,6 +11,7 @@ import {
   insuranceMayBeRequired,
 } from '@/lib/rentals/booking-classification'
 import {
+  FIELD_RENTAL_DEFAULT_DURATION_MINUTES,
   FIELD_RENTAL_DURATION_OPTIONS_MINUTES,
   FIELD_RENTAL_SLOT_STARTS,
   FIELD_RENTAL_WINDOW_CLOSE_MINUTES,
@@ -68,8 +69,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   const [rentalType, setRentalType] = useState<RentalType | ''>('')
   const [sessionDate, setSessionDate] = useState('')
   const [slotStart, setSlotStart] = useState('')
-  /** Default field rental block: 180 minutes (3 hr) — separate product from hosted party deposits. */
-  const [durationMinutes, setDurationMinutes] = useState(180)
+  /** Default field rental block: 2 hr — separate product from hosted party deposits. */
+  const [durationMinutes, setDurationMinutes] = useState(FIELD_RENTAL_DEFAULT_DURATION_MINUTES)
   const [fieldId, setFieldId] = useState('')
   const [participantCount, setParticipantCount] = useState<string>('')
   const [renterName, setRenterName] = useState('')
@@ -328,8 +329,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 2  -  Date, time, and field</p>
           <p className="text-sm text-formula-mist">
             <strong className="text-formula-paper">Field rental checkout only</strong> — not the hosted birthday party deposit (that is a separate booking type in
-            the hub). Start times every 30 minutes; duration defaults to <strong className="text-formula-paper">180 minutes</strong> (change if you need less).
-            Deposit scales at ${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr (e.g. 180 min = ${fieldRentalDepositUsd(180).toFixed(0)} per session). Overlapping holds
+            the hub). Start times every 30 minutes; duration defaults to <strong className="text-formula-paper">2 hours</strong> (change if you need a different length).
+            Deposit scales at ${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr (e.g. 2 hr = ${fieldRentalDepositUsd(FIELD_RENTAL_DEFAULT_DURATION_MINUTES).toFixed(0)} per session). Overlapping holds
             are blocked.
           </p>
           <div className="grid gap-4 md:grid-cols-2">

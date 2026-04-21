@@ -4,7 +4,7 @@
 export const EVENT_REQUEST_TYPES = [
   { value: 'corporate', label: 'Corporate / team building' },
   { value: 'hosted_birthday_party', label: 'Hosted birthday party (party deposit — not field rental checkout)' },
-  { value: 'field_rental_block', label: 'Field rental (structured deposit · default 180 min blocks)' },
+  { value: 'field_rental_block', label: 'Field rental window (book on Rentals · default 2 hr — not event pricing)' },
   { value: 'club', label: 'Club / team event' },
   { value: 'tournament', label: 'Tournament / showcase' },
   { value: 'camp_clinic', label: 'Camp or clinic block' },

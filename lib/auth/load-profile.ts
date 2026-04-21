@@ -13,13 +13,15 @@ export async function loadProfileForUser(userId: string): Promise<{ profile: Pro
 }
 
 /** Hub route for this role, or `null` if invalid (use `getPortalRoute` when you need `/login`). */
-export function portalRouteForRole(role: string | null | undefined): '/parent/dashboard' | '/staff-portal' | null {
+export function portalRouteForRole(
+  role: string | null | undefined
+): '/parent/dashboard' | '/staff-portal' | '/coach/today' | null {
   const r = getPortalRoute(role)
   return r === '/login' ? null : r
 }
 
 export function staffDashboardHref(role: string | null | undefined): string {
   const r = (role ?? '').toLowerCase()
-  if (r === 'coach') return '/coach/dashboard'
+  if (r === 'coach') return '/coach/today'
   return '/admin/dashboard'
 }

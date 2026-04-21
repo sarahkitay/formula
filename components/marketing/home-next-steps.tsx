@@ -40,7 +40,7 @@ export function HomeNextSteps() {
             <strong className="font-medium text-formula-paper">Adult programming:</strong> pickup and leagues for adults. Same professional standards.
           </li>
           <li>
-            <strong className="font-medium text-formula-paper">Field rentals:</strong> structured field time (default 180 min blocks) —{' '}
+            <strong className="font-medium text-formula-paper">Field rentals:</strong> structured field time (default 2 hr blocks) —{' '}
             <Link href={MARKETING_HREF.rentals} className="font-medium text-formula-volt/90 underline-offset-4 hover:underline">
               rentals
             </Link>

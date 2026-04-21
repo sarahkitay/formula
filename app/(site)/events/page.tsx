@@ -26,7 +26,7 @@ export default function EventsHubPage() {
     <MarketingInnerPage
       eyebrow="Events"
       title="Host at Formula"
-      intro="Request a block below — staff replies by email. Field rentals (default 180 min, deposit checkout) and hosted birthday parties (party deposit) are separate booking types; use the hub for those checkouts."
+      intro="Use the form below for corporate blocks, tournaments, camps, and similar hosted uses — staff replies by email. This page is not field-rental checkout: structured field time (published hourly rate, default 2 hr holds) and birthday parties (party deposit) are booked on Rentals, Parties, or the booking hub."
       wide
     >
       <section id="event-request" aria-labelledby="event-request-heading" className="not-prose scroll-mt-28">
@@ -49,9 +49,9 @@ export default function EventsHubPage() {
         {upcoming.length === 0 ? (
           <p className="mt-3 text-sm text-formula-frost/70">Nothing listed yet — check back or submit a request above.</p>
         ) : (
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-4">
             {upcoming.map((block) => (
-              <li key={block.id} className="rounded-lg border border-formula-frost/14 bg-formula-paper/[0.03] p-5">
+              <li key={block.id} className="rounded-lg border border-formula-frost/14 bg-formula-paper/[0.03] p-4 sm:p-5">
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/90">{block.title}</p>
                 <p className="mt-2 text-sm leading-relaxed text-formula-frost/85">{block.summary}</p>
               </li>
@@ -60,8 +60,8 @@ export default function EventsHubPage() {
         )}
       </section>
 
-      <details className="not-prose mt-12 rounded-xl border border-formula-frost/14 bg-formula-base/60 open:border-formula-frost/22">
-        <summary className="cursor-pointer px-5 py-4 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-paper md:px-6">
+      <details className="not-prose mt-10 rounded-xl border border-formula-frost/14 bg-formula-base/60 open:border-formula-frost/22 sm:mt-12">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center px-4 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-paper marker:content-none sm:min-h-14 sm:px-6 sm:py-4 [&::-webkit-details-marker]:hidden">
           Hosted paths & facility context
         </summary>
         <div className="border-t border-formula-frost/10 px-5 py-5 md:px-6">
@@ -82,8 +82,8 @@ export default function EventsHubPage() {
               Facility
             </Link>
             {' · '}
-            <Link href={`${MARKETING_HREF.bookAssessment}#field-rental-on-hub`} className="text-formula-volt underline-offset-2 hover:underline">
-              Field rental deposit
+            <Link href={MARKETING_HREF.rentals} className="text-formula-volt underline-offset-2 hover:underline">
+              Field rentals (pricing & deposit)
             </Link>
             .
           </p>

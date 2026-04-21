@@ -83,7 +83,7 @@ const HIGHLIGHTS: {
   },
   {
     label: 'Field rentals',
-    line: 'Structured deposits · default 180 min blocks.',
+    line: 'Structured deposits · default 2 hr blocks.',
     more: 'Not the same checkout as hosted birthday parties — separate booking type.',
     href: MARKETING_HREF.rentals,
     tier: 'quiet',
@@ -132,7 +132,7 @@ const SECONDARY_PATHS: { label: string; line: string; href: string; tier: 'defau
   },
   {
     label: 'Field rental booking',
-    line: 'Deposits · default 180 min — not party checkout.',
+    line: 'Deposits · default 2 hr — not party checkout.',
     href: MARKETING_HREF.rentals,
     tier: 'quiet',
   },
