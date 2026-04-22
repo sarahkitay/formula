@@ -6,7 +6,7 @@ export default function PublicSiteLayout({ children }: { children: React.ReactNo
   return (
     <div className="marketing-site min-h-[100dvh] antialiased">
       <SiteHeader />
-      <main>{children}</main>
+      <main className="min-w-0">{children}</main>
       <MarketingEmailCapture />
       <MarketingFooter />
     </div>

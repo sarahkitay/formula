@@ -6,19 +6,26 @@ import { EVENT_BUDGET_RANGES, EVENT_REQUEST_TYPES, EVENT_SPACE_PRESETS } from '@
 
 const INITIAL: EventRequestState = { ok: false, message: '' }
 
+/** `min-w-0` + `w-full` so grid children shrink on narrow viewports (select option text is a common overflow source). */
+const fieldClass =
+  'box-border w-full min-w-0 max-w-full min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm'
+
+const textareaClass =
+  'box-border w-full min-w-0 max-w-full min-h-[7.5rem] border border-formula-frost/18 bg-formula-paper/[0.04] px-3 py-2.5 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:text-sm'
+
+const labelClass = 'flex min-w-0 flex-col gap-2'
+
 export function EventRequestForm() {
   const [state, action, pending] = useActionState(submitEventRequest, INITIAL)
 
   return (
-    <form action={action} className="not-prose grid gap-4 sm:gap-5 md:grid-cols-2">
-      <label className="flex flex-col gap-2 md:col-span-2">
+    <form
+      action={action}
+      className="not-prose grid w-full min-w-0 max-w-full grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-6 md:gap-y-5"
+    >
+      <label className={`${labelClass} md:col-span-2`}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Event type *</span>
-        <select
-          name="eventType"
-          required
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-          defaultValue=""
-        >
+        <select name="eventType" required className={fieldClass} defaultValue="">
           <option value="" disabled>
             Select type
           </option>
@@ -30,27 +37,14 @@ export function EventRequestForm() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-2">
+      <label className={labelClass}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Headcount *</span>
-        <input
-          name="guestCount"
-          type="number"
-          min={1}
-          max={5000}
-          required
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-          placeholder="e.g. 40"
-        />
+        <input name="guestCount" type="number" min={1} max={5000} required className={fieldClass} placeholder="e.g. 40" />
       </label>
 
-      <label className="flex flex-col gap-2">
+      <label className={labelClass}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Budget *</span>
-        <select
-          name="budgetRange"
-          required
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-          defaultValue=""
-        >
+        <select name="budgetRange" required className={fieldClass} defaultValue="">
           <option value="" disabled>
             Select range
           </option>
@@ -62,27 +56,14 @@ export function EventRequestForm() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-2">
+      <label className={labelClass}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist"># of fields / areas *</span>
-        <input
-          name="spaceCount"
-          type="number"
-          min={1}
-          max={20}
-          required
-          defaultValue={1}
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-        />
+        <input name="spaceCount" type="number" min={1} max={20} required defaultValue={1} className={fieldClass} />
       </label>
 
-      <label className="flex flex-col gap-2 md:col-span-2">
+      <label className={`${labelClass} md:col-span-2`}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Space preference *</span>
-        <select
-          name="spacePreset"
-          required
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-          defaultValue=""
-        >
+        <select name="spacePreset" required className={fieldClass} defaultValue="">
           <option value="" disabled>
             Select primary need
           </option>
@@ -94,69 +75,47 @@ export function EventRequestForm() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-2 md:col-span-2">
+      <label className={`${labelClass} md:col-span-2`}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Preferred dates or timing</span>
         <input
           name="preferredDates"
           type="text"
           maxLength={240}
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
+          className={fieldClass}
           placeholder="e.g. Sat in March, weekday evenings"
         />
       </label>
 
-      <label className="flex flex-col gap-2">
+      <label className={labelClass}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Your name *</span>
-        <input
-          name="contactName"
-          required
-          autoComplete="name"
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-        />
+        <input name="contactName" required autoComplete="name" className={fieldClass} />
       </label>
 
-      <label className="flex flex-col gap-2">
+      <label className={labelClass}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Email *</span>
-        <input
-          name="contactEmail"
-          type="email"
-          required
-          autoComplete="email"
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-        />
+        <input name="contactEmail" type="email" required autoComplete="email" className={fieldClass} />
       </label>
 
-      <label className="flex flex-col gap-2 md:col-span-2">
+      <label className={`${labelClass} md:col-span-2`}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Phone</span>
-        <input
-          name="contactPhone"
-          type="tel"
-          autoComplete="tel"
-          className="min-h-12 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:h-11 sm:min-h-0 sm:text-sm"
-        />
+        <input name="contactPhone" type="tel" autoComplete="tel" className={fieldClass} />
       </label>
 
-      <label className="flex flex-col gap-2 md:col-span-2">
+      <label className={`${labelClass} md:col-span-2`}>
         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Notes</span>
-        <textarea
-          name="notes"
-          rows={3}
-          maxLength={2000}
-          className="min-h-[7.5rem] border border-formula-frost/18 bg-formula-paper/[0.04] px-3 py-2.5 text-base text-formula-paper outline-none focus:border-formula-volt/45 sm:text-sm"
-          placeholder="Format, catering, AV, club name, etc."
-        />
+        <textarea name="notes" rows={3} maxLength={2000} className={textareaClass} placeholder="Format, catering, AV, club name, etc." />
       </label>
 
-      <div className="md:col-span-2">
+      <div className="min-w-0 md:col-span-2">
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-12 w-full items-center justify-center border border-black/25 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black hover:brightness-105 disabled:opacity-50 sm:h-11 sm:w-auto sm:min-h-0"
+          className="flex min-h-12 w-full max-w-full items-center justify-center border border-black/25 bg-formula-volt px-4 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black hover:brightness-105 disabled:opacity-50 sm:h-11 sm:w-auto sm:min-h-0 sm:max-w-none sm:px-6"
         >
           {pending ? 'Sending…' : 'Submit request'}
         </button>
         {state.message ? (
-          <p className={`mt-3 text-sm ${state.ok ? 'text-formula-volt' : 'text-red-300'}`} role="status">
+          <p className={`mt-3 break-words text-sm ${state.ok ? 'text-formula-volt' : 'text-red-300'}`} role="status">
             {state.message}
           </p>
         ) : null}
