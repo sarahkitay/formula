@@ -1,17 +1,31 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { BookAssessmentClient } from '@/components/marketing/book-assessment-client'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { loadProfileForUser } from '@/lib/auth/load-profile'
-import { supabase } from '@/lib/supabase'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { supabase } from '@/lib/supabase'
 import { SITE } from '@/lib/site-config'
 
-export function ParentBookAssessmentClient() {
+export type ParentBookingProfile = {
+  guardianName: string
+  guardianEmail: string
+}
+
+const ParentBookingProfileContext = createContext<ParentBookingProfile | null>(null)
+
+export function useParentBookingProfile(): ParentBookingProfile {
+  const ctx = useContext(ParentBookingProfileContext)
+  if (!ctx) {
+    throw new Error('useParentBookingProfile must be used within parent /book-assessment layout')
+  }
+  return ctx
+}
+
+export function ParentBookAssessmentLayoutClient({ children }: { children: ReactNode }) {
   const router = useRouter()
   const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -95,14 +109,14 @@ export function ParentBookAssessmentClient() {
   }
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Reserve your spot"
-        subtitle={`${SITE.facilityName} · signed in. Same booking hub as the public page; receipts go to your account email.`}
-      />
-      <div className="mt-8 max-w-3xl">
-        <BookAssessmentClient variant="portal" guardianFullName={guardianName} guardianEmail={guardianEmail} />
-      </div>
-    </PageContainer>
+    <ParentBookingProfileContext.Provider value={{ guardianName, guardianEmail }}>
+      <PageContainer>
+        <PageHeader
+          title="Reserve your spot"
+          subtitle={`${SITE.facilityName} · signed in. Each booking type opens on its own page — use the hub to pick a flow.`}
+        />
+        <div className="mt-8 max-w-3xl">{children}</div>
+      </PageContainer>
+    </ParentBookingProfileContext.Provider>
   )
 }

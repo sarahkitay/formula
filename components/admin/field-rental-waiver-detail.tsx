@@ -2,18 +2,25 @@
 
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
+import { FieldRentalWaiverLegalDocument } from '@/components/marketing/field-rental-waiver-legal-document'
 import { Button } from '@/components/ui/button'
 import type { FieldRentalAgreementFull } from '@/lib/rentals/field-rental-agreements-server'
+import {
+  FIELD_RENTAL_WAIVER_ACK_CHECKBOXES,
+  FIELD_RENTAL_WAIVER_BULLETS,
+  FIELD_RENTAL_WAIVER_INTRO,
+  FIELD_RENTAL_WAIVER_TITLE,
+} from '@/lib/rentals/field-rental-waiver-legal-copy'
+import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
+import {
+  formatCheckoutAmount,
+  formatFieldRentalBookingSummaryLine,
+  rentalFieldLabel,
+} from '@/lib/rentals/field-rental-agreement-admin-display'
 import { formatRentalTypeForDisplay } from '@/lib/rentals/field-rental-waiver-labels'
-
-function formatSubmitted(iso: string | null) {
-  if (!iso) return '—'
-  try {
-    return new Date(iso).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
-  } catch {
-    return iso
-  }
-}
+import { decodeRentalDatesCompact } from '@/lib/rentals/rental-weekly-dates'
+import { humanRentalWindowSummary } from '@/lib/rentals/rental-time-window'
+import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
 
 function safePdfFileStem(name: string): string {
   const cleaned = name.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 48)
@@ -74,7 +81,7 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull): Promise<void> {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
 
-  paragraph('Submitted', formatSubmitted(a.submitted_at))
+  paragraph('Submitted', formatFacilityDateTimeShort(a.submitted_at))
   paragraph('Agreement ID', a.id)
   paragraph('Source', a.source)
   paragraph('Rental type', formatRentalTypeForDisplay(a.rental_type))
@@ -91,6 +98,41 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull): Promise<void> {
   paragraph('Risk / indemnity accepted', a.risk_accepted ? 'Yes' : 'No')
   paragraph('Rules / cancellation accepted', a.rules_accepted ? 'Yes' : 'No')
   paragraph('Stripe checkout session', a.stripe_checkout_session_id ?? '—')
+  paragraph('Checkout paid', formatCheckoutAmount(a.checkout_amount_total_cents ?? null, a.checkout_currency ?? null))
+  paragraph('Booking summary', formatFieldRentalBookingSummaryLine(a))
+  paragraph('Field (checkout)', rentalFieldLabel(a.booking_rental_field))
+  paragraph('Time window (checkout)', a.booking_rental_window ? humanRentalWindowSummary(a.booking_rental_window) : '—')
+  paragraph('Anchor session date', a.booking_rental_date ?? '—')
+  const decoded = a.booking_rental_dates_compact ? decodeRentalDatesCompact(a.booking_rental_dates_compact) : []
+  paragraph('Session dates (checkout)', decoded.length > 0 ? decoded.join(', ') : '—')
+  paragraph('Weeks billed (checkout)', a.booking_session_weeks != null ? String(a.booking_session_weeks) : '—')
+  paragraph('Headcount at checkout', a.booking_headcount_at_checkout != null ? String(a.booking_headcount_at_checkout) : '—')
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(12)
+  ensureSpace(10)
+  doc.text('Full agreement text (as shown to signers)', margin, y)
+  y += 8
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  paragraph('Title', FIELD_RENTAL_WAIVER_TITLE)
+  paragraph(
+    'Intro',
+    a.waiver_invite_id ? FIELD_RENTAL_WAIVER_INTRO.roster : FIELD_RENTAL_WAIVER_INTRO.standard
+  )
+  for (const b of FIELD_RENTAL_WAIVER_BULLETS) {
+    paragraph(b.lead, b.body)
+  }
+  doc.setFont('helvetica', 'bold')
+  ensureSpace(6)
+  doc.text('Acknowledgment checkboxes:', margin, y)
+  y += 5
+  doc.setFont('helvetica', 'normal')
+  for (const line of FIELD_RENTAL_WAIVER_ACK_CHECKBOXES) {
+    const wrapped = doc.splitTextToSize(`• ${line}`, maxTextW) as string[]
+    addLines(wrapped, 10, 5)
+  }
+  y += 4
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(11)
@@ -152,7 +194,25 @@ export function FieldRentalWaiverDetail({ agreement }: { agreement: FieldRentalA
         <Button size="md" variant="secondary" type="button" onClick={() => window.print()}>
           Print / Save as PDF
         </Button>
+        <Link
+          href={BOOKING_HUB_PUBLIC.waiver}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-9 items-center border border-formula-frost/20 px-4 font-mono text-[10px] font-semibold uppercase tracking-wide text-formula-paper hover:border-formula-volt/40"
+        >
+          Open live waiver form
+        </Link>
       </div>
+
+      <section className="mb-10 rounded-lg border border-formula-frost/14 bg-formula-base/40 p-6 md:p-8">
+        <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Full waiver text (as shown to signers)</h2>
+        <p className="mt-2 max-w-3xl text-xs leading-relaxed text-formula-frost/75">
+          Same agreement language and acknowledgments guests see before they sign. Scroll the live form in a new tab if you need the interactive layout.
+        </p>
+        <div className="mt-6 max-h-[min(70vh,720px)] overflow-y-auto rounded border border-formula-frost/12 bg-formula-deep/40 p-5 md:p-6">
+          <FieldRentalWaiverLegalDocument introVariant={agreement.waiver_invite_id ? 'roster' : 'standard'} />
+        </div>
+      </section>
 
       <article className="border border-formula-frost/12 bg-formula-paper/[0.03] p-6 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.04)] md:p-8">
         <header className="border-b border-formula-frost/12 pb-6">
@@ -160,8 +220,39 @@ export function FieldRentalWaiverDetail({ agreement }: { agreement: FieldRentalA
           <h1 className="mt-2 font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl">
             Signed waiver — full record
           </h1>
-          <p className="mt-2 font-mono text-[11px] text-formula-mist">Submitted {formatSubmitted(agreement.submitted_at)}</p>
+          <p className="mt-2 font-mono text-[11px] text-formula-mist">
+            Submitted {formatFacilityDateTimeShort(agreement.submitted_at)}
+          </p>
         </header>
+
+        <div className="mt-6 border border-formula-frost/12 bg-formula-deep/30 p-5">
+          <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Paid booking (from checkout)</h2>
+          <dl className="mt-4 divide-y divide-formula-frost/10">
+            {row('Amount paid', formatCheckoutAmount(agreement.checkout_amount_total_cents ?? null, agreement.checkout_currency ?? null))}
+            {row('Field', rentalFieldLabel(agreement.booking_rental_field))}
+            {row(
+              'Time window',
+              agreement.booking_rental_window ? humanRentalWindowSummary(agreement.booking_rental_window) : null
+            )}
+            {row('Session dates', (() => {
+              const compact = agreement.booking_rental_dates_compact
+              if (compact) {
+                const d = decodeRentalDatesCompact(compact)
+                if (d.length > 0) return d.join(', ')
+              }
+              if (agreement.booking_rental_date) {
+                return agreement.booking_session_weeks != null && agreement.booking_session_weeks > 1
+                  ? `${agreement.booking_rental_date} (${agreement.booking_session_weeks} weeks)`
+                  : agreement.booking_rental_date
+              }
+              return null
+            })())}
+            {row('Team size at checkout', agreement.booking_headcount_at_checkout != null ? String(agreement.booking_headcount_at_checkout) : null)}
+          </dl>
+          <p className="mt-3 text-xs text-formula-frost/70">
+            Roster waivers store one signer per row; “team size at checkout” is how many people paid checkout expected to sign. Per-waiver participant count is below.
+          </p>
+        </div>
 
         <dl className="mt-6 divide-y divide-formula-frost/10 border-t border-formula-frost/12">
           {row('Agreement ID', agreement.id)}

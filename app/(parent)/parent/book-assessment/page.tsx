@@ -1,12 +1,26 @@
-import type { Metadata } from 'next'
-import { ParentBookAssessmentClient } from '@/components/parent/parent-book-assessment-client'
+import Link from 'next/link'
+import { BookAssessmentHub } from '@/components/marketing/book-assessment-hub'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { BOOKING_HUB_PARENT } from '@/lib/marketing/book-assessment-paths'
 
-export const metadata: Metadata = {
-  title: 'Book a Skills Check',
-  description: 'Book a Formula Skills Check from your parent portal using live availability.',
-  robots: { index: false, follow: false },
+export default function ParentBookAssessmentHubPage() {
+  return (
+    <>
+      <BookAssessmentHub variant="portal" />
+      <p className="mt-10 border-t border-border-subtle pt-8 text-[12px] text-text-muted">
+        <Link href="/parent/dashboard" className="text-formula-volt underline-offset-2 hover:underline">
+          Parent home
+        </Link>
+        {' · '}
+        <Link href={MARKETING_HREF.assessment} className="text-formula-volt underline-offset-2 hover:underline">
+          What we measure
+        </Link>
+        {' · '}
+        <Link href={BOOKING_HUB_PARENT.fieldRental} className="text-formula-volt underline-offset-2 hover:underline">
+          Field rental
+        </Link>
+      </p>
+    </>
+  )
 }
 
-export default function ParentBookAssessmentPage() {
-  return <ParentBookAssessmentClient />
-}

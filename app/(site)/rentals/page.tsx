@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
 import { FieldRentalBookingFlow } from '@/components/marketing/field-rental-booking-flow'
 import { FieldRentalAgreementForm } from '@/components/marketing/field-rental-agreement-form'
+import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { FIELD_RENTAL_PUBLISHED_RATES } from '@/lib/marketing/public-pricing'
 
@@ -21,7 +22,7 @@ export default function RentalsPage() {
     >
       <p className="not-prose text-sm text-formula-frost/80">
         One stop with Skills Check + party deposit:{' '}
-        <Link href={`${MARKETING_HREF.bookAssessment}#field-rental-on-hub`} className="text-formula-volt underline-offset-2 hover:underline">
+        <Link href={BOOKING_HUB_PUBLIC.fieldRental} className="text-formula-volt underline-offset-2 hover:underline">
           booking hub
         </Link>
         . Corporate / large blocks:{' '}

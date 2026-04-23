@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
+import { loadFieldRentalCheckoutSnapshot } from '@/lib/rentals/field-rental-checkout-snapshot'
 import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
 import { PARTICIPANT_SELF_WAIVER_RENTAL_TYPE } from '@/lib/rentals/field-rental-waiver-labels'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
@@ -106,6 +107,11 @@ export async function submitFieldRentalAgreement(
     }
   }
 
+  const checkoutSnapshot =
+    rosterInvite?.stripe_checkout_session_id != null && rosterInvite.stripe_checkout_session_id.length > 0
+      ? await loadFieldRentalCheckoutSnapshot(rosterInvite.stripe_checkout_session_id)
+      : null
+
   const saved = await insertFieldRentalAgreement({
     rental_type: rentalType,
     participant_name: participantName,
@@ -122,6 +128,7 @@ export async function submitFieldRentalAgreement(
     risk_accepted: riskAccepted,
     rules_accepted: rulesAccepted,
     waiver_invite_id: waiverInviteId,
+    ...(checkoutSnapshot ?? {}),
   })
 
   if (!saved.ok) {

@@ -21,14 +21,14 @@ export const MARKETING_HREF = {
   assessment: '/assessment',
   privacy: '/privacy',
   terms: '/terms',
-  /** Public booking hub path only (compose hashes yourself, e.g. field rental). */
+  /** Public booking hub (landing + links into split flows). */
   bookAssessment: '/book-assessment',
-  /** Booking hub directory — public. */
+  /** Booking hub landing — public (legacy hash URLs still scroll to `#${BOOKING_HUB_DIRECTORY_ID}` on that page). */
   bookAssessmentDirectory: `/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
-  /** Same directory on the parent portal hub. */
+  /** Parent booking hub landing. */
   parentBookAssessmentDirectory: `/parent/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
-  /** Primary CTA: opens booking hub at the directory. */
-  bookAssessmentPortal: `/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
+  /** Primary CTA: booking hub home. */
+  bookAssessmentPortal: '/book-assessment',
 } as const
 
 export type MarketingHref = (typeof MARKETING_HREF)[keyof typeof MARKETING_HREF]

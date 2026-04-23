@@ -4,6 +4,7 @@ import { useActionState, useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { submitFieldRentalAgreement } from '@/app/(site)/rentals/actions'
+import { FieldRentalWaiverLegalDocument } from '@/components/marketing/field-rental-waiver-legal-document'
 
 const INITIAL_STATE = { ok: false, message: '' }
 
@@ -110,42 +111,7 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
       className="not-prose my-14 scroll-mt-28 border border-formula-frost/12 bg-formula-base/70 p-6 md:p-9"
     >
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Field rental agreement</p>
-      <h3 className="mt-4 font-mono text-xl font-semibold tracking-tight text-formula-paper md:text-2xl">
-        Field Rental Agreement and Facility Use Waiver
-      </h3>
-      <p className="mt-3 max-w-3xl text-sm leading-relaxed text-formula-mist">
-        {rosterInvite ? (
-          <>
-            You are signing for <strong className="text-formula-paper">one participant</strong> on this roster link. Each person should submit their own
-            waiver using the same link until the booking is complete. Minors: a parent or legal guardian completes the waiver.
-          </>
-        ) : (
-          <>
-            Required per participant: name, email, date of birth, and signed waiver before field access. Minors: parent or legal guardian completes the
-            waiver. Submitting sends a copy to our team and saves the waiver for staff review. Use the field rental checkout when you are also placing a paid
-            hold.
-          </>
-        )}
-      </p>
-
-      <div className="mt-8 space-y-4 border border-formula-frost/10 bg-formula-paper/[0.02] p-4 text-sm leading-relaxed text-formula-mist md:p-5">
-        <p>
-          <strong className="text-formula-paper">1) Rental type and classification:</strong> Facility may reclassify incorrect booking type and adjust pricing or
-          terminate without refund.
-        </p>
-        <p>
-          <strong className="text-formula-paper">2) Capacity limits:</strong> Club/Team Practice max 20 per field. Private/Semi-Private max 4; 5+ reclassified.
-          General Use/Pick-Up max 15 and no commercial/team instruction.
-        </p>
-        <p>
-          <strong className="text-formula-paper">3-5) Registration, minors, and field rules:</strong> all participants need signed waiver; parent/guardian signs for
-          minors. No cleats. Water only on field. No food/gum/other drinks on turf. Follow staff instructions.
-        </p>
-        <p>
-          <strong className="text-formula-paper">6-11) Time, cancellation, liability, insurance, indemnification:</strong> overstay billed in 30-minute increments;
-          48-hour cancellation policy; renter responsible for damage; COI may be required; renter assumes risk and certifies all participants signed.
-        </p>
-      </div>
+      <FieldRentalWaiverLegalDocument introVariant={rosterInvite ? 'roster' : 'standard'} className="mt-4" />
 
       <form action={action} className="mt-8 grid gap-5 md:grid-cols-2">
         <input type="hidden" name="signatureDataUrl" value={signatureDataUrl} />

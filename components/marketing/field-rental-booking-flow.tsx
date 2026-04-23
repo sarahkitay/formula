@@ -26,7 +26,7 @@ import {
 } from '@/lib/rentals/rental-time-window'
 
 const PAYMENT_STEP = 6
-const STEP_LABELS = ['Type', 'Slot', 'Headcount', 'Tier', 'Rules', 'Pay'] as const
+const STEP_LABELS = ['Type', 'Slot', 'Participants', 'Tier', 'Rules', 'Pay'] as const
 
 const FIELDS = [...RENTAL_FIELD_OPTIONS]
 
@@ -510,7 +510,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
 
       {step === 3 ? (
         <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 3  -  Participant count (control step)</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 3  -  Field rental headcount (classification)</p>
           <ul className="list-inside list-disc text-sm text-formula-mist">
             <li>Private: 1–4 → Tier 1 (Standard). 5+ → group / clinic tier on the same field (up to 20).</li>
             <li>Club / Team: max 20 per field (booking blocked above).</li>

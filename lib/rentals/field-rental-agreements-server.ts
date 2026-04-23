@@ -19,6 +19,14 @@ export type FieldRentalAgreementInsert = {
   stripe_checkout_session_id?: string | null
   /** When set, this waiver counts toward roster progress for that invite link. */
   waiver_invite_id?: string | null
+  checkout_amount_total_cents?: number | null
+  checkout_currency?: string | null
+  booking_rental_field?: string | null
+  booking_rental_window?: string | null
+  booking_rental_date?: string | null
+  booking_rental_dates_compact?: string | null
+  booking_session_weeks?: number | null
+  booking_headcount_at_checkout?: number | null
 }
 
 export type FieldRentalAgreementRow = {
@@ -34,6 +42,14 @@ export type FieldRentalAgreementRow = {
   organization_name: string | null
   signature_name: string
   notes: string | null
+  checkout_amount_total_cents: number | null
+  checkout_currency: string | null
+  booking_rental_field: string | null
+  booking_rental_window: string | null
+  booking_rental_date: string | null
+  booking_rental_dates_compact: string | null
+  booking_session_weeks: number | null
+  booking_headcount_at_checkout: number | null
 }
 
 /** Full row for admin detail + PDF (includes signature image data URL). */
@@ -44,6 +60,8 @@ export type FieldRentalAgreementFull = FieldRentalAgreementRow & {
   rules_accepted: boolean
   stripe_checkout_session_id: string | null
   source: string
+  /** Present when this waiver counted toward a roster invite link. */
+  waiver_invite_id?: string | null
 }
 
 export async function insertFieldRentalAgreement(
@@ -73,6 +91,14 @@ export async function insertFieldRentalAgreement(
       rules_accepted: row.rules_accepted,
       stripe_checkout_session_id: row.stripe_checkout_session_id ?? null,
       waiver_invite_id: row.waiver_invite_id ?? null,
+      checkout_amount_total_cents: row.checkout_amount_total_cents ?? null,
+      checkout_currency: row.checkout_currency ?? null,
+      booking_rental_field: row.booking_rental_field ?? null,
+      booking_rental_window: row.booking_rental_window ?? null,
+      booking_rental_date: row.booking_rental_date ?? null,
+      booking_rental_dates_compact: row.booking_rental_dates_compact ?? null,
+      booking_session_weeks: row.booking_session_weeks ?? null,
+      booking_headcount_at_checkout: row.booking_headcount_at_checkout ?? null,
     })
     .select('id')
     .single()
@@ -91,7 +117,7 @@ export async function listFieldRentalAgreementsRecent(limit = 100): Promise<Fiel
   const { data, error } = await supabase
     .from('field_rental_agreements')
     .select(
-      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_dob, parent_guardian_name, participant_count, organization_name, signature_name, notes'
+      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_dob, parent_guardian_name, participant_count, organization_name, signature_name, notes, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout'
     )
     .order('submitted_at', { ascending: false })
     .limit(Math.min(500, Math.max(1, limit)))
