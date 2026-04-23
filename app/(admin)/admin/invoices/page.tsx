@@ -9,12 +9,12 @@ export default function AdminInvoicesPage() {
       <div className="mx-auto max-w-2xl space-y-6">
         <PageHeader
           title="Invoices"
-          subtitle="Compose an invoice message, then open Mail or Messages on this device — or copy the text to paste anywhere."
+          subtitle="Create a Stripe payment link for the amount you enter, then share it by Mail, Messages, or copy — same message body everywhere."
         />
         <div className="rounded-xl border border-border-subtle bg-surface-elevated/40 p-5 sm:p-6">
           <div className="mb-5 flex items-center gap-2 text-text-muted">
             <Receipt className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-            <span className="text-xs font-medium uppercase tracking-wide">Open on this device</span>
+            <span className="text-xs font-medium uppercase tracking-wide">Invoice & pay link</span>
           </div>
           <InvoiceSendForm />
         </div>
