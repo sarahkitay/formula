@@ -3,8 +3,8 @@ import { listStripePurchasesAsPayments } from '@/lib/billing/stripe-purchases-se
 
 export const runtime = 'nodejs'
 
-/** Admin UI: completed Checkout rows from `stripe_purchases` (service role). */
+/** Admin UI: Checkout rows from `stripe_purchases` (service role), including field-rental deposits. */
 export async function GET() {
-  const payments = await listStripePurchasesAsPayments(300)
+  const payments = await listStripePurchasesAsPayments(600)
   return NextResponse.json({ payments })
 }

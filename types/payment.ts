@@ -9,6 +9,8 @@ export interface Payment {
   amount: number
   currency: 'USD'
   description: string
+  /** Stripe Checkout `metadata.type` (e.g. `field-rental-booking`, `assessment`). */
+  checkoutType?: string
   paymentMethod: PaymentMethod
   status: PaymentStatus
   createdAt: string

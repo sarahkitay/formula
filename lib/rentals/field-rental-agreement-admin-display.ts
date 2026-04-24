@@ -52,3 +52,22 @@ export function formatFieldRentalBookingSummaryLine(a: BookingPick): string {
   const parts = [field !== '—' ? field : '', windowHuman, dates !== '—' ? dates : '', hc].filter(Boolean)
   return parts.length > 0 ? parts.join(' · ') : '—'
 }
+
+/** Session summary for a roster invite row (uses expected headcount as roster size). */
+export function formatRosterInviteBookingSummary(inv: {
+  booking_rental_field?: string | null
+  booking_rental_window?: string | null
+  booking_rental_date?: string | null
+  booking_rental_dates_compact?: string | null
+  booking_session_weeks?: number | null
+  expected_waiver_count: number
+}): string {
+  return formatFieldRentalBookingSummaryLine({
+    booking_rental_field: inv.booking_rental_field ?? null,
+    booking_rental_window: inv.booking_rental_window ?? null,
+    booking_rental_date: inv.booking_rental_date ?? null,
+    booking_rental_dates_compact: inv.booking_rental_dates_compact ?? null,
+    booking_session_weeks: inv.booking_session_weeks ?? null,
+    booking_headcount_at_checkout: inv.expected_waiver_count,
+  })
+}

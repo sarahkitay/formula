@@ -6,16 +6,21 @@ import {
   computeRevenueThresholds,
   GROWTH_PHASES,
 } from '@/lib/mock-data/admin-operating-system'
+import { getStripeRevenueSummary } from '@/lib/billing/stripe-purchases-server'
+import { formatCurrency } from '@/lib/utils'
 
-export default function RevenueStrategyPage() {
-  const thresholds = computeRevenueThresholds(revenueByCategory)
+export default async function RevenueStrategyPage() {
+  const stripe = await getStripeRevenueSummary()
+  const rows =
+    stripe.configured && stripe.stripeRevenueByCategory.length > 0 ? stripe.stripeRevenueByCategory : revenueByCategory
+  const thresholds = computeRevenueThresholds(rows)
 
   return (
     <PageContainer fullWidth>
       <div className="space-y-6">
         <PageHeader
           title="Revenue + strategy"
-          subtitle="Mix discipline · utilization · correlation views · phase framing"
+          subtitle="Mix discipline from paid Stripe Checkout (field rentals, parties, assessments, packages, invoices). Totals match Admin → Payments."
           breadcrumb={[
             { label: 'Dashboard', href: '/admin/dashboard' },
             { label: 'Revenue' },
@@ -39,15 +44,26 @@ export default function RevenueStrategyPage() {
           </div>
         </AdminPanel>
 
-        <AdminPanel title="Revenue by category (demo)" eyebrow="YTD">
-          <AdminMonoTable
-            headers={['Category', 'Amount', 'Share']}
-            rows={revenueByCategory.map(r => [
-              r.category,
-              r.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
-              `${r.pct}%`,
-            ])}
-          />
+        <AdminPanel title="Revenue by category" eyebrow="STRIPE · PAID CHECKOUTS">
+          {rows.length === 0 ? (
+            <p className="font-mono text-[11px] text-formula-mist">
+              No completed Stripe purchases yet. After the webhook writes to <code className="text-formula-frost/80">stripe_purchases</code>, amounts roll up
+              here (including <strong className="text-formula-paper">field-rental-booking</strong> deposits).
+            </p>
+          ) : (
+            <AdminMonoTable
+              headers={['Category', 'Amount', 'Share of paid total']}
+              rows={rows.map(r => [r.category, formatCurrency(r.amount), `${r.pct}%`])}
+            />
+          )}
+          {stripe.configured ? (
+            <p className="mt-3 font-mono text-[10px] text-formula-mist">
+              Paid total in window: {formatCurrency(stripe.totalRevenue)} · {stripe.completedCount} completed ·{' '}
+              <a href="/admin/payments" className="text-formula-volt underline-offset-2 hover:underline">
+                Open ledger
+              </a>
+            </p>
+          ) : null}
         </AdminPanel>
 
         <AdminPanel title="Warning thresholds" eyebrow="DISCIPLINE">
@@ -65,7 +81,7 @@ export default function RevenueStrategyPage() {
             ])}
           />
           <p className="mt-3 font-mono text-[10px] text-formula-mist">
-            Rental &gt;35% · adult &gt;20% · camps &gt;20% · youth membership &lt;40% trigger review.
+            Rental &gt;35% · adult &gt;20% · camps &gt;20% · youth membership &lt;40% trigger review. Current % is share of your paid Stripe total above.
           </p>
         </AdminPanel>
 

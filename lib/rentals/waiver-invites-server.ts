@@ -11,11 +11,30 @@ export type WaiverInviteRow = {
   stripe_checkout_session_id: string | null
   notes: string | null
   created_at: string
+  /** Set when invite is created from paid Checkout (migration adds columns). */
+  purchaser_name?: string | null
+  purchaser_email?: string | null
+  checkout_amount_total_cents?: number | null
+  checkout_currency?: string | null
+  checkout_completed_at?: string | null
+  booking_rental_field?: string | null
+  booking_rental_window?: string | null
+  booking_rental_date?: string | null
+  booking_rental_dates_compact?: string | null
+  booking_session_weeks?: number | null
+}
+
+export type SignedWaiverOnInvite = {
+  id: string
+  participant_name: string
+  participant_email: string
+  submitted_at: string | null
 }
 
 export type WaiverInviteWithProgress = WaiverInviteRow & {
   completed_count: number
   remaining_count: number
+  signed_waivers: SignedWaiverOnInvite[]
 }
 
 function newInviteToken(): string {
@@ -35,6 +54,18 @@ export async function countWaiversForInviteId(inviteId: string): Promise<number>
     return 0
   }
   return count ?? 0
+}
+
+export async function getWaiverInviteById(id: string): Promise<WaiverInviteRow | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(id.trim())) return null
+  const supabase = getServiceSupabase()
+  if (!supabase) return null
+  const { data, error } = await supabase.from('field_rental_waiver_invites').select('*').eq('id', id.trim()).maybeSingle()
+  if (error) {
+    console.warn('[waiver-invites] get by id:', error.message)
+    return null
+  }
+  return data as WaiverInviteRow | null
 }
 
 export async function getWaiverInviteByToken(token: string): Promise<WaiverInviteRow | null> {
@@ -95,7 +126,7 @@ export async function createManualWaiverInvite(params: {
 
 /**
  * After a paid field-rental checkout, ensure a roster invite exists (idempotent on stripe session id).
- * Uses metadata.rental_participants as expected waiver count.
+ * Snapshots purchaser, amount, and booking metadata for admin roster view.
  */
 export async function ensureWaiverInviteForPaidFieldRental(session: Stripe.Checkout.Session): Promise<void> {
   const m = session.metadata ?? {}
@@ -110,6 +141,15 @@ export async function ensureWaiverInviteForPaidFieldRental(session: Stripe.Check
   const existing = await getWaiverInviteByStripeSessionId(sid)
   if (existing) return
 
+  const purchaserName =
+    session.customer_details?.name?.trim() ||
+    (typeof m.renter_name === 'string' ? m.renter_name.trim() : '') ||
+    null
+  const purchaserEmail = (session.customer_details?.email ?? session.customer_email ?? '').trim() || null
+  const weeksRaw = parseInt(m.rental_weeks ?? '', 10)
+  const booking_session_weeks = Number.isFinite(weeksRaw) && weeksRaw >= 1 ? weeksRaw : null
+  const paidAtIso = new Date().toISOString()
+
   const token = newInviteToken()
   const { error } = await supabase.from('field_rental_waiver_invites').insert({
     token,
@@ -118,6 +158,16 @@ export async function ensureWaiverInviteForPaidFieldRental(session: Stripe.Check
     rental_type: m.rental_type?.trim() || null,
     stripe_checkout_session_id: sid,
     notes: null,
+    purchaser_name: purchaserName,
+    purchaser_email: purchaserEmail,
+    checkout_amount_total_cents: session.amount_total ?? null,
+    checkout_currency: session.currency ?? 'usd',
+    checkout_completed_at: paidAtIso,
+    booking_rental_field: m.rental_field?.trim() || null,
+    booking_rental_window: m.rental_window?.trim() || null,
+    booking_rental_date: m.rental_date?.trim() || null,
+    booking_rental_dates_compact: m.rental_dates_compact?.trim() || null,
+    booking_session_weeks,
   })
   if (error) {
     if (error.code === '23505') return
@@ -130,12 +180,12 @@ export async function resolveWaiverInviteIdFromToken(token: string): Promise<str
   return row?.id ?? null
 }
 
-export async function listWaiverInvitesWithProgress(limit = 40): Promise<WaiverInviteWithProgress[]> {
+export async function listWaiverInvitesWithProgress(limit = 50): Promise<WaiverInviteWithProgress[]> {
   const supabase = getServiceSupabase()
   if (!supabase) return []
   const { data, error } = await supabase
     .from('field_rental_waiver_invites')
-    .select('id, token, expected_waiver_count, rental_ref, rental_type, stripe_checkout_session_id, notes, created_at')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(Math.min(100, Math.max(1, limit)))
 
@@ -145,13 +195,52 @@ export async function listWaiverInvitesWithProgress(limit = 40): Promise<WaiverI
   }
 
   const rows = data as WaiverInviteRow[]
+  const ids = rows.map(r => r.id)
+
+  let waiverRows: {
+    id: string
+    waiver_invite_id: string | null
+    participant_name: string
+    participant_email: string
+    submitted_at: string | null
+  }[] = []
+
+  if (ids.length > 0) {
+    const { data: wData, error: wErr } = await supabase
+      .from('field_rental_agreements')
+      .select('id, waiver_invite_id, participant_name, participant_email, submitted_at')
+      .in('waiver_invite_id', ids)
+      .order('submitted_at', { ascending: true })
+    if (wErr) {
+      console.warn('[waiver-invites] list signed waivers:', wErr.message)
+    } else {
+      waiverRows = (wData ?? []) as typeof waiverRows
+    }
+  }
+
+  const byInvite = new Map<string, SignedWaiverOnInvite[]>()
+  const completedByInvite = new Map<string, number>()
+  for (const w of waiverRows) {
+    if (!w.waiver_invite_id) continue
+    completedByInvite.set(w.waiver_invite_id, (completedByInvite.get(w.waiver_invite_id) ?? 0) + 1)
+    const list = byInvite.get(w.waiver_invite_id) ?? []
+    list.push({
+      id: w.id,
+      participant_name: w.participant_name,
+      participant_email: w.participant_email,
+      submitted_at: w.submitted_at,
+    })
+    byInvite.set(w.waiver_invite_id, list)
+  }
+
   const out: WaiverInviteWithProgress[] = []
   for (const row of rows) {
-    const completed = await countWaiversForInviteId(row.id)
+    const completed = completedByInvite.get(row.id) ?? 0
     out.push({
       ...row,
       completed_count: completed,
       remaining_count: Math.max(0, row.expected_waiver_count - completed),
+      signed_waivers: byInvite.get(row.id) ?? [],
     })
   }
   return out

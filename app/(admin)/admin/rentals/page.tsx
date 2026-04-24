@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
 import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
 import { ManualWaiverInviteForm } from '@/components/admin/manual-waiver-invite-form'
+import { RosterWaiverInvitesAdmin } from '@/components/admin/roster-waiver-invites-admin'
 import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
 import { listWaiverInvitesWithProgress } from '@/lib/rentals/waiver-invites-server'
 import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
@@ -102,29 +103,15 @@ export default async function RentalsPage() {
           ) : (
             <>
               <p className="mb-4 font-mono text-[11px] text-formula-mist">
-                Paid field-rental checkouts get a link on the checkout success page. Manual links (walk-ins, comps) can be created below. Each signed waiver
-                through the link increments the count until the expected number is reached.
+                After a paid field-rental checkout, the purchaser gets a roster link to share with each participant. Below: who paid, when, the session they
+                booked, progress (e.g. 5 / 12 signed), and an expandable list of every waiver tied to that link so you can see who is signing for which organizer.
+                Manual links skip Stripe snapshot fields.
               </p>
               <ManualWaiverInviteForm />
               {waiverInvites.length === 0 ? (
                 <p className="mt-6 font-mono text-[11px] text-formula-mist">No roster links yet.</p>
               ) : (
-                <div className="mt-6">
-                  <AdminMonoTable
-                  headers={['Created', 'Done / expected', 'Left', 'Ref', 'Type', 'Stripe session', 'URL']}
-                  rows={waiverInvites.map(inv => [
-                    formatFacilityDateTimeShort(inv.created_at),
-                    `${inv.completed_count} / ${inv.expected_waiver_count}`,
-                    String(inv.remaining_count),
-                    clip(inv.rental_ref, 24),
-                    clip(inv.rental_type, 20),
-                    clip(inv.stripe_checkout_session_id, 18),
-                    <span key={inv.id} className="font-mono text-[9px] text-formula-frost/85">
-                      {siteOrigin}/rentals/waiver/{inv.token.slice(0, 10)}…
-                    </span>,
-                  ])}
-                  />
-                </div>
+                <RosterWaiverInvitesAdmin invites={waiverInvites} siteOrigin={siteOrigin} />
               )}
             </>
           )}
@@ -162,6 +149,7 @@ export default async function RentalsPage() {
             <AdminMonoTable
               headers={[
                 'Submitted',
+                'Booked by (organizer)',
                 'Paid',
                 'Booking',
                 'Rental type',
@@ -176,6 +164,10 @@ export default async function RentalsPage() {
               ]}
               rows={waiverRows.map((r) => [
                 formatFacilityDateTimeShort(r.submitted_at),
+                clip(
+                  [r.roster_organizer_name, r.roster_organizer_email].filter(Boolean).join(' · ') || '—',
+                  40
+                ),
                 formatCheckoutAmount(r.checkout_amount_total_cents ?? null, r.checkout_currency ?? null),
                 clip(formatFieldRentalBookingSummaryLine(r), 52),
                 r.rental_type,
@@ -202,9 +194,9 @@ export default async function RentalsPage() {
           )}
           <p className="mt-3 font-mono text-[10px] text-formula-mist/80">
             Open a row for submitted answers, the complete agreement text shown to signers, acknowledgments, signature image, PDF download, and a link to the live
-            public waiver form. Submitted times use the facility timezone ({FACILITY_TIMEZONE}). “Count” is the headcount on this waiver line (roster links are 1 per
-            signer); team size from checkout appears in Booking. Paid / Booking populate when the waiver was submitted through a paid roster link (snapshot from
-            Stripe at submit).
+            public waiver form. Submitted times use the facility timezone ({FACILITY_TIMEZONE}). “Booked by” is the purchaser who paid the field rental when this
+            waiver came from their roster link. “Count” is 1 per roster signer; team size at checkout is in Booking. Paid / Booking on each row are snapshots at
+            waiver submit; the roster panel above shows the organizer payment once for the whole link.
           </p>
         </AdminPanel>
 

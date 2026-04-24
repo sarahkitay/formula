@@ -42,6 +42,7 @@ export type FieldRentalAgreementRow = {
   organization_name: string | null
   signature_name: string
   notes: string | null
+  waiver_invite_id: string | null
   checkout_amount_total_cents: number | null
   checkout_currency: string | null
   booking_rental_field: string | null
@@ -50,6 +51,9 @@ export type FieldRentalAgreementRow = {
   booking_rental_dates_compact: string | null
   booking_session_weeks: number | null
   booking_headcount_at_checkout: number | null
+  /** Populated in admin list when this waiver is tied to a paid roster link. */
+  roster_organizer_name?: string | null
+  roster_organizer_email?: string | null
 }
 
 /** Full row for admin detail + PDF (includes signature image data URL). */
@@ -60,8 +64,6 @@ export type FieldRentalAgreementFull = FieldRentalAgreementRow & {
   rules_accepted: boolean
   stripe_checkout_session_id: string | null
   source: string
-  /** Present when this waiver counted toward a roster invite link. */
-  waiver_invite_id?: string | null
 }
 
 export async function insertFieldRentalAgreement(
@@ -117,7 +119,7 @@ export async function listFieldRentalAgreementsRecent(limit = 100): Promise<Fiel
   const { data, error } = await supabase
     .from('field_rental_agreements')
     .select(
-      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_dob, parent_guardian_name, participant_count, organization_name, signature_name, notes, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout'
+      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_dob, parent_guardian_name, participant_count, organization_name, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout'
     )
     .order('submitted_at', { ascending: false })
     .limit(Math.min(500, Math.max(1, limit)))
@@ -126,7 +128,30 @@ export async function listFieldRentalAgreementsRecent(limit = 100): Promise<Fiel
     console.warn('[field-rental-agreements] list:', error.message)
     return []
   }
-  return (data ?? []) as FieldRentalAgreementRow[]
+
+  const baseRows = (data ?? []) as FieldRentalAgreementRow[]
+  const inviteIds = [...new Set(baseRows.map(r => r.waiver_invite_id).filter((id): id is string => Boolean(id)))]
+  if (inviteIds.length === 0) return baseRows
+
+  const { data: invData, error: invErr } = await supabase
+    .from('field_rental_waiver_invites')
+    .select('id, purchaser_name, purchaser_email')
+    .in('id', inviteIds)
+
+  if (invErr || !invData?.length) return baseRows
+
+  const invMap = new Map(
+    (invData as { id: string; purchaser_name: string | null; purchaser_email: string | null }[]).map(i => [i.id, i])
+  )
+
+  return baseRows.map(r => {
+    const inv = r.waiver_invite_id ? invMap.get(r.waiver_invite_id) : undefined
+    return {
+      ...r,
+      roster_organizer_name: inv?.purchaser_name ?? null,
+      roster_organizer_email: inv?.purchaser_email ?? null,
+    }
+  })
 }
 
 export async function getFieldRentalAgreementById(id: string): Promise<FieldRentalAgreementFull | null> {

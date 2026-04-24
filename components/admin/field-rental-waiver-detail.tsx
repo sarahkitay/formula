@@ -22,6 +22,16 @@ import { decodeRentalDatesCompact } from '@/lib/rentals/rental-weekly-dates'
 import { humanRentalWindowSummary } from '@/lib/rentals/rental-time-window'
 import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
 
+export type RosterOrganizerContext = {
+  purchaserName: string | null
+  purchaserEmail: string | null
+  paidLabel: string
+  paidAtLabel: string
+  sessionSummary: string
+  rosterProgress: string
+  inviteToken: string
+}
+
 function safePdfFileStem(name: string): string {
   const cleaned = name.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 48)
   return cleaned.length > 0 ? cleaned : 'participant'
@@ -37,7 +47,7 @@ function row(label: string, value: string | null | undefined) {
   )
 }
 
-async function downloadWaiverPdf(a: FieldRentalAgreementFull): Promise<void> {
+async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrganizerContext | null): Promise<void> {
   const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'mm', format: 'letter' })
   const pageW = doc.internal.pageSize.getWidth()
@@ -82,6 +92,14 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull): Promise<void> {
   doc.setFontSize(10)
 
   paragraph('Submitted', formatFacilityDateTimeShort(a.submitted_at))
+  if (roster) {
+    paragraph('Roster organizer (paid deposit)', roster.purchaserName ?? '—')
+    paragraph('Organizer email', roster.purchaserEmail ?? '—')
+    paragraph('Organizer paid', roster.paidLabel)
+    paragraph('Organizer paid at', roster.paidAtLabel)
+    paragraph('Booked session (roster link)', roster.sessionSummary)
+    paragraph('Roster progress when exporting', roster.rosterProgress)
+  }
   paragraph('Agreement ID', a.id)
   paragraph('Source', a.source)
   paragraph('Rental type', formatRentalTypeForDisplay(a.rental_type))
@@ -162,13 +180,19 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull): Promise<void> {
   doc.save(`field-rental-waiver-${safePdfFileStem(a.participant_name)}-${a.id.slice(0, 8)}.pdf`)
 }
 
-export function FieldRentalWaiverDetail({ agreement }: { agreement: FieldRentalAgreementFull }) {
+export function FieldRentalWaiverDetail({
+  agreement,
+  rosterOrganizer = null,
+}: {
+  agreement: FieldRentalAgreementFull
+  rosterOrganizer?: RosterOrganizerContext | null
+}) {
   const [pdfBusy, setPdfBusy] = useState(false)
 
   const onDownloadPdf = useCallback(async () => {
     setPdfBusy(true)
     try {
-      await downloadWaiverPdf(agreement)
+      await downloadWaiverPdf(agreement, rosterOrganizer ?? null)
     } catch (e) {
       console.error(e)
       window.alert(
@@ -177,7 +201,7 @@ export function FieldRentalWaiverDetail({ agreement }: { agreement: FieldRentalA
     } finally {
       setPdfBusy(false)
     }
-  }, [agreement])
+  }, [agreement, rosterOrganizer])
 
   return (
     <div className="space-y-8">
@@ -203,6 +227,44 @@ export function FieldRentalWaiverDetail({ agreement }: { agreement: FieldRentalA
           Open live waiver form
         </Link>
       </div>
+
+      {rosterOrganizer ? (
+        <section className="rounded-lg border border-formula-volt/25 bg-formula-volt/[0.06] p-5 md:p-6">
+          <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-mist">Roster link · who paid for this rental</h2>
+          <p className="mt-2 text-sm text-formula-paper">
+            <strong>{rosterOrganizer.purchaserName ?? 'Organizer'}</strong>
+            {rosterOrganizer.purchaserEmail ? (
+              <span className="text-formula-frost/85"> · {rosterOrganizer.purchaserEmail}</span>
+            ) : null}
+          </p>
+          <dl className="mt-4 space-y-2 font-mono text-[11px] text-formula-frost/88">
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-formula-mist">Paid</dt>
+              <dd>
+                {rosterOrganizer.paidLabel} · {rosterOrganizer.paidAtLabel}
+              </dd>
+            </div>
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-formula-mist">Session booked</dt>
+              <dd>{rosterOrganizer.sessionSummary}</dd>
+            </div>
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-formula-mist">Roster</dt>
+              <dd>{rosterOrganizer.rosterProgress} signed via this link</dd>
+            </div>
+          </dl>
+          <p className="mt-3 text-xs text-formula-frost/75">
+            The signer below completed a waiver for the session this organizer paid for.{' '}
+            <Link
+              href={`/rentals/waiver/${rosterOrganizer.inviteToken}`}
+              className="text-formula-volt underline-offset-2 hover:underline"
+            >
+              Open participant waiver page
+            </Link>
+            .
+          </p>
+        </section>
+      ) : null}
 
       <section className="mb-10 rounded-lg border border-formula-frost/14 bg-formula-base/40 p-6 md:p-8">
         <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Full waiver text (as shown to signers)</h2>

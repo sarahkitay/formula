@@ -73,7 +73,11 @@ export default async function AdminDashboardPage() {
   )[0]
 
   const mapAssets = facilityAssets.length > 0 ? facilityAssets : defaultIdleFacilityAssets()
-  const youthShareRow = revenueByCategory.find(r => r.category.startsWith('Youth'))
+  const stripeCategoryRows =
+    stripeSummary.configured && stripeSummary.stripeRevenueByCategory.length > 0
+      ? stripeSummary.stripeRevenueByCategory
+      : revenueByCategory
+  const youthShareRow = stripeCategoryRows.find(r => r.category.startsWith('Youth'))
   const youthShareLabel = youthShareRow != null ? `${Math.round(youthShareRow.pct)}%` : '—'
 
   const navTiles = adminNav.filter(item => item.href !== '/admin/dashboard')
@@ -200,8 +204,13 @@ export default async function AdminDashboardPage() {
           href={item.href}
           dataPoints={[
             { label: 'Zones (map)', value: mapAssets.length },
-            { label: 'Ext. bookings', value: '—' },
-            { label: 'Today revenue', value: '—' },
+            { label: 'Field rental paid (all)', value: formatCurrency(stripeSummary.fieldRentalRevenueTotal) },
+            {
+              label: 'Field rental paid (today)',
+              value: formatCurrency(stripeSummary.fieldRentalRevenueToday),
+              highlight: stripeSummary.fieldRentalRevenueToday > 0 ? 'green' : undefined,
+            },
+            { label: 'Paid deposits (count)', value: stripeSummary.fieldRentalCompletedCount },
           ]}
         />
       )
@@ -280,7 +289,7 @@ export default async function AdminDashboardPage() {
     }
 
     if (item.href === '/admin/revenue-strategy') {
-      const breached = computeRevenueThresholds(revenueByCategory).filter(t => t.breached).length
+      const breached = computeRevenueThresholds(stripeCategoryRows).filter(t => t.breached).length
       return (
         <ModuleBlock
           key={item.href}

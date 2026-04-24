@@ -59,9 +59,11 @@ export default function PaymentsPage() {
     },
     {
       key: 'description',
-      header: 'Type',
+      header: 'Product',
       render: p => (
-        <span className="block max-w-[200px] truncate text-sm text-text-secondary">{p.description}</span>
+        <span className="block max-w-[min(280px,40vw)] truncate text-sm text-text-secondary" title={p.description}>
+          {p.description}
+        </span>
       ),
     },
     {
@@ -107,7 +109,7 @@ export default function PaymentsPage() {
       <div className="space-y-6">
         <PageHeader
           title="Payments"
-          subtitle="Online payments completed through checkout (read-only ledger)"
+          subtitle="Stripe Checkout sessions from webhook — includes field rental deposits, party deposits, assessments, packages, and custom invoices."
           actions={
             <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />} type="button" disabled>
               Export CSV

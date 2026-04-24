@@ -1,4 +1,6 @@
 import { getServiceSupabase } from '@/lib/supabase/service'
+import type { RevenueCategoryRow } from '@/lib/mock-data/admin-operating-system'
+import { FACILITY_TIMEZONE, formatYmdInTimeZone } from '@/lib/facility/facility-day'
 import type { Payment, PaymentMethod, PaymentStatus } from '@/types'
 
 type StripePurchaseRow = {
@@ -22,14 +24,62 @@ function mapPaymentStatus(stripeStatus: string | null): PaymentStatus {
   return 'pending'
 }
 
+function metaString(m: Record<string, unknown>, key: string): string | undefined {
+  const v = m[key]
+  return typeof v === 'string' && v.trim() ? v.trim() : undefined
+}
+
+/** Human-readable line item for admin / parent ledgers. */
+export function checkoutTypeDescription(type: string, metadata: Record<string, unknown>): string {
+  const m = metadata ?? {}
+  switch (type) {
+    case 'field-rental-booking': {
+      const field = metaString(m, 'rental_field')
+      const weeks = metaString(m, 'rental_weeks')
+      const parts = ['Field rental deposit']
+      if (field) parts.push(field.replace(/_/g, ' '))
+      if (weeks) parts.push(`${weeks} session(s)`)
+      return parts.join(' · ')
+    }
+    case 'party-booking-1k':
+      return 'Party deposit ($1k)'
+    case 'assessment':
+      return 'Skills check / assessment'
+    case 'package-5':
+      return 'Session package (5)'
+    case 'package-10':
+      return 'Session package (10)'
+    case 'manual-invoice':
+      return metaString(m, 'invoice_payee') ? `Custom invoice · ${metaString(m, 'invoice_payee')}` : 'Custom invoice'
+    default:
+      return type ? type.replace(/-/g, ' ') : 'Checkout'
+  }
+}
+
+function customerDisplayName(row: StripePurchaseRow): string {
+  const m = row.metadata ?? {}
+  const email = row.email?.trim()
+  if (row.type === 'party-booking-1k') {
+    const name = metaString(m, 'party_contact_name')
+    if (name) return name
+  }
+  if (row.type === 'manual-invoice') {
+    const payee = metaString(m, 'invoice_payee')
+    if (payee) return payee
+  }
+  if (row.type === 'field-rental-booking') {
+    const ref = metaString(m, 'rental_ref')
+    if (email) return email
+    if (ref) return `Booking ${ref.slice(0, 10)}…`
+  }
+  if (email) return email
+  return 'Customer'
+}
+
 function mapRowToPayment(row: StripePurchaseRow): Payment {
   const meta = row.metadata ?? {}
   const playerId = typeof meta.player_id === 'string' ? meta.player_id : ''
-  const playerName =
-    typeof meta.player_name === 'string' && meta.player_name.trim()
-      ? meta.player_name.trim()
-      : row.email?.trim() || 'Customer'
-
+  const playerName = customerDisplayName(row)
   const dollars = row.amount / 100
 
   return {
@@ -38,7 +88,8 @@ function mapRowToPayment(row: StripePurchaseRow): Payment {
     playerName,
     amount: dollars,
     currency: 'USD',
-    description: row.type.replace(/-/g, ' '),
+    description: checkoutTypeDescription(row.type, meta),
+    checkoutType: row.type,
     paymentMethod: 'card' as PaymentMethod,
     status: mapPaymentStatus(row.payment_status),
     createdAt: row.created_at,
@@ -46,8 +97,49 @@ function mapRowToPayment(row: StripePurchaseRow): Payment {
   }
 }
 
+/**
+ * Roll up completed Checkout revenue into coarse buckets that align with
+ * `computeRevenueThresholds` category name prefixes (Rentals, Youth membership, …).
+ */
+export function buildStripeRevenueCategoryRows(completed: Payment[]): RevenueCategoryRow[] {
+  const total = completed.reduce((s, p) => s + p.amount, 0)
+  if (total <= 0) return []
+
+  const sumTypes = (types: Set<string>) =>
+    completed.filter(p => p.checkoutType && types.has(p.checkoutType)).reduce((s, p) => s + p.amount, 0)
+
+  const rentals = sumTypes(new Set(['field-rental-booking', 'party-booking-1k']))
+  const youthPrograms = sumTypes(new Set(['assessment', 'package-5', 'package-10']))
+  const custom = sumTypes(new Set(['manual-invoice']))
+  const attributed = rentals + youthPrograms + custom
+  const other = Math.max(0, total - attributed)
+
+  const mk = (category: string, amount: number): RevenueCategoryRow => ({
+    category,
+    amount,
+    pct: Math.round((amount / total) * 1000) / 10,
+  })
+
+  const out: RevenueCategoryRow[] = []
+  if (rentals > 0) out.push(mk('Rentals & facility (Stripe)', rentals))
+  if (youthPrograms > 0) out.push(mk('Youth membership / Skills + packages (Stripe)', youthPrograms))
+  if (custom > 0) out.push(mk('Custom invoices (Stripe)', custom))
+  if (other > 0) out.push(mk('Other checkouts (Stripe)', other))
+
+  if (out.length > 0) {
+    let sumEarly = 0
+    for (let i = 0; i < out.length - 1; i++) sumEarly += out[i].pct
+    out[out.length - 1] = { ...out[out.length - 1], pct: Math.round((100 - sumEarly) * 10) / 10 }
+  }
+  return out
+}
+
+function isSameFacilityDay(iso: string, ref: Date): boolean {
+  return formatYmdInTimeZone(iso, FACILITY_TIMEZONE) === formatYmdInTimeZone(ref, FACILITY_TIMEZONE)
+}
+
 /** Completed Stripe Checkout rows (service role). Amounts are stored in cents. */
-export async function listStripePurchasesAsPayments(limit = 200): Promise<Payment[]> {
+export async function listStripePurchasesAsPayments(limit = 500): Promise<Payment[]> {
   const sb = getServiceSupabase()
   if (!sb) return []
 
@@ -55,11 +147,15 @@ export async function listStripePurchasesAsPayments(limit = 200): Promise<Paymen
     .from('stripe_purchases')
     .select('id, stripe_session_id, stripe_customer_id, email, type, amount, currency, payment_status, metadata, created_at')
     .order('created_at', { ascending: false })
-    .limit(limit)
+    .limit(Math.min(2000, Math.max(1, limit)))
 
-  if (error || !data?.length) return []
+  if (error) {
+    console.warn('[stripe-purchases] list:', error.message)
+    return []
+  }
 
-  return (data as StripePurchaseRow[]).map(mapRowToPayment)
+  const rows = (data ?? []) as StripePurchaseRow[]
+  return rows.map(mapRowToPayment)
 }
 
 export async function getStripeRevenueSummary(): Promise<{
@@ -70,6 +166,11 @@ export async function getStripeRevenueSummary(): Promise<{
   recent: Payment[]
   lastCompleted: Payment | undefined
   rowCount: number
+  /** Completed revenue grouped for overview / strategy (empty if no data). */
+  stripeRevenueByCategory: RevenueCategoryRow[]
+  fieldRentalRevenueTotal: number
+  fieldRentalRevenueToday: number
+  fieldRentalCompletedCount: number
 }> {
   const sb = getServiceSupabase()
   if (!sb) {
@@ -81,12 +182,21 @@ export async function getStripeRevenueSummary(): Promise<{
       recent: [],
       lastCompleted: undefined,
       rowCount: 0,
+      stripeRevenueByCategory: [],
+      fieldRentalRevenueTotal: 0,
+      fieldRentalRevenueToday: 0,
+      fieldRentalCompletedCount: 0,
     }
   }
   const rows = await listStripePurchasesAsPayments(500)
   const completed = rows.filter(r => r.status === 'completed')
   const pending = rows.filter(r => r.status === 'pending')
   const totalRevenue = completed.reduce((s, r) => s + r.amount, 0)
+  const fieldRows = completed.filter(p => p.checkoutType === 'field-rental-booking')
+  const now = new Date()
+  const fieldRentalRevenueToday = fieldRows.filter(p => isSameFacilityDay(p.createdAt, now)).reduce((s, p) => s + p.amount, 0)
+  const fieldRentalRevenueTotal = fieldRows.reduce((s, p) => s + p.amount, 0)
+
   return {
     configured: true,
     totalRevenue,
@@ -95,5 +205,9 @@ export async function getStripeRevenueSummary(): Promise<{
     recent: rows.slice(0, 10),
     lastCompleted: completed[0],
     rowCount: rows.length,
+    stripeRevenueByCategory: buildStripeRevenueCategoryRows(completed),
+    fieldRentalRevenueTotal,
+    fieldRentalRevenueToday,
+    fieldRentalCompletedCount: fieldRows.length,
   }
 }

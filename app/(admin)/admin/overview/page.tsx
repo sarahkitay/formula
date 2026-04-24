@@ -35,6 +35,10 @@ export default async function AdminOverviewPage() {
   const expiredMemberships = 0
   const currentBlockCount = todaysSessions.filter(s => s.status === 'in-progress').length
   const revenueMtd = stripeSummary.totalRevenue
+  const revenueCategoryRows =
+    stripeSummary.configured && stripeSummary.stripeRevenueByCategory.length > 0
+      ? stripeSummary.stripeRevenueByCategory
+      : revenueByCategory
 
   return (
     <PageContainer fullWidth>
@@ -79,7 +83,7 @@ export default async function AdminOverviewPage() {
             href="/admin/schedule"
           />
           <StatCard
-            label="Revenue (MTD)"
+            label="Revenue (Stripe, paid)"
             value={<CountUp end={revenueMtd} format="currency" />}
             href="/admin/payments"
           />
@@ -198,7 +202,8 @@ export default async function AdminOverviewPage() {
           </div>
           <div className="panel-technical p-5">
             <SectionHeader
-              title="Revenue snapshot"
+              title="Revenue snapshot (Stripe)"
+              description="Paid Checkout sessions from your webhook — includes field rental deposits, parties, assessments, packages, and custom invoices."
               action={
                 <Link href="/admin/revenue-strategy">
                   <Button variant="ghost" size="sm" rightIcon={<ChevronRight className="h-3 w-3" strokeWidth={2} />}>
@@ -208,19 +213,23 @@ export default async function AdminOverviewPage() {
               }
             />
             <div className="mt-3 space-y-1.5 font-mono text-[11px]">
-              {revenueByCategory.slice(0, 5).map(r => (
-                <div key={r.category} className="flex justify-between">
-                  <span className="text-text-secondary">{r.category}</span>
-                  <span className="tabular-nums text-text-muted">
-                    {r.pct}% · {formatCurrency(r.amount)}
-                  </span>
-                </div>
-              ))}
+              {revenueCategoryRows.length === 0 ? (
+                <p className="text-text-muted">No completed Stripe checkouts in the ledger yet.</p>
+              ) : (
+                revenueCategoryRows.slice(0, 8).map(r => (
+                  <div key={r.category} className="flex justify-between gap-2">
+                    <span className="min-w-0 text-text-secondary">{r.category}</span>
+                    <span className="shrink-0 tabular-nums text-text-muted">
+                      {r.pct}% · {formatCurrency(r.amount)}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
             <div className="mt-3 border-t border-border pt-3 font-mono text-[10px] text-text-muted">
-              Threshold checks:{' '}
-              {computeRevenueThresholds(revenueByCategory).filter(t => t.breached).length === 0
-                ? 'none breached (demo mix)'
+              Threshold checks (share of paid Stripe total):{' '}
+              {computeRevenueThresholds(revenueCategoryRows).filter(t => t.breached).length === 0
+                ? 'none breached'
                 : 'review required'}
             </div>
           </div>
@@ -359,7 +368,7 @@ export default async function AdminOverviewPage() {
             {recentPayments.length === 0 && (
               <p className="py-6 text-center text-[13px] text-text-muted">
                 {stripeSummary.configured
-                  ? 'No online payments recorded yet. Completed checkouts will show here automatically.'
+                  ? 'No Stripe purchases in the recent window yet. Field rental deposits and other checkouts appear after successful payment and webhook insert.'
                   : 'Payment history is unavailable right now. Try again later or contact support.'}
               </p>
             )}
