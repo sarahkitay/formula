@@ -5,6 +5,9 @@ import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { submitFieldRentalAgreement } from '@/app/(site)/rentals/actions'
 import { FieldRentalWaiverLegalDocument } from '@/components/marketing/field-rental-waiver-legal-document'
+import { FIELD_RENTAL_WAIVER_ACK_CHECKBOXES } from '@/lib/rentals/field-rental-waiver-legal-copy'
+
+const ACK_FIELD_NAMES = ['agreementAccepted', 'riskAccepted', 'rulesAccepted'] as const
 
 const INITIAL_STATE = { ok: false, message: '' }
 
@@ -171,9 +174,12 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
         </label>
 
         <label className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Phone</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Phone *</span>
           <input
             name="participantPhone"
+            required
+            type="tel"
+            autoComplete="tel"
             className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
           />
         </label>
@@ -186,6 +192,29 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
             required
             max={today}
             className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+          />
+        </label>
+
+        <label className="flex flex-col gap-2 md:col-span-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Address *</span>
+          <textarea
+            name="participantAddress"
+            required
+            rows={2}
+            autoComplete="street-address"
+            className="border border-formula-frost/16 bg-formula-paper/[0.03] px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+            placeholder="Street, city, state, ZIP"
+          />
+        </label>
+
+        <label className="flex flex-col gap-2 md:col-span-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Emergency contact — name & phone *</span>
+          <textarea
+            name="emergencyContact"
+            required
+            rows={2}
+            className="border border-formula-frost/16 bg-formula-paper/[0.03] px-3 py-2 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+            placeholder="e.g. Jane Doe · 818-555-0100"
           />
         </label>
 
@@ -210,11 +239,13 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
           />
         </label>
 
-        <label className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Team / organization</span>
+        <label className="flex flex-col gap-2 md:col-span-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Team / organization *</span>
           <input
             name="organizationName"
+            required
             className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+            placeholder="Club or team name"
           />
         </label>
 
@@ -263,18 +294,12 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
           />
         </label>
 
-        <label className="flex items-start gap-3 md:col-span-2">
-          <input type="checkbox" name="agreementAccepted" required className="mt-1 h-4 w-4 accent-formula-volt" />
-          <span className="text-sm text-formula-mist">I agree to all terms in the Field Rental Agreement and Facility Use Waiver.</span>
-        </label>
-        <label className="flex items-start gap-3 md:col-span-2">
-          <input type="checkbox" name="riskAccepted" required className="mt-1 h-4 w-4 accent-formula-volt" />
-          <span className="text-sm text-formula-mist">I assume all participation risks and agree to indemnify and hold harmless Formula Soccer Center.</span>
-        </label>
-        <label className="flex items-start gap-3 md:col-span-2">
-          <input type="checkbox" name="rulesAccepted" required className="mt-1 h-4 w-4 accent-formula-volt" />
-          <span className="text-sm text-formula-mist">I understand and will comply with facility rules, time limits, and cancellation policy.</span>
-        </label>
+        {FIELD_RENTAL_WAIVER_ACK_CHECKBOXES.map((label, i) => (
+          <label key={ACK_FIELD_NAMES[i]} className="flex items-start gap-3 md:col-span-2">
+            <input type="checkbox" name={ACK_FIELD_NAMES[i]} required className="mt-1 h-4 w-4 accent-formula-volt" />
+            <span className="text-sm text-formula-mist">{label}</span>
+          </label>
+        ))}
 
         <div className="md:col-span-2">
           <button

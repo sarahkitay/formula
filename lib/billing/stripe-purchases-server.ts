@@ -1,6 +1,7 @@
 import { getServiceSupabase } from '@/lib/supabase/service'
 import type { RevenueCategoryRow } from '@/lib/mock-data/admin-operating-system'
 import { FACILITY_TIMEZONE, formatYmdInTimeZone } from '@/lib/facility/facility-day'
+import { OFFLINE_FIELD_RENTAL_SESSION_PREFIX } from '@/lib/stripe/record-purchase'
 import type { Payment, PaymentMethod, PaymentStatus } from '@/types'
 
 type StripePurchaseRow = {
@@ -39,6 +40,7 @@ export function checkoutTypeDescription(type: string, metadata: Record<string, u
       const parts = ['Field rental deposit']
       if (field) parts.push(field.replace(/_/g, ' '))
       if (weeks) parts.push(`${weeks} session(s)`)
+      if (metaString(m, 'admin_offline') === 'true') parts.push('in person (admin)')
       return parts.join(' · ')
     }
     case 'party-booking-1k':
@@ -68,6 +70,8 @@ function customerDisplayName(row: StripePurchaseRow): string {
     if (payee) return payee
   }
   if (row.type === 'field-rental-booking') {
+    const renter = metaString(m, 'renter_name')
+    if (renter) return renter
     const ref = metaString(m, 'rental_ref')
     if (email) return email
     if (ref) return `Booking ${ref.slice(0, 10)}…`
@@ -81,6 +85,8 @@ function mapRowToPayment(row: StripePurchaseRow): Payment {
   const playerId = typeof meta.player_id === 'string' ? meta.player_id : ''
   const playerName = customerDisplayName(row)
   const dollars = row.amount / 100
+  const offlineFieldRental =
+    row.stripe_session_id.startsWith(OFFLINE_FIELD_RENTAL_SESSION_PREFIX) || metaString(meta, 'admin_offline') === 'true'
 
   return {
     id: row.id,
@@ -90,7 +96,7 @@ function mapRowToPayment(row: StripePurchaseRow): Payment {
     currency: 'USD',
     description: checkoutTypeDescription(row.type, meta),
     checkoutType: row.type,
-    paymentMethod: 'card' as PaymentMethod,
+    paymentMethod: (offlineFieldRental ? 'cash' : 'card') as PaymentMethod,
     status: mapPaymentStatus(row.payment_status),
     createdAt: row.created_at,
     invoiceNumber: row.stripe_session_id.length > 14 ? `${row.stripe_session_id.slice(0, 14)}…` : row.stripe_session_id,

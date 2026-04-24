@@ -1,36 +1,25 @@
-/** Single source for waiver language shown on the public form and in admin (signed record). */
+/** Intro copy and checkbox labels for the field rental waiver (Golazo agreement body: `golazo-waiver-sections.ts`). */
 
-export const FIELD_RENTAL_WAIVER_TITLE = 'Field Rental Agreement and Facility Use Waiver' as const
+export {
+  GOLAZO_WAIVER_DOC_TITLE,
+  GOLAZO_WAIVER_ENTITY_LINES,
+  GOLAZO_WAIVER_PARTICIPANT_HEADER,
+  GOLAZO_WAIVER_SECTIONS,
+  GOLAZO_WAIVER_SIGNING_BLOCK,
+  type GolazoBlock,
+  type GolazoSection,
+} from '@/lib/rentals/golazo-waiver-sections'
 
 export const FIELD_RENTAL_WAIVER_INTRO = {
   standard:
-    'Required per participant: name, email, date of birth, and signed waiver before field access. Minors: parent or legal guardian completes the waiver. Submitting sends a copy to our team and saves the waiver for staff review. Use the field rental checkout when you are also placing a paid hold.',
+    'Complete every field below. Your name, date of birth, address, phone, emergency contact, and team or organization are part of this agreement. Minors: a parent or legal guardian completes and signs. Expand each section to read the full text before you acknowledge and sign. Submitting saves the waiver for staff review and notifies our team.',
   roster:
-    'You are signing for one participant on this roster link. Each person should submit their own waiver using the same link until the booking is complete. Minors: a parent or legal guardian completes the waiver.',
+    'You are signing for one participant on this roster link. Each person should submit their own waiver using the same link until the booking is complete. Complete address, phone, emergency contact, and team or organization. Minors: a parent or legal guardian completes the waiver. Expand each section to read the full agreement.',
 } as const
 
-export const FIELD_RENTAL_WAIVER_BULLETS = [
-  {
-    lead: '1) Rental type and classification:',
-    body: 'Facility may reclassify incorrect booking type and adjust pricing or terminate without refund.',
-  },
-  {
-    lead: '2) Capacity limits:',
-    body: 'Club/Team Practice max 20 per field. Private/Semi-Private max 4; 5+ reclassified. General Use/Pick-Up max 15 and no commercial/team instruction.',
-  },
-  {
-    lead: '3-5) Registration, minors, and field rules:',
-    body: 'all participants need signed waiver; parent/guardian signs for minors. No cleats. Water only on field. No food/gum/other drinks on turf. Follow staff instructions.',
-  },
-  {
-    lead: '6-11) Time, cancellation, liability, insurance, indemnification:',
-    body: 'overstay billed in 30-minute increments; 48-hour cancellation policy; renter responsible for damage; COI may be required; renter assumes risk and certifies all participants signed.',
-  },
-] as const
-
-/** Checkbox labels as shown on the signing form (must stay in sync with `field-rental-agreement-form`). */
+/** Checkbox labels on the signing form (must match `field-rental-agreement-form` name bindings). */
 export const FIELD_RENTAL_WAIVER_ACK_CHECKBOXES = [
-  'I agree to all terms in the Field Rental Agreement and Facility Use Waiver.',
-  'I assume all participation risks and agree to indemnify and hold harmless Formula Soccer Center.',
-  'I understand and will comply with facility rules, time limits, and cancellation policy.',
+  'I have read and agree to the Release of Liability, Assumption of Risk, and Indemnification Agreement above, including every numbered section I opened or expanded.',
+  'I understand I am releasing important legal rights, including the right to sue for negligence, to the fullest extent permitted by California law, and I sign voluntarily.',
+  'I agree to indemnify and defend the Released Parties as stated in the agreement; I consent to medical treatment terms; and I will follow facility rules, posted instructions, and staff directions.',
 ] as const

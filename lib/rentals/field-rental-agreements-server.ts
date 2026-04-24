@@ -6,10 +6,12 @@ export type FieldRentalAgreementInsert = {
   participant_name: string
   participant_email: string
   participant_phone: string | null
+  participant_address: string | null
   participant_dob: string
   parent_guardian_name: string | null
   participant_count: number | null
   organization_name: string | null
+  emergency_contact: string | null
   signature_name: string
   signature_data_url: string
   notes: string | null
@@ -36,10 +38,12 @@ export type FieldRentalAgreementRow = {
   participant_name: string
   participant_email: string
   participant_phone: string | null
+  participant_address: string | null
   participant_dob: string
   parent_guardian_name: string | null
   participant_count: number | null
   organization_name: string | null
+  emergency_contact: string | null
   signature_name: string
   notes: string | null
   waiver_invite_id: string | null
@@ -81,10 +85,12 @@ export async function insertFieldRentalAgreement(
       participant_name: row.participant_name,
       participant_email: row.participant_email,
       participant_phone: row.participant_phone,
+      participant_address: row.participant_address,
       participant_dob: row.participant_dob,
       parent_guardian_name: row.parent_guardian_name,
       participant_count: row.participant_count,
       organization_name: row.organization_name,
+      emergency_contact: row.emergency_contact,
       signature_name: row.signature_name,
       signature_data_url: row.signature_data_url,
       notes: row.notes,
@@ -119,7 +125,7 @@ export async function listFieldRentalAgreementsRecent(limit = 100): Promise<Fiel
   const { data, error } = await supabase
     .from('field_rental_agreements')
     .select(
-      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_dob, parent_guardian_name, participant_count, organization_name, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout'
+      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_address, participant_dob, parent_guardian_name, participant_count, organization_name, emergency_contact, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout'
     )
     .order('submitted_at', { ascending: false })
     .limit(Math.min(500, Math.max(1, limit)))

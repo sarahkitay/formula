@@ -87,6 +87,10 @@ export async function submitFieldRentalAgreement(
   const participantName = getRequiredString(formData, 'participantName')
   const participantEmail = getRequiredString(formData, 'participantEmail')
   const participantDob = getRequiredString(formData, 'participantDob')
+  const participantPhone = getRequiredString(formData, 'participantPhone')
+  const participantAddress = getRequiredString(formData, 'participantAddress')
+  const emergencyContact = getRequiredString(formData, 'emergencyContact')
+  const organizationName = getRequiredString(formData, 'organizationName')
   const signatureDataUrl = getRequiredString(formData, 'signatureDataUrl')
   const agreementAccepted = formData.get('agreementAccepted') === 'on'
   const riskAccepted = formData.get('riskAccepted') === 'on'
@@ -98,6 +102,19 @@ export async function submitFieldRentalAgreement(
       ok: false,
       message: 'Missing required fields. Name, email, date of birth, printed signature name, and signature are required.',
     }
+  }
+
+  if (!participantPhone || participantPhone.length < 7) {
+    return { ok: false, message: 'Phone is required (include area code).' }
+  }
+  if (!organizationName || organizationName.length < 2) {
+    return { ok: false, message: 'Team or organization is required.' }
+  }
+  if (!participantAddress || participantAddress.length < 5) {
+    return { ok: false, message: 'Address is required as stated on the agreement.' }
+  }
+  if (!emergencyContact || emergencyContact.length < 5) {
+    return { ok: false, message: 'Emergency contact name and phone are required.' }
   }
 
   if (!agreementAccepted || !riskAccepted || !rulesAccepted) {
@@ -116,11 +133,13 @@ export async function submitFieldRentalAgreement(
     rental_type: rentalType,
     participant_name: participantName,
     participant_email: participantEmail,
-    participant_phone: getRequiredString(formData, 'participantPhone') ?? null,
+    participant_phone: participantPhone,
+    participant_address: participantAddress,
     participant_dob: participantDob,
     parent_guardian_name: getRequiredString(formData, 'parentGuardianName') ?? null,
     participant_count,
-    organization_name: getRequiredString(formData, 'organizationName') ?? null,
+    organization_name: organizationName,
+    emergency_contact: emergencyContact,
     signature_name: signatureName,
     signature_data_url: signatureDataUrl,
     notes: getRequiredString(formData, 'notes') ?? null,
@@ -154,6 +173,10 @@ export async function submitFieldRentalAgreement(
         <li><strong>Rental type</strong>: ${escapeHtml(rentalType)}</li>
         <li><strong>Participant</strong>: ${escapeHtml(participantName)}</li>
         <li><strong>Email</strong>: ${escapeHtml(participantEmail)}</li>
+        <li><strong>Phone</strong>: ${escapeHtml(participantPhone)}</li>
+        <li><strong>Address</strong>: ${escapeHtml(participantAddress)}</li>
+        <li><strong>Emergency contact</strong>: ${escapeHtml(emergencyContact)}</li>
+        <li><strong>Team / org</strong>: ${escapeHtml(organizationName)}</li>
         <li><strong>DOB</strong>: ${escapeHtml(participantDob)}</li>
         <li><strong>Printed signer</strong>: ${escapeHtml(signatureName)}</li>
         <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '—'}</li>

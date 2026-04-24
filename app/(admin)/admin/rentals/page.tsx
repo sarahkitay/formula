@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
 import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
 import { ManualWaiverInviteForm } from '@/components/admin/manual-waiver-invite-form'
+import { PaidInPersonFieldRentalInviteForm } from '@/components/admin/paid-in-person-field-rental-invite-form'
 import { RosterWaiverInvitesAdmin } from '@/components/admin/roster-waiver-invites-admin'
 import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
 import { listWaiverInvitesWithProgress } from '@/lib/rentals/waiver-invites-server'
@@ -103,11 +104,14 @@ export default async function RentalsPage() {
           ) : (
             <>
               <p className="mb-4 font-mono text-[11px] text-formula-mist">
-                After a paid field-rental checkout, the purchaser gets a roster link to share with each participant. Below: who paid, when, the session they
-                booked, progress (e.g. 5 / 12 signed), and an expandable list of every waiver tied to that link so you can see who is signing for which organizer.
-                Manual links skip Stripe snapshot fields.
+                After online checkout, the purchaser gets a roster link. Below: who paid, session summary, waiver progress, and each signer. Use{' '}
+                <strong className="text-formula-paper/90">Quick roster link</strong> for internal or comp lists (no payment row). Use{' '}
+                <strong className="text-formula-paper/90">Paid in person</strong> when the deposit was collected offline so you get the same waiver URL plus a
+                Payments / revenue entry.
               </p>
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.12em] text-formula-mist">Quick roster link</p>
               <ManualWaiverInviteForm />
+              <PaidInPersonFieldRentalInviteForm />
               {waiverInvites.length === 0 ? (
                 <p className="mt-6 font-mono text-[11px] text-formula-mist">No roster links yet.</p>
               ) : (

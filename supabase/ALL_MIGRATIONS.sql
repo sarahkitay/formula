@@ -551,10 +551,12 @@ create table if not exists public.field_rental_agreements (
   participant_name text not null,
   participant_email text not null,
   participant_phone text,
+  participant_address text,
   participant_dob date not null,
   parent_guardian_name text,
   participant_count integer,
   organization_name text,
+  emergency_contact text,
   signature_name text not null,
   signature_data_url text not null,
   notes text,
@@ -815,4 +817,17 @@ comment on column public.field_rental_waiver_invites.purchaser_name is
   'Cardholder / customer name from Stripe Checkout when the roster link was created.';
 comment on column public.field_rental_waiver_invites.checkout_completed_at is
   'Approximate time the paid checkout was recorded (webhook handler).';
+
+
+-- -----------------------------------------------------------------------------
+-- SOURCE: field_rental_agreements_participant_address_emergency.sql
+-- -----------------------------------------------------------------------------
+alter table public.field_rental_agreements
+  add column if not exists participant_address text,
+  add column if not exists emergency_contact text;
+
+comment on column public.field_rental_agreements.participant_address is
+  'Street address as provided on the liability waiver.';
+comment on column public.field_rental_agreements.emergency_contact is
+  'Emergency contact name and phone as provided on the waiver (single field).';
 

@@ -1,5 +1,9 @@
 import { randomBytes } from 'crypto'
 import type Stripe from 'stripe'
+import { RENTAL_FIELD_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
+import { encodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
+import { encodeRentalWindow, isValidFieldRentalWindow } from '@/lib/rentals/rental-time-window'
+import { recordOfflineFieldRentalPurchase } from '@/lib/stripe/record-purchase'
 import { getServiceSupabase } from '@/lib/supabase/service'
 
 export type WaiverInviteRow = {
@@ -122,6 +126,136 @@ export async function createManualWaiverInvite(params: {
     return { ok: false, message: 'Could not create invite.' }
   }
   return { ok: true, token }
+}
+
+const COACH_RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
+
+const YMD = /^\d{4}-\d{2}-\d{2}$/
+
+export type PaidInPersonFieldRentalInviteParams = {
+  expectedWaiverCount: number
+  amountTotalCents: number
+  currency: string
+  purchaserName: string
+  purchaserEmail: string | null
+  rentalType: string
+  rentalField: string
+  slotStart: string
+  durationMinutes: number
+  anchorSessionDate: string
+  sessionWeeks: number
+  rentalRef: string | null
+  notes: string | null
+}
+
+/**
+ * Admin: field rental paid in person — roster waiver link (same snapshot columns as Stripe checkout invites)
+ * plus a `stripe_purchases` row with a synthetic session id so Payments / revenue include the deposit.
+ */
+export async function createPaidInPersonFieldRentalInvite(
+  params: PaidInPersonFieldRentalInviteParams
+): Promise<{ ok: true; token: string } | { ok: false; message: string }> {
+  const n = Math.floor(params.expectedWaiverCount)
+  if (!Number.isFinite(n) || n < 1 || n > 500) {
+    return { ok: false, message: 'Expected waiver count must be between 1 and 500.' }
+  }
+  if (!COACH_RENTAL_TYPES.has(params.rentalType)) {
+    return { ok: false, message: 'Choose a rental type for this booking.' }
+  }
+  if (!Number.isFinite(params.amountTotalCents) || params.amountTotalCents < 50) {
+    return { ok: false, message: 'Amount must be at least $0.50 (50 cents).' }
+  }
+  const anchor = params.anchorSessionDate.trim()
+  if (!YMD.test(anchor)) {
+    return { ok: false, message: 'Session date must be YYYY-MM-DD.' }
+  }
+  const weeks = Math.floor(params.sessionWeeks)
+  if (!Number.isFinite(weeks) || weeks < 1 || weeks > 52) {
+    return { ok: false, message: 'Session weeks must be between 1 and 52.' }
+  }
+  if (!RENTAL_FIELD_OPTIONS.some(f => f.value === params.rentalField)) {
+    return { ok: false, message: 'Invalid field selection.' }
+  }
+  const rentalWindow = encodeRentalWindow(params.slotStart, params.durationMinutes)
+  if (!isValidFieldRentalWindow(rentalWindow)) {
+    return { ok: false, message: 'Invalid start time or duration for a field rental window.' }
+  }
+  const purchaserName = params.purchaserName.trim()
+  if (purchaserName.length < 2) {
+    return { ok: false, message: 'Purchaser / payer name is required.' }
+  }
+
+  const dates = weeklyOccurrenceDatesIso(anchor, weeks)
+  const compact = encodeRentalDatesCompact(dates)
+  const rental_ref = params.rentalRef?.trim() || `inperson_${randomBytes(5).toString('hex')}`
+  const paidAtIso = new Date().toISOString()
+  const currency = (params.currency || 'usd').toLowerCase().slice(0, 8)
+
+  const supabase = getServiceSupabase()
+  if (!supabase) {
+    return { ok: false, message: 'Database not configured.' }
+  }
+
+  const token = newInviteToken()
+  const { data: inv, error: invErr } = await supabase
+    .from('field_rental_waiver_invites')
+    .insert({
+      token,
+      expected_waiver_count: n,
+      rental_ref,
+      rental_type: params.rentalType,
+      stripe_checkout_session_id: null,
+      notes: params.notes?.trim() || null,
+      purchaser_name: purchaserName,
+      purchaser_email: params.purchaserEmail?.trim() || null,
+      checkout_amount_total_cents: Math.round(params.amountTotalCents),
+      checkout_currency: currency,
+      checkout_completed_at: paidAtIso,
+      booking_rental_field: params.rentalField,
+      booking_rental_window: rentalWindow,
+      booking_rental_date: anchor,
+      booking_rental_dates_compact: compact.length > 0 ? compact : null,
+      booking_session_weeks: weeks,
+    })
+    .select('id, token')
+    .single()
+
+  if (invErr || !inv) {
+    console.error('[waiver-invites] paid-in-person invite:', invErr?.message)
+    return { ok: false, message: 'Could not create roster invite.' }
+  }
+
+  const inviteId = (inv as { id: string; token: string }).id
+  const inviteToken = (inv as { id: string; token: string }).token
+
+  const metadata: Record<string, string> = {
+    type: 'field-rental-booking',
+    rental_ref,
+    rental_field: params.rentalField,
+    rental_window: rentalWindow,
+    rental_date: anchor,
+    rental_dates_compact: compact,
+    rental_weeks: String(weeks),
+    rental_participants: String(n),
+    rental_type: params.rentalType,
+    renter_name: purchaserName,
+    admin_offline: 'true',
+    waiver_invite_id: inviteId,
+  }
+
+  const recorded = await recordOfflineFieldRentalPurchase({
+    amountCents: Math.round(params.amountTotalCents),
+    currency,
+    email: params.purchaserEmail?.trim() || null,
+    metadata,
+  })
+
+  if (!recorded.ok) {
+    await supabase.from('field_rental_waiver_invites').delete().eq('id', inviteId)
+    return { ok: false, message: recorded.message }
+  }
+
+  return { ok: true, token: inviteToken }
 }
 
 /**

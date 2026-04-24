@@ -7,9 +7,12 @@ import { Button } from '@/components/ui/button'
 import type { FieldRentalAgreementFull } from '@/lib/rentals/field-rental-agreements-server'
 import {
   FIELD_RENTAL_WAIVER_ACK_CHECKBOXES,
-  FIELD_RENTAL_WAIVER_BULLETS,
   FIELD_RENTAL_WAIVER_INTRO,
-  FIELD_RENTAL_WAIVER_TITLE,
+  GOLAZO_WAIVER_DOC_TITLE,
+  GOLAZO_WAIVER_ENTITY_LINES,
+  GOLAZO_WAIVER_PARTICIPANT_HEADER,
+  GOLAZO_WAIVER_SECTIONS,
+  GOLAZO_WAIVER_SIGNING_BLOCK,
 } from '@/lib/rentals/field-rental-waiver-legal-copy'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 import {
@@ -84,6 +87,30 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrga
     y += 2
   }
 
+  const addWrapped = (text: string, fontSize = 9, lineMm = 4.2) => {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(fontSize)
+    const wrapped = doc.splitTextToSize(text, maxTextW) as string[]
+    for (const line of wrapped) {
+      ensureSpace(lineMm)
+      doc.text(line, margin, y)
+      y += lineMm
+    }
+  }
+
+  const addWrappedBold = (text: string, fontSize = 10, lineMm = 5) => {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(fontSize)
+    const wrapped = doc.splitTextToSize(text, maxTextW) as string[]
+    for (const line of wrapped) {
+      ensureSpace(lineMm)
+      doc.text(line, margin, y)
+      y += lineMm
+    }
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+  }
+
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(15)
   doc.text('Field Rental Agreement — Signed waiver', margin, y)
@@ -106,6 +133,8 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrga
   paragraph('Participant', a.participant_name)
   paragraph('Email', a.participant_email)
   paragraph('Phone', a.participant_phone ?? '—')
+  paragraph('Address', a.participant_address ?? '—')
+  paragraph('Emergency contact', a.emergency_contact ?? '—')
   paragraph('Date of birth', a.participant_dob)
   paragraph('Participant count', a.participant_count != null ? String(a.participant_count) : '—')
   paragraph('Parent / guardian', a.parent_guardian_name ?? '—')
@@ -133,14 +162,31 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrga
   y += 8
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
-  paragraph('Title', FIELD_RENTAL_WAIVER_TITLE)
-  paragraph(
-    'Intro',
-    a.waiver_invite_id ? FIELD_RENTAL_WAIVER_INTRO.roster : FIELD_RENTAL_WAIVER_INTRO.standard
-  )
-  for (const b of FIELD_RENTAL_WAIVER_BULLETS) {
-    paragraph(b.lead, b.body)
+
+  addWrappedBold(GOLAZO_WAIVER_DOC_TITLE, 11, 5.2)
+  for (const line of GOLAZO_WAIVER_ENTITY_LINES) {
+    addWrapped(line, 9, 4)
   }
+  y += 2
+  addWrapped(a.waiver_invite_id ? FIELD_RENTAL_WAIVER_INTRO.roster : FIELD_RENTAL_WAIVER_INTRO.standard, 9, 4)
+  y += 2
+  addWrapped(GOLAZO_WAIVER_PARTICIPANT_HEADER, 9, 4)
+  y += 3
+
+  for (const sec of GOLAZO_WAIVER_SECTIONS) {
+    addWrappedBold(`${sec.n}. ${sec.title}`, 10, 5)
+    for (const b of sec.blocks) {
+      if (b.type === 'p') addWrapped(b.text, 9, 4)
+      else for (const item of b.items) addWrapped(`• ${item}`, 9, 4)
+    }
+    y += 2
+  }
+
+  for (const line of GOLAZO_WAIVER_SIGNING_BLOCK) {
+    addWrappedBold(line, 9, 4.5)
+  }
+  y += 3
+
   doc.setFont('helvetica', 'bold')
   ensureSpace(6)
   doc.text('Acknowledgment checkboxes:', margin, y)
@@ -148,7 +194,7 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrga
   doc.setFont('helvetica', 'normal')
   for (const line of FIELD_RENTAL_WAIVER_ACK_CHECKBOXES) {
     const wrapped = doc.splitTextToSize(`• ${line}`, maxTextW) as string[]
-    addLines(wrapped, 10, 5)
+    addLines(wrapped, 9, 4.2)
   }
   y += 4
 
@@ -323,6 +369,8 @@ export function FieldRentalWaiverDetail({
           {row('Participant name', agreement.participant_name)}
           {row('Email', agreement.participant_email)}
           {row('Phone', agreement.participant_phone)}
+          {row('Address', agreement.participant_address)}
+          {row('Emergency contact', agreement.emergency_contact)}
           {row('Date of birth', agreement.participant_dob)}
           {row('Participant count', agreement.participant_count != null ? String(agreement.participant_count) : null)}
           {row('Parent / guardian', agreement.parent_guardian_name)}
@@ -334,19 +382,16 @@ export function FieldRentalWaiverDetail({
 
         <div className="mt-8 border-t border-formula-frost/12 pt-6">
           <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Acknowledgments</h2>
-          <ul className="mt-3 list-none space-y-2 p-0 text-sm text-formula-paper">
-            <li className="flex gap-2">
-              <span className="text-formula-volt">{agreement.agreement_accepted ? '✓' : '—'}</span>
-              Facility use agreement and waiver terms accepted
-            </li>
-            <li className="flex gap-2">
-              <span className="text-formula-volt">{agreement.risk_accepted ? '✓' : '—'}</span>
-              Risk assumption and indemnification accepted
-            </li>
-            <li className="flex gap-2">
-              <span className="text-formula-volt">{agreement.rules_accepted ? '✓' : '—'}</span>
-              Facility rules and cancellation policy accepted
-            </li>
+          <ul className="mt-3 list-none space-y-3 p-0 text-sm text-formula-paper">
+            {FIELD_RENTAL_WAIVER_ACK_CHECKBOXES.map((label, i) => {
+              const checked = [agreement.agreement_accepted, agreement.risk_accepted, agreement.rules_accepted][i]
+              return (
+                <li key={label} className="flex gap-2">
+                  <span className="shrink-0 text-formula-volt">{checked ? '✓' : '—'}</span>
+                  <span className="text-formula-frost/90">{label}</span>
+                </li>
+              )
+            })}
           </ul>
         </div>
 
