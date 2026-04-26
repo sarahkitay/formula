@@ -3,11 +3,14 @@
 import * as React from 'react'
 import Link from 'next/link'
 import type { FieldRentalAgreementRow } from '@/lib/rentals/field-rental-agreements-server'
+import type { RentalWaiverCheckinRow } from '@/lib/rentals/rental-waiver-checkins-server'
 import type { CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
 import { Modal, ModalBody, ModalFooter } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { DAY_LABELS } from '@/components/schedule/control-schedule-grid'
 import { humanRentalWindowSummary } from '@/lib/rentals/rental-time-window'
+import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
+import { cn } from '@/lib/utils'
 
 function formatHm(minute: number) {
   const h = Math.floor(minute / 60)
@@ -46,8 +49,11 @@ export function AdminCalendarFeedModal({
   const [rentalDetail, setRentalDetail] = React.useState<{
     booking: RentalBookingDetail
     agreements: FieldRentalAgreementRow[]
+    checkins: RentalWaiverCheckinRow[]
   } | null>(null)
   const [loadError, setLoadError] = React.useState<string | null>(null)
+  const [checkinError, setCheckinError] = React.useState<string | null>(null)
+  const [checkinBusyId, setCheckinBusyId] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     if (!open || !block) {
@@ -64,17 +70,23 @@ export function AdminCalendarFeedModal({
     let cancelled = false
     setLoading(true)
     setLoadError(null)
+    setCheckinError(null)
     void (async () => {
       try {
         const res = await fetch(`/api/schedule/rental-booking-detail?id=${encodeURIComponent(rawId)}`)
         const body = (await res.json()) as {
           booking?: RentalBookingDetail
           agreements?: FieldRentalAgreementRow[]
+          checkins?: RentalWaiverCheckinRow[]
           error?: string
         }
         if (!res.ok) throw new Error(body.error ?? 'Failed to load rental')
         if (!cancelled && body.booking) {
-          setRentalDetail({ booking: body.booking, agreements: body.agreements ?? [] })
+          setRentalDetail({
+            booking: body.booking,
+            agreements: body.agreements ?? [],
+            checkins: body.checkins ?? [],
+          })
         }
       } catch (e) {
         if (!cancelled) {
@@ -90,10 +102,50 @@ export function AdminCalendarFeedModal({
     }
   }, [open, block])
 
+  const checkinMap = React.useMemo(() => {
+    const m = new Map<string, RentalWaiverCheckinRow>()
+    for (const c of rentalDetail?.checkins ?? []) {
+      m.set(c.field_rental_agreement_id, c)
+    }
+    return m
+  }, [rentalDetail?.checkins])
+
+  const toggleWaiverCheckIn = React.useCallback(
+    async (agreementId: string, checkedIn: boolean) => {
+      if (!rentalDetail) return
+      setCheckinBusyId(agreementId)
+      setCheckinError(null)
+      try {
+        const res = await fetch('/api/schedule/rental-booking-detail', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookingId: rentalDetail.booking.id,
+            agreementId,
+            checkedIn,
+            checkedInBy: 'admin-schedule',
+          }),
+        })
+        const body = (await res.json()) as { ok?: boolean; checkins?: RentalWaiverCheckinRow[]; error?: string }
+        if (!res.ok) throw new Error(body.error ?? 'Check-in update failed')
+        if (body.checkins) {
+          setRentalDetail(prev => (prev ? { ...prev, checkins: body.checkins! } : prev))
+        }
+      } catch (e) {
+        setCheckinError(e instanceof Error ? e.message : 'Check-in update failed')
+      } finally {
+        setCheckinBusyId(null)
+      }
+    },
+    [rentalDetail]
+  )
+
   if (!block) return null
 
   const day = DAY_LABELS[block.dayIndex]
   const isRental = block.id.startsWith('rent-')
+  const checkedInCount = rentalDetail ? rentalDetail.checkins.length : 0
+  const waiverCount = rentalDetail?.agreements.length ?? 0
 
   return (
     <Modal open={open} onClose={onClose} title={isRental ? 'Field rental hold' : 'Calendar entry'} size="sm">
@@ -118,6 +170,7 @@ export function AdminCalendarFeedModal({
           <div className="space-y-2 rounded border border-formula-frost/12 bg-formula-paper/[0.05] px-3 py-2 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
             {loading ? <p className="font-mono text-[10px] text-text-muted">Loading roster waivers…</p> : null}
             {loadError ? <p className="text-amber-200/90">{loadError}</p> : null}
+            {checkinError ? <p className="text-amber-200/90">{checkinError}</p> : null}
             {rentalDetail ? (
               <>
                 <p>
@@ -134,13 +187,56 @@ export function AdminCalendarFeedModal({
                 {rentalDetail.agreements.length === 0 ? (
                   <p className="text-text-muted">None submitted yet for this slot.</p>
                 ) : (
-                  <ul className="max-h-40 space-y-1 overflow-y-auto border border-border/60 py-1">
-                    {rentalDetail.agreements.map(a => (
-                      <li key={a.id} className="px-1 font-mono text-[10px] leading-snug text-text-primary">
-                        {a.participant_name} · {a.rental_type.replace(/_/g, ' ')}
-                      </li>
-                    ))}
-                  </ul>
+                  <>
+                    <p className="font-mono text-[10px] text-text-muted">
+                      Check-in:{' '}
+                      <span className="font-semibold text-text-primary">
+                        {checkedInCount} / {waiverCount}
+                      </span>{' '}
+                      signers marked present
+                    </p>
+                    <ul className="max-h-[min(50vh,18rem)] divide-y divide-border/50 overflow-y-auto rounded border border-border/60">
+                      {rentalDetail.agreements.map(a => {
+                        const cin = checkinMap.get(a.id)
+                        const busy = checkinBusyId === a.id
+                        return (
+                          <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 px-2 py-2">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                <Link
+                                  href={`/admin/rentals/waivers/${a.id}`}
+                                  className="text-[11px] font-semibold text-formula-volt underline-offset-2 hover:underline"
+                                >
+                                  {a.participant_name}
+                                </Link>
+                                <span className="font-mono text-[9px] uppercase tracking-wide text-text-muted">
+                                  {a.rental_type.replace(/_/g, ' ')}
+                                </span>
+                              </div>
+                              <p className="truncate font-mono text-[10px] text-text-muted">{a.participant_email}</p>
+                              {cin ? (
+                                <p className="mt-0.5 font-mono text-[9px] text-formula-volt/90">
+                                  Present · {formatFacilityDateTimeShort(cin.checked_in_at)}
+                                </p>
+                              ) : (
+                                <p className="mt-0.5 font-mono text-[9px] text-text-muted">Not checked in</p>
+                              )}
+                            </div>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="sm"
+                              disabled={busy}
+                              className={cn('shrink-0', cin && 'border-formula-volt/35 bg-formula-volt/10')}
+                              onClick={() => void toggleWaiverCheckIn(a.id, !cin)}
+                            >
+                              {busy ? '…' : cin ? 'Undo' : 'Check in'}
+                            </Button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </>
                 )}
               </>
             ) : null}

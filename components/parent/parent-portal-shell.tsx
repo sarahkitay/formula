@@ -68,13 +68,8 @@ export function ParentPortalShell({ children }: { children: React.ReactNode }) {
       }
 
       const role = (profile.role ?? '').toLowerCase()
-      if (role === 'coach') {
+      if (role === 'coach' || role === 'staff' || role === 'admin') {
         router.replace(getPortalRoute(profile.role))
-        setPhase('redirect')
-        return
-      }
-      if (role === 'staff' || role === 'admin') {
-        router.replace('/staff-portal')
         setPhase('redirect')
         return
       }

@@ -15,7 +15,7 @@ export async function loadProfileForUser(userId: string): Promise<{ profile: Pro
 /** Hub route for this role, or `null` if invalid (use `getPortalRoute` when you need `/login`). */
 export function portalRouteForRole(
   role: string | null | undefined
-): '/parent/dashboard' | '/staff-portal' | '/coach/today' | null {
+): '/parent/dashboard' | '/staff-portal' | '/admin/dashboard' | '/coach/today' | null {
   const r = getPortalRoute(role)
   return r === '/login' ? null : r
 }

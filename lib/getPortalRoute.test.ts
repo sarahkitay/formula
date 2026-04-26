@@ -8,10 +8,10 @@ describe('getPortalRoute', () => {
     expect(getPortalRoute('  Parent  ')).toBe('/parent/dashboard')
   })
 
-  it('routes staff and admin to staff hub', () => {
+  it('routes admin to Admin OS and staff to the shared staff hub', () => {
     expect(getPortalRoute('staff')).toBe('/staff-portal')
-    expect(getPortalRoute('admin')).toBe('/staff-portal')
-    expect(getPortalRoute('ADMIN')).toBe('/staff-portal')
+    expect(getPortalRoute('admin')).toBe('/admin/dashboard')
+    expect(getPortalRoute('ADMIN')).toBe('/admin/dashboard')
   })
 
   it('routes coaches to coach execution hub', () => {

@@ -145,7 +145,7 @@ export default function StaffPortalHubPage() {
         return
       }
 
-      if (hub === '/coach/today') {
+      if (hub === '/coach/today' || hub === '/admin/dashboard') {
         router.replace(hub)
         return
       }

@@ -288,6 +288,9 @@ export default function SchedulePage() {
                   />
                   Booked items only — hide open program templates (assessments, rentals, and party holds still show)
                 </label>
+                <p className="font-mono text-[10px] text-formula-mist/85">
+                  Field rentals: click a rental block to list signed waivers for that slot and mark each signer present (saved per booking).
+                </p>
                 <FacilityWeekCalendar
                   weekStart={week.weekStart}
                   blocks={calendarBlocksForView}
