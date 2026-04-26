@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto'
 import type Stripe from 'stripe'
-import { RENTAL_FIELD_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
+import { isKnownRentalFieldId } from '@/lib/rentals/field-rental-picker-constants'
 import { encodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 import { encodeRentalWindow, isValidFieldRentalWindow } from '@/lib/rentals/rental-time-window'
 import { recordOfflineFieldRentalPurchase } from '@/lib/stripe/record-purchase'
@@ -173,7 +173,7 @@ export async function createPaidInPersonFieldRentalInvite(
   if (!Number.isFinite(weeks) || weeks < 1 || weeks > 52) {
     return { ok: false, message: 'Session weeks must be between 1 and 52.' }
   }
-  if (!RENTAL_FIELD_OPTIONS.some(f => f.value === params.rentalField)) {
+  if (!isKnownRentalFieldId(params.rentalField)) {
     return { ok: false, message: 'Invalid field selection.' }
   }
   const rentalWindow = encodeRentalWindow(params.slotStart, params.durationMinutes)

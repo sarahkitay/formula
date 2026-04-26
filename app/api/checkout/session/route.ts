@@ -4,7 +4,7 @@ import { ASSESSMENT_MAX_KIDS_PER_BOOKING } from '@/lib/assessment/constants'
 import { slotHasRoom } from '@/lib/assessment/slots-server'
 import { encodeRentalDatesCompact, resolveFieldRentalSessionDatesFromMetadata } from '@/lib/rentals/rental-weekly-dates'
 import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWeeklySlotsForDates } from '@/lib/rentals/rental-slots'
-import { RENTAL_FIELD_OPTIONS, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
+import { isKnownRentalFieldId, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
 import { fieldRentalDepositUsd } from '@/lib/marketing/public-pricing'
 import { isValidFieldRentalWindow, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
@@ -120,8 +120,8 @@ export async function POST(req: Request) {
     if (!Number.isInteger(guests) || guests < 1 || guests > 200) {
       return NextResponse.json({ error: 'party_guest_count must be an integer from 1 to 200.' }, { status: 400 })
     }
-    if (!field || !RENTAL_FIELD_OPTIONS.some(f => f.value === field)) {
-      return NextResponse.json({ error: 'rental_field must be a known field id (field_a, field_b, field_indoor).' }, { status: 400 })
+    if (!field || !isKnownRentalFieldId(field)) {
+      return NextResponse.json({ error: 'rental_field must be field_1, field_2, or field_3 (legacy ids still accepted).' }, { status: 400 })
     }
     if (!rDate || !ymd(rDate)) {
       return NextResponse.json({ error: 'rental_date must be YYYY-MM-DD (field session date).' }, { status: 400 })
@@ -159,8 +159,8 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
-    if (!RENTAL_FIELD_OPTIONS.some(f => f.value === rentalSlot.field)) {
-      return NextResponse.json({ error: 'rental_field must be a known field id.' }, { status: 400 })
+    if (!isKnownRentalFieldId(rentalSlot.field)) {
+      return NextResponse.json({ error: 'rental_field must be field_1, field_2, or field_3 (legacy ids still accepted).' }, { status: 400 })
     }
     const windowTrimmed = rentalSlot.window.trim()
     if (!isValidFieldRentalWindow(windowTrimmed)) {

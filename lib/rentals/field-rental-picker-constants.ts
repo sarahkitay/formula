@@ -43,7 +43,20 @@ export const FIELD_RENTAL_DEFAULT_DURATION_MINUTES = 120
 export const FIELD_RENTAL_WINDOW_CLOSE_MINUTES = 22 * 60
 
 export const RENTAL_FIELD_OPTIONS = [
-  { value: 'field_a', label: 'Field A (turf)' },
-  { value: 'field_b', label: 'Field B (turf)' },
-  { value: 'field_indoor', label: 'Indoor / small-sided' },
+  { value: 'field_1', label: 'Field 1' },
+  { value: 'field_2', label: 'Field 2' },
+  { value: 'field_3', label: 'Field 3 (outdoor)' },
 ] as const
+
+/** Older checkout / waiver rows may still store these ids — keep labels and API validation in sync. */
+export const RENTAL_FIELD_LEGACY_LABELS: Readonly<Record<string, string>> = {
+  field_a: 'Field 1',
+  field_b: 'Field 2',
+  field_indoor: 'Field 3 (outdoor)',
+}
+
+export function isKnownRentalFieldId(fieldId: string): boolean {
+  const id = fieldId.trim()
+  if (RENTAL_FIELD_OPTIONS.some(f => f.value === id)) return true
+  return Object.prototype.hasOwnProperty.call(RENTAL_FIELD_LEGACY_LABELS, id)
+}

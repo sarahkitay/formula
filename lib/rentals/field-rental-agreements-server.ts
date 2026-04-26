@@ -113,6 +113,19 @@ export async function insertFieldRentalAgreement(
 
   if (error) {
     console.error('[field-rental-agreements] insert:', error.message)
+    const msg = error.message ?? ''
+    if (
+      msg.includes('participant_address') ||
+      msg.includes('emergency_contact') ||
+      msg.includes("Could not find the") ||
+      msg.includes('column') && msg.includes('schema cache')
+    ) {
+      return {
+        ok: false,
+        message:
+          'Database is missing new waiver columns (address, emergency contact). In Supabase SQL Editor, run the migration file `supabase/field_rental_agreements_participant_address_emergency.sql` (or the matching block at the end of `supabase/ALL_MIGRATIONS.sql`), then try again.',
+      }
+    }
     return { ok: false, message: 'Could not save agreement. Confirm the migration ran and the service role key is set.' }
   }
   return { ok: true, id: (data as { id: string }).id }

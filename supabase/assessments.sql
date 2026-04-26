@@ -30,6 +30,7 @@ create policy "assessments_select_staff"
   using (public.formula_is_staff());
 
 -- Parent: read assessments only for athletes linked in parent_players
+drop policy if exists "assessments_select_linked_parent" on public.assessments;
 create policy "assessments_select_linked_parent"
   on public.assessments for select
   using (

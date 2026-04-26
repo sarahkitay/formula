@@ -1,4 +1,4 @@
-import { RENTAL_FIELD_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
+import { RENTAL_FIELD_LEGACY_LABELS, RENTAL_FIELD_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
 import { decodeRentalDatesCompact } from '@/lib/rentals/rental-weekly-dates'
 import { humanRentalWindowSummary } from '@/lib/rentals/rental-time-window'
 import type { FieldRentalAgreementRow } from '@/lib/rentals/field-rental-agreements-server'
@@ -6,7 +6,10 @@ import type { FieldRentalAgreementRow } from '@/lib/rentals/field-rental-agreeme
 export function rentalFieldLabel(fieldId: string | null | undefined): string {
   if (!fieldId) return '—'
   const hit = RENTAL_FIELD_OPTIONS.find(f => f.value === fieldId)
-  return hit?.label ?? fieldId
+  if (hit) return hit.label
+  const legacy = RENTAL_FIELD_LEGACY_LABELS[fieldId]
+  if (legacy) return legacy
+  return fieldId
 }
 
 export function formatCheckoutAmount(cents: number | null | undefined, currency: string | null | undefined): string {

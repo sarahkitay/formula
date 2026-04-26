@@ -26,9 +26,9 @@ export type EventBudgetRangeValue = (typeof EVENT_BUDGET_RANGES)[number]['value'
 /** Space intent: single primary choice + notes for combinations. */
 export const EVENT_SPACE_PRESETS = [
   { value: 'full_facility', label: 'Full facility (max footprint / premium)' },
-  { value: 'field_a', label: 'Field A (turf)' },
-  { value: 'field_b', label: 'Field B (turf)' },
-  { value: 'field_indoor', label: 'Indoor / small-sided' },
+  { value: 'field_1', label: 'Field 1' },
+  { value: 'field_2', label: 'Field 2' },
+  { value: 'field_3', label: 'Field 3 (outdoor)' },
   { value: 'multi_mixed', label: 'Multiple areas (detail in notes)' },
   { value: 'unsure', label: 'Not sure — recommend for us' },
 ] as const
