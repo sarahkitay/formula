@@ -26,6 +26,8 @@ export interface AdminSlotDetailModalProps {
   onClose: () => void
   weekStart: string
   slot: ScheduleSlot | null
+  /** Same youth block: PC hub + field stations (merged calendar card). */
+  relatedSlots?: ScheduleSlot[] | null
   meta: AdminBlockDemoMeta | null
   checkedInIds: Set<string>
   onToggleCheckedIn: (rosterId: string) => void
@@ -36,6 +38,7 @@ export function AdminSlotDetailModal({
   onClose,
   weekStart,
   slot,
+  relatedSlots = null,
   meta,
   checkedInIds,
   onToggleCheckedIn,
@@ -59,6 +62,21 @@ export function AdminSlotDetailModal({
   <p className="mt-0.5 text-sm text-text-primary">{assetLabelForSlot(slot)}</p>
   <p className="mt-0.5 text-xs text-text-secondary">{slot.label}</p>
   </div>
+
+  {relatedSlots && relatedSlots.length > 1 ? (
+    <div>
+      <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-text-muted">Block rotations</p>
+      <ul className="mt-1 max-h-36 space-y-1 overflow-y-auto rounded border border-border/60 px-2 py-1.5 text-xs text-text-secondary">
+        {relatedSlots.map(s => (
+          <li key={s.id} className="leading-snug">
+            <span className="font-medium text-text-primary">{assetLabelForSlot(s)}</span>
+            <span className="text-text-muted"> · </span>
+            {formatRange(weekStart, s)}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : null}
 
   {!meta && (
   <p className="rounded border border-formula-frost/12 bg-formula-paper/[0.05] px-3 py-2 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">

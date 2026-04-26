@@ -3,7 +3,8 @@ import { isoDateForWeekDay } from '@/lib/schedule/generator'
 import { fetchFacilityScheduleConfig } from '@/lib/schedule/facility-schedule-config-server'
 import { buildPublishedWeek } from '@/lib/schedule/published-week'
 import { getServiceSupabase } from '@/lib/supabase/service'
-import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
+import { parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
+import { holidaysBetweenYmdInclusive } from '@/lib/schedule/us-major-holidays'
 
 const LA = 'America/Los_Angeles'
 
@@ -23,6 +24,10 @@ export type CalendarFeedBlock = {
   dayIndex: DayIndex
   startMinute: number
   endMinute: number
+  /** Merged youth block: all program slot ids in this group (same `youthBlockId`). */
+  programSlotIds?: string[]
+  /** DB row when `category === 'rental_booking'` (for drag / detail APIs). */
+  rentalBookingId?: string
 }
 
 function ymdInLa(iso: string): string {
@@ -49,12 +54,13 @@ function wallMinutesInLa(iso: string): number {
 function slotCategory(s: ScheduleSlot): CalendarFeedCategory {
   if (s.kind === 'party') return 'party'
   if (s.kind === 'field_rental_premium' || s.kind === 'field_rental_nonpremium') return 'field_rental'
-  if (s.kind === 'youth_training' || s.kind === 'preschool' || s.kind === 'open_gym') return 'youth_program'
+  if (s.kind === 'youth_training' || s.kind === 'preschool' || s.kind === 'littles' || s.kind === 'open_gym')
+    return 'youth_program'
   return 'other_program'
 }
 
-function programBlocksFromWeek(week: GeneratedWeek): CalendarFeedBlock[] {
-  return week.slots.map(s => ({
+function singleProgramBlock(s: ScheduleSlot): CalendarFeedBlock {
+  return {
     id: `slot-${s.id}`,
     category: slotCategory(s),
     label: s.label,
@@ -62,13 +68,72 @@ function programBlocksFromWeek(week: GeneratedWeek): CalendarFeedBlock[] {
     dayIndex: s.dayIndex,
     startMinute: s.startMinute,
     endMinute: s.endMinute,
-  }))
+  }
 }
 
-export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{ week: GeneratedWeek; blocks: CalendarFeedBlock[] }> {
+function safeGroupId(youthBlockId: string): string {
+  return youthBlockId.replace(/[^a-zA-Z0-9_-]+/g, '_')
+}
+
+/**
+ * One calendar card per youth rotation block (PC hub + stations share `youthBlockId`);
+ * other program slots stay one row each.
+ */
+function programBlocksFromWeekCollapsed(week: GeneratedWeek): CalendarFeedBlock[] {
+  const slots = week.slots
+  const byYouth = new Map<string, ScheduleSlot[]>()
+  for (const s of slots) {
+    if (!s.youthBlockId) continue
+    if (slotCategory(s) !== 'youth_program') continue
+    const arr = byYouth.get(s.youthBlockId) ?? []
+    arr.push(s)
+    byYouth.set(s.youthBlockId, arr)
+  }
+
+  const covered = new Set<string>()
+  for (const group of byYouth.values()) {
+    for (const s of group) covered.add(s.id)
+  }
+
+  const out: CalendarFeedBlock[] = []
+  for (const s of slots) {
+    if (covered.has(s.id)) continue
+    out.push(singleProgramBlock(s))
+  }
+
+  for (const [youthBlockId, group] of byYouth) {
+    if (group.length === 0) continue
+    const rep = group.reduce((a, b) => (a.startMinute <= b.startMinute ? a : b))
+    const minStart = Math.min(...group.map(x => x.startMinute))
+    const maxEnd = Math.max(...group.map(x => x.endMinute))
+    const rotationNote = group.length > 1 ? ` · ${group.length} rotations` : ''
+    const shortHead = rep.label.split('//')[0]?.trim() || rep.label
+    out.push({
+      id: `slot-group-${safeGroupId(youthBlockId)}`,
+      category: 'youth_program',
+      label: `${shortHead}${rotationNote}`,
+      sublabel: rep.ageBand,
+      dayIndex: rep.dayIndex,
+      startMinute: minStart,
+      endMinute: maxEnd,
+      programSlotIds: [...new Set(group.map(x => x.id))].sort(),
+    })
+  }
+
+  out.sort((a, b) => a.dayIndex - b.dayIndex || a.startMinute - b.startMinute || a.id.localeCompare(b.id))
+  return out
+}
+
+export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
+  week: GeneratedWeek
+  blocks: CalendarFeedBlock[]
+  /** YYYY-MM-DD → holiday label(s) for admin calendar column styling */
+  holidays: Record<string, string>
+}> {
   const config = await fetchFacilityScheduleConfig()
   const week = buildPublishedWeek(weekAnchor, config)
-  const blocks: CalendarFeedBlock[] = [...programBlocksFromWeek(week)]
+  const blocks: CalendarFeedBlock[] = [...programBlocksFromWeekCollapsed(week)]
+  const holidays = holidaysBetweenYmdInclusive(week.weekStart, week.weekEnd)
 
   const sun = new Date(`${week.weekStart}T12:00:00`)
   const weekEnd = new Date(sun)
@@ -129,42 +194,27 @@ export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{ wee
           }
         }
         if (dayIndex == null) continue
+        const rawSlot = typeof row.time_slot === 'string' ? row.time_slot : ''
+        const parsed = parseRentalTimeSlot(rawSlot)
+        if (!parsed) {
+          console.warn('[calendar-feed] skip rental row: unparsable time_slot', row.id, rawSlot)
+          continue
+        }
+        const startMinute = Math.max(0, Math.min(24 * 60 - 1, parsed.startMinutes))
+        const endMinute = Math.max(startMinute + 15, Math.min(24 * 60, parsed.endMinutes))
         blocks.push({
           id: `rent-${row.id}`,
           category: 'rental_booking',
           label: `Field rental · ${row.field_id as string}`,
-          sublabel: row.time_slot as string,
+          sublabel: rawSlot,
           dayIndex,
-          startMinute: 10 * 60,
-          endMinute: 11 * 60,
+          startMinute,
+          endMinute,
+          rentalBookingId: row.id as string,
         })
       }
     }
   }
 
-  const agreements = await listFieldRentalAgreementsRecent(80)
-  for (const a of agreements) {
-    const submitted = a.submitted_at
-    if (!submitted) continue
-    const ymd = ymdInLa(submitted)
-    let dayIndex: DayIndex | null = null
-    for (let d = 0; d < 7; d++) {
-      if (isoDateForWeekDay(week.weekStart, d as DayIndex) === ymd) {
-        dayIndex = d as DayIndex
-        break
-      }
-    }
-    if (dayIndex == null) continue
-    blocks.push({
-      id: `fra-${a.id}`,
-      category: 'field_rental',
-      label: `Rental agreement · ${a.rental_type}`,
-      sublabel: a.participant_name,
-      dayIndex,
-      startMinute: 11 * 60 + 30,
-      endMinute: 12 * 60,
-    })
-  }
-
-  return { week, blocks }
+  return { week, blocks, holidays }
 }

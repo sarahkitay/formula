@@ -5,6 +5,7 @@
 
 import type Stripe from 'stripe'
 import { getServiceSupabase } from '@/lib/supabase/service'
+import { resolveCheckoutPurchaseType } from '@/lib/stripe/record-purchase'
 import { weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 
 export type RentalSlotFields = {
@@ -205,7 +206,7 @@ export async function releasePendingSlotByRef(rentalRef: string): Promise<void> 
 
 export async function confirmSlotFromPaidCheckout(session: Stripe.Checkout.Session): Promise<void> {
   const m = session.metadata ?? {}
-  if (m.type !== 'field-rental-booking') return
+  if (resolveCheckoutPurchaseType(session) !== 'field-rental-booking') return
 
   const fieldId = m.rental_field?.trim()
   const sessionDate = m.rental_date?.trim()

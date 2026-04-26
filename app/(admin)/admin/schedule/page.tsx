@@ -12,6 +12,7 @@ import { AdminSlotDetailModal } from '@/components/schedule/admin-slot-detail-mo
 import { buildPublishedWeek } from '@/lib/schedule/published-week'
 import { isoDateForWeekDay, startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
 import type { DayIndex, ScheduleOverride, ScheduleSlot } from '@/types/schedule'
+import type { CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
 import {
   buildAdminBlockMap,
   getAdminBlockKey,
@@ -26,7 +27,6 @@ import { loadFacilityScheduleConfigAction, saveFacilityScheduleConfigAction } fr
 import { Button } from '@/components/ui/button'
 import { FacilityWeekCalendar } from '@/components/schedule/facility-week-calendar'
 import { AdminCalendarFeedModal } from '@/components/schedule/admin-calendar-feed-modal'
-import type { CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
 
 export default function SchedulePage() {
   const [baseDate, setBaseDate] = useState(() => new Date())
@@ -34,12 +34,15 @@ export default function SchedulePage() {
   const [activeTab, setActiveTab] = useState<'calendar' | 'grid' | 'weekly' | 'publish'>('calendar')
   const [checkedInIds, setCheckedInIds] = useState<Set<string>>(() => new Set())
   const [detailSlot, setDetailSlot] = useState<ScheduleSlot | null>(null)
+  const [detailRelatedSlots, setDetailRelatedSlots] = useState<ScheduleSlot[]>([])
+  const [bookedOnly, setBookedOnly] = useState(false)
 
   const [facilityConfig, setFacilityConfig] = useState<FacilitySchedulePublishedConfig | null>(null)
   const [configLoadError, setConfigLoadError] = useState<string | null>(null)
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'ok' | 'err'>('idle')
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [calendarBlocks, setCalendarBlocks] = useState<CalendarFeedBlock[]>([])
+  const [calendarHolidays, setCalendarHolidays] = useState<Record<string, string>>({})
   const [calendarError, setCalendarError] = useState<string | null>(null)
   const [feedDetailBlock, setFeedDetailBlock] = useState<CalendarFeedBlock | null>(null)
 
@@ -62,27 +65,36 @@ export default function SchedulePage() {
     return buildPublishedWeek(baseDate, facilityConfig)
   }, [baseDate, facilityConfig])
 
-  useEffect(() => {
+  const loadCalendarFeed = useCallback(async () => {
     if (!week?.weekStart) return
-    let cancelled = false
     setCalendarError(null)
-    ;(async () => {
-      try {
-        const res = await fetch(`/api/schedule/calendar-feed?weekStart=${encodeURIComponent(week.weekStart)}`)
-        const body = (await res.json()) as { blocks?: CalendarFeedBlock[]; error?: string }
-        if (!res.ok) throw new Error(body.error ?? 'Failed to load calendar')
-        if (!cancelled) setCalendarBlocks(body.blocks ?? [])
-      } catch (e) {
-        if (!cancelled) {
-          setCalendarBlocks([])
-          setCalendarError(e instanceof Error ? e.message : 'Failed to load calendar')
-        }
+    try {
+      const res = await fetch(`/api/schedule/calendar-feed?weekStart=${encodeURIComponent(week.weekStart)}`)
+      const body = (await res.json()) as {
+        blocks?: CalendarFeedBlock[]
+        holidays?: Record<string, string>
+        error?: string
       }
-    })()
-    return () => {
-      cancelled = true
+      if (!res.ok) throw new Error(body.error ?? 'Failed to load calendar')
+      setCalendarBlocks(body.blocks ?? [])
+      setCalendarHolidays(body.holidays && typeof body.holidays === 'object' ? body.holidays : {})
+    } catch (e) {
+      setCalendarBlocks([])
+      setCalendarHolidays({})
+      setCalendarError(e instanceof Error ? e.message : 'Failed to load calendar')
     }
   }, [week?.weekStart])
+
+  useEffect(() => {
+    void loadCalendarFeed()
+  }, [loadCalendarFeed])
+
+  const calendarBlocksForView = useMemo(() => {
+    if (!bookedOnly) return calendarBlocks
+    return calendarBlocks.filter(
+      b => b.category === 'assessment' || b.category === 'rental_booking' || b.category === 'party'
+    )
+  }, [calendarBlocks, bookedOnly])
 
   const blockMap = useMemo(() => (week ? buildAdminBlockMap(week) : new Map()), [week])
   const weeklyBlockCount = useMemo(() => (week ? listWeeklyBookableAnchors(week).length : 0), [week])
@@ -267,19 +279,41 @@ export default function SchedulePage() {
                 {calendarError ? (
                   <p className="font-mono text-xs text-amber-200/90">{calendarError}</p>
                 ) : null}
+                <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] text-formula-frost/90">
+                  <input
+                    type="checkbox"
+                    checked={bookedOnly}
+                    onChange={e => setBookedOnly(e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-formula-frost/30 bg-formula-deep/40"
+                  />
+                  Booked items only — hide open program templates (assessments, rentals, and party holds still show)
+                </label>
                 <FacilityWeekCalendar
                   weekStart={week.weekStart}
-                  blocks={calendarBlocks}
+                  blocks={calendarBlocksForView}
+                  holidayLabelsByYmd={calendarHolidays}
                   week={week}
-                  onProgramSlotClick={s => {
+                  onProgramSlotClick={(s, opts) => {
                     setFeedDetailBlock(null)
+                    setDetailRelatedSlots(opts?.relatedSlots ?? [])
                     setDetailSlot(s)
                   }}
                   onFeedBlockClick={b => {
                     setDetailSlot(null)
+                    setDetailRelatedSlots([])
                     setFeedDetailBlock(b)
                   }}
                   onEmptySlotClick={appendOverrideFromCalendar}
+                  onRentalBookingTimeCommit={async ({ bookingId, startMinute, endMinute }) => {
+                    const res = await fetch(`/api/admin/rental-slot-bookings/${encodeURIComponent(bookingId)}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ startMinute, endMinute }),
+                    })
+                    const body = (await res.json()) as { error?: string }
+                    if (!res.ok) throw new Error(body.error ?? 'Could not update rental time')
+                    await loadCalendarFeed()
+                  }}
                 />
               </div>
             )}
@@ -373,6 +407,7 @@ export default function SchedulePage() {
                     adminSlotFill={adminSlotFill}
                     onSlotClick={s => {
                       setFeedDetailBlock(null)
+                      setDetailRelatedSlots([])
                       setDetailSlot(s)
                     }}
                   />
@@ -386,9 +421,13 @@ export default function SchedulePage() {
 
             <AdminSlotDetailModal
               open={detailSlot != null}
-              onClose={() => setDetailSlot(null)}
+              onClose={() => {
+                setDetailSlot(null)
+                setDetailRelatedSlots([])
+              }}
               weekStart={week.weekStart}
               slot={detailSlot}
+              relatedSlots={detailRelatedSlots}
               meta={detailMeta}
               checkedInIds={checkedInIds}
               onToggleCheckedIn={toggleCheckedIn}

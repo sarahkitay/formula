@@ -2,6 +2,7 @@ import type { AgeGroup } from '@/types/player'
 
 /** Age bands parents choose at portal signup; must match `schedule` / booking logic. */
 export const PORTAL_SIGNUP_AGE_GROUPS: { value: AgeGroup; label: string }[] = [
+  { value: 'U6', label: 'U6 (Littles)' },
   { value: 'U8', label: 'U8' },
   { value: 'U10', label: 'U10' },
   { value: 'U12', label: 'U12' },

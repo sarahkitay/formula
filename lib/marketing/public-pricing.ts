@@ -19,6 +19,16 @@ export const SESSION_PACKAGE_5 = {
   purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
 } as const
 
+/** Littles: Mon/Wed/Fri 30-minute blocks; $50/session × 6 sessions. Monday track uses 7 calendar weeks to cover Memorial Day. */
+export const LITTLES_SIX_WEEK = {
+  priceUsd: 300,
+  perSessionUsd: 50,
+  sessionsInPack: 6,
+  label: 'Littles 6-session series',
+  summary:
+    'Six 30-minute Littles sessions on your chosen Mon/Wed/Fri time (10:00–10:30 or 10:45–11:15). $300 total ($50/session). Monday tracks run six sessions across seven calendar weeks to cover Memorial Day; Wednesday and Friday are six consecutive weeks.',
+} as const
+
 /** Prepaid 10-session package (early bird). */
 export const SESSION_PACKAGE_10 = {
   sessions: 10,

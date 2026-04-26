@@ -11,6 +11,7 @@ export type ScheduleAgeBand = '4-5' | '6-8' | '9-11' | '12-14' | '15-19'
 export type ScheduleProgramKind =
   | 'youth_training'
   | 'preschool'
+  | 'littles'
   | 'adult_league'
   | 'adult_pickup'
   | 'field_rental_premium'

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSiteOrigin, getStripe } from '@/lib/stripe/server'
+import { resolveCheckoutPurchaseType } from '@/lib/stripe/record-purchase'
 import { ensureWaiverInviteForPaidFieldRental, getWaiverInviteByStripeSessionId } from '@/lib/rentals/waiver-invites-server'
 
 export const runtime = 'nodejs'
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'checkout_not_paid' }, { status: 409 })
   }
 
-  if (session.metadata?.type !== 'field-rental-booking') {
+  if (resolveCheckoutPurchaseType(session) !== 'field-rental-booking') {
     return NextResponse.json({ error: 'not_field_rental_checkout' }, { status: 400 })
   }
 

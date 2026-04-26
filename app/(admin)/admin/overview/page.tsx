@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { UserCheck, ChevronRight, DollarSign, AlertTriangle } from 'lucide-react'
+import { UserCheck, ChevronRight, AlertTriangle } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { StatCard } from '@/components/ui/stat-card'
@@ -24,6 +24,7 @@ import {
   computeRevenueThresholds,
 } from '@/lib/mock-data/admin-operating-system'
 import { getRosterStats } from '@/lib/facility/roster-stats-server'
+import { AdminPaymentStream } from '@/components/admin/admin-payment-stream'
 
 export default async function AdminOverviewPage() {
   const rosterStats = await getRosterStats()
@@ -353,49 +354,7 @@ export default async function AdminOverviewPage() {
           </div>
         </div>
 
-        <div className="panel-technical space-y-4 p-5">
-          <SectionHeader
-            title="Payment stream"
-            action={
-              <Link href="/admin/payments">
-                <Button variant="ghost" size="sm" rightIcon={<ChevronRight className="h-3 w-3" strokeWidth={2} />}>
-                  Ledger
-                </Button>
-              </Link>
-            }
-          />
-          <div className="divide-y divide-border">
-            {recentPayments.length === 0 && (
-              <p className="py-6 text-center text-[13px] text-text-muted">
-                {stripeSummary.configured
-                  ? 'No Stripe purchases in the recent window yet. Field rental deposits and other checkouts appear after successful payment and webhook insert.'
-                  : 'Payment history is unavailable right now. Try again later or contact support.'}
-              </p>
-            )}
-            {recentPayments.map(payment => (
-              <Link
-                key={payment.id}
-                href="/admin/payments"
-                className="flex items-center gap-4 py-2.5 text-inherit no-underline transition-colors duration-150 first:pt-0 last:pb-0 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005700]"
-              >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-border bg-muted text-text-muted">
-                  <DollarSign className="h-3.5 w-3.5" strokeWidth={1.75} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] text-text-primary">{payment.playerName}</p>
-                  <p className="truncate text-[11px] text-text-muted">{payment.description}</p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p className="text-[13px] font-medium tabular-nums text-text-primary">
-                    {formatCurrency(payment.amount)}
-                  </p>
-                  <p className="font-mono text-[11px] text-text-muted">{formatDate(payment.createdAt)}</p>
-                </div>
-                <StatusPill status={payment.status} />
-              </Link>
-            ))}
-          </div>
-        </div>
+        <AdminPaymentStream configured={stripeSummary.configured} initialPayments={recentPayments} />
       </div>
     </PageContainer>
   )

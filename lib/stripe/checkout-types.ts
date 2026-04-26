@@ -2,6 +2,7 @@ export const CHECKOUT_TYPES = [
   'assessment',
   'package-5',
   'package-10',
+  'littles-6wk-300',
   'field-rental-booking',
   'party-booking-1k',
 ] as const

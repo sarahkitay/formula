@@ -15,6 +15,25 @@ export function newOfflineFieldRentalStripeSessionId(): string {
  *
  * Column names match `public.stripe_purchases` (Stripe’s `amount_total` → DB `amount`).
  */
+function metaStr(m: Stripe.Metadata | null | undefined, key: string): string | undefined {
+  const v = m?.[key]
+  return typeof v === 'string' && v.trim() ? v.trim() : undefined
+}
+
+/**
+ * If `metadata.type` is missing or wrong but rental keys are present, treat as field rental deposit.
+ * Used when persisting purchases and when branching on checkout kind after payment.
+ */
+export function resolveCheckoutPurchaseType(session: Stripe.Checkout.Session): string {
+  const m = session.metadata ?? {}
+  const raw = metaStr(m, 'type')
+  if (raw && raw !== 'unknown') return raw
+  if (metaStr(m, 'rental_ref') && (metaStr(m, 'rental_field') || metaStr(m, 'rental_window'))) {
+    return 'field-rental-booking'
+  }
+  return raw ?? 'unknown'
+}
+
 export async function recordCheckoutSessionCompleted(session: Stripe.Checkout.Session): Promise<void> {
   const supabase = getServiceSupabase()
   if (!supabase) {
@@ -22,7 +41,7 @@ export async function recordCheckoutSessionCompleted(session: Stripe.Checkout.Se
     return
   }
 
-  const checkoutType = session.metadata?.type
+  const checkoutType = resolveCheckoutPurchaseType(session)
   const email = session.customer_details?.email ?? session.customer_email ?? null
 
   const payload = {
@@ -31,7 +50,7 @@ export async function recordCheckoutSessionCompleted(session: Stripe.Checkout.Se
       typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id ?? null,
     stripe_customer_id: typeof session.customer === 'string' ? session.customer : session.customer?.id ?? null,
     email,
-    type: checkoutType ?? 'unknown',
+    type: checkoutType,
     amount: session.amount_total ?? 0,
     currency: session.currency ?? 'usd',
     payment_status: session.payment_status ?? 'unpaid',

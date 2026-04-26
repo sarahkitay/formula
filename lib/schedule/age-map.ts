@@ -7,6 +7,8 @@ import type { ScheduleAgeBand, ScheduleProgramKind, ScheduleSlot } from '@/types
  */
 export function ageGroupToScheduleBand(ag: AgeGroup): ScheduleAgeBand | null {
   switch (ag) {
+    case 'U6':
+      return '4-5'
     case 'U8':
       return '6-8'
     case 'U10':
@@ -29,7 +31,7 @@ export function ageGroupToScheduleBand(ag: AgeGroup): ScheduleAgeBand | null {
 export function scheduleSlotMatchesChildBand(
   slot: ScheduleSlot,
   band: ScheduleAgeBand,
-  kinds: ScheduleProgramKind[] = ['youth_training', 'preschool']
+  kinds: ScheduleProgramKind[] = ['youth_training', 'preschool', 'littles']
 ): boolean {
   if (!kinds.includes(slot.kind)) return false
   return slot.ageBand === band

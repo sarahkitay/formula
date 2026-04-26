@@ -1,4 +1,4 @@
-export type AgeGroup = 'U8' | 'U10' | 'U12' | 'U14' | 'U16' | 'U18' | 'Adult'
+export type AgeGroup = 'U6' | 'U8' | 'U10' | 'U12' | 'U14' | 'U16' | 'U18' | 'Adult'
 export type PlayerStatus = 'active' | 'inactive' | 'suspended'
 export type PlayerPosition = 'GK' | 'DEF' | 'MID' | 'FWD'
 

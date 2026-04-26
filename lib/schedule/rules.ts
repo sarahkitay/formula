@@ -17,6 +17,12 @@ export const PROGRAM_UI: Record<
     border: 'rgb(22 101 52)',
     text: '#ffffff',
   },
+  littles: {
+    key: 'Littles (30 min · M/W/F AM)',
+    bg: 'rgb(13 148 136 / 0.9)',
+    border: 'rgb(15 118 110)',
+    text: '#ffffff',
+  },
   adult_league: {
     key: 'Adult league',
     bg: 'rgb(30 58 138 / 0.92)',
@@ -107,3 +113,6 @@ export const YOUTH_BLOCK_TOTAL = YOUTH_BLOCK_MINUTES + YOUTH_GAP_MINUTES
 
 /** Max athletes per youth training block (Performance Center anchor roster) */
 export const YOUTH_BLOCK_CAPACITY = 6
+
+/** Littles 30-minute blocks (separate roster from rotation youth) */
+export const LITTLES_BLOCK_CAPACITY = 12

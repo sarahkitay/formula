@@ -3,7 +3,7 @@ import type Stripe from 'stripe'
 import { isKnownRentalFieldId } from '@/lib/rentals/field-rental-picker-constants'
 import { encodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 import { encodeRentalWindow, isValidFieldRentalWindow } from '@/lib/rentals/rental-time-window'
-import { recordOfflineFieldRentalPurchase } from '@/lib/stripe/record-purchase'
+import { recordOfflineFieldRentalPurchase, resolveCheckoutPurchaseType } from '@/lib/stripe/record-purchase'
 import { getServiceSupabase } from '@/lib/supabase/service'
 
 export type WaiverInviteRow = {
@@ -96,6 +96,49 @@ export async function getWaiverInviteByStripeSessionId(sessionId: string): Promi
     return null
   }
   return data as WaiverInviteRow | null
+}
+
+function isPlausibleEmail(s: string): boolean {
+  const t = s.trim().toLowerCase()
+  return t.length > 3 && t.includes('@') && t.includes('.')
+}
+
+/** Admin: fix organizer label when Stripe didn’t capture `customer_details.name`. */
+export async function updateWaiverInviteOrganizer(params: {
+  id: string
+  purchaserName: string
+  purchaserEmail: string
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  const id = params.id.trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    return { ok: false, message: 'Invalid invite id.' }
+  }
+  const nameTrim = params.purchaserName.trim()
+  const emailTrim = params.purchaserEmail.trim().toLowerCase()
+  const hasName = nameTrim.length >= 2
+  const hasEmail = emailTrim.length > 0 && isPlausibleEmail(emailTrim)
+  if (!hasName && !hasEmail) {
+    return {
+      ok: false,
+      message: 'Enter an organizer name (at least 2 characters) and/or a valid email.',
+    }
+  }
+  const supabase = getServiceSupabase()
+  if (!supabase) {
+    return { ok: false, message: 'Database not configured.' }
+  }
+  const { error } = await supabase
+    .from('field_rental_waiver_invites')
+    .update({
+      purchaser_name: hasName ? nameTrim : null,
+      purchaser_email: hasEmail ? emailTrim : null,
+    })
+    .eq('id', id)
+  if (error) {
+    console.error('[waiver-invites] update organizer:', error.message)
+    return { ok: false, message: 'Could not save organizer details.' }
+  }
+  return { ok: true }
 }
 
 export async function createManualWaiverInvite(params: {
@@ -264,7 +307,7 @@ export async function createPaidInPersonFieldRentalInvite(
  */
 export async function ensureWaiverInviteForPaidFieldRental(session: Stripe.Checkout.Session): Promise<void> {
   const m = session.metadata ?? {}
-  if (m.type !== 'field-rental-booking') return
+  if (resolveCheckoutPurchaseType(session) !== 'field-rental-booking') return
   const sid = session.id?.trim()
   if (!sid) return
   const expected = parseInt(m.rental_participants ?? '1', 10)

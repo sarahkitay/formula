@@ -1,6 +1,6 @@
 import type { GeneratedWeek, ScheduleSlot } from '@/types/schedule'
 import { SCHEDULE_ASSETS } from '@/lib/schedule/assets'
-import { YOUTH_BLOCK_CAPACITY } from '@/lib/schedule/rules'
+import { LITTLES_BLOCK_CAPACITY, YOUTH_BLOCK_CAPACITY } from '@/lib/schedule/rules'
 
 export function stableInt(seed: string, lo: number, hi: number): number {
   let h = 0
@@ -64,7 +64,13 @@ export function buildAdminBlockDemo(weekStart: string, anchor: ScheduleSlot): Ad
   const seed = `${weekStart}|${blockKey}`
 
   const capacity =
-    anchor.kind === 'open_gym' ? 24 : anchor.kind === 'preschool' ? 16 : YOUTH_BLOCK_CAPACITY
+    anchor.kind === 'open_gym'
+      ? 24
+      : anchor.kind === 'preschool'
+        ? 16
+        : anchor.kind === 'littles'
+          ? LITTLES_BLOCK_CAPACITY
+          : YOUTH_BLOCK_CAPACITY
   const enrolled = 0
   const soldOut = false
   const players: AdminRosterPlayerDemo[] = []

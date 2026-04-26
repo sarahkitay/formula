@@ -11,8 +11,8 @@ export async function GET(req: Request) {
     const weekStartRaw = searchParams.get('weekStart')?.trim()
     const base = weekStartRaw ? new Date(`${weekStartRaw}T12:00:00`) : new Date()
     const sun = startOfScheduleWeek(base)
-    const { week, blocks } = await buildFacilityCalendarFeed(sun)
-    return NextResponse.json({ weekStart: week.weekStart, weekEnd: week.weekEnd, blocks })
+    const { week, blocks, holidays } = await buildFacilityCalendarFeed(sun)
+    return NextResponse.json({ weekStart: week.weekStart, weekEnd: week.weekEnd, blocks, holidays })
   } catch (e) {
     console.error('[calendar-feed]', e)
     return NextResponse.json({ error: 'Failed to build calendar feed' }, { status: 500 })

@@ -7,6 +7,7 @@ import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWe
 import { isKnownRentalFieldId, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
 import { fieldRentalDepositUsd } from '@/lib/marketing/public-pricing'
 import { isValidFieldRentalWindow, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
+import { isLittlesCheckoutTrackId, LITTLES_PACK_SESSIONS, littlesCalendarWeekSpan } from '@/lib/marketing/littles-tracks'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
   /** Set for field-rental so attach + Stripe metadata stay aligned after checkout.create. */
   let fieldRentalSessionDatesYmd: string[] | null = null
   let fieldRentalStripeMeta: Record<string, string> = {}
+  let littlesStripeMeta: Record<string, string> = {}
 
   if (type === 'assessment') {
     const slotId = metadataExtra.assessment_slot_id?.trim()
@@ -221,6 +223,24 @@ export async function POST(req: Request) {
     }
   }
 
+  if (type === 'littles-6wk-300') {
+    const track = metadataExtra.littles_track?.trim() ?? ''
+    if (!isLittlesCheckoutTrackId(track)) {
+      return NextResponse.json(
+        {
+          error:
+            'Littles checkout requires metadata littles_track (e.g. littles-wed-600). Choose a published Monday, Wednesday, or Friday slot.',
+        },
+        { status: 400 }
+      )
+    }
+    littlesStripeMeta = {
+      littles_track: track,
+      littles_sessions_in_pack: String(LITTLES_PACK_SESSIONS),
+      littles_calendar_weeks: String(littlesCalendarWeekSpan(track)),
+    }
+  }
+
   const emailHint = metadataExtra.parent_email_hint?.trim().toLowerCase() ?? ''
   const partyEmail = metadataExtra.party_contact_email?.trim().toLowerCase() ?? ''
   const prefillEmail =
@@ -237,11 +257,13 @@ export async function POST(req: Request) {
       success_url: `${origin}/checkout/success?${successQuery}`,
       cancel_url: `${origin}/checkout/cancel`,
       metadata: {
-        type,
         twilio_sms_opt_in: smsConsent ? 'true' : 'false',
         ...metadataExtra,
         ...(fieldRentalStripeDates ?? {}),
         ...fieldRentalStripeMeta,
+        ...littlesStripeMeta,
+        /** Last so client-supplied metadata cannot override the server checkout kind (required for webhook → `stripe_purchases`). */
+        type,
       },
       ...(prefillEmail ? { customer_email: prefillEmail } : {}),
       customer_creation: 'always',

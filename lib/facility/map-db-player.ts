@@ -1,6 +1,6 @@
 import type { AgeGroup, Player, PlayerPosition, PlayerStatus } from '@/types/player'
 
-const AGE_GROUPS: AgeGroup[] = ['U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
+const AGE_GROUPS: AgeGroup[] = ['U6', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
 
 function toAgeGroup(raw: string | null | undefined): AgeGroup {
   const t = (raw ?? '').trim() as AgeGroup

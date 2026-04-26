@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { DollarSign, Download } from 'lucide-react'
+import { DollarSign, Download, Trash2 } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { StatCard } from '@/components/ui/stat-card'
@@ -22,6 +22,7 @@ const METHOD_LABELS: Record<string, string> = {
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoadError(null)
@@ -39,6 +40,28 @@ export default function PaymentsPage() {
   useEffect(() => {
     void load()
   }, [load])
+
+  const removePayment = useCallback(async (p: Payment) => {
+    const ok = window.confirm(
+      'Remove this entry from the ledger? This does not refund or cancel anything in Stripe — it only deletes the stored row.'
+    )
+    if (!ok) return
+    setDeletingId(p.id)
+    try {
+      const res = await fetch('/api/admin/stripe-purchases', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: p.id }),
+      })
+      const body = (await res.json()) as { error?: string }
+      if (!res.ok) throw new Error(body.error ?? 'Failed to remove payment')
+      setPayments(prev => prev.filter(x => x.id !== p.id))
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : 'Delete failed')
+    } finally {
+      setDeletingId(null)
+    }
+  }, [])
 
   const completed = useMemo(() => payments.filter(p => p.status === 'completed'), [payments])
   const pending = useMemo(() => payments.filter(p => p.status === 'pending'), [payments])
@@ -96,6 +119,24 @@ export default function PaymentsPage() {
       key: 'status',
       header: 'Status',
       render: p => <StatusPill status={p.status} />,
+    },
+    {
+      key: '_remove',
+      header: '',
+      render: p => (
+        <button
+          type="button"
+          title="Remove from ledger (no Stripe refund)"
+          aria-label="Remove from ledger"
+          disabled={deletingId === p.id}
+          onClick={() => void removePayment(p)}
+          className={cn(
+            'inline-flex h-8 w-8 items-center justify-center rounded-control text-text-muted transition-colors hover:bg-muted hover:text-destructive disabled:opacity-40'
+          )}
+        >
+          <Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+        </button>
+      ),
     },
   ]
 

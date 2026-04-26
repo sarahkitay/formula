@@ -16,7 +16,7 @@ import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
 import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
 import { Player, AgeGroup } from '@/types'
 
-const AGE_GROUPS: Array<AgeGroup | 'All'> = ['All', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
+const AGE_GROUPS: Array<AgeGroup | 'All'> = ['All', 'U6', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
 
 export default function PlayersPage() {
   const router = useRouter()

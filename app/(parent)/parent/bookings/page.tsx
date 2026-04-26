@@ -27,7 +27,7 @@ import {
 } from '@/lib/parent/parent-block-bookings'
 import { notifyParentBlockBookingCreated } from '@/lib/parent/notify-block-booking-client'
 
-const AGE_GROUPS: AgeGroup[] = ['U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
+const AGE_GROUPS: AgeGroup[] = ['U6', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
 
 function toBookingAgeGroup(raw: string): AgeGroup {
   const t = raw.trim() as AgeGroup
@@ -262,7 +262,7 @@ export default function ParentBookingsPage() {
       (scheduleBand &&
         !!slot.youthBlockId &&
         !!bookableByYouthBlock.get(slot.youthBlockId) &&
-        (slot.kind === 'youth_training' || slot.kind === 'preschool') &&
+        (slot.kind === 'youth_training' || slot.kind === 'preschool' || slot.kind === 'littles') &&
         slot.ageBand === scheduleBand) ||
       slot.kind === 'open_gym'
     )

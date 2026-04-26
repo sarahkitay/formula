@@ -131,6 +131,83 @@ export async function insertFieldRentalAgreement(
   return { ok: true, id: (data as { id: string }).id }
 }
 
+const AGREEMENT_LIST_COL =
+  'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_address, participant_dob, parent_guardian_name, participant_count, organization_name, emergency_contact, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout, stripe_checkout_session_id'
+
+/** Signed waivers tied to a specific field rental slot (booking row snapshot). */
+export async function listAgreementsForRentalSlot(params: {
+  fieldId: string
+  sessionDate: string
+  timeSlot: string
+}): Promise<FieldRentalAgreementRow[]> {
+  const supabase = getServiceSupabase()
+  if (!supabase) return []
+  const field = params.fieldId.trim()
+  const date = params.sessionDate.trim()
+  const window = params.timeSlot.trim()
+  if (!field || !date || !window) return []
+
+  const { data, error } = await supabase
+    .from('field_rental_agreements')
+    .select(AGREEMENT_LIST_COL)
+    .eq('booking_rental_field', field)
+    .eq('booking_rental_date', date)
+    .eq('booking_rental_window', window)
+    .not('submitted_at', 'is', null)
+    .order('submitted_at', { ascending: true })
+
+  if (error) {
+    console.warn('[field-rental-agreements] list for slot:', error.message)
+    return []
+  }
+  return (data ?? []) as FieldRentalAgreementRow[]
+}
+
+/** Slot snapshot plus Stripe session (still finds waivers after admin nudges `time_slot` on the booking). */
+export async function listAgreementsForRentalBooking(booking: {
+  field_id: unknown
+  session_date: unknown
+  time_slot: unknown
+  stripe_checkout_session_id?: unknown
+}): Promise<FieldRentalAgreementRow[]> {
+  const supabase = getServiceSupabase()
+  if (!supabase) return []
+
+  const fieldId = String(booking.field_id ?? '').trim()
+  const sessionDate =
+    typeof booking.session_date === 'string'
+      ? booking.session_date.slice(0, 10)
+      : String(booking.session_date ?? '').slice(0, 10)
+  const timeSlot = String(booking.time_slot ?? '').trim()
+  const stripe =
+    typeof booking.stripe_checkout_session_id === 'string' && booking.stripe_checkout_session_id.startsWith('cs_')
+      ? booking.stripe_checkout_session_id.trim()
+      : ''
+
+  const bySlot = await listAgreementsForRentalSlot({ fieldId, sessionDate, timeSlot })
+  const seen = new Set(bySlot.map(r => r.id))
+  const out = [...bySlot]
+
+  if (stripe) {
+    const { data, error } = await supabase
+      .from('field_rental_agreements')
+      .select(AGREEMENT_LIST_COL)
+      .eq('stripe_checkout_session_id', stripe)
+      .not('submitted_at', 'is', null)
+      .order('submitted_at', { ascending: true })
+    if (!error && data?.length) {
+      for (const row of data as FieldRentalAgreementRow[]) {
+        if (!seen.has(row.id)) {
+          seen.add(row.id)
+          out.push(row)
+        }
+      }
+    }
+  }
+
+  return out
+}
+
 export async function listFieldRentalAgreementsRecent(limit = 100): Promise<FieldRentalAgreementRow[]> {
   const supabase = getServiceSupabase()
   if (!supabase) return []

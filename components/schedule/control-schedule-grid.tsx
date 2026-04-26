@@ -45,15 +45,15 @@ function slotStyle(
 }
 
 function simplifiedSlotLabel(s: ScheduleSlot): string {
-  if ((s.kind === 'youth_training' || s.kind === 'preschool') && s.ageBand) {
-    return 'Youth'
+  if ((s.kind === 'youth_training' || s.kind === 'preschool' || s.kind === 'littles') && s.ageBand) {
+    return s.kind === 'littles' ? 'Littles' : 'Youth'
   }
   return s.label
 }
 
 function slotSecondRowLabel(s: ScheduleSlot): string | null {
-  if ((s.kind === 'youth_training' || s.kind === 'preschool') && s.ageBand) {
-    return s.ageBand
+  if ((s.kind === 'youth_training' || s.kind === 'preschool' || s.kind === 'littles') && s.ageBand) {
+    return s.kind === 'littles' ? `${s.ageBand} · U6` : s.ageBand
   }
   return null
 }
@@ -263,7 +263,8 @@ export function ControlScheduleGrid({
                 style={{
                   backgroundColor:
                     parentMode
-                      ? k === 'open_gym' || (scheduleAgeBand != null && (k === 'youth_training' || k === 'preschool'))
+                      ? k === 'open_gym' ||
+                          (scheduleAgeBand != null && (k === 'youth_training' || k === 'preschool' || k === 'littles'))
                         ? 'rgb(0 87 0 / 0.9)'
                         : 'rgb(42 58 54 / 0.9)'
                       : PROGRAM_UI[k].bg,
@@ -279,7 +280,7 @@ export function ControlScheduleGrid({
         {DAY_LABELS[dayIndex]} · Week of {week.weekStart}: pre-generated facility program (read-only)
         {scheduleAgeBand != null && !parentMode && (
           <span className="mt-1 block font-bold text-formula-volt">
-            Showing only {scheduleAgeBand} youth / preschool blocks (matches your athlete&apos;s training band).
+            Showing only {scheduleAgeBand} youth / preschool / Littles blocks (matches your athlete&apos;s training band).
           </span>
         )}
         {scheduleAgeBand != null && parentMode && (
