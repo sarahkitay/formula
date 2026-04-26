@@ -58,6 +58,8 @@ export type FieldRentalAgreementRow = {
   /** Populated in admin list when this waiver is tied to a paid roster link. */
   roster_organizer_name?: string | null
   roster_organizer_email?: string | null
+  /** Total waivers linked to the same invite / expected headcount (same on every row for that invite). */
+  waiver_invite_roster_progress?: string | null
 }
 
 /** Full row for admin detail + PDF (includes signature image data URL). */
@@ -231,23 +233,83 @@ export async function listFieldRentalAgreementsRecent(limit = 100): Promise<Fiel
 
   const { data: invData, error: invErr } = await supabase
     .from('field_rental_waiver_invites')
-    .select('id, purchaser_name, purchaser_email')
+    .select('id, purchaser_name, purchaser_email, expected_waiver_count')
     .in('id', inviteIds)
 
   if (invErr || !invData?.length) return baseRows
 
   const invMap = new Map(
-    (invData as { id: string; purchaser_name: string | null; purchaser_email: string | null }[]).map(i => [i.id, i])
+    (
+      invData as {
+        id: string
+        purchaser_name: string | null
+        purchaser_email: string | null
+        expected_waiver_count: number
+      }[]
+    ).map(i => [i.id, i])
   )
+
+  const linkedCount = new Map<string, number>()
+  for (const r of baseRows) {
+    if (r.waiver_invite_id) {
+      linkedCount.set(r.waiver_invite_id, (linkedCount.get(r.waiver_invite_id) ?? 0) + 1)
+    }
+  }
 
   return baseRows.map(r => {
     const inv = r.waiver_invite_id ? invMap.get(r.waiver_invite_id) : undefined
+    const signedForInvite = r.waiver_invite_id ? linkedCount.get(r.waiver_invite_id) ?? 0 : 0
     return {
       ...r,
       roster_organizer_name: inv?.purchaser_name ?? null,
       roster_organizer_email: inv?.purchaser_email ?? null,
+      waiver_invite_roster_progress:
+        inv != null ? `${signedForInvite}/${inv.expected_waiver_count}` : null,
     }
   })
+}
+
+/** Admin: attach a signed waiver to a roster invite (counts toward progress) or clear the link. */
+export async function linkFieldRentalAgreementWaiverInvite(params: {
+  agreementId: string
+  waiverInviteId: string | null
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  const agreementId = params.agreementId.trim()
+  if (!isUuid(agreementId)) {
+    return { ok: false, message: 'Invalid waiver record id.' }
+  }
+  let inviteId: string | null = null
+  if (params.waiverInviteId != null && String(params.waiverInviteId).trim() !== '') {
+    const w = String(params.waiverInviteId).trim()
+    if (!isUuid(w)) {
+      return { ok: false, message: 'Invalid roster invite id.' }
+    }
+    inviteId = w
+  }
+
+  const supabase = getServiceSupabase()
+  if (!supabase) {
+    return { ok: false, message: 'Database not configured.' }
+  }
+
+  if (inviteId) {
+    const { data: inv, error: invErr } = await supabase
+      .from('field_rental_waiver_invites')
+      .select('id')
+      .eq('id', inviteId)
+      .maybeSingle()
+    if (invErr || !inv) {
+      return { ok: false, message: 'Roster invite not found.' }
+    }
+  }
+
+  const { error } = await supabase.from('field_rental_agreements').update({ waiver_invite_id: inviteId }).eq('id', agreementId)
+
+  if (error) {
+    console.error('[field-rental-agreements] link invite:', error.message)
+    return { ok: false, message: 'Could not update roster link on this waiver.' }
+  }
+  return { ok: true }
 }
 
 export async function getFieldRentalAgreementById(id: string): Promise<FieldRentalAgreementFull | null> {

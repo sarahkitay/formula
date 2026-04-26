@@ -56,7 +56,7 @@ export function checkoutTypeDescription(type: string, metadata: Record<string, u
     case 'littles-6wk-300': {
       const track = metaString(m, 'littles_track')
       const weeks = metaString(m, 'littles_calendar_weeks')
-      const parts = ['Littles 6-session pack ($300)']
+      const parts = ['Formula Minis 6-week pack ($300)']
       if (track) parts.push(track.replace(/-/g, ' '))
       if (weeks) parts.push(`${weeks} calendar wk`)
       return parts.join(' · ')

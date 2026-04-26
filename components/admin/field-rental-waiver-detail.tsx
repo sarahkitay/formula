@@ -24,6 +24,7 @@ import { formatRentalTypeForDisplay } from '@/lib/rentals/field-rental-waiver-la
 import { decodeRentalDatesCompact } from '@/lib/rentals/rental-weekly-dates'
 import { humanRentalWindowSummary } from '@/lib/rentals/rental-time-window'
 import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
+import { WaiverRosterLinkControls, type WaiverRosterInviteOption } from '@/components/admin/waiver-roster-link-controls'
 
 export type RosterOrganizerContext = {
   purchaserName: string | null
@@ -229,9 +230,12 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrga
 export function FieldRentalWaiverDetail({
   agreement,
   rosterOrganizer = null,
+  rosterInviteLinkOptions = [],
 }: {
   agreement: FieldRentalAgreementFull
   rosterOrganizer?: RosterOrganizerContext | null
+  /** Admin: roster invites this waiver can be linked to (same list as Rentals page). */
+  rosterInviteLinkOptions?: WaiverRosterInviteOption[]
 }) {
   const [pdfBusy, setPdfBusy] = useState(false)
 
@@ -273,6 +277,14 @@ export function FieldRentalWaiverDetail({
           Open live waiver form
         </Link>
       </div>
+
+      {rosterInviteLinkOptions.length > 0 ? (
+        <WaiverRosterLinkControls
+          agreementId={agreement.id}
+          currentInviteId={agreement.waiver_invite_id}
+          inviteOptions={rosterInviteLinkOptions}
+        />
+      ) : null}
 
       {rosterOrganizer ? (
         <section className="rounded-lg border border-formula-volt/25 bg-formula-volt/[0.06] p-5 md:p-6">

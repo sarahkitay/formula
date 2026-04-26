@@ -7,7 +7,11 @@ import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWe
 import { isKnownRentalFieldId, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
 import { fieldRentalDepositUsd } from '@/lib/marketing/public-pricing'
 import { isValidFieldRentalWindow, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
-import { isLittlesCheckoutTrackId, LITTLES_PACK_SESSIONS, littlesCalendarWeekSpan } from '@/lib/marketing/littles-tracks'
+import {
+  FORMULA_MINIS_PACK_SESSIONS,
+  formulaMinisCalendarWeekSpan,
+  isFormulaMinisCheckoutTrackId,
+} from '@/lib/marketing/formula-minis-tracks'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
@@ -225,19 +229,19 @@ export async function POST(req: Request) {
 
   if (type === 'littles-6wk-300') {
     const track = metadataExtra.littles_track?.trim() ?? ''
-    if (!isLittlesCheckoutTrackId(track)) {
+    if (!isFormulaMinisCheckoutTrackId(track)) {
       return NextResponse.json(
         {
           error:
-            'Littles checkout requires metadata littles_track (e.g. littles-wed-600). Choose a published Monday, Wednesday, or Friday slot.',
+            'Formula Minis checkout requires metadata littles_track (e.g. littles-wed-600). Choose a published Monday, Wednesday, or Friday slot.',
         },
         { status: 400 }
       )
     }
     littlesStripeMeta = {
       littles_track: track,
-      littles_sessions_in_pack: String(LITTLES_PACK_SESSIONS),
-      littles_calendar_weeks: String(littlesCalendarWeekSpan(track)),
+      littles_sessions_in_pack: String(FORMULA_MINIS_PACK_SESSIONS),
+      littles_calendar_weeks: String(formulaMinisCalendarWeekSpan(track)),
     }
   }
 

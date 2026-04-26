@@ -18,7 +18,7 @@ export const PROGRAM_UI: Record<
     text: '#ffffff',
   },
   littles: {
-    key: 'Littles (30 min · M/W/F AM)',
+    key: 'Formula Minis (2–3 · M/W/F AM)',
     bg: 'rgb(13 148 136 / 0.9)',
     border: 'rgb(15 118 110)',
     text: '#ffffff',
@@ -114,5 +114,5 @@ export const YOUTH_BLOCK_TOTAL = YOUTH_BLOCK_MINUTES + YOUTH_GAP_MINUTES
 /** Max athletes per youth training block (Performance Center anchor roster) */
 export const YOUTH_BLOCK_CAPACITY = 6
 
-/** Littles 30-minute blocks (separate roster from rotation youth) */
-export const LITTLES_BLOCK_CAPACITY = 12
+/** Formula Minis 30-minute blocks — max participants per session (Children’s Programming Summary v4). */
+export const MINIS_BLOCK_CAPACITY = 24

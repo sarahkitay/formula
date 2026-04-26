@@ -8,7 +8,7 @@ import type { ScheduleAgeBand } from '@/types/schedule'
 
 export const runtime = 'nodejs'
 
-const BANDS: ScheduleAgeBand[] = ['6-8', '9-11', '12-14', '15-19']
+const BANDS: ScheduleAgeBand[] = ['2-3', '4-5', '6-8', '9-11', '12-14', '15-19']
 
 /**
  * Published youth training blocks (Performance Center anchors) by age band for one facility week.

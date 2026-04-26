@@ -2,7 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
-import { loadFieldRentalCheckoutSnapshot } from '@/lib/rentals/field-rental-checkout-snapshot'
+import {
+  loadFieldRentalCheckoutSnapshot,
+  mergeWaiverInviteIntoCheckoutSnapshot,
+  type FieldRentalAgreementCheckoutSnapshot,
+} from '@/lib/rentals/field-rental-checkout-snapshot'
 import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
 import { PARTICIPANT_SELF_WAIVER_RENTAL_TYPE } from '@/lib/rentals/field-rental-waiver-labels'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
@@ -124,10 +128,24 @@ export async function submitFieldRentalAgreement(
     }
   }
 
-  const checkoutSnapshot =
-    rosterInvite?.stripe_checkout_session_id != null && rosterInvite.stripe_checkout_session_id.length > 0
-      ? await loadFieldRentalCheckoutSnapshot(rosterInvite.stripe_checkout_session_id)
-      : null
+  let checkoutSnapshot: FieldRentalAgreementCheckoutSnapshot | null = null
+  if (rosterInvite?.stripe_checkout_session_id && rosterInvite.stripe_checkout_session_id.length > 0) {
+    checkoutSnapshot = await loadFieldRentalCheckoutSnapshot(rosterInvite.stripe_checkout_session_id)
+  }
+  if (rosterInvite) {
+    const base: FieldRentalAgreementCheckoutSnapshot = checkoutSnapshot ?? {
+      stripe_checkout_session_id: null,
+      checkout_amount_total_cents: null,
+      checkout_currency: null,
+      booking_rental_field: null,
+      booking_rental_window: null,
+      booking_rental_date: null,
+      booking_rental_dates_compact: null,
+      booking_session_weeks: null,
+      booking_headcount_at_checkout: null,
+    }
+    checkoutSnapshot = mergeWaiverInviteIntoCheckoutSnapshot(rosterInvite, base)
+  }
 
   const saved = await insertFieldRentalAgreement({
     rental_type: rentalType,

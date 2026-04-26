@@ -7,6 +7,7 @@ import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
 import { ManualWaiverInviteForm } from '@/components/admin/manual-waiver-invite-form'
 import { PaidInPersonFieldRentalInviteForm } from '@/components/admin/paid-in-person-field-rental-invite-form'
 import { RosterWaiverInvitesAdmin } from '@/components/admin/roster-waiver-invites-admin'
+import { SignedRentalWaiversLinkTable, type RosterInvitePickOption } from '@/components/admin/signed-rental-waivers-link-table'
 import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
 import { listWaiverInvitesWithProgress } from '@/lib/rentals/waiver-invites-server'
 import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
@@ -14,7 +15,6 @@ import { getSiteOrigin } from '@/lib/stripe/server'
 import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 import { listPartyBookingsRecent } from '@/lib/party/party-bookings-server'
-import { formatCheckoutAmount, formatFieldRentalBookingSummaryLine } from '@/lib/rentals/field-rental-agreement-admin-display'
 import { formatCurrency } from '@/lib/utils'
 import { SITE } from '@/lib/site-config'
 
@@ -23,10 +23,30 @@ function clip(s: string | null, max: number) {
   return s.length <= max ? s : `${s.slice(0, max)}…`
 }
 
+function rosterInvitePickOptions(
+  invites: Awaited<ReturnType<typeof listWaiverInvitesWithProgress>>
+): RosterInvitePickOption[] {
+  return invites.map(inv => {
+    const displayName = inv.purchaser_name?.trim() ?? ''
+    const displayEmail = inv.purchaser_email?.trim() ?? ''
+    const organizer =
+      displayName ||
+      displayEmail ||
+      (inv.stripe_checkout_session_id ? 'Paid checkout' : 'Manual / comp link')
+    return {
+      id: inv.id,
+      label: `${organizer} · ${inv.completed_count}/${inv.expected_waiver_count}`,
+      completed: inv.completed_count,
+      expected: inv.expected_waiver_count,
+    }
+  })
+}
+
 export default async function RentalsPage() {
   const waiverRows = await listFieldRentalAgreementsRecent(100)
   const partyRows = await listPartyBookingsRecent(80)
   const waiverInvites = await listWaiverInvitesWithProgress(50)
+  const waiverInviteSelectOptions = rosterInvitePickOptions(waiverInvites)
   const siteOrigin = getSiteOrigin()
   const serviceConfigured = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim())
 
@@ -122,17 +142,19 @@ export default async function RentalsPage() {
         </AdminPanel>
 
         <AdminPanel title="Signed rental waivers" eyebrow="FIELD RENTAL">
-          <p className="mb-4 font-mono text-[11px] text-formula-mist">
-            <Link
-              href={BOOKING_HUB_PUBLIC.waiver}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-formula-volt underline-offset-2 hover:underline"
-            >
-              Open full waiver form (reference — same as guests)
-            </Link>
-            . Each signed row links to the full record, agreement language, and signature.
-          </p>
+              <p className="mb-4 font-mono text-[11px] text-formula-mist">
+                <Link
+                  href={BOOKING_HUB_PUBLIC.waiver}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-formula-volt underline-offset-2 hover:underline"
+                >
+                  Open full waiver form (reference — same as guests)
+                </Link>
+                . Each signed row links to the full record, agreement language, and signature. Use the <strong className="text-formula-paper/90">Attach to</strong>{' '}
+                column or drag the <strong className="text-formula-paper/90">⣿</strong> handle onto a roster invite above so walk-up / public-form signers count
+                toward the right organizer.
+              </p>
           {!serviceConfigured ? (
             <p className="font-mono text-[11px] text-amber-200/90">
               Signed waivers can’t be loaded right now. Try again in a few minutes; if this keeps happening, contact support.
@@ -150,57 +172,14 @@ export default async function RentalsPage() {
               flow will appear here after guests submit them.
             </p>
           ) : (
-            <AdminMonoTable
-              headers={[
-                'Submitted',
-                'Booked by (organizer)',
-                'Paid',
-                'Booking',
-                'Rental type',
-                'Participant',
-                'Email',
-                'DOB',
-                'Count',
-                'Signer',
-                'Guardian',
-                'Org',
-                'Notes',
-              ]}
-              rows={waiverRows.map((r) => [
-                formatFacilityDateTimeShort(r.submitted_at),
-                clip(
-                  [r.roster_organizer_name, r.roster_organizer_email].filter(Boolean).join(' · ') || '—',
-                  40
-                ),
-                formatCheckoutAmount(r.checkout_amount_total_cents ?? null, r.checkout_currency ?? null),
-                clip(formatFieldRentalBookingSummaryLine(r), 52),
-                r.rental_type,
-                <span key={`${r.id}-name`} className="inline-flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <Link href={`/admin/rentals/waivers/${r.id}`} className="text-formula-volt underline-offset-2 hover:underline">
-                    {r.participant_name}
-                  </Link>
-                  <Link
-                    href={`/admin/rentals/waivers/${r.id}`}
-                    className="font-mono text-[9px] uppercase tracking-wide text-formula-mist hover:text-formula-paper"
-                  >
-                    Full record + agreement
-                  </Link>
-                </span>,
-                r.participant_email,
-                r.participant_dob,
-                r.participant_count != null ? String(r.participant_count) : '—',
-                r.signature_name,
-                r.parent_guardian_name ?? '—',
-                r.organization_name ?? '—',
-                clip(r.notes, 48),
-              ])}
-            />
+            <SignedRentalWaiversLinkTable rows={waiverRows} inviteOptions={waiverInviteSelectOptions} />
           )}
           <p className="mt-3 font-mono text-[10px] text-formula-mist/80">
             Open a row for submitted answers, the complete agreement text shown to signers, acknowledgments, signature image, PDF download, and a link to the live
-            public waiver form. Submitted times use the facility timezone ({FACILITY_TIMEZONE}). “Booked by” is the purchaser who paid the field rental when this
-            waiver came from their roster link. “Count” is 1 per roster signer; team size at checkout is in Booking. Paid / Booking on each row are snapshots at
-            waiver submit; the roster panel above shows the organizer payment once for the whole link.
+            public waiver form. Submitted times use the facility timezone ({FACILITY_TIMEZONE}). “Booked by” fills from the roster invite once this row is linked;
+            unlink if needed. “Roster link” shows how many waivers are tied to that invite vs expected headcount. “Count” is 1 per roster signer; team size at
+            checkout is in Booking. Paid / Booking on each row are snapshots at waiver submit; the roster panel above shows the organizer payment once for the whole
+            link.
           </p>
         </AdminPanel>
 

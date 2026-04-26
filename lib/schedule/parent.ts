@@ -1,6 +1,6 @@
 import type { BookableYouthSlot, DayIndex, GeneratedWeek, ScheduleAgeBand, ScheduleSlot } from '@/types/schedule'
 import { scheduleSlotMatchesChildBand } from '@/lib/schedule/age-map'
-import { LITTLES_BLOCK_CAPACITY, YOUTH_BLOCK_CAPACITY } from '@/lib/schedule/rules'
+import { MINIS_BLOCK_CAPACITY, YOUTH_BLOCK_CAPACITY } from '@/lib/schedule/rules'
 
 /**
  * One bookable row per youth block (Performance Center anchor only, system-generated roster).
@@ -16,7 +16,7 @@ export function getBookableYouthSlots(
     (s): s is ScheduleSlot & { youthBlockId: string } =>
       s.assetId === 'performance-center' &&
       !!s.youthBlockId &&
-      scheduleSlotMatchesChildBand(s, band, ['youth_training', 'littles'])
+      scheduleSlotMatchesChildBand(s, band, ['youth_training', 'littles', 'preschool'])
   )
   const seen = new Set<string>()
   const out: BookableYouthSlot[] = []
@@ -24,7 +24,7 @@ export function getBookableYouthSlots(
     if (seen.has(s.youthBlockId)) continue
     seen.add(s.youthBlockId)
     const bookId = `book-${s.youthBlockId}`
-    const cap = s.kind === 'littles' ? LITTLES_BLOCK_CAPACITY : YOUTH_BLOCK_CAPACITY
+    const cap = s.kind === 'littles' ? MINIS_BLOCK_CAPACITY : YOUTH_BLOCK_CAPACITY
     const enrolled = Math.min(cap, enrollmentBySlotRef?.get(bookId) ?? 0)
     out.push({
       id: bookId,

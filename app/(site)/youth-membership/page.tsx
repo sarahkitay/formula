@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
-import { LittlesSixWeekCheckout } from '@/components/marketing/littles-six-week-checkout'
+import { FormulaMinisSixWeekCheckout } from '@/components/marketing/formula-minis-six-week-checkout'
 import { HomeProgramsAndPathways } from '@/components/marketing/home-programs-and-pathways'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
 import { YouthMembershipPackageHero } from '@/components/marketing/youth-membership-package-hero'
@@ -9,7 +9,7 @@ import { YouthPackageAckStrip } from '@/components/marketing/youth-package-ack-s
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import {
   FORMULA_SKILLS_CHECK,
-  LITTLES_SIX_WEEK,
+  FORMULA_MINIS_SIX_WEEK,
   SESSION_PACKAGE_10,
   SESSION_PACKAGE_5,
   SESSION_PACKAGE_EARLY_BIRD,
@@ -76,14 +76,16 @@ export default function YouthMembershipPage() {
         <YouthPackageAckStrip />
         <p className="text-sm text-formula-frost/70">Session expiration window: confirm with the desk before launch.</p>
 
-        <h2 className="!mt-14">Littles (U6)</h2>
+        <h2 className="!mt-14">Formula Minis (ages 2–3)</h2>
         <p>
-          <strong>{LITTLES_SIX_WEEK.label}</strong> · ${LITTLES_SIX_WEEK.priceUsd} ({LITTLES_SIX_WEEK.sessionsInPack} sessions · $
-          {LITTLES_SIX_WEEK.perSessionUsd}/session)
+          <strong>{FORMULA_MINIS_SIX_WEEK.label}</strong> · ${FORMULA_MINIS_SIX_WEEK.priceUsd} ({FORMULA_MINIS_SIX_WEEK.sessionsInPack} sessions · $
+          {FORMULA_MINIS_SIX_WEEK.perSessionUsd}/session)
         </p>
-        <p>{LITTLES_SIX_WEEK.summary}</p>
-        <p>After checkout, use the parent portal to book your athlete into the matching weekly block on the facility schedule.</p>
-        <LittlesSixWeekCheckout />
+        <p>{FORMULA_MINIS_SIX_WEEK.summary}</p>
+        <p>
+          After checkout, link a roster player as <strong>U6</strong> in the parent portal (Formula Minis ages 2–3), then book the matching Monday, Wednesday, or Friday block on the facility schedule.
+        </p>
+        <FormulaMinisSixWeekCheckout />
 
         <h2 className="!mt-14">Memberships</h2>
         <p>

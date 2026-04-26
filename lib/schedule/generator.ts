@@ -75,8 +75,8 @@ function pushPreschool(slots: ScheduleSlot[], day: DayIndex) {
   })
 }
 
-/** Littles (U6): Mon / Wed / Fri, 10:00–10:30 and 10:45–11:15 on Performance Center */
-function pushLittles(slots: ScheduleSlot[], day: DayIndex) {
+/** Formula Minis (ages 2–3): Mon / Wed / Fri, 10:00–10:30 and 10:45–11:15 on Performance Center */
+function pushFormulaMinis(slots: ScheduleSlot[], day: DayIndex) {
   if (day !== 1 && day !== 3 && day !== 5) return
   const dayTag = day === 1 ? 'mon' : day === 3 ? 'wed' : 'fri'
   add(slots, {
@@ -85,8 +85,8 @@ function pushLittles(slots: ScheduleSlot[], day: DayIndex) {
     startMinute: 10 * 60,
     endMinute: 10 * 60 + 30,
     kind: 'littles',
-    label: 'Littles // 10:00–10:30 · U6',
-    ageBand: '4-5',
+    label: 'Formula Minis // Session A · 10:00–10:30 AM · ages 2–3',
+    ageBand: '2-3',
     youthBlockId: `littles-${dayTag}-600`,
   })
   add(slots, {
@@ -95,8 +95,8 @@ function pushLittles(slots: ScheduleSlot[], day: DayIndex) {
     startMinute: 10 * 60 + 45,
     endMinute: 11 * 60 + 15,
     kind: 'littles',
-    label: 'Littles // 10:45–11:15 · U6',
-    ageBand: '4-5',
+    label: 'Formula Minis // Session B · 10:45–11:15 AM · ages 2–3',
+    ageBand: '2-3',
     youthBlockId: `littles-${dayTag}-645`,
   })
 }
@@ -320,7 +320,7 @@ function buildWeekSlots(weekIndex: number): ScheduleSlot[] {
     const day = d as DayIndex
     pushFieldRevenue(slots, day)
     pushPreschool(slots, day)
-    pushLittles(slots, day)
+    pushFormulaMinis(slots, day)
     pushYouthDay(slots, day)
     pushPartyRoom(slots, day)
     pushFlex(slots, day, weekIndex)

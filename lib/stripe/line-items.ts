@@ -2,7 +2,7 @@ import type Stripe from 'stripe'
 import {
   FIELD_RENTAL_BOOKING_CHECKOUT,
   FORMULA_SKILLS_CHECK,
-  LITTLES_SIX_WEEK,
+  FORMULA_MINIS_SIX_WEEK,
   PARTY_BOOKING_1K_CHECKOUT,
   SESSION_PACKAGE_5,
   SESSION_PACKAGE_10,
@@ -88,10 +88,10 @@ export function lineItemsForCheckoutType(
           currency: 'usd',
           tax_behavior: 'exclusive',
           product_data: {
-            name: LITTLES_SIX_WEEK.label,
-            description: LITTLES_SIX_WEEK.summary,
+            name: FORMULA_MINIS_SIX_WEEK.label,
+            description: FORMULA_MINIS_SIX_WEEK.summary,
           },
-          unit_amount: Math.round(LITTLES_SIX_WEEK.priceUsd * 100),
+          unit_amount: Math.round(FORMULA_MINIS_SIX_WEEK.priceUsd * 100),
         },
       },
     ]

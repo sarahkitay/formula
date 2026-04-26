@@ -46,14 +46,14 @@ function slotStyle(
 
 function simplifiedSlotLabel(s: ScheduleSlot): string {
   if ((s.kind === 'youth_training' || s.kind === 'preschool' || s.kind === 'littles') && s.ageBand) {
-    return s.kind === 'littles' ? 'Littles' : 'Youth'
+    return s.kind === 'littles' ? 'Minis' : 'Youth'
   }
   return s.label
 }
 
 function slotSecondRowLabel(s: ScheduleSlot): string | null {
   if ((s.kind === 'youth_training' || s.kind === 'preschool' || s.kind === 'littles') && s.ageBand) {
-    return s.kind === 'littles' ? `${s.ageBand} · U6` : s.ageBand
+    return s.kind === 'littles' ? `${s.ageBand} · Minis` : s.ageBand
   }
   return null
 }
@@ -280,7 +280,7 @@ export function ControlScheduleGrid({
         {DAY_LABELS[dayIndex]} · Week of {week.weekStart}: pre-generated facility program (read-only)
         {scheduleAgeBand != null && !parentMode && (
           <span className="mt-1 block font-bold text-formula-volt">
-            Showing only {scheduleAgeBand} youth / preschool / Littles blocks (matches your athlete&apos;s training band).
+            Showing only {scheduleAgeBand} youth / preschool / Formula Minis blocks (matches your athlete&apos;s training band).
           </span>
         )}
         {scheduleAgeBand != null && parentMode && (

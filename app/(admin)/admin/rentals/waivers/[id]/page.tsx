@@ -7,7 +7,8 @@ import { PageHeader } from '@/components/ui/page-header'
 import { formatCheckoutAmount, formatRosterInviteBookingSummary } from '@/lib/rentals/field-rental-agreement-admin-display'
 import { getFieldRentalAgreementById } from '@/lib/rentals/field-rental-agreements-server'
 import { formatRentalTypeForDisplay, isUuid } from '@/lib/rentals/field-rental-waiver-labels'
-import { countWaiversForInviteId, getWaiverInviteById } from '@/lib/rentals/waiver-invites-server'
+import { countWaiversForInviteId, getWaiverInviteById, listWaiverInvitesWithProgress } from '@/lib/rentals/waiver-invites-server'
+import type { WaiverRosterInviteOption } from '@/components/admin/waiver-roster-link-controls'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 import '../waiver-print.css'
 
@@ -54,6 +55,22 @@ export default async function FieldRentalWaiverPage({ params }: Props) {
   const agreement = await getFieldRentalAgreementById(id)
   if (!agreement) notFound()
 
+  const allInvites = await listWaiverInvitesWithProgress(80)
+  const rosterInviteLinkOptions: WaiverRosterInviteOption[] = allInvites.map(inv => {
+    const displayName = inv.purchaser_name?.trim() ?? ''
+    const displayEmail = inv.purchaser_email?.trim() ?? ''
+    const organizer =
+      displayName ||
+      displayEmail ||
+      (inv.stripe_checkout_session_id ? 'Paid checkout' : 'Manual / comp link')
+    return {
+      id: inv.id,
+      label: `${organizer} · ${inv.completed_count}/${inv.expected_waiver_count}`,
+      completed: inv.completed_count,
+      expected: inv.expected_waiver_count,
+    }
+  })
+
   let rosterOrganizer: RosterOrganizerContext | null = null
   if (agreement.waiver_invite_id) {
     const inv = await getWaiverInviteById(agreement.waiver_invite_id)
@@ -89,7 +106,11 @@ export default async function FieldRentalWaiverPage({ params }: Props) {
           { label: 'Signed waiver' },
         ]}
       />
-      <FieldRentalWaiverDetail agreement={agreement} rosterOrganizer={rosterOrganizer} />
+      <FieldRentalWaiverDetail
+        agreement={agreement}
+        rosterOrganizer={rosterOrganizer}
+        rosterInviteLinkOptions={rosterInviteLinkOptions}
+      />
     </PageContainer>
   )
 }

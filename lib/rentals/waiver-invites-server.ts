@@ -1,7 +1,8 @@
 import { randomBytes } from 'crypto'
 import type Stripe from 'stripe'
 import { isKnownRentalFieldId } from '@/lib/rentals/field-rental-picker-constants'
-import { encodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
+import { formatFieldRentalBookingSummaryLine } from '@/lib/rentals/field-rental-agreement-admin-display'
+import { decodeRentalDatesCompact, encodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 import { encodeRentalWindow, isValidFieldRentalWindow } from '@/lib/rentals/rental-time-window'
 import { recordOfflineFieldRentalPurchase, resolveCheckoutPurchaseType } from '@/lib/stripe/record-purchase'
 import { getServiceSupabase } from '@/lib/supabase/service'
@@ -9,12 +10,12 @@ import { getServiceSupabase } from '@/lib/supabase/service'
 export type WaiverInviteRow = {
   id: string
   token: string
+  created_at: string
   expected_waiver_count: number
   rental_ref: string | null
   rental_type: string | null
   stripe_checkout_session_id: string | null
   notes: string | null
-  created_at: string
   /** Set when invite is created from paid Checkout (migration adds columns). */
   purchaser_name?: string | null
   purchaser_email?: string | null
@@ -33,6 +34,10 @@ export type SignedWaiverOnInvite = {
   participant_name: string
   participant_email: string
   submitted_at: string | null
+  /** True when signer email matches the invite purchaser email (Stripe payer / organizer). */
+  is_organizer_waiver: boolean
+  /** Field / window / dates stored on this agreement row when submitted. */
+  session_summary: string | null
 }
 
 export type WaiverInviteWithProgress = WaiverInviteRow & {
@@ -141,6 +146,104 @@ export async function updateWaiverInviteOrganizer(params: {
   return { ok: true }
 }
 
+const YMD = /^\d{4}-\d{2}-\d{2}$/
+
+/** Admin: correct payment + field / time / dates on the roster invite (and future waiver rows still merge from invite). */
+export async function updateWaiverInviteSessionAndPayment(params: {
+  id: string
+  checkout_amount_total_cents: number | null
+  checkout_currency: string | null
+  checkout_completed_at: string | null
+  booking_rental_field: string | null
+  booking_rental_window: string | null
+  booking_rental_date: string | null
+  booking_rental_dates_compact: string | null
+  booking_session_weeks: number | null
+}): Promise<{ ok: true } | { ok: false; message: string }> {
+  const id = params.id.trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    return { ok: false, message: 'Invalid invite id.' }
+  }
+
+  const cents = params.checkout_amount_total_cents
+  if (cents != null && (!Number.isFinite(cents) || cents < 0 || cents > 50_000_000)) {
+    return { ok: false, message: 'Amount (cents) must be between 0 and a reasonable maximum.' }
+  }
+
+  const cur = (params.checkout_currency ?? 'usd').trim().toLowerCase()
+  if (cur.length !== 3) {
+    return { ok: false, message: 'Currency must be a 3-letter ISO code (e.g. usd).' }
+  }
+
+  let paidAt: string | null = params.checkout_completed_at?.trim() || null
+  if (paidAt) {
+    const t = Date.parse(paidAt)
+    if (!Number.isFinite(t)) {
+      return { ok: false, message: 'Paid-at must be a valid ISO date/time.' }
+    }
+    paidAt = new Date(t).toISOString()
+  }
+
+  const field = params.booking_rental_field?.trim() || null
+  if (field && !isKnownRentalFieldId(field)) {
+    return { ok: false, message: 'Unknown rental field id. Use field_1, field_2, field_3, or legacy ids from the picker.' }
+  }
+
+  const win = params.booking_rental_window?.trim() || null
+  if (win && !isValidFieldRentalWindow(win)) {
+    return {
+      ok: false,
+      message: 'Rental window must match checkout format (e.g. 6:00 AM|90 for start + duration in minutes).',
+    }
+  }
+
+  const anchor = params.booking_rental_date?.trim() || null
+  if (anchor && !YMD.test(anchor)) {
+    return { ok: false, message: 'Anchor session date must be YYYY-MM-DD.' }
+  }
+
+  const compact = params.booking_rental_dates_compact?.trim().replace(/\s/g, '') || null
+  if (compact) {
+    const dec = decodeRentalDatesCompact(compact)
+    if (dec.length === 0) {
+      return { ok: false, message: 'Session dates compact string is invalid (use digits only, 8 per date, as in checkout metadata).' }
+    }
+  }
+
+  let weeks: number | null = params.booking_session_weeks
+  if (weeks != null) {
+    weeks = Math.round(weeks)
+    if (!Number.isFinite(weeks) || weeks < 1 || weeks > 52) {
+      return { ok: false, message: 'Session weeks must be between 1 and 52, or leave empty.' }
+    }
+  }
+
+  const supabase = getServiceSupabase()
+  if (!supabase) {
+    return { ok: false, message: 'Database not configured.' }
+  }
+
+  const { error } = await supabase
+    .from('field_rental_waiver_invites')
+    .update({
+      checkout_amount_total_cents: cents,
+      checkout_currency: cur,
+      checkout_completed_at: paidAt,
+      booking_rental_field: field,
+      booking_rental_window: win,
+      booking_rental_date: anchor,
+      booking_rental_dates_compact: compact,
+      booking_session_weeks: weeks,
+    })
+    .eq('id', id)
+
+  if (error) {
+    console.error('[waiver-invites] update snapshot:', error.message)
+    return { ok: false, message: 'Could not save payment and session details.' }
+  }
+  return { ok: true }
+}
+
 export async function createManualWaiverInvite(params: {
   expectedWaiverCount: number
   rentalType?: string | null
@@ -172,8 +275,6 @@ export async function createManualWaiverInvite(params: {
 }
 
 const COACH_RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
-
-const YMD = /^\d{4}-\d{2}-\d{2}$/
 
 export type PaidInPersonFieldRentalInviteParams = {
   expectedWaiverCount: number
@@ -380,12 +481,20 @@ export async function listWaiverInvitesWithProgress(limit = 50): Promise<WaiverI
     participant_name: string
     participant_email: string
     submitted_at: string | null
+    booking_rental_field: string | null
+    booking_rental_window: string | null
+    booking_rental_date: string | null
+    booking_rental_dates_compact: string | null
+    booking_session_weeks: number | null
+    booking_headcount_at_checkout: number | null
   }[] = []
 
   if (ids.length > 0) {
     const { data: wData, error: wErr } = await supabase
       .from('field_rental_agreements')
-      .select('id, waiver_invite_id, participant_name, participant_email, submitted_at')
+      .select(
+        'id, waiver_invite_id, participant_name, participant_email, submitted_at, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout'
+      )
       .in('waiver_invite_id', ids)
       .order('submitted_at', { ascending: true })
     if (wErr) {
@@ -397,15 +506,33 @@ export async function listWaiverInvitesWithProgress(limit = 50): Promise<WaiverI
 
   const byInvite = new Map<string, SignedWaiverOnInvite[]>()
   const completedByInvite = new Map<string, number>()
+  const organizerEmailByInvite = new Map<string, string>()
+  for (const r of rows) {
+    const em = r.purchaser_email?.trim().toLowerCase()
+    if (em) organizerEmailByInvite.set(r.id, em)
+  }
+
   for (const w of waiverRows) {
     if (!w.waiver_invite_id) continue
     completedByInvite.set(w.waiver_invite_id, (completedByInvite.get(w.waiver_invite_id) ?? 0) + 1)
     const list = byInvite.get(w.waiver_invite_id) ?? []
+    const orgEm = organizerEmailByInvite.get(w.waiver_invite_id) ?? ''
+    const signerEm = w.participant_email.trim().toLowerCase()
+    const session_summary = formatFieldRentalBookingSummaryLine({
+      booking_rental_field: w.booking_rental_field,
+      booking_rental_window: w.booking_rental_window,
+      booking_rental_date: w.booking_rental_date,
+      booking_rental_dates_compact: w.booking_rental_dates_compact,
+      booking_session_weeks: w.booking_session_weeks,
+      booking_headcount_at_checkout: w.booking_headcount_at_checkout,
+    })
     list.push({
       id: w.id,
       participant_name: w.participant_name,
       participant_email: w.participant_email,
       submitted_at: w.submitted_at,
+      is_organizer_waiver: Boolean(orgEm && signerEm === orgEm),
+      session_summary: session_summary === '—' ? null : session_summary,
     })
     byInvite.set(w.waiver_invite_id, list)
   }

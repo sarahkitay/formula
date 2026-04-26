@@ -19,14 +19,14 @@ export const SESSION_PACKAGE_5 = {
   purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
 } as const
 
-/** Littles: Mon/Wed/Fri 30-minute blocks; $50/session × 6 sessions. Monday track uses 7 calendar weeks to cover Memorial Day. */
-export const LITTLES_SIX_WEEK = {
+/** Formula Minis (ages 2–3): Mon/Wed/Fri; two 30-minute sessions per day; $50/session × 6 sessions. Monday uses seven calendar weeks (Memorial Day). */
+export const FORMULA_MINIS_SIX_WEEK = {
   priceUsd: 300,
   perSessionUsd: 50,
   sessionsInPack: 6,
-  label: 'Littles 6-session series',
+  label: 'Formula Minis 6-week package',
   summary:
-    'Six 30-minute Littles sessions on your chosen Mon/Wed/Fri time (10:00–10:30 or 10:45–11:15). $300 total ($50/session). Monday tracks run six sessions across seven calendar weeks to cover Memorial Day; Wednesday and Friday are six consecutive weeks.',
+    'Formula Minis weekday program (ages 2–3): Monday, Wednesday, and Friday with Session A 10:00–10:30 AM or Session B 10:45–11:15 AM. $300 per 6-week package ($50 per session). Up to 24 participants per session; enrollment may be cancelled or consolidated if a session is below 6. Monday enrollments span seven calendar weeks so Memorial Day week is skipped with a built-in makeup; Wednesday and Friday run six consecutive weeks. Example season: May 11–June 19, 2026 (Mondays through June 22).',
 } as const
 
 /** Prepaid 10-session package (early bird). */

@@ -17,3 +17,6 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 export function isUuid(value: string): boolean {
   return UUID_RE.test(value)
 }
+
+/** Admin drag-and-drop: signed waiver row → roster invite drop zone (`dataTransfer` type). */
+export const FIELD_RENTAL_WAIVER_DRAG_MIME = 'application/x-formula-field-rental-waiver-id' as const

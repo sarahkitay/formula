@@ -26,6 +26,8 @@ type SerializedSlot = {
 }
 
 const BAND_TABS: { band: ScheduleAgeBand; label: string; hint: string }[] = [
+  { band: '2-3', label: '2–3', hint: 'Formula Minis (U6 roster)' },
+  { band: '4-5', label: '4–5', hint: 'Pre-school programming' },
   { band: '6-8', label: '6–8', hint: 'U8 roster ages' },
   { band: '9-11', label: '9–11', hint: 'U10–U11' },
   { band: '12-14', label: '12–14', hint: 'U12–U14' },
@@ -125,7 +127,7 @@ export function YouthBlocksWeekPanel() {
     void load(weekStart)
   }, [load, weekStart])
 
-  const tabMeta = useMemo(() => BAND_TABS.find((t) => t.band === band) ?? BAND_TABS[2], [band])
+  const tabMeta = useMemo(() => BAND_TABS.find((t) => t.band === band) ?? BAND_TABS[0]!, [band])
 
   const onBlockClick = () => {
     if (hasPackage) {

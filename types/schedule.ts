@@ -6,7 +6,7 @@
 export type DayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 /** Sun–Sat */
 
 /** Canonical training / revenue bands used by the generator */
-export type ScheduleAgeBand = '4-5' | '6-8' | '9-11' | '12-14' | '15-19'
+export type ScheduleAgeBand = '2-3' | '4-5' | '6-8' | '9-11' | '12-14' | '15-19'
 
 export type ScheduleProgramKind =
   | 'youth_training'

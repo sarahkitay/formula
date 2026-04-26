@@ -8,7 +8,7 @@ import type { ScheduleAgeBand, ScheduleProgramKind, ScheduleSlot } from '@/types
 export function ageGroupToScheduleBand(ag: AgeGroup): ScheduleAgeBand | null {
   switch (ag) {
     case 'U6':
-      return '4-5'
+      return '2-3'
     case 'U8':
       return '6-8'
     case 'U10':
