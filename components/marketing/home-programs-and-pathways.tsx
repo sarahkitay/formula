@@ -125,6 +125,12 @@ const HIGHLIGHTS: {
 
 const SECONDARY_PATHS: { label: string; line: string; href: string; tier: 'default' | 'quiet' }[] = [
   {
+    label: 'Formula Minis',
+    line: `Weekday ages 2–3 · $300 pack. Sunday ages 2–5 · $500 / 10 weeks. Schedules + Stripe checkout.`,
+    href: MARKETING_HREF.minis,
+    tier: 'default',
+  },
+  {
     label: 'Register for camp',
     line: 'Full facility. Structured days - summer + holidays.',
     href: MARKETING_HREF.camps,

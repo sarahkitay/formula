@@ -7,6 +7,8 @@ export const MARKETING_HREF = {
   home: '/',
   whatIsFormula: '/what-is-formula',
   youthMembership: '/youth-membership',
+  /** Formula Minis weekday + Sunday weekend packages (ages 2–5). */
+  minis: '/minis',
   fpi: '/fpi',
   fridayCircuit: '/friday-circuit',
   clinics: '/clinics',
@@ -38,6 +40,7 @@ export type MarketingHref = (typeof MARKETING_HREF)[keyof typeof MARKETING_HREF]
 export const HEADER_MAIN: { label: string; href: string }[] = [
   { label: 'What Formula Is', href: MARKETING_HREF.whatIsFormula },
   { label: 'Membership', href: MARKETING_HREF.youthMembership },
+  { label: 'Minis', href: MARKETING_HREF.minis },
   { label: 'The Formula', href: MARKETING_HREF.fpi },
   { label: 'Facility', href: MARKETING_HREF.facility },
   { label: 'Events', href: MARKETING_HREF.events },

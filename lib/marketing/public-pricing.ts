@@ -33,7 +33,7 @@ export const FORMULA_MINIS_SIX_WEEK = {
   /** Aligned with v4: $300 ÷ sessions in pack (single Stripe line item). */
   perSessionUsd: Math.round((FORMULA_MINIS_PACK_PRICE / FORMULA_MINIS_SESSIONS_IN_PACK) * 100) / 100,
   label: 'Formula Minis · 6-week weekday package',
-  /** Condensed from Children’s Programming Summary v4 (April 2026). */
+  /** Condensed from Children's Programming Summary v4 (April 2026). */
   summary:
     'Formula Minis (ages 2–3), weekdays: Monday, Wednesday, and Friday. Each day offers Session A (10:00–10:30 AM) and Session B (10:45–11:15 AM); participants enroll in one session time for the full 6-week package. Program dates May 11–June 19, 2026 (Monday meetings extend through June 22 to absorb Memorial Day on May 25 — no session that Monday). Minimum 6 participants per session (below that, sessions may be cancelled or consolidated); maximum 24 per session. Enrollment is by 6-week package only; no drop-ins. $300 per participant for the full package (12 sessions). Refunds: none after enrollment is confirmed; no formal make-ups — staff may try to place your child in another session the same week if capacity allows (not guaranteed).',
 } as const

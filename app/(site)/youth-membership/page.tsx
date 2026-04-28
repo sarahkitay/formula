@@ -1,26 +1,17 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
-import { FormulaMinisSixWeekCheckout } from '@/components/marketing/formula-minis-six-week-checkout'
-import { SundayChildProgramCheckout } from '@/components/marketing/sunday-child-program-checkout'
 import { HomeProgramsAndPathways } from '@/components/marketing/home-programs-and-pathways'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
 import { YouthMembershipPackageHero } from '@/components/marketing/youth-membership-package-hero'
 import { YouthPackageAckStrip } from '@/components/marketing/youth-package-ack-strip'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import {
-  FORMULA_SKILLS_CHECK,
-  FORMULA_MINIS_SIX_WEEK,
-  FORMULA_SUNDAY_CHILD_PROGRAM_10_WK,
-  SESSION_PACKAGE_10,
-  SESSION_PACKAGE_5,
-  SESSION_PACKAGE_EARLY_BIRD,
-} from '@/lib/marketing/public-pricing'
+import { FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10, SESSION_PACKAGE_5, SESSION_PACKAGE_EARLY_BIRD } from '@/lib/marketing/public-pricing'
 
 export const metadata: Metadata = {
   title: 'Programs and pricing',
   description:
-    'Formula Skills Check, early bird session packages, Formula Minis weekday (ages 2–3), Sunday Weekend Program (ages 2–5, 10 weeks, $500), and youth memberships at Formula Soccer Center.',
+    'Formula Skills Check, early bird session packages, and youth memberships. Formula Minis (weekday + Sunday weekend) lives on its own page with schedules and checkout.',
 }
 
 export default function YouthMembershipPage() {
@@ -78,11 +69,35 @@ export default function YouthMembershipPage() {
         <YouthPackageAckStrip />
         <p className="text-sm text-formula-frost/70">Session expiration window: confirm with the desk before launch.</p>
 
-        <h2 className="!mt-14">Children&apos;s programming (summary)</h2>
+        <h2 className="!mt-14">Formula Minis &amp; youngest ages</h2>
         <p>
-          Published structure matches our <strong>Children&apos;s Programming Summary v4</strong> (April 2026): Formula Minis weekday (ages 2–3), Formula Juniors
-          weekday (ages 4–5 — details to come), and the <strong>Sunday Weekend Program</strong> (ages 2–5, four age-specific sessions). Standard membership U-brackets
-          (U8–U14, U19) are separate from these preschool-style packages.
+          <strong>Formula Minis</strong> (weekday ages 2–3) and the <strong>Sunday Weekend Program</strong> (ages 2–5) use their own published packs and Stripe
+          checkout — not the 5- or 10-session early-bird blocks above. Schedules, calendar tables, capacity, policies, and both checkouts live on the dedicated page.
+        </p>
+        <div className="not-prose mt-4 flex flex-wrap gap-3">
+          <Link
+            href={`${MARKETING_HREF.minis}#weekday-package`}
+            className="inline-flex h-11 items-center border border-formula-volt/45 bg-formula-volt/[0.14] px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-volt hover:bg-formula-volt/[0.22]"
+          >
+            Weekday Minis · schedules &amp; pay
+          </Link>
+          <Link
+            href={`${MARKETING_HREF.minis}#sunday-weekend`}
+            className="inline-flex h-11 items-center border border-formula-frost/22 bg-formula-paper/[0.05] px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper hover:border-formula-frost/35"
+          >
+            Sunday weekend · schedules &amp; pay
+          </Link>
+          <Link
+            href={MARKETING_HREF.minis}
+            className="inline-flex h-11 items-center border border-formula-frost/14 px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-mist hover:text-formula-paper"
+          >
+            Full Minis overview
+          </Link>
+        </div>
+
+        <h2 className="!mt-14">Children&apos;s programming brackets</h2>
+        <p className="text-sm text-formula-frost/80">
+          Standard membership U-brackets (U8–U14, U19) are separate from preschool-style Minis / Juniors packages. See the Minis page for the v4 age split on Sundays.
         </p>
         <div className="not-prose overflow-x-auto">
           <table className="w-full min-w-[520px] border-collapse font-mono text-[11px] text-formula-frost/90">
@@ -96,8 +111,8 @@ export default function YouthMembershipPage() {
             </thead>
             <tbody>
               {[
-                ['Formula Minis', '2–3', 'Weekday + Sunday weekend'],
-                ['Formula Juniors', '4–5', 'Weekday details to come; Sunday weekend live below'],
+                ['Formula Minis', '2–3', 'Weekday + Sunday weekend — link above'],
+                ['Formula Juniors', '4–5', 'Sunday weekend on Minis page; weekday TBA'],
                 ['U8', '6–7', 'Standard membership'],
                 ['U10', '8–9', 'Standard membership'],
                 ['U12', '10–11', 'Standard membership'],
@@ -113,51 +128,6 @@ export default function YouthMembershipPage() {
             </tbody>
           </table>
         </div>
-
-        <h2 className="!mt-14">Formula Minis — weekday (ages 2–3)</h2>
-        <p>
-          <strong>{FORMULA_MINIS_SIX_WEEK.label}</strong> · ${FORMULA_MINIS_SIX_WEEK.priceUsd} ({FORMULA_MINIS_SIX_WEEK.sessionsInPack} sessions in the published
-          package · ${FORMULA_MINIS_SIX_WEEK.perSessionUsd}/session effective rate)
-        </p>
-        <p>{FORMULA_MINIS_SIX_WEEK.summary}</p>
-        <p>
-          After checkout, link a roster player as <strong>U6</strong> in the parent portal (Formula Minis ages 2–3), then book the matching Monday, Wednesday, or
-          Friday block on the facility schedule.
-        </p>
-        <FormulaMinisSixWeekCheckout />
-
-        <h3 className="!mt-10 text-formula-paper/95">Formula Juniors — weekday (ages 4–5)</h3>
-        <p className="text-formula-frost/85">Weekday schedule and enrollment for Formula Juniors will be published here when ops finalizes the block. Sunday ages 4–5 are available in the weekend program below.</p>
-
-        <h2 className="!mt-14">Sunday Weekend Program (ages 2–5)</h2>
-        <p>
-          <strong>{FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.label}</strong> · ${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.priceUsd} (
-          {FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.sessionsInPack} scheduled Sundays · ${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.perSessionUsd}/Sunday effective rate)
-        </p>
-        <p>{FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.summary}</p>
-        <p className="text-sm text-formula-frost/80">
-          Season: {FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.startDateYmd} → {FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.endDateYmd}. Skipped dates:{' '}
-          {FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.skippedSundayNotes.join(' · ')}. Capacity: min {FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.minEnrollment}, max{' '}
-          {FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.maxCapacity} per session.
-        </p>
-        <ul className="text-[14px] leading-relaxed text-formula-frost/88">
-          <li>
-            <strong>Formula Minis (age 2)</strong> · 9:00–9:30 AM · 30 minutes
-          </li>
-          <li>
-            <strong>Formula Minis (age 3)</strong> · 9:45–10:15 AM · 30 minutes
-          </li>
-          <li>
-            <strong>Formula Juniors (age 4)</strong> · 10:30–11:15 AM · 45 minutes
-          </li>
-          <li>
-            <strong>Formula Juniors (age 5)</strong> · 11:30 AM–12:15 PM · 45 minutes
-          </li>
-        </ul>
-        <p>
-          Unlike weekday Minis (ages 2–3 together), weekend sessions are <strong>split by single birth year</strong> so coaching can match developmental stage.
-        </p>
-        <SundayChildProgramCheckout />
 
         <h2 className="!mt-14">Memberships</h2>
         <p>

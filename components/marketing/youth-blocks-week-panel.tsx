@@ -26,8 +26,16 @@ type SerializedSlot = {
 }
 
 const BAND_TABS: { band: ScheduleAgeBand; label: string; hint: string }[] = [
-  { band: '2-3', label: '2–3', hint: 'Formula Minis (U6 roster)' },
-  { band: '4-5', label: '4–5', hint: 'Pre-school programming' },
+  {
+    band: '2-3',
+    label: '2–3',
+    hint: 'Formula Minis · weekday $300 pack · Sunday weekend ages 2–5 ($500) — see Minis page',
+  },
+  {
+    band: '4-5',
+    label: '4–5',
+    hint: 'Formula Juniors · Sunday weekend $500 (ages 4–5) — weekday block TBA · see Minis page',
+  },
   { band: '6-8', label: '6–8', hint: 'U8 roster ages' },
   { band: '9-11', label: '9–11', hint: 'U10–U11' },
   { band: '12-14', label: '12–14', hint: 'U12–U14' },
@@ -201,10 +209,14 @@ export function YouthBlocksWeekPanel() {
         {!hasPackage ? (
           <p className="mt-4 rounded-sm border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-formula-frost/90">
             Package not marked on this device — block picks open the confirmation flow. After you buy a package, use &quot;I purchased a package&quot; on the{' '}
+            <Link href={MARKETING_HREF.minis} className="font-semibold text-formula-volt underline underline-offset-2 hover:underline">
+              Minis page
+            </Link>{' '}
+            for published Formula Minis / Sunday pricing, or the{' '}
             <Link href={MARKETING_HREF.youthMembership} className="font-semibold text-formula-volt underline underline-offset-2 hover:underline">
               programs page
             </Link>{' '}
-            to unlock portal-first booking.
+            for older-youth session packages — then use &quot;I purchased a package&quot; to unlock portal-first booking.
           </p>
         ) : (
           <p className="mt-4 rounded-sm border border-formula-volt/25 bg-formula-volt/10 px-3 py-2 text-xs text-formula-paper">
@@ -255,6 +267,7 @@ export function YouthBlocksWeekPanel() {
           }}
           bandLabel={gateBand.label}
           rosterAgeHint={gateBand.hint}
+          scheduleAgeBand={band}
         />
       ) : null}
     </section>
