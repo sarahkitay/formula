@@ -9,6 +9,13 @@ export function newOfflineFieldRentalStripeSessionId(): string {
   return `${OFFLINE_FIELD_RENTAL_SESSION_PREFIX}${randomUUID().replace(/-/g, '')}`
 }
 
+/** Synthetic Checkout id for admin schedule / ops cash entries (never collides with Stripe `cs_`). */
+export const OFFLINE_SCHEDULE_LEDGER_PREFIX = 'offline_sched_' as const
+
+export function newOfflineScheduleLedgerSessionId(): string {
+  return `${OFFLINE_SCHEDULE_LEDGER_PREFIX}${randomUUID().replace(/-/g, '')}`
+}
+
 /**
  * Persist a completed Checkout session. Safe to call only from the verified Stripe webhook.
  * No-ops if Supabase service role is not configured.
@@ -104,6 +111,59 @@ export async function recordOfflineFieldRentalPurchase(params: {
       return { ok: false, message: 'Duplicate payment record; try again.' }
     }
     console.error('[stripe] offline field rental purchase:', error.message)
+    return { ok: false, message: 'Could not record payment row.' }
+  }
+  return { ok: true, stripe_session_id }
+}
+
+const MIN_LEDGER_CENTS = 50
+
+/**
+ * Records an admin-entered cash / in-person payment so it appears in Admin → Payments (`manual-invoice`)
+ * and revenue rollups. Same table shape as Stripe webhook inserts.
+ */
+export async function recordAdminScheduleLedgerPayment(params: {
+  amountCents: number
+  currency: string
+  email: string | null
+  payeeName: string
+  notes: string | null
+  metadataExtra?: Record<string, string>
+}): Promise<{ ok: true; stripe_session_id: string } | { ok: false; message: string }> {
+  const supabase = getServiceSupabase()
+  if (!supabase) {
+    return { ok: false, message: 'Database not configured.' }
+  }
+  if (!Number.isFinite(params.amountCents) || params.amountCents < MIN_LEDGER_CENTS) {
+    return { ok: false, message: `Amount must be at least $${(MIN_LEDGER_CENTS / 100).toFixed(2)}.` }
+  }
+  const payee = params.payeeName.trim()
+  if (!payee) {
+    return { ok: false, message: 'Payee / client name is required for the ledger.' }
+  }
+  const stripe_session_id = newOfflineScheduleLedgerSessionId()
+  const meta: Record<string, string> = {
+    invoice_payee: payee,
+    invoice_notes: (params.notes ?? '').trim() || 'Admin schedule',
+    admin_schedule: 'true',
+    ...(params.metadataExtra ?? {}),
+  }
+  const { error } = await supabase.from('stripe_purchases').insert({
+    stripe_session_id,
+    stripe_payment_intent_id: null,
+    stripe_customer_id: null,
+    email: params.email?.trim() || null,
+    type: 'manual-invoice',
+    amount: Math.round(params.amountCents),
+    currency: (params.currency || 'usd').toLowerCase(),
+    payment_status: 'paid',
+    metadata: meta as Record<string, unknown>,
+  })
+  if (error) {
+    if (error.code === '23505') {
+      return { ok: false, message: 'Duplicate payment record; try again.' }
+    }
+    console.error('[stripe] admin schedule ledger:', error.message)
     return { ok: false, message: 'Could not record payment row.' }
   }
   return { ok: true, stripe_session_id }

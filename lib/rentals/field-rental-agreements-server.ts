@@ -2,7 +2,7 @@ import { getServiceSupabase } from '@/lib/supabase/service'
 import { isUuid } from '@/lib/rentals/field-rental-waiver-labels'
 
 /** How the waiver reached the database (admin “Signed rental waivers” origin column). */
-export type FieldRentalAgreementSource = 'public_site' | 'coach_booking' | 'roster_link'
+export type FieldRentalAgreementSource = 'public_site' | 'coach_booking' | 'roster_link' | 'roster_rsvp'
 
 export type FieldRentalAgreementInsert = {
   rental_type: string

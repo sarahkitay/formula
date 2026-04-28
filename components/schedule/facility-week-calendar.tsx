@@ -59,10 +59,15 @@ export interface FacilityWeekCalendarProps {
   onProgramSlotClick?: (slot: ScheduleSlot, opts?: { relatedSlots: ScheduleSlot[] }) => void
   /** Assessments, rentals, agreements, etc. */
   onFeedBlockClick?: (block: CalendarFeedBlock) => void
-  /** Empty grid — adds a draft override (parent wires save + tab switch). */
+  /** Empty grid — parent opens quick-book / override flow. */
   onEmptySlotClick?: (payload: { dayIndex: DayIndex; startMinute: number; endMinute: number }) => void
   /** Vertical drag on field-rental booking blocks commits new wall times (minutes from midnight). */
   onRentalBookingTimeCommit?: (payload: { bookingId: string; startMinute: number; endMinute: number }) => void | Promise<void>
+  /**
+   * When true, any block tap goes to `onFeedBlockClick` first (e.g. admin quick book). Rotation roster is still
+   * reachable from that modal. Drag-to-reschedule rentals is unchanged.
+   */
+  preferQuickBookOnBlockClick?: boolean
 }
 
 export function FacilityWeekCalendar({
@@ -74,6 +79,7 @@ export function FacilityWeekCalendar({
   onFeedBlockClick,
   onEmptySlotClick,
   onRentalBookingTimeCommit,
+  preferQuickBookOnBlockClick = false,
 }: FacilityWeekCalendarProps) {
   const [draftDeltaMin, setDraftDeltaMin] = React.useState<Record<string, number>>({})
   const dragRef = React.useRef<{
@@ -139,6 +145,10 @@ export function FacilityWeekCalendar({
   }, [byDay])
 
   const handleBlockActivate = (b: CalendarFeedBlock) => {
+    if (preferQuickBookOnBlockClick && onFeedBlockClick) {
+      onFeedBlockClick(b)
+      return
+    }
     if (week && b.programSlotIds?.length) {
       const slots = b.programSlotIds
         .map(id => week.slots.find(s => s.id === id))
@@ -253,7 +263,7 @@ export function FacilityWeekCalendar({
         <div className="font-mono text-[10px] text-formula-mist">
           <p>
             Week of {weekStart} · Los Angeles wall time · program + assessments + rentals + parties · overlapping blocks
-            are split horizontally; click a block for details or empty space to add an override.
+            are split horizontally; click a block for details or empty space to quick-book a slot (draft override).
           </p>
           {hasHolidayThisWeek ? (
             <p className="mt-1 flex items-center gap-2 text-rose-200/95">

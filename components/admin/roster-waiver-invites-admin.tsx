@@ -482,8 +482,8 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
                 </ul>
               )}
               <p className="mt-3 text-[10px] leading-relaxed text-formula-mist/75">
-                Each person signs for the field session above; the organizer ({organizerFoot}) paid the deposit (online or in person). Waivers without a roster link
-                appear only in the table below.
+                The roster link offers full sign or RSVP (prior waiver on file). Organizer ({organizerFoot}) paid the deposit (online or in person). Rows without
+                this invite appear only in Signed waivers below.
               </p>
             </div>
           </details>

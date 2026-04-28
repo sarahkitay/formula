@@ -200,15 +200,24 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
           </Button>
         </div>
 
-        {config.overrides.length === 0 ? (
-          <p className="mt-4 font-mono text-[11px] text-formula-mist">No overrides — generator defaults only.</p>
-        ) : (
-          <ul className="mt-4 space-y-3">
-            {config.overrides.map(o => (
-              <li
-                key={o.id}
-                className="grid grid-cols-1 gap-2 border border-formula-frost/10 bg-formula-deep/25 p-3 font-mono text-[11px] md:grid-cols-[1fr_1fr_1fr_auto]"
-              >
+        <details className="mt-4 border border-formula-frost/10 bg-formula-deep/20 px-3 py-2 open:bg-formula-deep/25">
+          <summary className="cursor-pointer select-none font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-formula-frost/90 hover:text-formula-paper">
+            Advanced · spreadsheet-style override rows
+          </summary>
+          <p className="mt-3 max-w-xl font-mono text-[10px] text-formula-frost/75">
+            Prefer clicking empty cells on the <strong className="text-formula-paper">Full calendar</strong> tab for a
+            guided quick book. Use this section for precise edits, bulk rows, or{' '}
+            <code className="text-formula-volt">youthBlockId</code> anchors.
+          </p>
+          {config.overrides.length === 0 ? (
+            <p className="mt-3 font-mono text-[11px] text-formula-mist">No overrides — generator defaults only.</p>
+          ) : (
+            <ul className="mt-3 space-y-3">
+              {config.overrides.map(o => (
+                <li
+                  key={o.id}
+                  className="grid grid-cols-1 gap-2 border border-formula-frost/10 bg-formula-deep/25 p-3 font-mono text-[11px] md:grid-cols-[1fr_1fr_1fr_auto]"
+                >
                 <label className="text-formula-mist">
                   <span className="block">Date (YYYY-MM-DD)</span>
                   <input
@@ -335,9 +344,10 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                   Internal: start {o.startMinute} min · end {o.endMinute} min (read-only; edit times above)
                 </p>
               </li>
-            ))}
-          </ul>
-        )}
+              ))}
+            </ul>
+          )}
+        </details>
       </div>
     </div>
   )

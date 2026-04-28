@@ -10,9 +10,9 @@ import { ControlScheduleGrid, DAY_LABELS } from '@/components/schedule/control-s
 import { AdminWeeklyRoster } from '@/components/schedule/admin-weekly-roster'
 import { AdminSlotDetailModal } from '@/components/schedule/admin-slot-detail-modal'
 import { buildPublishedWeek } from '@/lib/schedule/published-week'
-import { isoDateForWeekDay, startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
+import { startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
 import type { DayIndex, ScheduleOverride, ScheduleSlot } from '@/types/schedule'
-import type { CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
+import { calendarBlockVisibleInBookingsOnlyView, type CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
 import {
   buildAdminBlockMap,
   getAdminBlockKey,
@@ -27,6 +27,7 @@ import { loadFacilityScheduleConfigAction, saveFacilityScheduleConfigAction } fr
 import { Button } from '@/components/ui/button'
 import { FacilityWeekCalendar } from '@/components/schedule/facility-week-calendar'
 import { AdminCalendarFeedModal } from '@/components/schedule/admin-calendar-feed-modal'
+import { AdminQuickBookingModal, type AdminQuickBookDraft } from '@/components/schedule/admin-quick-booking-modal'
 
 export default function SchedulePage() {
   const [baseDate, setBaseDate] = useState(() => new Date())
@@ -35,7 +36,8 @@ export default function SchedulePage() {
   const [checkedInIds, setCheckedInIds] = useState<Set<string>>(() => new Set())
   const [detailSlot, setDetailSlot] = useState<ScheduleSlot | null>(null)
   const [detailRelatedSlots, setDetailRelatedSlots] = useState<ScheduleSlot[]>([])
-  const [bookedOnly, setBookedOnly] = useState(false)
+  const [bookedOnly, setBookedOnly] = useState(true)
+  const [quickBookDraft, setQuickBookDraft] = useState<AdminQuickBookDraft | null>(null)
 
   const [facilityConfig, setFacilityConfig] = useState<FacilitySchedulePublishedConfig | null>(null)
   const [configLoadError, setConfigLoadError] = useState<string | null>(null)
@@ -91,9 +93,7 @@ export default function SchedulePage() {
 
   const calendarBlocksForView = useMemo(() => {
     if (!bookedOnly) return calendarBlocks
-    return calendarBlocks.filter(
-      b => b.category === 'assessment' || b.category === 'rental_booking' || b.category === 'party'
-    )
+    return calendarBlocks.filter(calendarBlockVisibleInBookingsOnlyView)
   }, [calendarBlocks, bookedOnly])
 
   const blockMap = useMemo(() => (week ? buildAdminBlockMap(week) : new Map()), [week])
@@ -153,26 +153,28 @@ export default function SchedulePage() {
     }
   }
 
-  const appendOverrideFromCalendar = useCallback(
-    ({ dayIndex, startMinute, endMinute }: { dayIndex: DayIndex; startMinute: number; endMinute: number }) => {
+  const openQuickBookFromCalendar = useCallback(
+    (payload: { dayIndex: DayIndex; startMinute: number; endMinute: number }) => {
       if (!facilityConfig || !week) return
-      const id = `ov-cal-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-      const date = isoDateForWeekDay(week.weekStart, dayIndex)
-      const row: ScheduleOverride = {
-        id,
-        date,
-        assetId: 'performance-center',
-        startMinute,
-        endMinute,
-        kind: 'flex_ops',
-        label: 'Calendar override',
-        mode: 'replace',
-      }
-      setFacilityConfig({ ...facilityConfig, overrides: [...facilityConfig.overrides, row] })
-      setActiveTab('publish')
+      setQuickBookDraft({ source: 'empty', ...payload })
     },
     [facilityConfig, week]
   )
+
+  const openQuickBookFromFeedBlock = useCallback((block: CalendarFeedBlock) => {
+    if (!facilityConfig || !week) return
+    setQuickBookDraft({ source: 'block', block })
+  }, [facilityConfig, week])
+
+  const commitQuickBookOverride = useCallback((row: ScheduleOverride | null, opts: { openPublishTab: boolean }) => {
+    if (row) {
+      setFacilityConfig(prev => {
+        if (!prev) return prev
+        return { ...prev, overrides: [...prev.overrides, row] }
+      })
+    }
+    if (opts.openPublishTab) setActiveTab('publish')
+  }, [])
 
   const onSavePublish = async () => {
     if (!facilityConfig) return
@@ -279,23 +281,48 @@ export default function SchedulePage() {
                 {calendarError ? (
                   <p className="font-mono text-xs text-amber-200/90">{calendarError}</p>
                 ) : null}
-                <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] text-formula-frost/90">
-                  <input
-                    type="checkbox"
-                    checked={bookedOnly}
-                    onChange={e => setBookedOnly(e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-formula-frost/30 bg-formula-deep/40"
-                  />
-                  Booked items only — hide open program templates (assessments, rentals, and party holds still show)
-                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-formula-mist">Calendar view</span>
+                  <div className="flex rounded border border-formula-frost/14 p-0.5 font-mono text-[10px]">
+                    <button
+                      type="button"
+                      className={cn(
+                        'rounded px-2.5 py-1.5 font-bold uppercase tracking-wide transition-colors',
+                        bookedOnly
+                          ? 'bg-formula-volt text-formula-base'
+                          : 'text-formula-frost/85 hover:bg-formula-paper/[0.06]'
+                      )}
+                      onClick={() => setBookedOnly(true)}
+                    >
+                      Bookings &amp; holds
+                    </button>
+                    <button
+                      type="button"
+                      className={cn(
+                        'rounded px-2.5 py-1.5 font-bold uppercase tracking-wide transition-colors',
+                        !bookedOnly
+                          ? 'bg-formula-volt text-formula-base'
+                          : 'text-formula-frost/85 hover:bg-formula-paper/[0.06]'
+                      )}
+                      onClick={() => setBookedOnly(false)}
+                    >
+                      Full schedule
+                    </button>
+                  </div>
+                  <span className="max-w-md font-mono text-[10px] text-formula-frost/70">
+                    Default shows paid party holds, field rentals, assessments with bookings, and youth blocks with parent
+                    enrollments. Full schedule adds open templates.
+                  </span>
+                </div>
                 <p className="font-mono text-[10px] text-formula-mist/85">
-                  Field rentals: click a rental block to list signed waivers for that slot and mark each signer present (saved per booking).
+                  Click any block for quick client / payment / override. Field rentals: use <strong className="text-formula-paper">Rental waivers &amp; check-in</strong> in that modal for waiver roster.
                 </p>
                 <FacilityWeekCalendar
                   weekStart={week.weekStart}
                   blocks={calendarBlocksForView}
                   holidayLabelsByYmd={calendarHolidays}
                   week={week}
+                  preferQuickBookOnBlockClick
                   onProgramSlotClick={(s, opts) => {
                     setFeedDetailBlock(null)
                     setDetailRelatedSlots(opts?.relatedSlots ?? [])
@@ -304,9 +331,10 @@ export default function SchedulePage() {
                   onFeedBlockClick={b => {
                     setDetailSlot(null)
                     setDetailRelatedSlots([])
-                    setFeedDetailBlock(b)
+                    setFeedDetailBlock(null)
+                    openQuickBookFromFeedBlock(b)
                   }}
-                  onEmptySlotClick={appendOverrideFromCalendar}
+                  onEmptySlotClick={openQuickBookFromCalendar}
                   onRentalBookingTimeCommit={async ({ bookingId, startMinute, endMinute }) => {
                     const res = await fetch(`/api/admin/rental-slot-bookings/${encodeURIComponent(bookingId)}`, {
                       method: 'PATCH',
@@ -444,6 +472,22 @@ export default function SchedulePage() {
               onOpenPublishTab={() => {
                 setFeedDetailBlock(null)
                 setActiveTab('publish')
+              }}
+            />
+
+            <AdminQuickBookingModal
+              open={quickBookDraft != null}
+              onClose={() => setQuickBookDraft(null)}
+              weekStart={week.weekStart}
+              draft={quickBookDraft}
+              week={week}
+              onSave={(row, opts) => {
+                commitQuickBookOverride(row, opts)
+              }}
+              onOpenRentalCheckIn={b => setFeedDetailBlock(b)}
+              onOpenRotationRoster={(slot, related) => {
+                setDetailRelatedSlots(related)
+                setDetailSlot(slot)
               }}
             />
           </>

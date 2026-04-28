@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { FieldRentalAgreementForm, type FieldRentalRosterInvite } from '@/components/marketing/field-rental-agreement-form'
+import type { FieldRentalRosterInvite } from '@/components/marketing/field-rental-agreement-form'
+import { RosterWaiverInviteFlow } from '@/components/marketing/roster-waiver-invite-flow'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { formatRentalTypeForDisplay } from '@/lib/rentals/field-rental-waiver-labels'
@@ -45,7 +46,7 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
       wide
       eyebrow="Field rental"
       title="Roster waiver link"
-      intro="Each participant completes this form once. Staff see how many waivers are done vs how many this booking expects."
+      intro="Choose whether to sign the full waiver or RSVP if you already have a signed Formula waiver on file with the same email. Staff see how many spots are filled vs how many this booking expects."
       articleClassName="max-w-[920px]"
     >
       <div className="not-prose mb-10 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-5">
@@ -72,7 +73,13 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
             <span className="text-formula-frost/90">{formatRentalTypeForDisplay(invite.rental_type)}</span>
           </p>
         ) : null}
-        <p className="mt-3 break-all font-mono text-[10px] text-formula-mist/90">Share: {shareUrl}</p>
+        <p className="mt-3 break-all font-mono text-[10px] text-formula-mist/90">
+          Share (same link for everyone): {shareUrl}
+        </p>
+        <p className="mt-2 text-xs text-formula-frost/75">
+          Coaches: send this URL once — parents pick <strong className="text-formula-paper/90">Sign the waiver</strong> or{' '}
+          <strong className="text-formula-paper/90">RSVP only</strong> if they already signed digitally with us.
+        </p>
       </div>
 
       {rosterFull ? (
@@ -89,7 +96,7 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
           </Link>
         </div>
       ) : (
-        <FieldRentalAgreementForm rosterInvite={rosterInvite} />
+        <RosterWaiverInviteFlow inviteToken={invite.token} rosterInvite={rosterInvite} />
       )}
     </MarketingInnerPage>
   )
