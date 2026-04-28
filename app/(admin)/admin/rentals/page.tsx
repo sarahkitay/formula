@@ -165,11 +165,11 @@ export default async function RentalsPage() {
               <Link className="text-formula-volt underline" href="/rentals">
                 Rentals
               </Link>{' '}
-              or{' '}
+              ,{' '}
               <Link className="text-formula-volt underline" href="/book-assessment">
                 Book assessment
-              </Link>{' '}
-              flow will appear here after guests submit them.
+              </Link>
+              , or the coach <strong className="text-formula-paper/90">Kids team / booking waiver</strong> flow will appear here after they are submitted.
             </p>
           ) : (
             <SignedRentalWaiversLinkTable rows={waiverRows} inviteOptions={waiverInviteSelectOptions} />

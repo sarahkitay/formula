@@ -19,14 +19,40 @@ export const SESSION_PACKAGE_5 = {
   purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
 } as const
 
-/** Formula Minis (ages 2–3): Mon/Wed/Fri; two 30-minute sessions per day; $50/session × 6 sessions. Monday uses seven calendar weeks (Memorial Day). */
+/**
+ * Sessions in the published $300 weekday Minis package (Children's Programming v4).
+ * Stripe charges one line item at `priceUsd`; `littles_sessions_in_pack` metadata uses this value.
+ */
+export const FORMULA_MINIS_SESSIONS_IN_PACK = 12
+const FORMULA_MINIS_PACK_PRICE = 300
+
+/** Formula Minis weekday (ages 2–3): Mon / Wed / Fri; Session A 10:00–10:30 AM or Session B 10:45–11:15 AM; 6-week season per v4. */
 export const FORMULA_MINIS_SIX_WEEK = {
-  priceUsd: 300,
-  perSessionUsd: 50,
-  sessionsInPack: 6,
-  label: 'Formula Minis 6-week package',
+  priceUsd: FORMULA_MINIS_PACK_PRICE,
+  sessionsInPack: FORMULA_MINIS_SESSIONS_IN_PACK,
+  /** Aligned with v4: $300 ÷ sessions in pack (single Stripe line item). */
+  perSessionUsd: Math.round((FORMULA_MINIS_PACK_PRICE / FORMULA_MINIS_SESSIONS_IN_PACK) * 100) / 100,
+  label: 'Formula Minis · 6-week weekday package',
+  /** Condensed from Children’s Programming Summary v4 (April 2026). */
   summary:
-    'Formula Minis weekday program (ages 2–3): Monday, Wednesday, and Friday with Session A 10:00–10:30 AM or Session B 10:45–11:15 AM. $300 per 6-week package ($50 per session). Up to 24 participants per session; enrollment may be cancelled or consolidated if a session is below 6. Monday enrollments span seven calendar weeks so Memorial Day week is skipped with a built-in makeup; Wednesday and Friday run six consecutive weeks. Example season: May 11–June 19, 2026 (Mondays through June 22).',
+    'Formula Minis (ages 2–3), weekdays: Monday, Wednesday, and Friday. Each day offers Session A (10:00–10:30 AM) and Session B (10:45–11:15 AM); participants enroll in one session time for the full 6-week package. Program dates May 11–June 19, 2026 (Monday meetings extend through June 22 to absorb Memorial Day on May 25 — no session that Monday). Minimum 6 participants per session (below that, sessions may be cancelled or consolidated); maximum 24 per session. Enrollment is by 6-week package only; no drop-ins. $300 per participant for the full package (12 sessions). Refunds: none after enrollment is confirmed; no formal make-ups — staff may try to place your child in another session the same week if capacity allows (not guaranteed).',
+} as const
+
+/** Sunday Weekend Program (ages 2–5): four age-specific sessions; 10 weeks; v4 April 2026. */
+export const FORMULA_SUNDAY_CHILD_PROGRAM_10_WK = {
+  priceUsd: 500,
+  weeksInProgram: 10,
+  /** Ten scheduled Sundays in the season (two calendar skips). */
+  sessionsInPack: 10,
+  perSessionUsd: Math.round((500 / 10) * 100) / 100,
+  label: 'Sunday Weekend Program · 10-week package',
+  minEnrollment: 6,
+  maxCapacity: 25,
+  startDateYmd: '2026-05-17',
+  endDateYmd: '2026-08-02',
+  skippedSundayNotes: ['May 24, 2026 (Memorial Day weekend)', "June 21, 2026 (Father's Day)"] as const,
+  summary:
+    "Sunday program for ages 2–5: Formula Minis (ages 2 and 3) and Formula Juniors (ages 4 and 5), each in its own weekly time slot. Ten scheduled Sundays from May 17 through August 2, 2026, skipping May 24 (Memorial Day weekend) and June 21 (Father's Day). Minimum 6 participants per session; maximum 25. Enrollment by 10-week package only; no drop-ins. $500 per participant. Same refund / informal accommodation policy as weekday Minis: no refunds after confirmation; no formal make-ups; same-day alternate slot only if space and age-appropriate (not guaranteed).",
 } as const
 
 /** Prepaid 10-session package (early bird). */

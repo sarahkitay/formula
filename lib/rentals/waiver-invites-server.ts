@@ -4,6 +4,10 @@ import { isKnownRentalFieldId } from '@/lib/rentals/field-rental-picker-constant
 import { formatFieldRentalBookingSummaryLine } from '@/lib/rentals/field-rental-agreement-admin-display'
 import { decodeRentalDatesCompact, encodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 import { encodeRentalWindow, isValidFieldRentalWindow } from '@/lib/rentals/rental-time-window'
+import {
+  syncFieldRentalInviteToStripePurchasesLedger,
+  type FieldRentalInviteLedgerPayload,
+} from '@/lib/billing/stripe-purchases-server'
 import { recordOfflineFieldRentalPurchase, resolveCheckoutPurchaseType } from '@/lib/stripe/record-purchase'
 import { getServiceSupabase } from '@/lib/supabase/service'
 
@@ -241,6 +245,16 @@ export async function updateWaiverInviteSessionAndPayment(params: {
     console.error('[waiver-invites] update snapshot:', error.message)
     return { ok: false, message: 'Could not save payment and session details.' }
   }
+
+  const { data: syncedInvite, error: readErr } = await supabase
+    .from('field_rental_waiver_invites')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+  if (!readErr && syncedInvite) {
+    await syncFieldRentalInviteToStripePurchasesLedger(syncedInvite as unknown as FieldRentalInviteLedgerPayload)
+  }
+
   return { ok: true }
 }
 
@@ -397,6 +411,14 @@ export async function createPaidInPersonFieldRentalInvite(
   if (!recorded.ok) {
     await supabase.from('field_rental_waiver_invites').delete().eq('id', inviteId)
     return { ok: false, message: recorded.message }
+  }
+
+  const { error: linkLedgerErr } = await supabase
+    .from('field_rental_waiver_invites')
+    .update({ stripe_checkout_session_id: recorded.stripe_session_id })
+    .eq('id', inviteId)
+  if (linkLedgerErr) {
+    console.error('[waiver-invites] link ledger session to invite:', linkLedgerErr.message)
   }
 
   return { ok: true, token: inviteToken }

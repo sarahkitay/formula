@@ -19,6 +19,7 @@ export const MARKETING_HREF = {
   footbot: '/events/footbot',
   tournaments: '/events/tournaments',
   assessment: '/assessment',
+  careers: '/careers',
   privacy: '/privacy',
   terms: '/terms',
   /** Public booking hub (landing + links into split flows). */
@@ -41,6 +42,7 @@ export const HEADER_MAIN: { label: string; href: string }[] = [
   { label: 'Facility', href: MARKETING_HREF.facility },
   { label: 'Events', href: MARKETING_HREF.events },
   { label: 'Assessments', href: MARKETING_HREF.assessment },
+  { label: 'Careers', href: MARKETING_HREF.careers },
 ]
 
 /** Header: “More” menu - programs & revenue lines. */

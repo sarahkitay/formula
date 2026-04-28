@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import type { FieldRentalAgreementRow } from '@/lib/rentals/field-rental-agreements-server'
 import { FIELD_RENTAL_WAIVER_DRAG_MIME } from '@/lib/rentals/field-rental-waiver-labels'
-import { formatCheckoutAmount, formatFieldRentalBookingSummaryLine } from '@/lib/rentals/field-rental-agreement-admin-display'
+import {
+  formatCheckoutAmount,
+  formatFieldRentalBookingSummaryLine,
+  formatFieldRentalWaiverSource,
+} from '@/lib/rentals/field-rental-agreement-admin-display'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 
 export type RosterInvitePickOption = {
@@ -68,6 +72,7 @@ export function SignedRentalWaiversLinkTable({
             <tr className="border-b border-formula-frost/12 text-left text-formula-mist uppercase tracking-wide">
               <th className="pb-2 pr-2 font-medium">Drag</th>
               <th className="pb-2 pr-4 font-medium">Submitted</th>
+              <th className="pb-2 pr-4 font-medium">Origin</th>
               <th className="pb-2 pr-4 font-medium">Roster link</th>
               <th className="pb-2 pr-4 font-medium">Attach to…</th>
               <th className="pb-2 pr-4 font-medium">Booked by</th>
@@ -106,6 +111,7 @@ export function SignedRentalWaiversLinkTable({
                     </span>
                   </td>
                   <td className="py-2 pr-4 align-top">{formatFacilityDateTimeShort(r.submitted_at)}</td>
+                  <td className="py-2 pr-4 align-top text-formula-frost/85">{formatFieldRentalWaiverSource(r.source)}</td>
                   <td className="py-2 pr-4 align-top text-formula-frost/85">
                     {r.waiver_invite_roster_progress ?? (
                       <span className="text-formula-mist/80">Not linked</span>

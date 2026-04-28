@@ -175,7 +175,7 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="overflow-hidden border border-formula-frost/12 bg-formula-paper/[0.04] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
               {[
-                { name: 'Front Desk Staff', email: 'desk@formulafc.com', role: 'Admin', status: 'Active' },
+                { name: 'Front Desk Staff', email: 'info@formulasoccer.com', role: 'Admin', status: 'Active' },
                 { name: 'Marcus Rivera', email: 'marcus.rivera@formulafc.com', role: 'Coach', status: 'Active' },
                 { name: 'Elena Vasquez', email: 'elena.vasquez@formulafc.com', role: 'Coach', status: 'Active' },
                 { name: 'Jordan Kim', email: 'jordan.kim@formulafc.com', role: 'Coach', status: 'Active' },

@@ -103,6 +103,13 @@ export const adminNav: NavItem[] = [
   gridStatus: 'neutral',
   },
   {
+  label: 'Careers',
+  href: '/admin/careers',
+  icon: 'Briefcase',
+  description: 'Front desk + coach applications from /careers',
+  gridStatus: 'neutral',
+  },
+  {
   label: 'Payments',
   href: '/admin/payments',
   icon: 'DollarSign',

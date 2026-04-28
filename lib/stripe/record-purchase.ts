@@ -31,6 +31,9 @@ export function resolveCheckoutPurchaseType(session: Stripe.Checkout.Session): s
   if (metaStr(m, 'rental_ref') && (metaStr(m, 'rental_field') || metaStr(m, 'rental_window'))) {
     return 'field-rental-booking'
   }
+  if (metaStr(m, 'sunday_child_track')) {
+    return 'sunday-child-10wk-500'
+  }
   return raw ?? 'unknown'
 }
 

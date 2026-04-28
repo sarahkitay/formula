@@ -33,6 +33,7 @@ export function FormulaMinisSixWeekCheckout() {
         checkoutType="littles-6wk-300"
         label={`Buy ${FORMULA_MINIS_SIX_WEEK.label} ($${FORMULA_MINIS_SIX_WEEK.priceUsd})`}
         metadata={{ littles_track: track }}
+        hideSmsConsent
       />
     </div>
   )

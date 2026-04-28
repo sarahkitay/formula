@@ -3,6 +3,7 @@ import {
   FIELD_RENTAL_BOOKING_CHECKOUT,
   FORMULA_SKILLS_CHECK,
   FORMULA_MINIS_SIX_WEEK,
+  FORMULA_SUNDAY_CHILD_PROGRAM_10_WK,
   PARTY_BOOKING_1K_CHECKOUT,
   SESSION_PACKAGE_5,
   SESSION_PACKAGE_10,
@@ -92,6 +93,23 @@ export function lineItemsForCheckoutType(
             description: FORMULA_MINIS_SIX_WEEK.summary,
           },
           unit_amount: Math.round(FORMULA_MINIS_SIX_WEEK.priceUsd * 100),
+        },
+      },
+    ]
+  }
+
+  if (type === 'sunday-child-10wk-500') {
+    return [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          tax_behavior: 'exclusive',
+          product_data: {
+            name: FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.label,
+            description: FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.summary,
+          },
+          unit_amount: Math.round(FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.priceUsd * 100),
         },
       },
     ]

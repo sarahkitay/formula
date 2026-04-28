@@ -1,6 +1,9 @@
 import { getServiceSupabase } from '@/lib/supabase/service'
 import { isUuid } from '@/lib/rentals/field-rental-waiver-labels'
 
+/** How the waiver reached the database (admin “Signed rental waivers” origin column). */
+export type FieldRentalAgreementSource = 'public_site' | 'coach_booking' | 'roster_link'
+
 export type FieldRentalAgreementInsert = {
   rental_type: string
   participant_name: string
@@ -29,6 +32,8 @@ export type FieldRentalAgreementInsert = {
   booking_rental_dates_compact?: string | null
   booking_session_weeks?: number | null
   booking_headcount_at_checkout?: number | null
+  /** Defaults to public_site when omitted. */
+  source?: FieldRentalAgreementSource | null
 }
 
 export type FieldRentalAgreementRow = {
@@ -60,6 +65,8 @@ export type FieldRentalAgreementRow = {
   roster_organizer_email?: string | null
   /** Total waivers linked to the same invite / expected headcount (same on every row for that invite). */
   waiver_invite_roster_progress?: string | null
+  /** public_site | coach_booking | roster_link — from insert; older rows may be null/undefined. */
+  source?: string | null
 }
 
 /** Full row for admin detail + PDF (includes signature image data URL). */
@@ -109,6 +116,7 @@ export async function insertFieldRentalAgreement(
       booking_rental_dates_compact: row.booking_rental_dates_compact ?? null,
       booking_session_weeks: row.booking_session_weeks ?? null,
       booking_headcount_at_checkout: row.booking_headcount_at_checkout ?? null,
+      source: row.source ?? 'public_site',
     })
     .select('id')
     .single()
@@ -134,7 +142,7 @@ export async function insertFieldRentalAgreement(
 }
 
 const AGREEMENT_LIST_COL =
-  'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_address, participant_dob, parent_guardian_name, participant_count, organization_name, emergency_contact, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout, stripe_checkout_session_id'
+  'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_address, participant_dob, parent_guardian_name, participant_count, organization_name, emergency_contact, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout, stripe_checkout_session_id, source'
 
 /** Signed waivers tied to a specific field rental slot (booking row snapshot). */
 export async function listAgreementsForRentalSlot(params: {
@@ -217,7 +225,7 @@ export async function listFieldRentalAgreementsRecent(limit = 100): Promise<Fiel
   const { data, error } = await supabase
     .from('field_rental_agreements')
     .select(
-      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_address, participant_dob, parent_guardian_name, participant_count, organization_name, emergency_contact, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout'
+      'id, submitted_at, rental_type, participant_name, participant_email, participant_phone, participant_address, participant_dob, parent_guardian_name, participant_count, organization_name, emergency_contact, signature_name, notes, waiver_invite_id, checkout_amount_total_cents, checkout_currency, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks, booking_headcount_at_checkout, source'
     )
     .order('submitted_at', { ascending: false })
     .limit(Math.min(500, Math.max(1, limit)))

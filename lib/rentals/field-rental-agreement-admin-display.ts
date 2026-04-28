@@ -12,6 +12,15 @@ export function rentalFieldLabel(fieldId: string | null | undefined): string {
   return fieldId
 }
 
+/** Short label for admin tables (waiver `source` column). */
+export function formatFieldRentalWaiverSource(raw: string | null | undefined): string {
+  const s = (raw ?? 'public_site').trim()
+  if (s === 'coach_booking') return 'Coach booking'
+  if (s === 'roster_link') return 'Roster link'
+  if (s === 'public_site') return 'Public / desk'
+  return s || '—'
+}
+
 export function formatCheckoutAmount(cents: number | null | undefined, currency: string | null | undefined): string {
   if (cents == null) return '—'
   const code = (currency ?? 'usd').toUpperCase()

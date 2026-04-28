@@ -12,6 +12,11 @@ import {
   formulaMinisCalendarWeekSpan,
   isFormulaMinisCheckoutTrackId,
 } from '@/lib/marketing/formula-minis-tracks'
+import {
+  isSundayChildProgramCheckoutTrackId,
+  SUNDAY_CHILD_PROGRAM_PACK_SESSIONS,
+} from '@/lib/marketing/sunday-child-program-tracks'
+import { FORMULA_SUNDAY_CHILD_PROGRAM_10_WK } from '@/lib/marketing/public-pricing'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
@@ -79,6 +84,7 @@ export async function POST(req: Request) {
   let fieldRentalSessionDatesYmd: string[] | null = null
   let fieldRentalStripeMeta: Record<string, string> = {}
   let littlesStripeMeta: Record<string, string> = {}
+  let sundayChildStripeMeta: Record<string, string> = {}
 
   if (type === 'assessment') {
     const slotId = metadataExtra.assessment_slot_id?.trim()
@@ -245,6 +251,24 @@ export async function POST(req: Request) {
     }
   }
 
+  if (type === 'sunday-child-10wk-500') {
+    const track = metadataExtra.sunday_child_track?.trim() ?? ''
+    if (!isSundayChildProgramCheckoutTrackId(track)) {
+      return NextResponse.json(
+        {
+          error:
+            'Sunday Weekend Program checkout requires metadata sunday_child_track (age 2, 3, 4, or 5 Sunday slot). Choose a published option from the youth pricing page.',
+        },
+        { status: 400 }
+      )
+    }
+    sundayChildStripeMeta = {
+      sunday_child_track: track,
+      sunday_sessions_in_pack: String(SUNDAY_CHILD_PROGRAM_PACK_SESSIONS),
+      sunday_program_weeks: String(FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.weeksInProgram),
+    }
+  }
+
   const emailHint = metadataExtra.parent_email_hint?.trim().toLowerCase() ?? ''
   const partyEmail = metadataExtra.party_contact_email?.trim().toLowerCase() ?? ''
   const prefillEmail =
@@ -266,6 +290,7 @@ export async function POST(req: Request) {
         ...(fieldRentalStripeDates ?? {}),
         ...fieldRentalStripeMeta,
         ...littlesStripeMeta,
+        ...sundayChildStripeMeta,
         /** Last so client-supplied metadata cannot override the server checkout kind (required for webhook → `stripe_purchases`). */
         type,
       },

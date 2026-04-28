@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <AppShell
       role="admin"
       identityName="Front Desk"
-      identityEmail="desk@formulafc.com"
+      identityEmail="info@formulasoccer.com"
       dashboardHref="/admin/dashboard"
       navItems={adminNav}
       operatorLine="FACILITY_OS // ADMIN"

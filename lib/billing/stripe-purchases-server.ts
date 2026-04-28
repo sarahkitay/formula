@@ -1,7 +1,7 @@
 import { getServiceSupabase } from '@/lib/supabase/service'
 import type { RevenueCategoryRow } from '@/lib/mock-data/admin-operating-system'
 import { FACILITY_TIMEZONE, formatYmdInTimeZone } from '@/lib/facility/facility-day'
-import { OFFLINE_FIELD_RENTAL_SESSION_PREFIX } from '@/lib/stripe/record-purchase'
+import { OFFLINE_FIELD_RENTAL_SESSION_PREFIX, recordOfflineFieldRentalPurchase } from '@/lib/stripe/record-purchase'
 import type { Payment, PaymentMethod, PaymentStatus } from '@/types'
 
 type StripePurchaseRow = {
@@ -61,6 +61,12 @@ export function checkoutTypeDescription(type: string, metadata: Record<string, u
       if (weeks) parts.push(`${weeks} calendar wk`)
       return parts.join(' · ')
     }
+    case 'sunday-child-10wk-500': {
+      const track = metaString(m, 'sunday_child_track')
+      const parts = ['Sunday Weekend Program 10-week ($500)']
+      if (track) parts.push(track.replace(/-/g, ' '))
+      return parts.join(' · ')
+    }
     case 'manual-invoice':
       return metaString(m, 'invoice_payee') ? `Custom invoice · ${metaString(m, 'invoice_payee')}` : 'Custom invoice'
     default:
@@ -96,7 +102,171 @@ function inferCheckoutTypeFromMetadata(rowType: string, meta: Record<string, unk
   if (metaString(meta, 'rental_ref') && (metaString(meta, 'rental_field') || metaString(meta, 'rental_window'))) {
     return 'field-rental-booking'
   }
+  if (metaString(meta, 'sunday_child_track')) {
+    return 'sunday-child-10wk-500'
+  }
   return t || 'unknown'
+}
+
+/** Snapshot from `field_rental_waiver_invites` for syncing Admin → Rentals payment edits into `stripe_purchases`. */
+export type FieldRentalInviteLedgerPayload = {
+  id: string
+  stripe_checkout_session_id: string | null
+  checkout_amount_total_cents: number | null
+  checkout_currency: string | null
+  checkout_completed_at: string | null
+  purchaser_email: string | null
+  purchaser_name: string | null
+  rental_ref: string | null
+  rental_type: string | null
+  booking_rental_field: string | null
+  booking_rental_window: string | null
+  booking_rental_date: string | null
+  booking_rental_dates_compact: string | null
+  booking_session_weeks: number | null
+  expected_waiver_count: number
+}
+
+/**
+ * Keeps `stripe_purchases` (Payments ledger + revenue rollups) aligned with roster invite payment fields.
+ * - Stripe checkouts: row matched by `stripe_session_id` = `cs_*`.
+ * - In-person / manual: matched by synthetic `offline_fr_*` on invite, or `metadata.waiver_invite_id`.
+ * - If no row exists and amount ≥ $0.50, inserts an offline field-rental row (same shape as paid-in-person flow).
+ */
+export async function syncFieldRentalInviteToStripePurchasesLedger(inv: FieldRentalInviteLedgerPayload): Promise<void> {
+  const sb = getServiceSupabase()
+  if (!sb) return
+
+  const sid = (inv.stripe_checkout_session_id ?? '').trim()
+  const centsRaw = inv.checkout_amount_total_cents
+  const cents = centsRaw != null && Number.isFinite(centsRaw) ? Math.round(centsRaw) : null
+  const currency = (inv.checkout_currency ?? 'usd').toLowerCase().slice(0, 8)
+  const email = inv.purchaser_email?.trim() || null
+
+  const buildMetadata = (): Record<string, string> => ({
+    type: 'field-rental-booking',
+    waiver_invite_id: inv.id,
+    rental_ref: inv.rental_ref?.trim() || '',
+    rental_field: inv.booking_rental_field?.trim() || '',
+    rental_window: inv.booking_rental_window?.trim() || '',
+    rental_date: inv.booking_rental_date?.trim() || '',
+    rental_dates_compact: inv.booking_rental_dates_compact?.trim() || '',
+    rental_weeks: inv.booking_session_weeks != null ? String(inv.booking_session_weeks) : '',
+    rental_participants: String(inv.expected_waiver_count ?? 1),
+    rental_type: inv.rental_type?.trim() || '',
+    renter_name: inv.purchaser_name?.trim() || '',
+    admin_offline: 'true',
+  })
+
+  type LedgerRow = { id: string; stripe_session_id: string; metadata: Record<string, unknown> | null }
+  let purchase: LedgerRow | null = null
+
+  if (sid.startsWith('cs_') || sid.startsWith(OFFLINE_FIELD_RENTAL_SESSION_PREFIX)) {
+    const { data, error } = await sb
+      .from('stripe_purchases')
+      .select('id, stripe_session_id, metadata')
+      .eq('stripe_session_id', sid)
+      .maybeSingle()
+    if (!error && data) {
+      purchase = data as LedgerRow
+    }
+  }
+
+  if (!purchase) {
+    const { data: rows, error: metaErr } = await sb
+      .from('stripe_purchases')
+      .select('id, stripe_session_id, metadata')
+      .eq('type', 'field-rental-booking')
+      .contains('metadata', { waiver_invite_id: inv.id })
+      .limit(2)
+    if (!metaErr && rows?.length) {
+      purchase = rows[0] as LedgerRow
+    }
+  }
+
+  const clearLedger = cents == null || cents === 0
+  if (clearLedger) {
+    if (purchase?.stripe_session_id?.startsWith(OFFLINE_FIELD_RENTAL_SESSION_PREFIX)) {
+      await sb.from('stripe_purchases').delete().eq('id', purchase.id)
+      await sb.from('field_rental_waiver_invites').update({ stripe_checkout_session_id: null }).eq('id', inv.id)
+    }
+    return
+  }
+
+  if (!Number.isFinite(cents) || cents < 50) {
+    return
+  }
+
+  if (purchase) {
+    const prevMeta = (purchase.metadata ?? {}) as Record<string, unknown>
+    const isOfflineRow =
+      purchase.stripe_session_id.startsWith(OFFLINE_FIELD_RENTAL_SESSION_PREFIX) ||
+      metaString(prevMeta as Record<string, unknown>, 'admin_offline') === 'true'
+
+    let merged: Record<string, unknown>
+    if (isOfflineRow) {
+      merged = { ...prevMeta, ...buildMetadata() }
+    } else {
+      merged = {
+        ...prevMeta,
+        waiver_invite_id: inv.id,
+        renter_name: inv.purchaser_name?.trim() || metaString(prevMeta, 'renter_name') || '',
+        rental_field: inv.booking_rental_field?.trim() || metaString(prevMeta, 'rental_field') || '',
+        rental_window: inv.booking_rental_window?.trim() || metaString(prevMeta, 'rental_window') || '',
+        rental_date: inv.booking_rental_date?.trim() || metaString(prevMeta, 'rental_date') || '',
+        rental_dates_compact: inv.booking_rental_dates_compact?.trim() || metaString(prevMeta, 'rental_dates_compact') || '',
+        rental_weeks:
+          inv.booking_session_weeks != null
+            ? String(inv.booking_session_weeks)
+            : metaString(prevMeta, 'rental_weeks') || '',
+        rental_ref: inv.rental_ref?.trim() || metaString(prevMeta, 'rental_ref') || '',
+        rental_type: inv.rental_type?.trim() || metaString(prevMeta, 'rental_type') || '',
+        rental_participants: String(inv.expected_waiver_count ?? 1),
+      }
+    }
+
+    const { error: upErr } = await sb
+      .from('stripe_purchases')
+      .update({
+        amount: cents,
+        currency,
+        email,
+        payment_status: 'paid',
+        metadata: merged as Record<string, unknown>,
+      })
+      .eq('id', purchase.id)
+
+    if (upErr) {
+      console.error('[stripe-purchases] sync invite → update ledger:', upErr.message)
+    }
+    return
+  }
+
+  if (sid.startsWith('cs_')) {
+    console.warn('[stripe-purchases] sync invite: no ledger row for Checkout session', sid)
+    return
+  }
+
+  const recorded = await recordOfflineFieldRentalPurchase({
+    amountCents: cents,
+    currency,
+    email,
+    metadata: buildMetadata(),
+  })
+  if (!recorded.ok) {
+    console.error('[stripe-purchases] sync invite → insert ledger:', recorded.message)
+    return
+  }
+
+  if (!sid.startsWith('cs_')) {
+    const { error: linkErr } = await sb
+      .from('field_rental_waiver_invites')
+      .update({ stripe_checkout_session_id: recorded.stripe_session_id })
+      .eq('id', inv.id)
+    if (linkErr) {
+      console.warn('[stripe-purchases] sync invite → link synthetic session id:', linkErr.message)
+    }
+  }
 }
 
 function mapRowToPayment(row: StripePurchaseRow): Payment {
@@ -136,7 +306,9 @@ export function buildStripeRevenueCategoryRows(completed: Payment[]): RevenueCat
     completed.filter(p => p.checkoutType && types.has(p.checkoutType)).reduce((s, p) => s + p.amount, 0)
 
   const rentals = sumTypes(new Set(['field-rental-booking', 'party-booking-1k']))
-  const youthPrograms = sumTypes(new Set(['assessment', 'package-5', 'package-10', 'littles-6wk-300']))
+  const youthPrograms = sumTypes(
+    new Set(['assessment', 'package-5', 'package-10', 'littles-6wk-300', 'sunday-child-10wk-500'])
+  )
   const custom = sumTypes(new Set(['manual-invoice']))
   const attributed = rentals + youthPrograms + custom
   const other = Math.max(0, total - attributed)

@@ -7,7 +7,10 @@ import {
   mergeWaiverInviteIntoCheckoutSnapshot,
   type FieldRentalAgreementCheckoutSnapshot,
 } from '@/lib/rentals/field-rental-checkout-snapshot'
-import { insertFieldRentalAgreement } from '@/lib/rentals/field-rental-agreements-server'
+import {
+  insertFieldRentalAgreement,
+  type FieldRentalAgreementSource,
+} from '@/lib/rentals/field-rental-agreements-server'
 import { PARTICIPANT_SELF_WAIVER_RENTAL_TYPE } from '@/lib/rentals/field-rental-waiver-labels'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
 
@@ -147,6 +150,12 @@ export async function submitFieldRentalAgreement(
     checkoutSnapshot = mergeWaiverInviteIntoCheckoutSnapshot(rosterInvite, base)
   }
 
+  const agreementSource: FieldRentalAgreementSource = waiverInviteId
+    ? 'roster_link'
+    : isCoachBookingWaiver
+      ? 'coach_booking'
+      : 'public_site'
+
   const saved = await insertFieldRentalAgreement({
     rental_type: rentalType,
     participant_name: participantName,
@@ -165,6 +174,7 @@ export async function submitFieldRentalAgreement(
     risk_accepted: riskAccepted,
     rules_accepted: rulesAccepted,
     waiver_invite_id: waiverInviteId,
+    source: agreementSource,
     ...(checkoutSnapshot ?? {}),
   })
 
@@ -173,6 +183,9 @@ export async function submitFieldRentalAgreement(
   }
 
   revalidatePath('/admin/rentals')
+  if (isCoachBookingWaiver) {
+    revalidatePath('/coach/field-rental-waiver')
+  }
   if (rosterTokenForRevalidate) {
     revalidatePath(`/rentals/waiver/${rosterTokenForRevalidate}`)
   }
