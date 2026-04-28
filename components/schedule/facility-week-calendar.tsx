@@ -16,6 +16,16 @@ import {
   type LaidOutCalendarBlock,
 } from '@/lib/schedule/calendar-day-layout'
 
+/** Hour row `h` (0–23): top of row in px within the day column. */
+function hourRowTopPx(h: number): number {
+  return ((h * 60 - CAL_DISPLAY_START) / 60) * CAL_PX_PER_HOUR
+}
+
+/** Hours where at least 30 minutes remains before `CAL_DISPLAY_END` (bookable empty click). */
+function bookableHourStarts(hours: readonly number[]): number[] {
+  return hours.filter(h => h * 60 + 30 <= CAL_DISPLAY_END)
+}
+
 function categoryStyle(cat: CalendarFeedCategory): string {
   switch (cat) {
     case 'youth_program':
@@ -99,6 +109,8 @@ export function FacilityWeekCalendar({
   }, [])
 
   const totalPx = ((CAL_DISPLAY_END - CAL_DISPLAY_START) / 60) * CAL_PX_PER_HOUR
+
+  const bookableHours = React.useMemo(() => bookableHourStarts(hours), [hours])
 
   const hasHolidayThisWeek = React.useMemo(() => {
     if (!holidayLabelsByYmd || Object.keys(holidayLabelsByYmd).length === 0) return false
@@ -245,15 +257,11 @@ export function FacilityWeekCalendar({
     void endRentalDrag(e, b, 'cancel')
   }
 
-  const handleGridClick = (e: React.MouseEvent<HTMLButtonElement>, di: DayIndex) => {
+  const handleHourSlotClick = (di: DayIndex, h: number) => {
     if (!onEmptySlotClick) return
-    const y = e.nativeEvent.offsetY
-    const clamped = Math.max(0, Math.min(y, totalPx))
-    const span = CAL_DISPLAY_END - CAL_DISPLAY_START
-    const minuteRaw = CAL_DISPLAY_START + (clamped / totalPx) * span
-    const snapped = Math.round(minuteRaw / SNAP_MIN) * SNAP_MIN
-    const startMinute = Math.max(CAL_DISPLAY_START, Math.min(CAL_DISPLAY_END - 30, snapped))
+    const startMinute = Math.max(CAL_DISPLAY_START, Math.min(h * 60, CAL_DISPLAY_END - 30))
     const endMinute = Math.min(CAL_DISPLAY_END, startMinute + 60)
+    if (endMinute <= startMinute) return
     onEmptySlotClick({ dayIndex: di, startMinute, endMinute })
   }
 
@@ -263,7 +271,8 @@ export function FacilityWeekCalendar({
         <div className="font-mono text-[10px] text-formula-mist">
           <p>
             Week of {weekStart} · Los Angeles wall time · program + assessments + rentals + parties · overlapping blocks
-            are split horizontally; click a block for details or empty space to quick-book a slot (draft override).
+            are split horizontally; click a block for details, or an <strong className="text-formula-paper">hour row</strong>{' '}
+            to quick-book that hour (adjust length in the popup).
           </p>
           {hasHolidayThisWeek ? (
             <p className="mt-1 flex items-center gap-2 text-rose-200/95">
@@ -338,7 +347,7 @@ export function FacilityWeekCalendar({
                   </div>
                 ) : null}
               </div>
-              <div className="relative" style={{ height: totalPx }}>
+              <div className="relative overflow-hidden" style={{ height: totalPx }}>
                 <div className="pointer-events-none absolute inset-0 z-0 flex flex-col">
                   {hours.map(h => (
                     <div
@@ -348,14 +357,31 @@ export function FacilityWeekCalendar({
                     />
                   ))}
                 </div>
-                {onEmptySlotClick ? (
-                  <button
-                    type="button"
-                    className="absolute inset-0 z-[1] cursor-cell bg-transparent text-left outline-none hover:bg-formula-volt/[0.04] focus-visible:ring-1 focus-visible:ring-formula-volt/40"
-                    aria-label={`Add or edit schedule for ${DAY_LABELS[di]} — click a time`}
-                    onClick={e => handleGridClick(e, di)}
-                  />
-                ) : null}
+                {onEmptySlotClick
+                  ? bookableHours.map(h => (
+                      <button
+                        key={`empty-${di}-${h}`}
+                        type="button"
+                        className={cn(
+                          'absolute z-[1] w-full cursor-cell border border-transparent text-left outline-none transition-colors',
+                          'hover:border-formula-volt/35 hover:bg-formula-volt/[0.12]',
+                          'focus-visible:border-formula-volt/50 focus-visible:bg-formula-volt/[0.14] focus-visible:ring-1 focus-visible:ring-formula-volt/40',
+                          hol && 'hover:border-rose-400/30 hover:bg-rose-500/[0.08] focus-visible:ring-rose-400/35'
+                        )}
+                        style={{
+                          top: hourRowTopPx(h),
+                          height: CAL_PX_PER_HOUR,
+                          left: 0,
+                          right: 0,
+                        }}
+                        aria-label={`${DAY_LABELS[di]} · book ${h > 12 ? h - 12 : h === 0 ? 12 : h}${h >= 12 ? 'pm' : 'am'} hour`}
+                        onClick={e => {
+                          e.stopPropagation()
+                          handleHourSlotClick(di, h)
+                        }}
+                      />
+                    ))
+                  : null}
                 {dayBlocks.map(b => {
                   const topMin = Math.max(CAL_DISPLAY_START, b.startMinute)
                   const botMin = Math.min(CAL_DISPLAY_END, b.endMinute)
