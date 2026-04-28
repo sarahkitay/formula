@@ -493,7 +493,7 @@ div {
 .home-field-3d.home-field-3d--hero-interactive .i.act {
   animation: none;
   transform: perspective(600px) rotateX(calc(68deg + var(--field-mouse-x, 0deg))) rotateY(var(--field-mouse-y, 0deg));
-  transition: transform 0.15s ease-out;
+  /* Tilt is driven by rAF + lerped CSS vars; no transition here (avoids jank vs. pointer updates). */
 }
 
 @media (prefers-reduced-motion: reduce) {

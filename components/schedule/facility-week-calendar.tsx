@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import {
   CAL_DISPLAY_END,
   CAL_DISPLAY_START,
+  CAL_GRID_HEADER_PX,
   CAL_PX_PER_HOUR,
   layoutCalendarBlocksForDay,
   type LaidOutCalendarBlock,
@@ -102,9 +103,12 @@ export function FacilityWeekCalendar({
   } | null>(null)
   const movedPxRef = React.useRef(0)
 
+  /** One row per hour in [CAL_DISPLAY_START, CAL_DISPLAY_END) — length × CAL_PX_PER_HOUR must equal totalPx. */
   const hours = React.useMemo(() => {
     const out: number[] = []
-    for (let h = Math.floor(CAL_DISPLAY_START / 60); h <= Math.floor(CAL_DISPLAY_END / 60); h++) out.push(h)
+    const first = Math.floor(CAL_DISPLAY_START / 60)
+    const lastExclusive = Math.ceil(CAL_DISPLAY_END / 60)
+    for (let h = first; h < lastExclusive; h++) out.push(h)
     return out
   }, [])
 
@@ -300,17 +304,24 @@ export function FacilityWeekCalendar({
       <div className="flex gap-0 overflow-x-auto border border-formula-frost/12 bg-formula-paper/[0.03] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
         <div
           className="sticky left-0 z-20 w-10 shrink-0 border-r border-formula-frost/12 bg-formula-deep/60 font-mono text-[9px] text-formula-mist"
-          style={{ minHeight: totalPx + 28 }}
+          style={{ minHeight: totalPx + CAL_GRID_HEADER_PX }}
         >
-          <div className="h-7 border-b border-formula-frost/10" />
+          <div
+            className="box-border flex shrink-0 items-center justify-end border-b border-formula-frost/10 pr-1 text-[8px] font-bold uppercase tracking-wide text-formula-frost/80"
+            style={{ height: CAL_GRID_HEADER_PX }}
+          >
+            Time
+          </div>
           {hours.map(h => (
             <div
               key={h}
-              className="border-b border-formula-frost/8 text-right pr-1"
-              style={{ height: CAL_PX_PER_HOUR }}
+              className="box-border shrink-0 border-b border-formula-frost/8 text-right leading-none"
+              style={{ height: CAL_PX_PER_HOUR, flexShrink: 0 }}
             >
-              {h > 12 ? h - 12 : h === 0 ? 12 : h}
-              {h >= 12 ? 'p' : 'a'}
+              <span className="inline-block pr-1 pt-0.5">
+                {h > 12 ? h - 12 : h === 0 ? 12 : h}
+                {h >= 12 ? 'p' : 'a'}
+              </span>
             </div>
           ))}
         </div>
@@ -327,22 +338,24 @@ export function FacilityWeekCalendar({
                 'relative min-w-[104px] flex-1 border-r border-formula-frost/10 last:border-r-0',
                 hol && 'bg-rose-950/[0.14]'
               )}
-              style={{ minHeight: totalPx + 28 }}
+              style={{ minHeight: totalPx + CAL_GRID_HEADER_PX }}
             >
               <div
                 className={cn(
-                  'sticky top-0 z-[15] border-b px-1 py-1 text-center font-mono text-[9px] font-bold uppercase',
+                  'sticky top-0 z-[15] box-border flex shrink-0 flex-col items-center justify-center overflow-hidden border-b px-1 text-center font-mono text-[8px] font-bold uppercase leading-tight',
                   hol
                     ? 'border-rose-500/35 bg-rose-950/60 text-rose-50'
                     : 'border-formula-frost/12 bg-formula-deep/50 text-formula-paper'
                 )}
+                style={{ height: CAL_GRID_HEADER_PX, minHeight: CAL_GRID_HEADER_PX }}
+                title={hol ?? undefined}
               >
-                <div>{DAY_LABELS[di]}</div>
-                <div className={cn('text-[8px] font-normal', hol ? 'text-rose-100/85' : 'text-formula-mist')}>
+                <div className="leading-tight">{DAY_LABELS[di]}</div>
+                <div className={cn('font-mono font-normal', hol ? 'text-rose-100/90' : 'text-formula-frost/85')}>
                   {iso.slice(5)}
                 </div>
                 {hol ? (
-                  <div className="mt-0.5 line-clamp-3 text-[7px] font-semibold normal-case leading-tight text-rose-100">
+                  <div className="max-w-full truncate text-[7px] font-semibold normal-case text-rose-100/95" title={hol}>
                     {hol}
                   </div>
                 ) : null}
@@ -352,8 +365,11 @@ export function FacilityWeekCalendar({
                   {hours.map(h => (
                     <div
                       key={h}
-                      className={cn('border-b border-formula-frost/[0.06]', hol && 'border-rose-500/[0.07]')}
-                      style={{ height: CAL_PX_PER_HOUR }}
+                      className={cn(
+                        'box-border shrink-0 border-b border-formula-frost/[0.06]',
+                        hol && 'border-rose-500/[0.07]'
+                      )}
+                      style={{ height: CAL_PX_PER_HOUR, flexShrink: 0 }}
                     />
                   ))}
                 </div>
@@ -363,10 +379,10 @@ export function FacilityWeekCalendar({
                         key={`empty-${di}-${h}`}
                         type="button"
                         className={cn(
-                          'absolute z-[1] w-full cursor-cell border border-transparent text-left outline-none transition-colors',
-                          'hover:border-formula-volt/35 hover:bg-formula-volt/[0.12]',
-                          'focus-visible:border-formula-volt/50 focus-visible:bg-formula-volt/[0.14] focus-visible:ring-1 focus-visible:ring-formula-volt/40',
-                          hol && 'hover:border-rose-400/30 hover:bg-rose-500/[0.08] focus-visible:ring-rose-400/35'
+                          'absolute z-[1] box-border w-full cursor-cell text-left outline-none ring-inset transition-[box-shadow,background-color]',
+                          'ring-1 ring-transparent hover:bg-formula-volt/[0.12] hover:ring-formula-volt/35',
+                          'focus-visible:bg-formula-volt/[0.14] focus-visible:ring-formula-volt/50',
+                          hol && 'hover:bg-rose-500/[0.08] hover:ring-rose-400/35 focus-visible:ring-rose-400/45'
                         )}
                         style={{
                           top: hourRowTopPx(h),
@@ -397,11 +413,11 @@ export function FacilityWeekCalendar({
                       key={b.id}
                       type="button"
                       className={cn(
-                        'absolute z-[2] overflow-hidden rounded-sm border px-1 py-0.5 text-left text-[8px] font-semibold leading-tight shadow-sm transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-formula-volt/50',
+                        'absolute z-[2] box-border overflow-hidden rounded-sm border px-1 py-0.5 text-left text-[8px] font-semibold leading-tight shadow-sm transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-formula-volt/50',
                         categoryStyle(b.category),
                         draggableRental && 'touch-none cursor-grab active:cursor-grabbing'
                       )}
-                      style={{ top, height: h, left, width: w }}
+                      style={{ top: Math.round(top), height: Math.max(1, Math.round(h)), left, width: w }}
                       title={calendarBlockHoverTitle(b)}
                       aria-label={`${b.label} ${formatHm(b.startMinute)} to ${formatHm(b.endMinute)}`}
                       onClick={e => {

@@ -39,6 +39,24 @@ export const FIELD_RENTAL_DURATION_OPTIONS_MINUTES = [30, 60, 90, 120, 150, 180,
 /** Initial duration in the public field-rental checkout flow (2 hours). */
 export const FIELD_RENTAL_DEFAULT_DURATION_MINUTES = 120
 
+/** Admin roster / waiver invite: headcount dropdown (1–50 + common larger rosters). */
+export const FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS: readonly number[] = (() => {
+  const set = new Set<number>()
+  for (let i = 1; i <= 50; i++) set.add(i)
+  for (const x of [55, 60, 72, 80, 100, 120, 150, 200, 250, 300, 400, 500]) set.add(x)
+  return [...set].sort((a, b) => a - b)
+})()
+
+/** Consecutive weekly sessions (admin paid-in-person + checkout parity). */
+export const FIELD_RENTAL_SESSION_WEEKS_OPTIONS: readonly number[] = Array.from({ length: 26 }, (_, i) => i + 1)
+
+/** Human label for duration dropdowns (admin + marketing). */
+export function formatFieldRentalDurationLabel(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`
+  if (minutes % 60 === 0) return minutes === 60 ? '1 hour' : `${minutes / 60} hours`
+  return `${Math.floor(minutes / 60)} hr ${minutes % 60} min`
+}
+
 /** Bookings must end by this minute-of-day (22:00 = 10:00 PM). */
 export const FIELD_RENTAL_WINDOW_CLOSE_MINUTES = 22 * 60
 
@@ -54,6 +72,9 @@ export const RENTAL_FIELD_LEGACY_LABELS: Readonly<Record<string, string>> = {
   field_b: 'Field 2',
   field_indoor: 'Field 3 (outdoor)',
 }
+
+/** Common in-person deposit amounts (USD) for datalist quick-pick on admin forms. */
+export const FIELD_RENTAL_COMMON_DEPOSIT_USD = [90, 120, 150, 180, 240, 300, 360, 450, 540, 600, 720, 900] as const
 
 export function isKnownRentalFieldId(fieldId: string): boolean {
   const id = fieldId.trim()

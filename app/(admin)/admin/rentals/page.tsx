@@ -129,9 +129,22 @@ export default async function RentalsPage() {
                 <strong className="text-formula-paper/90">Paid in person</strong> when the deposit was collected offline so you get the same waiver URL plus a
                 Payments / revenue entry.
               </p>
-              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.12em] text-formula-mist">Quick roster link</p>
-              <ManualWaiverInviteForm />
-              <PaidInPersonFieldRentalInviteForm />
+              <details open className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
+                <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
+                  <span className="text-formula-volt">▸</span> Quick roster link — comp / internal (no payment row)
+                </summary>
+                <div className="mt-3 border-t border-formula-frost/10 pt-3">
+                  <ManualWaiverInviteForm />
+                </div>
+              </details>
+              <details className="mt-4 rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
+                <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
+                  <span className="text-formula-volt">▸</span> Paid in person — desk deposit + same waiver URL + Payments entry
+                </summary>
+                <div className="mt-3 border-t border-formula-frost/10 pt-3">
+                  <PaidInPersonFieldRentalInviteForm />
+                </div>
+              </details>
               {waiverInvites.length === 0 ? (
                 <p className="mt-6 font-mono text-[11px] text-formula-mist">No roster links yet.</p>
               ) : (

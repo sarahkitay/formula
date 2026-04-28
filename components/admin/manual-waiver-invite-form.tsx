@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { createManualWaiverInviteAction } from '@/app/(admin)/admin/rentals/waiver-invite-actions'
+import { FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
 
 type State =
   | { status: 'idle' }
@@ -9,6 +10,10 @@ type State =
   | { status: 'success'; waiver_url: string }
 
 const INITIAL: State = { status: 'idle' }
+
+const fieldBase =
+  'h-10 w-full rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 text-[13px] text-formula-paper outline-none transition-colors focus:border-formula-volt/50 focus:ring-1 focus:ring-formula-volt/25'
+const selectField = `${fieldBase} cursor-pointer`
 
 async function runAction(_prev: State, formData: FormData): Promise<State> {
   const r = await createManualWaiverInviteAction(formData)
@@ -21,29 +26,26 @@ export function ManualWaiverInviteForm() {
 
   return (
     <div className="space-y-4">
-      <form
-        action={action}
-        className="grid gap-4 font-mono text-[11px] md:grid-cols-2"
-      >
+      <form action={action} className="grid gap-4 font-mono text-[11px] md:grid-cols-2">
         <label className="flex flex-col gap-1.5 md:col-span-2">
-          <span className="text-formula-mist">Expected waivers (1–500) *</span>
-          <input
+          <span className="text-formula-mist">Expected waivers (roster size) *</span>
+          <select
             name="expectedWaiverCount"
-            type="number"
-            min={1}
-            max={500}
             required
             defaultValue={12}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          />
+            className={selectField}
+            aria-label="Expected number of waivers on this roster"
+          >
+            {FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS.map(n => (
+              <option key={n} value={n}>
+                {n} {n === 1 ? 'signer' : 'signers'}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Rental type (optional lock)</span>
-          <select
-            name="rentalType"
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-            defaultValue=""
-          >
+          <select name="rentalType" className={selectField} defaultValue="">
             <option value="">Let each signer choose</option>
             <option value="club_team_practice">Club / Team Practice</option>
             <option value="private_semi_private">Private / Semi-Private</option>
@@ -56,7 +58,7 @@ export function ManualWaiverInviteForm() {
             name="rentalRef"
             type="text"
             maxLength={120}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
+            className={fieldBase}
             placeholder="e.g. internal hold id"
           />
         </label>
@@ -66,7 +68,7 @@ export function ManualWaiverInviteForm() {
             name="notes"
             rows={2}
             maxLength={500}
-            className="border border-formula-frost/18 bg-formula-paper/[0.04] px-3 py-2 text-formula-paper outline-none focus:border-formula-volt/40"
+            className="min-h-[4.5rem] w-full rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 text-[13px] text-formula-paper outline-none transition-colors focus:border-formula-volt/50 focus:ring-1 focus:ring-formula-volt/25"
           />
         </label>
         <div className="md:col-span-2">

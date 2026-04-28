@@ -5,6 +5,9 @@ export const CAL_DISPLAY_START = 6 * 60
 export const CAL_DISPLAY_END = 23 * 60
 export const CAL_PX_PER_HOUR = 44
 
+/** Fixed header height (px) for time gutter + day columns; must match facility-week-calendar header row. */
+export const CAL_GRID_HEADER_PX = 40
+
 export type LaidOutCalendarBlock = CalendarFeedBlock & {
   /** 0–100 within the day column */
   leftPct: number

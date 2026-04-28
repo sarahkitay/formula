@@ -4,9 +4,13 @@ import { useActionState } from 'react'
 import Link from 'next/link'
 import { createPaidInPersonFieldRentalInviteAction } from '@/app/(admin)/admin/rentals/waiver-invite-actions'
 import {
+  FIELD_RENTAL_COMMON_DEPOSIT_USD,
   FIELD_RENTAL_DEFAULT_DURATION_MINUTES,
   FIELD_RENTAL_DURATION_OPTIONS_MINUTES,
+  FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS,
+  FIELD_RENTAL_SESSION_WEEKS_OPTIONS,
   FIELD_RENTAL_SLOT_STARTS,
+  formatFieldRentalDurationLabel,
   RENTAL_FIELD_OPTIONS,
 } from '@/lib/rentals/field-rental-picker-constants'
 
@@ -16,6 +20,10 @@ type State =
   | { status: 'success'; waiver_url: string }
 
 const INITIAL: State = { status: 'idle' }
+
+const fieldBase =
+  'h-10 w-full rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 text-[13px] text-formula-paper outline-none transition-colors focus:border-formula-volt/50 focus:ring-1 focus:ring-formula-volt/25'
+const selectField = `${fieldBase} cursor-pointer`
 
 async function runAction(_prev: State, formData: FormData): Promise<State> {
   const r = await createPaidInPersonFieldRentalInviteAction(formData)
@@ -27,7 +35,7 @@ export function PaidInPersonFieldRentalInviteForm() {
   const [state, action, pending] = useActionState(runAction, INITIAL)
 
   return (
-    <div className="mt-8 space-y-4 border-t border-formula-frost/12 pt-8">
+    <div className="space-y-4 pt-1">
       <div>
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Paid in person</p>
         <h3 className="mt-1 font-mono text-sm font-semibold text-formula-paper">Field rental deposit + roster waiver link</h3>
@@ -40,6 +48,12 @@ export function PaidInPersonFieldRentalInviteForm() {
         </p>
       </div>
 
+      <datalist id="field-rental-deposit-presets">
+        {FIELD_RENTAL_COMMON_DEPOSIT_USD.map(amt => (
+          <option key={amt} value={amt.toFixed(2)} />
+        ))}
+      </datalist>
+
       <form action={action} className="grid gap-4 font-mono text-[11px] md:grid-cols-2">
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Amount collected (USD) *</span>
@@ -50,51 +64,35 @@ export function PaidInPersonFieldRentalInviteForm() {
             min={0.5}
             step="0.01"
             required
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
+            list="field-rental-deposit-presets"
+            className={fieldBase}
             placeholder="e.g. 360.00"
           />
+          <span className="text-[10px] text-formula-mist/80">Type a custom amount or pick from browser suggestions (common deposits).</span>
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Expected waivers (roster size) *</span>
-          <input
-            name="expectedWaiverCount"
-            type="number"
-            min={1}
-            max={500}
-            required
-            defaultValue={12}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          />
+          <select name="expectedWaiverCount" required defaultValue={12} className={selectField}>
+            {FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS.map(n => (
+              <option key={n} value={n}>
+                {n} {n === 1 ? 'signer' : 'signers'}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Payer / organizer name *</span>
-          <input
-            name="purchaserName"
-            type="text"
-            required
-            maxLength={200}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          />
+          <input name="purchaserName" type="text" required maxLength={200} className={fieldBase} />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Payer email (optional)</span>
-          <input
-            name="purchaserEmail"
-            type="email"
-            maxLength={200}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          />
+          <input name="purchaserEmail" type="email" maxLength={200} className={fieldBase} />
         </label>
 
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Rental type *</span>
-          <select
-            name="rentalType"
-            required
-            defaultValue=""
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          >
+          <select name="rentalType" required defaultValue="" className={selectField}>
             <option value="" disabled>
               Select type
             </option>
@@ -105,12 +103,7 @@ export function PaidInPersonFieldRentalInviteForm() {
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Field *</span>
-          <select
-            name="rentalField"
-            required
-            defaultValue=""
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          >
+          <select name="rentalField" required defaultValue="" className={selectField}>
             <option value="" disabled>
               Select field
             </option>
@@ -124,34 +117,22 @@ export function PaidInPersonFieldRentalInviteForm() {
 
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">First session date *</span>
-          <input
-            name="sessionDate"
-            type="date"
-            required
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          />
+          <input name="sessionDate" type="date" required className={selectField} />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Consecutive weekly sessions *</span>
-          <input
-            name="sessionWeeks"
-            type="number"
-            min={1}
-            max={52}
-            required
-            defaultValue={1}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          />
+          <select name="sessionWeeks" required defaultValue={1} className={selectField}>
+            {FIELD_RENTAL_SESSION_WEEKS_OPTIONS.map(w => (
+              <option key={w} value={w}>
+                {w} {w === 1 ? 'week' : 'weeks'}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Start time *</span>
-          <select
-            name="slotStart"
-            required
-            defaultValue=""
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-          >
+          <select name="slotStart" required defaultValue="" className={selectField}>
             <option value="" disabled>
               Select start
             </option>
@@ -168,11 +149,11 @@ export function PaidInPersonFieldRentalInviteForm() {
             name="durationMinutes"
             required
             defaultValue={FIELD_RENTAL_DEFAULT_DURATION_MINUTES}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
+            className={selectField}
           >
             {FIELD_RENTAL_DURATION_OPTIONS_MINUTES.map(m => (
               <option key={m} value={m}>
-                {m} minutes
+                {formatFieldRentalDurationLabel(m)}
               </option>
             ))}
           </select>
@@ -180,13 +161,7 @@ export function PaidInPersonFieldRentalInviteForm() {
 
         <label className="flex flex-col gap-1.5 md:col-span-2">
           <span className="text-formula-mist">Booking ref (optional — auto if empty)</span>
-          <input
-            name="rentalRef"
-            type="text"
-            maxLength={120}
-            className="h-10 border border-formula-frost/18 bg-formula-paper/[0.04] px-3 text-formula-paper outline-none focus:border-formula-volt/40"
-            placeholder="Internal id or receipt #"
-          />
+          <input name="rentalRef" type="text" maxLength={120} className={fieldBase} placeholder="Internal id or receipt #" />
         </label>
         <label className="flex flex-col gap-1.5 md:col-span-2">
           <span className="text-formula-mist">Notes (optional)</span>
@@ -194,7 +169,7 @@ export function PaidInPersonFieldRentalInviteForm() {
             name="notes"
             rows={2}
             maxLength={500}
-            className="border border-formula-frost/18 bg-formula-paper/[0.04] px-3 py-2 text-formula-paper outline-none focus:border-formula-volt/40"
+            className="min-h-[4.5rem] w-full rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 text-[13px] text-formula-paper outline-none transition-colors focus:border-formula-volt/50 focus:ring-1 focus:ring-formula-volt/25"
           />
         </label>
 

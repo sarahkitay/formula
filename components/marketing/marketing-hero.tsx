@@ -106,7 +106,7 @@ export function MarketingHero() {
             transition={{ duration: 0.65, delay: reduceMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-20 mt-2 max-w-[16rem] text-center font-mono text-[9px] uppercase tracking-[0.28em] text-formula-mist [text-shadow:0_1px_12px_rgba(0,0,0,0.55)] max-sm:text-left max-sm:translate-x-[min(2.25rem,12vw)] sm:translate-x-0 lg:mt-2 lg:text-center"
           >
-            Move pointer or drag to tilt the field
+            Slow drift — pointer adds a gentle tilt
           </motion.p>
         </div>
       </div>
