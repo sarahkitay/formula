@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { BOOKING_HUB_PARENT, BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
 import { BOOKING_HUB_DIRECTORY_ID, MARKETING_HREF } from '@/lib/marketing/nav'
+import { SITE } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
 type HubVariant = 'public' | 'portal'
@@ -37,6 +38,10 @@ export function BookAssessmentHub({ variant }: { variant: HubVariant }) {
       aria-label="Reserve by category"
       className="not-prose scroll-mt-28 space-y-5"
     >
+      <p className="rounded-lg border border-formula-frost/14 bg-formula-paper/[0.04] px-4 py-3 text-sm leading-relaxed text-formula-frost/90 md:px-5 md:py-3.5">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Attire · </span>
+        {SITE.turfShoesAttendeeRule}
+      </p>
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
         {tiles.map((item) => (
           <li key={item.href} className="min-w-0">

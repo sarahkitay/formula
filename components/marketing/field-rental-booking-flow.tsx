@@ -24,6 +24,7 @@ import {
   parseUsTimeToMinutesFromMidnight,
   rentalWindowsOverlap,
 } from '@/lib/rentals/rental-time-window'
+import { SITE } from '@/lib/site-config'
 
 const PAYMENT_STEP = 6
 const STEP_LABELS = ['Type', 'Slot', 'Participants', 'Tier', 'Rules', 'Pay'] as const
@@ -637,7 +638,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             </label>
           </div>
           <ul className="space-y-2 border border-formula-frost/10 bg-formula-paper/[0.02] p-4 text-sm text-formula-mist">
-            <li>No cleats on turf.</li>
+            <li>{SITE.turfShoesAttendeeRule}</li>
             <li>Water only on the field (no food, gum, or other beverages).</li>
             <li>Access limited to reserved field and time.</li>
             <li>All participants must complete waivers before field access.</li>

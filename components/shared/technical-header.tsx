@@ -31,6 +31,8 @@ export interface TechnicalHeaderProps {
   /** Parent: linked athletes */
   athletesSummary?: string
   endSessionVariant?: 'login-link' | 'logout-button'
+  /** Shown in a slim row below primary nav (e.g. facility street address). */
+  addressLine?: string
 }
 
 function pathWithoutHash(href: string): string {
@@ -59,6 +61,7 @@ export function TechnicalHeader({
   identityEmail,
   athletesSummary,
   endSessionVariant = 'login-link',
+  addressLine,
 }: TechnicalHeaderProps) {
   const pathname = usePathname()
   const logoHref = logoHrefProp ?? homeHref
@@ -190,6 +193,16 @@ export function TechnicalHeader({
             )
           })}
         </nav>
+        {addressLine?.trim() ? (
+          <div
+            className={cn(
+              '-mx-6 border-t px-6 py-2 text-center font-mono text-[10px] font-medium uppercase leading-snug tracking-[0.14em]',
+              dark ? 'border-formula-frost/10 text-formula-mist' : 'border-black/10 text-zinc-500'
+            )}
+          >
+            <span className="normal-case tracking-normal">{addressLine.trim()}</span>
+          </div>
+        ) : null}
       </div>
     </header>
   )

@@ -28,6 +28,8 @@ export interface AppShellProps {
   logoHref?: string
   /** Rendered at top of `<main>` (e.g. parent portal quick search) */
   mainTop?: React.ReactNode
+  /** Shown below header nav in `TechnicalHeader` (e.g. street address). */
+  facilityAddressLine?: string
 }
 
 export function AppShell({
@@ -44,6 +46,7 @@ export function AppShell({
   logoutRedirectTo = '/login',
   logoHref,
   mainTop,
+  facilityAddressLine,
 }: AppShellProps) {
   const technicalNav = navItems.map(item => ({ label: item.label, href: item.href }))
   const isDarkOs = surface === 'admin-os' || surface === 'coach-os' || surface === 'parent-os'
@@ -70,6 +73,7 @@ export function AppShell({
         athletesSummary={athletesSummary}
         endSessionVariant={endSessionVariant}
         logoutRedirectTo={logoutRedirectTo}
+        addressLine={facilityAddressLine}
       />
       <main className="lab-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-10">
         {mainTop}

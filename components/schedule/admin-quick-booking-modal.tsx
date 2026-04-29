@@ -113,7 +113,8 @@ function buildOverrideLabel(
   kind: ScheduleProgramKind,
   headcount: string,
   paidUsd: string,
-  dueUsd: string
+  dueUsd: string,
+  complimentary: boolean
 ): string {
   if (mode === 'clear') {
     const t = org.trim()
@@ -124,10 +125,14 @@ function buildOverrideLabel(
   const parts: string[] = [name, kindLabel]
   const hc = parseInt(headcount, 10)
   if (!Number.isNaN(hc) && hc > 0) parts.push(`HC ${hc}`)
-  const paid = parseFloat(paidUsd.replace(/,/g, ''))
-  const due = parseFloat(dueUsd.replace(/,/g, ''))
-  if (!Number.isNaN(paid) && paid > 0) parts.push(`Paid $${paid.toFixed(2)}`)
-  if (!Number.isNaN(due) && due > 0) parts.push(`Due $${due.toFixed(2)}`)
+  if (complimentary) {
+    parts.push('Complimentary')
+  } else {
+    const paid = parseFloat(paidUsd.replace(/,/g, ''))
+    const due = parseFloat(dueUsd.replace(/,/g, ''))
+    if (!Number.isNaN(paid) && paid > 0) parts.push(`Paid $${paid.toFixed(2)}`)
+    if (!Number.isNaN(due) && due > 0) parts.push(`Due $${due.toFixed(2)}`)
+  }
   return parts.join(' · ')
 }
 
@@ -161,6 +166,7 @@ export function AdminQuickBookingModal({
   const [headcount, setHeadcount] = React.useState('')
   const [paidUsd, setPaidUsd] = React.useState('')
   const [dueUsd, setDueUsd] = React.useState('')
+  const [complimentary, setComplimentary] = React.useState(false)
   const [mode, setMode] = React.useState<'replace' | 'clear'>('replace')
   const [assetId, setAssetId] = React.useState('performance-center')
   const [youthBlockId, setYouthBlockId] = React.useState('')
@@ -193,6 +199,7 @@ export function AdminQuickBookingModal({
       setHeadcount('')
       setPaidUsd('')
       setDueUsd('')
+      setComplimentary(false)
       setMode('replace')
       setYouthBlockId(b.youthBlockId ?? '')
       setAssetId(assetIdGuessFromBlock(b))
@@ -202,6 +209,7 @@ export function AdminQuickBookingModal({
       setHeadcount('')
       setPaidUsd('')
       setDueUsd('')
+      setComplimentary(false)
       setMode('replace')
       setAssetId('performance-center')
       setYouthBlockId('')
@@ -263,7 +271,7 @@ export function AdminQuickBookingModal({
     if (!draft) return null
     const s = Math.max(CAL_DISPLAY_START, Math.min(startMinute, CAL_DISPLAY_END - 30))
     const e = Math.min(CAL_DISPLAY_END, s + durationMinutes)
-    const label = buildOverrideLabel(mode, org, kind, headcount, paidUsd, dueUsd)
+    const label = buildOverrideLabel(mode, org, kind, headcount, paidUsd, dueUsd, complimentary)
     return {
       id: nextOverrideId(),
       date: isoDateForWeekDay(weekStart, draftDayIndex(draft)),
@@ -288,7 +296,8 @@ export function AdminQuickBookingModal({
   const validOverride =
     mode === 'clear' || (mode === 'replace' && payeeForLedger.length > 0)
 
-  const canRecordLedger = paidCents >= 50 && payeeForLedger.length > 0
+  const canRecordLedger =
+    !complimentary && paidCents >= 50 && payeeForLedger.length > 0
 
   const canSubmit =
     !submitting &&
@@ -298,6 +307,10 @@ export function AdminQuickBookingModal({
     if (!addOverrideToDraft && mode === 'clear') {
       setMode('replace')
     }
+  }, [addOverrideToDraft, mode])
+
+  React.useEffect(() => {
+    if (!addOverrideToDraft || mode !== 'replace') setComplimentary(false)
   }, [addOverrideToDraft, mode])
 
   const blockSummary = React.useMemo(() => {
@@ -568,6 +581,28 @@ export function AdminQuickBookingModal({
               </label>
             )}
 
+            {addOverrideToDraft && mode === 'replace' ? (
+              <label className="flex cursor-pointer items-start gap-2.5 text-[11px] text-text-secondary">
+                <input
+                  type="checkbox"
+                  checked={complimentary}
+                  onChange={e => {
+                    const on = e.target.checked
+                    setComplimentary(on)
+                    if (on) {
+                      setPaidUsd('')
+                      setDueUsd('')
+                    }
+                  }}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary focus-visible:ring-2 focus-visible:ring-ring/40"
+                />
+                <span>
+                  <strong className="text-text-primary">Complimentary</strong> — no charge; nothing is posted to
+                  Payments. The draft override label will include “Complimentary”.
+                </span>
+              </label>
+            ) : null}
+
             <div className="grid grid-cols-2 gap-3">
               <label className={FIELD_LABEL}>
                 <span className="block">Paid (USD)</span>
@@ -577,8 +612,13 @@ export function AdminQuickBookingModal({
                   onChange={e => setPaidUsd(e.target.value)}
                   inputMode="decimal"
                   placeholder="0"
+                  disabled={complimentary}
                 />
-                <span className={FIELD_HINT}>Posts to Payments at $0.50 or more</span>
+                <span className={FIELD_HINT}>
+                  {complimentary
+                    ? 'Turn off Complimentary to record a payment.'
+                    : 'Posts to Payments at $0.50 or more'}
+                </span>
               </label>
               <label className={FIELD_LABEL}>
                 <span className="block">Due (USD, optional)</span>
@@ -588,7 +628,7 @@ export function AdminQuickBookingModal({
                   onChange={e => setDueUsd(e.target.value)}
                   inputMode="decimal"
                   placeholder="0"
-                  disabled={!addOverrideToDraft}
+                  disabled={!addOverrideToDraft || complimentary}
                 />
               </label>
             </div>
@@ -631,11 +671,20 @@ export function AdminQuickBookingModal({
             ) : null}
 
             <p className="rounded-md border border-border bg-muted/60 px-3 py-2.5 text-[11px] leading-relaxed text-text-secondary">
-              Paid amounts write a <strong className="text-text-primary">manual-invoice</strong> row to{' '}
-              <Link href="/admin/payments" className="font-medium text-primary underline-offset-2 hover:underline">
-                Payments
-              </Link>
-              . Due amounts stay on the override label until you collect them.
+              {complimentary && addOverrideToDraft && mode === 'replace' ? (
+                <>
+                  Complimentary bookings only update the <strong className="text-text-primary">schedule draft</strong>{' '}
+                  label — no Payments row.
+                </>
+              ) : (
+                <>
+                  Paid amounts write a <strong className="text-text-primary">manual-invoice</strong> row to{' '}
+                  <Link href="/admin/payments" className="font-medium text-primary underline-offset-2 hover:underline">
+                    Payments
+                  </Link>
+                  . Due amounts stay on the override label until you collect them.
+                </>
+              )}
             </p>
           </>
         )}

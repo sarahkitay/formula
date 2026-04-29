@@ -21,5 +21,5 @@ export const FIELD_RENTAL_WAIVER_INTRO = {
 export const FIELD_RENTAL_WAIVER_ACK_CHECKBOXES = [
   'I have read and agree to the Release of Liability, Assumption of Risk, and Indemnification Agreement above, including every numbered section I opened or expanded.',
   'I understand I am releasing important legal rights, including the right to sue for negligence, to the fullest extent permitted by California law, and I sign voluntarily.',
-  'I agree to indemnify and defend the Released Parties as stated in the agreement; I consent to medical treatment terms; and I will follow facility rules, posted instructions, and staff directions.',
+  'I agree to indemnify and defend the Released Parties as stated in the agreement; I consent to medical treatment terms; and I will follow facility rules, posted instructions, and staff directions — including that I (and any minors I supervise) will wear turf-appropriate footwear (turf shoes) on the field and will not use outdoor cleats or other unsafe footwear on the artificial turf.',
 ] as const

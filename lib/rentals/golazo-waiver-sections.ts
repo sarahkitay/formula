@@ -19,7 +19,7 @@ export const GOLAZO_WAIVER_DOC_TITLE =
 export const GOLAZO_WAIVER_ENTITY_LINES = [
   'GOLAZO SOCCER CENTER LLC',
   'aka FORMULA SOCCER',
-  '15001 Calvert St., Van Nuys, CA 91411',
+  '15001 Calvert St., Los Angeles, CA 91411',
 ] as const
 
 /** Shown above the participant form fields — ties blanks to the agreement. */
@@ -100,7 +100,7 @@ export const GOLAZO_WAIVER_SECTIONS: readonly GolazoSection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'I represent that I am physically able to participate and will inform Facility staff of any medical condition that could affect safe participation. I agree to follow all Facility rules, posted instructions, and staff directions. The Facility may remove or refuse participation to any person whose conduct is unsafe or disruptive without refund.',
+        text: 'I represent that I am physically able to participate and will inform Facility staff of any medical condition that could affect safe participation. I agree to follow all Facility rules, posted instructions, and staff directions. All participants and attendees on the playing surface must wear turf-appropriate footwear (turf shoes); outdoor cleats and other footwear unsafe for artificial turf are not permitted. The Facility may remove or refuse participation to any person whose conduct is unsafe or disruptive without refund.',
       },
     ],
   },

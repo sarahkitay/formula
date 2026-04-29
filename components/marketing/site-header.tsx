@@ -2,8 +2,11 @@
 
 import type { ReactNode } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
 import { getSiteHeaderPrimaryNav, MARKETING_HREF } from '@/lib/marketing/nav'
+import { SITE } from '@/lib/site-config'
+import { cn } from '@/lib/utils'
 
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -17,6 +20,9 @@ function NavLink({ href, children }: { href: string; children: ReactNode }) {
 }
 
 export function SiteHeader() {
+  const pathname = usePathname()
+  const showBookingAddress = pathname === '/book-assessment' || pathname?.startsWith('/book-assessment/')
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-formula-frost/10 bg-formula-deep/55 backdrop-blur-xl">
       <div className="mx-auto max-w-[1400px] px-5 md:px-8">
@@ -64,6 +70,16 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
+
+        {showBookingAddress ? (
+          <p
+            className={cn(
+              '-mx-5 border-t border-formula-frost/10 px-5 py-2 text-center font-mono text-[10px] font-medium leading-snug tracking-wide text-formula-mist md:-mx-8 md:px-8'
+            )}
+          >
+            {SITE.facilityAddressLine}
+          </p>
+        ) : null}
       </div>
     </header>
   )

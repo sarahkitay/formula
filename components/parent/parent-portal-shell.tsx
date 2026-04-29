@@ -11,6 +11,7 @@ import { getPortalRoute } from '@/lib/getPortalRoute'
 import { guardianOperatorSlug } from '@/lib/parent/guardian-operator-slug'
 import { parentNav } from '@/lib/nav/parent'
 import { supabase } from '@/lib/supabase'
+import { SITE } from '@/lib/site-config'
 
 type PlayerRow = { first_name: string | null; last_name: string | null }
 
@@ -143,6 +144,7 @@ export function ParentPortalShell({ children }: { children: React.ReactNode }) {
         endSessionVariant="logout-button"
         logoutRedirectTo="/login?role=parent"
         mainTop={<ParentPortalQuickSearch />}
+        facilityAddressLine={SITE.facilityAddressLine}
       >
         <ParentLinkedPlayersProvider>{children}</ParentLinkedPlayersProvider>
       </AppShell>
