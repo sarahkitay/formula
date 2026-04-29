@@ -11,7 +11,7 @@ import { getPortalRoute } from '@/lib/getPortalRoute'
 import { guardianOperatorSlug } from '@/lib/parent/guardian-operator-slug'
 import { parentNav } from '@/lib/nav/parent'
 import { supabase } from '@/lib/supabase'
-import { SITE } from '@/lib/site-config'
+import { FACILITY_APPLE_MAPS_URL, SITE } from '@/lib/site-config'
 
 type PlayerRow = { first_name: string | null; last_name: string | null }
 
@@ -145,6 +145,7 @@ export function ParentPortalShell({ children }: { children: React.ReactNode }) {
         logoutRedirectTo="/login?role=parent"
         mainTop={<ParentPortalQuickSearch />}
         facilityAddressLine={SITE.facilityAddressLine}
+        facilityAddressHref={FACILITY_APPLE_MAPS_URL}
       >
         <ParentLinkedPlayersProvider>{children}</ParentLinkedPlayersProvider>
       </AppShell>

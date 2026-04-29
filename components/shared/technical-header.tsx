@@ -33,6 +33,8 @@ export interface TechnicalHeaderProps {
   endSessionVariant?: 'login-link' | 'logout-button'
   /** Shown in a slim row below primary nav (e.g. facility street address). */
   addressLine?: string
+  /** When set with `addressLine`, the row becomes a link (e.g. Apple Maps). */
+  addressHref?: string
 }
 
 function pathWithoutHash(href: string): string {
@@ -62,6 +64,7 @@ export function TechnicalHeader({
   athletesSummary,
   endSessionVariant = 'login-link',
   addressLine,
+  addressHref,
 }: TechnicalHeaderProps) {
   const pathname = usePathname()
   const logoHref = logoHrefProp ?? homeHref
@@ -200,7 +203,22 @@ export function TechnicalHeader({
               dark ? 'border-formula-frost/10 text-formula-mist' : 'border-black/10 text-zinc-500'
             )}
           >
-            <span className="normal-case tracking-normal">{addressLine.trim()}</span>
+            {addressHref?.trim() ? (
+              <a
+                href={addressHref.trim()}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${addressLine.trim()} in Apple Maps`}
+                className={cn(
+                  'normal-case tracking-normal underline-offset-2 transition-colors hover:underline',
+                  dark ? 'text-formula-frost/90 hover:text-formula-volt' : 'text-zinc-600 hover:text-[#005700]'
+                )}
+              >
+                {addressLine.trim()}
+              </a>
+            ) : (
+              <span className="normal-case tracking-normal">{addressLine.trim()}</span>
+            )}
           </div>
         ) : null}
       </div>

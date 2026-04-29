@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
 import { getSiteHeaderPrimaryNav, MARKETING_HREF } from '@/lib/marketing/nav'
-import { SITE } from '@/lib/site-config'
+import { FACILITY_APPLE_MAPS_URL, SITE } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
@@ -60,12 +60,16 @@ export function SiteHeader() {
         </div>
 
         {showFacilityAddress ? (
-          <p
-            className={cn(
-              '-mx-5 border-t border-formula-frost/10 px-5 py-2 text-center font-mono text-[10px] font-medium leading-snug tracking-wide text-formula-mist md:-mx-8 md:px-8'
-            )}
-          >
-            {SITE.facilityAddressLine}
+          <p className="-mx-5 border-t border-formula-frost/10 px-5 py-2 text-center md:-mx-8 md:px-8">
+            <a
+              href={FACILITY_APPLE_MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Open ${SITE.facilityAddressLine} in Apple Maps`}
+              className="font-mono text-[10px] font-medium leading-snug tracking-wide text-formula-mist underline-offset-2 transition-colors hover:text-formula-volt hover:underline"
+            >
+              {SITE.facilityAddressLine}
+            </a>
           </p>
         ) : null}
 

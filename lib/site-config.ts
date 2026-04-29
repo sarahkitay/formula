@@ -82,3 +82,6 @@ export const SITE = {
   'Staffed check-in. Wristband scan preferred as soon as the athlete arrives; integration in progress.',
   roadmapNote: 'Wristband check-in → advanced analytics → mobile app.',
 } as const
+
+/** Apple Maps search for the facility (opens Maps app on Apple devices). */
+export const FACILITY_APPLE_MAPS_URL = `https://maps.apple.com/?q=${encodeURIComponent(SITE.facilityAddressLine)}`

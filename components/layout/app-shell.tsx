@@ -30,6 +30,8 @@ export interface AppShellProps {
   mainTop?: React.ReactNode
   /** Shown below header nav in `TechnicalHeader` (e.g. street address). */
   facilityAddressLine?: string
+  /** Link target for the address row (e.g. Apple Maps). */
+  facilityAddressHref?: string
 }
 
 export function AppShell({
@@ -47,6 +49,7 @@ export function AppShell({
   logoHref,
   mainTop,
   facilityAddressLine,
+  facilityAddressHref,
 }: AppShellProps) {
   const technicalNav = navItems.map(item => ({ label: item.label, href: item.href }))
   const isDarkOs = surface === 'admin-os' || surface === 'coach-os' || surface === 'parent-os'
@@ -74,6 +77,7 @@ export function AppShell({
         endSessionVariant={endSessionVariant}
         logoutRedirectTo={logoutRedirectTo}
         addressLine={facilityAddressLine}
+        addressHref={facilityAddressHref}
       />
       <main className="lab-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-10">
         {mainTop}
