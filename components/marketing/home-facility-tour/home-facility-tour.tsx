@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight, Pause, Play } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FACILITY_TOUR_LAYOUT } from '@/lib/marketing/facility-tour-layout'
 import { FACILITY_ZONES, type PublicFacilityZoneId } from '@/lib/marketing/facility-zones'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
@@ -93,10 +93,7 @@ function TourHotspot({
       <span
         className={cn(
           'pointer-events-none absolute inset-x-0 top-1.5 text-center font-mono text-[7px] uppercase leading-tight tracking-[0.18em] sm:top-2 sm:text-[8px] sm:tracking-[0.22em] md:text-[9px]',
-          stop.id === 'footbot' && 'text-white/92',
-          stop.id === 'support-cluster' && 'text-zinc-800/90',
-          stop.id === 'entrance' && 'text-zinc-800/92',
-          stop.id !== 'footbot' && stop.id !== 'support-cluster' && stop.id !== 'entrance' && 'text-white/88'
+          stop.id === 'footbot' ? 'text-white/92' : 'text-white/88'
         )}
       >
         {stop.label}
@@ -105,7 +102,7 @@ function TourHotspot({
         <span
           className={cn(
             'pointer-events-none absolute inset-x-0 top-5 text-center font-mono text-[6px] uppercase tracking-[0.2em] sm:top-7 sm:text-[7px] sm:tracking-[0.22em] md:top-8 md:text-[8px]',
-            stop.id === 'support-cluster' || stop.id === 'entrance' ? 'text-zinc-700/85' : 'text-white/50'
+            'text-white/52'
           )}
         >
           {stop.subCaption}
@@ -155,6 +152,7 @@ export function HomeFacilityTour() {
   const hotspotsOrdered = useMemo(() => sortStopsForHitOrder(tourStops), [tourStops])
   const [activeId, setActiveId] = useState<PublicFacilityZoneId>('field-1')
   const [autoPlay, setAutoPlay] = useState(true)
+  const zoneDetailRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!autoPlay) return
@@ -167,9 +165,21 @@ export function HomeFacilityTour() {
     return () => clearInterval(interval)
   }, [autoPlay, tourStops])
 
+  useEffect(() => {
+    if (autoPlay) return
+    if (typeof window === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (window.innerWidth >= 1024) return
+    zoneDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeId, autoPlay])
+
   const active = useMemo(() => tourStops.find(s => s.id === activeId) ?? tourStops[0]!, [activeId, tourStops])
   const activeZone = useMemo(() => FACILITY_ZONES.find(z => z.id === active.id), [active.id])
   const detailSubline = activeZone?.sub ?? active.eyebrow
+
+  const selectZone = (id: PublicFacilityZoneId) => {
+    setAutoPlay(false)
+    setActiveId(id)
+  }
 
   return (
     <section
@@ -178,9 +188,9 @@ export function HomeFacilityTour() {
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--color-formula-frost)_14%,transparent),transparent_32%),radial-gradient(circle_at_78%_12%,color-mix(in_srgb,var(--color-formula-volt)_8%,transparent),transparent_26%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px)] bg-[length:44px_44px] opacity-[0.22]" />
-      <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-gradient-to-t from-formula-deep/50 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-[14vh] bg-gradient-to-t from-formula-deep/40 to-transparent md:h-[16vh]" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-1.5 px-4 pb-3 pt-2 md:gap-2 md:px-8 md:pb-4 md:pt-3 lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-1.5 px-4 pb-2 pt-2 md:gap-2 md:px-8 md:pb-3 md:pt-3 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -232,17 +242,18 @@ export function HomeFacilityTour() {
             </p>
           </div>
           <FacilityTourStaticFloor
+            activeZoneId={activeId}
             hotspots={
               <>
                 {hotspotsOrdered.map(stop => (
-                  <TourHotspot key={stop.id} stop={stop} active={stop.id === activeId} onClick={setActiveId} />
+                  <TourHotspot key={stop.id} stop={stop} active={stop.id === activeId} onClick={selectZone} />
                 ))}
               </>
             }
           />
         </motion.div>
 
-        <div className="relative z-10 grid gap-2 pb-1 md:gap-2.5 md:pb-0 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
+        <div className="relative z-10 grid gap-2 pb-0 md:gap-2.5 md:pb-0 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
           <div className="rounded-lg border border-white/12 bg-black/38 px-2.5 py-2 backdrop-blur-md md:rounded-xl md:px-3 md:py-2.5">
             <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">Zones</p>
             <div className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 sm:grid-cols-3 md:grid-cols-4">
@@ -251,10 +262,7 @@ export function HomeFacilityTour() {
                   key={stop.id}
                   stop={stop}
                   active={stop.id === activeId}
-                  onClick={id => {
-                    setAutoPlay(false)
-                    setActiveId(id)
-                  }}
+                  onClick={selectZone}
                 />
               ))}
             </div>
@@ -262,6 +270,8 @@ export function HomeFacilityTour() {
 
           <AnimatePresence mode="wait">
             <motion.div
+              ref={zoneDetailRef}
+              id="facility-tour-zone-detail"
               key={active.id}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -269,7 +279,7 @@ export function HomeFacilityTour() {
               transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
               className="rounded-lg border border-white/12 bg-black/48 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.22)] backdrop-blur-md md:rounded-xl md:p-4"
             >
-              <p className="text-[10px] uppercase tracking-[0.24em] text-white/45 md:text-[11px] md:tracking-[0.28em]">Zone detail</p>
+              <p className="text-[10px] uppercase tracking-[0.24em] text-white/45 md:text-[11px] md:tracking-[0.28em]">What this zone is</p>
               <h3 className="mt-1 text-base font-semibold leading-tight tracking-[-0.03em] text-white md:text-lg">
                 {active.name}
               </h3>

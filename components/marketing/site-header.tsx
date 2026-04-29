@@ -21,7 +21,10 @@ function NavLink({ href, children }: { href: string; children: ReactNode }) {
 
 export function SiteHeader() {
   const pathname = usePathname()
-  const showBookingAddress = pathname === '/book-assessment' || pathname?.startsWith('/book-assessment/')
+  const showFacilityAddress =
+    pathname === '/' ||
+    pathname === '/book-assessment' ||
+    pathname?.startsWith('/book-assessment/')
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-formula-frost/10 bg-formula-deep/55 backdrop-blur-xl">
@@ -56,6 +59,16 @@ export function SiteHeader() {
           </div>
         </div>
 
+        {showFacilityAddress ? (
+          <p
+            className={cn(
+              '-mx-5 border-t border-formula-frost/10 px-5 py-2 text-center font-mono text-[10px] font-medium leading-snug tracking-wide text-formula-mist md:-mx-8 md:px-8'
+            )}
+          >
+            {SITE.facilityAddressLine}
+          </p>
+        ) : null}
+
         <nav
           className="-mx-5 flex gap-4 overflow-x-auto border-t border-formula-frost/8 px-5 py-2.5 md:hidden"
           aria-label="Primary"
@@ -70,16 +83,6 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-
-        {showBookingAddress ? (
-          <p
-            className={cn(
-              '-mx-5 border-t border-formula-frost/10 px-5 py-2 text-center font-mono text-[10px] font-medium leading-snug tracking-wide text-formula-mist md:-mx-8 md:px-8'
-            )}
-          >
-            {SITE.facilityAddressLine}
-          </p>
-        ) : null}
       </div>
     </header>
   )

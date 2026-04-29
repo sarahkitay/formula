@@ -1,4 +1,13 @@
+'use client'
+
 import type { ReactNode } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import {
+  facilityTourViewportTransform,
+  zoneFocusOriginPercents,
+  zoneFocusScaleMultiplier,
+} from '@/lib/marketing/facility-tour-map-geometry'
+import { FACILITY_ZONES_BY_ID, type PublicFacilityZoneId } from '@/lib/marketing/facility-zones'
 
 /** Full pitch markings (green fields). */
 function TourFieldPitch() {
@@ -28,18 +37,65 @@ function TourOutdoorPitch() {
 /**
  * Isometric facility plate (1240×930 logical space, scaled for viewport).
  * Decoration aligns with `FACILITY_ZONES` tour percentages (same as hotspots).
+ * `activeZoneId` drives transform-origin + scale so the map eases toward the selected zone.
  */
-export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
+export function FacilityTourStaticFloor({
+  hotspots,
+  activeZoneId,
+}: {
+  hotspots: ReactNode
+  activeZoneId: PublicFacilityZoneId
+}) {
+  const [viewportW, setViewportW] = useState(1024)
+  const [reduceMotion, setReduceMotion] = useState(false)
+
+  useEffect(() => {
+    const onResize = () => setViewportW(window.innerWidth)
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduceMotion(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
+  const zone = FACILITY_ZONES_BY_ID[activeZoneId]
+  const { ox, oy } = useMemo(() => zoneFocusOriginPercents(zone.tour), [zone.tour])
+
+  const tf = useMemo(() => facilityTourViewportTransform(viewportW), [viewportW])
+  const zoomMul = reduceMotion ? 1 : zoneFocusScaleMultiplier(activeZoneId)
+  const scale = tf.baseScale * zoomMul
+
+  const transform = `perspective(${tf.perspective}px) rotateX(${tf.rotateX}deg) rotateZ(${tf.rotateZ}deg) scale(${scale})`
+  const origin = reduceMotion ? '50% 18%' : `${ox}% ${oy}%`
+  const transition = reduceMotion
+    ? undefined
+    : 'transform 0.62s cubic-bezier(0.22, 1, 0.36, 1), transform-origin 0.52s cubic-bezier(0.22, 1, 0.36, 1)'
+
   return (
-    <div className="relative mx-auto w-full px-2 pb-3.5 pt-1 md:px-3 md:pb-5 md:pt-1.5">
+    <div className="relative mx-auto w-full px-2 pb-2.5 pt-1 md:px-3 md:pb-3.5 md:pt-1.5">
       <div className="relative w-full overflow-hidden max-md:h-[min(44vh,352px)] sm:max-md:h-[min(48vh,388px)] md:h-[min(48vh,424px)] lg:h-[min(52vh,488px)] xl:h-[min(54vh,520px)]">
         <div className="relative flex h-full min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-hidden">
-          <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_18%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.205)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.262)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.445)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.545)]">
+          <div
+            className="relative h-[930px] w-[1240px] max-w-none shrink-0 will-change-transform"
+            style={{
+              transform,
+              transformOrigin: origin,
+              transition,
+            }}
+          >
             <div className="pointer-events-none absolute inset-0" aria-hidden>
               <div className="absolute inset-x-[2%] top-[2%] h-[6%] rounded-t-md bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-formula-frost)_8%,transparent),transparent_92%)]" />
 
-              <div className="absolute inset-x-[2%] top-[9%] bottom-[2%] bg-formula-base shadow-2xl" />
+              {/* Slab: darker toward bottom so less flat grey shows under entrance / flex / Footbot row */}
+              <div className="absolute inset-x-[2%] top-[9%] bottom-[2%] bg-[linear-gradient(180deg,var(--color-formula-base)_0%,color-mix(in_srgb,var(--color-formula-deep)_38%,var(--color-formula-base))_52%,color-mix(in_srgb,var(--color-formula-deep)_72%,var(--color-formula-base))_100%)] shadow-2xl" />
               <div className="absolute inset-x-[2%] top-[9%] bottom-[2%] border-[6px] border-formula-frost/22 border-t-formula-frost/14" />
+              <div className="pointer-events-none absolute inset-x-[2%] top-[68%] bottom-[2%] bg-gradient-to-b from-transparent via-formula-deep/25 to-formula-deep/55" />
 
               {/* Field 3: outdoor, above Double Speed column (outside top edge) */}
               <div className="absolute left-[2.5%] top-[0.5%] z-[2] h-[8%] w-[9%] rounded-sm border border-white/35 bg-[#5a6d2e]/95 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ring-1 ring-sky-100/12">
@@ -64,11 +120,11 @@ export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
                 <TourFieldPitch />
               </div>
 
-              {/* Entrance / front desk, same footprint as Footbot */}
-              <div className="absolute left-[12.5%] top-[59%] h-[11%] w-[30%] border border-white/20 bg-[linear-gradient(180deg,#d8d9d8,#b8bab9)] shadow-[0_6px_16px_rgba(0,0,0,0.08)]">
-                <div className="absolute left-[6%] top-[18%] h-[52%] w-[22%] rounded-sm border border-white/40 bg-white/35" />
-                <div className="absolute right-[8%] top-[14%] h-[58%] w-[48%] border border-zinc-500/25 bg-zinc-600/20" />
-                <div className="absolute bottom-[10%] left-1/2 h-px w-[62%] -translate-x-1/2 bg-zinc-500/25" />
+              {/* Entrance / front desk — warmer slab, less flat grey */}
+              <div className="absolute left-[12.5%] top-[59%] h-[11%] w-[30%] border border-white/18 bg-[linear-gradient(180deg,#aeb5a8,#7d8478)] shadow-[0_6px_16px_rgba(0,0,0,0.12)]">
+                <div className="absolute left-[6%] top-[18%] h-[52%] w-[22%] rounded-sm border border-white/35 bg-white/28" />
+                <div className="absolute right-[8%] top-[14%] h-[58%] w-[48%] border border-zinc-700/30 bg-zinc-800/25" />
+                <div className="absolute bottom-[10%] left-1/2 h-px w-[62%] -translate-x-1/2 bg-zinc-700/30" />
               </div>
 
               {/* Performance Center: tall strip between Field 1 and Field 2 */}
@@ -78,11 +134,11 @@ export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
                 <div className="absolute inset-y-0 left-[12%] w-px bg-black/30" />
               </div>
 
-              {/* Support / gym, below Performance, aligned with entrance row */}
-              <div className="absolute left-[43.5%] top-[59%] h-[11%] w-[13%] border border-white/12 bg-[#e8e8e8]/90 shadow-[0_8px_20px_rgba(0,0,0,0.06)]">
-                <div className="absolute left-[10%] top-[18%] h-[28%] w-[22%] bg-[#6d7074]/85" />
-                <div className="absolute left-[10%] top-[52%] h-[28%] w-[22%] bg-[#6d7074]/85" />
-                <div className="absolute right-[8%] top-[14%] h-[72%] w-[34%] bg-[#d0d0d0]" />
+              {/* Support / gym / flex — muted sage, not bright grey */}
+              <div className="absolute left-[43.5%] top-[59%] h-[11%] w-[13%] border border-white/14 bg-[linear-gradient(180deg,#9aa396,#6f756b)] shadow-[0_8px_20px_rgba(0,0,0,0.1)]">
+                <div className="absolute left-[10%] top-[18%] h-[28%] w-[22%] bg-[#4a5048]/90" />
+                <div className="absolute left-[10%] top-[52%] h-[28%] w-[22%] bg-[#4a5048]/90" />
+                <div className="absolute right-[8%] top-[14%] h-[72%] w-[34%] bg-[#5c6258]/95" />
               </div>
 
               {/* Field 2, same size as Field 1 (not full-height to bottom) */}
@@ -90,7 +146,7 @@ export function FacilityTourStaticFloor({ hotspots }: { hotspots: ReactNode }) {
                 <TourFieldPitch />
               </div>
 
-              {/* Footbot: separate green block, same size as entrance; small rig on turf */}
+              {/* Footbot: turf block + rig */}
               <div className="absolute left-[57.5%] top-[59%] z-[1] h-[11%] w-[30%] border border-white/25 shadow-[0_8px_18px_rgba(0,0,0,0.12)]">
                 <div className="absolute inset-0 overflow-hidden rounded-[2px]">
                   <TourFieldPitch />
