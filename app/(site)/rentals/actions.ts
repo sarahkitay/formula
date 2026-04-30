@@ -195,9 +195,17 @@ export async function submitFieldRentalAgreement(
       ? `<li><strong>Roster link</strong>: invite in use · expected ${rosterExpected} waivers (counts in admin Rentals)</li>`
       : ''
 
-  await sendAdminNotification({
-    subject: `[Formula] Field rental agreement · ${participantName}`,
-    html: `
+  // Roster invite: email ops for each new signer until the roster is full (then skip — checkout/payment emails still fire from Stripe).
+  let notifyRosterWaiverToAdmin = true
+  if (waiverInviteId && rosterExpected != null) {
+    const signed = await countWaiversForInviteId(waiverInviteId)
+    if (signed >= rosterExpected) notifyRosterWaiverToAdmin = false
+  }
+
+  if (notifyRosterWaiverToAdmin) {
+    await sendAdminNotification({
+      subject: `[Formula] Field rental agreement · ${participantName}`,
+      html: `
       <p><strong>Field rental waiver submitted</strong></p>
       <ul>
         <li><strong>Agreement id</strong>: ${escapeHtml(saved.id)}</li>
@@ -215,8 +223,9 @@ export async function submitFieldRentalAgreement(
       </ul>
       <p>Signature image is stored securely with this waiver for staff review.</p>
     `,
-    text: `Field rental agreement saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`,
-  })
+      text: `Field rental agreement saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`,
+    })
+  }
 
   return {
     ok: true,

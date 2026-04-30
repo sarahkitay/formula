@@ -33,6 +33,55 @@ function fromDatetimeLocalToIso(v: string): string {
   return d.toISOString()
 }
 
+function InviteDeleteButton({ invite }: { invite: WaiverInviteWithProgress }) {
+  const router = useRouter()
+  const [busy, setBusy] = React.useState(false)
+  const [err, setErr] = React.useState<string | null>(null)
+  const canDelete = invite.completed_count === 0
+
+  async function remove() {
+    if (!canDelete) return
+    if (
+      !confirm(
+        'Delete this roster invite? The share link stops working. You can only delete when no waivers have been signed yet.'
+      )
+    ) {
+      return
+    }
+    setBusy(true)
+    setErr(null)
+    try {
+      const res = await fetch(`/api/admin/waiver-invite/${encodeURIComponent(invite.id)}`, { method: 'DELETE' })
+      const body = (await res.json()) as { error?: string }
+      if (!res.ok) throw new Error(body.error ?? 'Delete failed')
+      router.refresh()
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Delete failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-formula-frost/10 pt-3">
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        disabled={!canDelete || busy}
+        onClick={() => void remove()}
+        className="border-red-500/35 text-red-200/95 hover:border-red-400/50 hover:bg-red-950/40"
+      >
+        {busy ? 'Deleting…' : 'Delete invite'}
+      </Button>
+      {!canDelete ? (
+        <span className="font-mono text-[10px] text-formula-mist/80">Delete is available only when waivers signed = 0.</span>
+      ) : null}
+      {err ? <span className="font-mono text-[10px] text-amber-200/90">{err}</span> : null}
+    </div>
+  )
+}
+
 function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) {
   const router = useRouter()
   const dollarsInit =
@@ -399,6 +448,7 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
               <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-formula-mist transition-transform group-open:rotate-180" aria-hidden />
             </summary>
             <div className="border-t border-formula-frost/10 px-4 pb-4 pt-2">
+              <InviteDeleteButton invite={inv} />
               <div
                 className={cn(
                   'mb-3 rounded-md border border-dashed px-3 py-2.5 text-center font-mono text-[10px] leading-snug transition-colors',

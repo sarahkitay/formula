@@ -29,7 +29,7 @@ export default function MinisPage() {
       wide
       eyebrow="Children's programming"
       title="Formula Minis & Sunday weekend"
-      intro={`Formula Minis covers our youngest players: weekday blocks for ages 2–3 (${FORMULA_MINIS_SIX_WEEK.priceUsd} / ${FORMULA_MINIS_SIX_WEEK.sessionsInPack}-session season package) and the Sunday Weekend Program for ages 2–5 (${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.priceUsd} / ${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.sessionsInPack} scheduled Sundays). Everything below matches the published v4 family guide.`}
+      intro={`Formula Minis covers our youngest players: weekday blocks for ages 2–3 ($${FORMULA_MINIS_SIX_WEEK.priceUsd} · 6-week package, ${FORMULA_MINIS_SIX_WEEK.sessionsInPack} sessions — one per week on your chosen day) and the Sunday Weekend Program for ages 2–5 (${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.priceUsd} / ${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.sessionsInPack} scheduled Sundays). Everything below matches the published v4 family guide.`}
     >
       <nav className="not-prose mb-10 flex flex-wrap gap-2 border-b border-formula-frost/10 pb-4 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
         <a href="#overview" className="text-formula-volt hover:underline">
@@ -54,7 +54,7 @@ export default function MinisPage() {
         <ul className="list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-formula-frost/88">
           <li>
             <strong className="text-formula-paper">Weekday Formula Minis</strong> (ages 2–3): Monday, Wednesday, and Friday; two session times per day; you enroll in{' '}
-            <strong>one</strong> session time (A or B) for the full 6-week season.
+            <strong>one</strong> session time (A or B) on <strong>one</strong> weekday and attend <strong>once per week</strong> for six weeks ($300 · six sessions total).
           </li>
           <li>
             <strong className="text-formula-paper">Sunday Weekend Program</strong> (ages 2–5): four age-specific sessions on Sunday — Formula Minis for ages 2 and

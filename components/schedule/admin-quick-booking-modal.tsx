@@ -142,7 +142,7 @@ export interface AdminQuickBookingModalProps {
   weekStart: string
   draft: AdminQuickBookDraft | null
   week: GeneratedWeek | null
-  onSave: (override: ScheduleOverride | null, opts: { openPublishTab: boolean }) => void
+  onSave: (override: ScheduleOverride | null, opts: { autoPublish: boolean }) => void | Promise<void>
   onOpenRentalCheckIn?: (block: CalendarFeedBlock) => void
   onOpenRotationRoster?: (slot: ScheduleSlot, relatedSlots: ScheduleSlot[]) => void
 }
@@ -319,12 +319,27 @@ export function AdminQuickBookingModal({
     return `${b.category} · ${b.label}`.slice(0, 400)
   }, [draft])
 
-  const submit = async (openPublishTab: boolean) => {
+  const submit = async () => {
     if (!draft || !canSubmit) return
     setSubmitting(true)
     setLedgerError(null)
     try {
+      let row: ScheduleOverride | null = null
+      if (addOverrideToDraft) {
+        row = buildRow()
+        if (!row) return
+        if (mode === 'replace' && !payeeForLedger) return
+      }
+
       if (canRecordLedger) {
+        const assetLabel = SCHEDULE_ASSETS.find(a => a.id === assetId)?.label ?? assetId
+        const combinedBlockSummary = [blockSummary, row?.label].filter(Boolean).join(' · ').slice(0, 500)
+        const ledgerNotes = row
+          ? `Calendar slot: ${row.label} · ${row.date} · ${formatHm(row.startMinute)}–${formatHm(row.endMinute)} · ${assetLabel} · ${PROGRAM_UI[kind].key}`
+          : mode === 'replace'
+            ? `Schedule · ${PROGRAM_UI[kind].key}`
+            : 'Schedule clear'
+
         const res = await fetch('/api/admin/schedule-ledger', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -333,9 +348,9 @@ export function AdminQuickBookingModal({
             currency: 'usd',
             email: null,
             payeeName: payeeForLedger,
-            notes: mode === 'replace' ? `Schedule · ${PROGRAM_UI[kind].key}` : 'Schedule clear',
+            notes: ledgerNotes,
             weekStart,
-            blockSummary: blockSummary || undefined,
+            blockSummary: combinedBlockSummary || undefined,
           }),
         })
         const body = (await res.json()) as { error?: string }
@@ -345,14 +360,7 @@ export function AdminQuickBookingModal({
         }
       }
 
-      let row: ScheduleOverride | null = null
-      if (addOverrideToDraft) {
-        row = buildRow()
-        if (!row) return
-        if (mode === 'replace' && !payeeForLedger) return
-      }
-
-      onSave(row, { openPublishTab: openPublishTab && !!row })
+      await onSave(row, { autoPublish: Boolean(row) })
       onClose()
     } finally {
       setSubmitting(false)
@@ -476,8 +484,9 @@ export function AdminQuickBookingModal({
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary focus-visible:ring-2 focus-visible:ring-ring/40"
               />
               <span>
-                Add a published <strong className="text-text-primary">schedule override</strong> (draft in config).
-                Turn off for payment-only on existing rentals / parties / assessments.
+                Adds a <strong className="text-text-primary">live calendar</strong> block when you press{' '}
+                <strong className="text-text-primary">Add</strong> — no separate publish step. Turn off for payment-only (no
+                calendar change).
               </span>
             </label>
 
@@ -673,16 +682,19 @@ export function AdminQuickBookingModal({
             <p className="rounded-md border border-border bg-muted/60 px-3 py-2.5 text-[11px] leading-relaxed text-text-secondary">
               {complimentary && addOverrideToDraft && mode === 'replace' ? (
                 <>
-                  Complimentary bookings only update the <strong className="text-text-primary">schedule draft</strong>{' '}
-                  label — no Payments row.
+                  Complimentary: slot goes on the <strong className="text-text-primary">live calendar</strong> with no Payments /
+                  revenue row.
                 </>
               ) : (
                 <>
-                  Paid amounts write a <strong className="text-text-primary">manual-invoice</strong> row to{' '}
+                  Paid amounts (not complimentary, $0.50+) write a <strong className="text-text-primary">manual-invoice</strong>{' '}
+                  to{' '}
                   <Link href="/admin/payments" className="font-medium text-primary underline-offset-2 hover:underline">
                     Payments
-                  </Link>
-                  . Due amounts stay on the override label until you collect them.
+                  </Link>{' '}
+                  and roll into <strong className="text-text-primary">revenue</strong> the same way as other in-person
+                  entries. Notes include the slot label and date so ops can match calendar ↔ ledger. Due amounts stay on the
+                  override label until you collect them.
                 </>
               )}
             </p>
@@ -694,17 +706,8 @@ export function AdminQuickBookingModal({
           Cancel
         </Button>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="secondary" size="sm" disabled={!canSubmit} onClick={() => void submit(false)}>
-            {addOverrideToDraft ? 'Add to draft' : 'Record payment'}
-          </Button>
-          <Button
-            type="button"
-            variant="primary"
-            size="sm"
-            disabled={!canSubmit || !addOverrideToDraft}
-            onClick={() => void submit(true)}
-          >
-            Add &amp; open Publish
+          <Button type="button" variant="primary" size="sm" disabled={!canSubmit} onClick={() => void submit()}>
+            {addOverrideToDraft ? 'Add' : 'Record payment'}
           </Button>
         </div>
       </ModalFooter>

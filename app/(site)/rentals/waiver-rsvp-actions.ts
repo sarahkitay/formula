@@ -130,9 +130,11 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
   revalidatePath('/admin/rentals')
   revalidatePath(`/rentals/waiver/${token}`)
 
-  await sendAdminNotification({
-    subject: `[Formula] Roster RSVP (prior waiver) · ${participantName}`,
-    html: `
+  const signedAfter = await countWaiversForInviteId(invite.id)
+  if (signedAfter < invite.expected_waiver_count) {
+    await sendAdminNotification({
+      subject: `[Formula] Roster RSVP (prior waiver) · ${participantName}`,
+      html: `
       <p><strong>Roster RSVP</strong> — prior digital waiver matched</p>
       <ul>
         <li><strong>New row id</strong>: ${escapeHtml(saved.id)}</li>
@@ -142,8 +144,9 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
         <li><strong>Roster token</strong>: ${escapeHtml(token.slice(0, 12))}…</li>
       </ul>
     `,
-    text: `Roster RSVP\n${participantName} <${participantEmail}>\nPrior: ${prior.id}`,
-  })
+      text: `Roster RSVP\n${participantName} <${participantEmail}>\nPrior: ${prior.id}`,
+    })
+  }
 
   return {
     ok: true,

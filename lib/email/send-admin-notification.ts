@@ -72,7 +72,7 @@ function fromAddress(): string {
  * Server-only: notify operations inbox via Resend.
  *
  * **All** of these call this helper (same `ADMIN_NOTIFY_EMAIL` / aliases + `FROM` + API key):
- * - Field rental waiver submitted (`app/(site)/rentals/actions`)
+ * - Field rental waiver / roster RSVP (`app/(site)/rentals/actions`, `waiver-rsvp-actions`) — admin notify skipped only when that submission completes the roster invite; Stripe, parties, events, etc. unchanged
  * - Paid Stripe checkout — assessment, field rental deposit, other types (`lib/email/stripe-checkout-paid-email` from webhook)
  * - Party deposit paid (`lib/email/party-booking-email`)
  * - Event request form (`app/(site)/events/actions`)

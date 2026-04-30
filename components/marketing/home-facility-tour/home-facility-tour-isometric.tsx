@@ -2,11 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import {
-  facilityTourViewportTransform,
-  zoneFocusOriginPercents,
-  zoneFocusScaleMultiplier,
-} from '@/lib/marketing/facility-tour-map-geometry'
+import { zoneFocusOriginPercents, zoneFocusScaleMultiplier } from '@/lib/marketing/facility-tour-map-geometry'
 import { FACILITY_ZONES_BY_ID, type PublicFacilityZoneId } from '@/lib/marketing/facility-zones'
 
 /** Full pitch markings (green fields). */
@@ -37,24 +33,20 @@ function TourOutdoorPitch() {
 /**
  * Isometric facility plate (1240×930 logical space, scaled for viewport).
  * Decoration aligns with `FACILITY_ZONES` tour percentages (same as hotspots).
- * `activeZoneId` drives transform-origin + scale so the map eases toward the selected zone.
+ * Outer 3D transform stays fixed in the viewport. `activeZoneId` scales an inner layer from that
+ * zone's center so the plate does not jump. Zoom applies when tour autoplay is off (user-driven).
  */
 export function FacilityTourStaticFloor({
   hotspots,
   activeZoneId,
+  autoPlay,
 }: {
   hotspots: ReactNode
   activeZoneId: PublicFacilityZoneId
+  /** When true, inner zoom stays 1 so the map does not pulse while the tour auto-advances. */
+  autoPlay: boolean
 }) {
-  const [viewportW, setViewportW] = useState(1024)
   const [reduceMotion, setReduceMotion] = useState(false)
-
-  useEffect(() => {
-    const onResize = () => setViewportW(window.innerWidth)
-    onResize()
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -67,28 +59,26 @@ export function FacilityTourStaticFloor({
   const zone = FACILITY_ZONES_BY_ID[activeZoneId]
   const { ox, oy } = useMemo(() => zoneFocusOriginPercents(zone.tour), [zone.tour])
 
-  const tf = useMemo(() => facilityTourViewportTransform(viewportW), [viewportW])
-  const zoomMul = reduceMotion ? 1 : zoneFocusScaleMultiplier(activeZoneId)
-  const scale = tf.baseScale * zoomMul
-
-  const transform = `perspective(${tf.perspective}px) rotateX(${tf.rotateX}deg) rotateZ(${tf.rotateZ}deg) scale(${scale})`
-  const origin = reduceMotion ? '50% 18%' : `${ox}% ${oy}%`
-  const transition = reduceMotion
+  const innerZoom =
+    reduceMotion || autoPlay ? 1 : zoneFocusScaleMultiplier(activeZoneId)
+  const innerOrigin = reduceMotion ? '50% 45%' : `${ox}% ${oy}%`
+  const innerTransition = reduceMotion
     ? undefined
-    : 'transform 0.62s cubic-bezier(0.22, 1, 0.36, 1), transform-origin 0.52s cubic-bezier(0.22, 1, 0.36, 1)'
+    : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform-origin 0.45s cubic-bezier(0.22, 1, 0.36, 1)'
 
   return (
     <div className="relative mx-auto w-full px-2 pb-2.5 pt-1 md:px-3 md:pb-3.5 md:pt-1.5">
       <div className="relative w-full overflow-hidden max-md:h-[min(44vh,352px)] sm:max-md:h-[min(48vh,388px)] md:h-[min(48vh,424px)] lg:h-[min(52vh,488px)] xl:h-[min(54vh,520px)]">
         <div className="relative flex h-full min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-hidden">
-          <div
-            className="relative h-[930px] w-[1240px] max-w-none shrink-0 will-change-transform"
-            style={{
-              transform,
-              transformOrigin: origin,
-              transition,
-            }}
-          >
+          <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_18%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.205)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.262)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.445)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.545)]">
+            <div
+              className="absolute inset-0 z-10 will-change-transform"
+              style={{
+                transformOrigin: innerOrigin,
+                transform: `scale(${innerZoom})`,
+                transition: innerTransition,
+              }}
+            >
             <div className="pointer-events-none absolute inset-0" aria-hidden>
               <div className="absolute inset-x-[2%] top-[2%] h-[6%] rounded-t-md bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-formula-frost)_8%,transparent),transparent_92%)]" />
 
@@ -160,6 +150,7 @@ export function FacilityTourStaticFloor({
             </div>
 
             <div className="absolute inset-0 z-20">{hotspots}</div>
+            </div>
           </div>
         </div>
       </div>

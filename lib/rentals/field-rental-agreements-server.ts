@@ -173,6 +173,27 @@ export async function listAgreementsForRentalSlot(params: {
   return (data ?? []) as FieldRentalAgreementRow[]
 }
 
+/** Signed waivers explicitly linked to a roster invite (`waiver_invite_id`), including desk / unpaid flows. */
+export async function listAgreementsForWaiverInvite(inviteId: string): Promise<FieldRentalAgreementRow[]> {
+  const id = inviteId.trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return []
+  const supabase = getServiceSupabase()
+  if (!supabase) return []
+
+  const { data, error } = await supabase
+    .from('field_rental_agreements')
+    .select(AGREEMENT_LIST_COL)
+    .eq('waiver_invite_id', id)
+    .not('submitted_at', 'is', null)
+    .order('submitted_at', { ascending: true })
+
+  if (error) {
+    console.warn('[field-rental-agreements] list for invite:', error.message)
+    return []
+  }
+  return (data ?? []) as FieldRentalAgreementRow[]
+}
+
 /** Slot snapshot plus Stripe session (still finds waivers after admin nudges `time_slot` on the booking). */
 export async function listAgreementsForRentalBooking(booking: {
   field_id: unknown

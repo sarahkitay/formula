@@ -4,6 +4,8 @@ import { fetchFacilityScheduleConfig } from '@/lib/schedule/facility-schedule-co
 import { buildPublishedWeek } from '@/lib/schedule/published-week'
 import { getServiceSupabase } from '@/lib/supabase/service'
 import { parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
+import { decodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
+import { rentalFieldLabel } from '@/lib/rentals/field-rental-agreement-admin-display'
 import { holidaysBetweenYmdInclusive } from '@/lib/schedule/us-major-holidays'
 
 const LA = 'America/Los_Angeles'
@@ -38,6 +40,8 @@ export type CalendarFeedBlock = {
   assessmentBookingCount?: number
   /** `party_bookings.id` when this block is a paid party hold from the DB. */
   partyBookingId?: string
+  /** Roster invite row when the block is driven by `field_rental_waiver_invites` session snapshot (desk / unpaid / comp). */
+  waiverInviteId?: string
 }
 
 function ymdInLa(iso: string): string {
@@ -152,6 +156,32 @@ function programBlocksFromWeekCollapsed(
 
   out.sort((a, b) => a.dayIndex - b.dayIndex || a.startMinute - b.startMinute || a.id.localeCompare(b.id))
   return out
+}
+
+const YMD = /^\d{4}-\d{2}-\d{2}$/
+
+/** Session dates for a roster invite that fall inside [weekStart, weekEnd] (inclusive, YYYY-MM-DD). */
+export function waiverInviteSessionDatesInWeek(
+  inv: {
+    booking_rental_date: string | null
+    booking_rental_dates_compact: string | null
+    booking_session_weeks: number | null
+  },
+  weekStart: string,
+  weekEnd: string
+): string[] {
+  const compact = inv.booking_rental_dates_compact?.trim()
+  if (compact) {
+    const decoded = decodeRentalDatesCompact(compact)
+    return decoded.filter(d => d >= weekStart && d <= weekEnd)
+  }
+  const anchor = inv.booking_rental_date?.trim()
+  if (!anchor || !YMD.test(anchor)) return []
+  const wk = inv.booking_session_weeks
+  const n =
+    wk != null && Number.isFinite(wk) && wk > 0 ? Math.min(52, Math.floor(wk)) : 1
+  const series = weeklyOccurrenceDatesIso(anchor, n)
+  return series.filter(d => d >= weekStart && d <= weekEnd)
 }
 
 export function calendarBlockVisibleInBookingsOnlyView(b: CalendarFeedBlock): boolean {
@@ -292,6 +322,8 @@ export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
       .in('status', ['confirmed', 'pending'])
       .limit(500)
 
+    const rentalHoldKeys = new Set<string>()
+
     if (!re && rentals?.length) {
       for (const row of rentals) {
         const sd = row.session_date as string
@@ -311,10 +343,12 @@ export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
         }
         const startMinute = Math.max(0, Math.min(24 * 60 - 1, parsed.startMinutes))
         const endMinute = Math.max(startMinute + 15, Math.min(24 * 60, parsed.endMinutes))
+        const fid = row.field_id as string
+        rentalHoldKeys.add(`${fid}|${sd}|${rawSlot.trim()}`)
         blocks.push({
           id: `rent-${row.id}`,
           category: 'rental_booking',
-          label: `Field rental · ${row.field_id as string}`,
+          label: `Field rental · ${fid}`,
           sublabel: rawSlot,
           dayIndex,
           startMinute,
@@ -324,7 +358,80 @@ export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
         })
       }
     }
+
+    const { data: rosterInvites, error: rie } = await sb
+      .from('field_rental_waiver_invites')
+      .select(
+        'id, purchaser_name, purchaser_email, checkout_amount_total_cents, booking_rental_field, booking_rental_window, booking_rental_date, booking_rental_dates_compact, booking_session_weeks'
+      )
+      .order('created_at', { ascending: false })
+      .limit(400)
+
+    if (!rie && rosterInvites?.length) {
+      for (const inv of rosterInvites as {
+        id: string
+        purchaser_name: string | null
+        purchaser_email: string | null
+        checkout_amount_total_cents: number | null
+        booking_rental_field: string | null
+        booking_rental_window: string | null
+        booking_rental_date: string | null
+        booking_rental_dates_compact: string | null
+        booking_session_weeks: number | null
+      }[]) {
+        const fieldId = inv.booking_rental_field?.trim()
+        const rawWin = typeof inv.booking_rental_window === 'string' ? inv.booking_rental_window.trim() : ''
+        if (!fieldId || !rawWin) continue
+
+        const sessionDates = waiverInviteSessionDatesInWeek(inv, week.weekStart, week.weekEnd)
+        if (sessionDates.length === 0) continue
+
+        const parsed = parseRentalTimeSlot(rawWin)
+        if (!parsed) {
+          console.warn('[calendar-feed] skip roster invite: unparsable window', inv.id, rawWin)
+          continue
+        }
+        const startMinute = Math.max(0, Math.min(24 * 60 - 1, parsed.startMinutes))
+        const endMinute = Math.max(startMinute + 15, Math.min(24 * 60, parsed.endMinutes))
+
+        const org =
+          inv.purchaser_name?.trim() ||
+          inv.purchaser_email?.trim().split('@')[0]?.trim() ||
+          'Rental'
+        const fieldHuman = rentalFieldLabel(fieldId)
+        const paidTag =
+          inv.checkout_amount_total_cents != null && inv.checkout_amount_total_cents > 0
+            ? ''
+            : ' · comp / unpaid'
+
+        for (const ymd of sessionDates) {
+          const holdKey = `${fieldId}|${ymd}|${rawWin}`
+          if (rentalHoldKeys.has(holdKey)) continue
+          let dayIndex: DayIndex | null = null
+          for (let d = 0; d < 7; d++) {
+            if (isoDateForWeekDay(week.weekStart, d as DayIndex) === ymd) {
+              dayIndex = d as DayIndex
+              break
+            }
+          }
+          if (dayIndex == null) continue
+          blocks.push({
+            id: `waiver-inv-${inv.id}-${ymd}`,
+            category: 'rental_booking',
+            label: `${org} · ${fieldHuman}${paidTag}`,
+            sublabel: rawWin,
+            dayIndex,
+            startMinute,
+            endMinute,
+            templateSurface: false,
+            waiverInviteId: inv.id,
+          })
+        }
+      }
+    }
   }
+
+  blocks.sort((a, b) => a.dayIndex - b.dayIndex || a.startMinute - b.startMinute || a.id.localeCompare(b.id))
 
   return { week, blocks, holidays }
 }

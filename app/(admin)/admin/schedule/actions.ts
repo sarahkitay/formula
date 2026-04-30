@@ -21,6 +21,7 @@ export async function saveFacilityScheduleConfigAction(
   const result = await upsertFacilityScheduleConfig(config)
   if (!result.ok) return result
   revalidatePath('/admin/schedule')
+  revalidatePath('/admin/rentals')
   revalidatePath('/parent/bookings')
   return { ok: true }
 }

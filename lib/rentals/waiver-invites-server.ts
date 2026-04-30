@@ -480,6 +480,35 @@ export async function resolveWaiverInviteIdFromToken(token: string): Promise<str
   return row?.id ?? null
 }
 
+/**
+ * Admin: remove a roster invite only when no signed waivers reference it (`waiver_invite_id` rows).
+ */
+export async function deleteWaiverInviteIfNoSignedWaivers(
+  id: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const uuid = id.trim()
+  if (!/^[0-9a-f-]{36}$/i.test(uuid)) {
+    return { ok: false, message: 'Invalid invite id.' }
+  }
+  const signed = await countWaiversForInviteId(uuid)
+  if (signed > 0) {
+    return {
+      ok: false,
+      message: `Cannot delete: ${signed} signed waiver(s) are linked. Unlink agreements first if you must remove this invite.`,
+    }
+  }
+  const supabase = getServiceSupabase()
+  if (!supabase) {
+    return { ok: false, message: 'Database not configured.' }
+  }
+  const { error } = await supabase.from('field_rental_waiver_invites').delete().eq('id', uuid)
+  if (error) {
+    console.error('[waiver-invites] delete:', error.message)
+    return { ok: false, message: 'Could not delete invite.' }
+  }
+  return { ok: true }
+}
+
 export async function listWaiverInvitesWithProgress(limit = 50): Promise<WaiverInviteWithProgress[]> {
   const supabase = getServiceSupabase()
   if (!supabase) return []

@@ -30,6 +30,8 @@ import { AdminCalendarFeedModal } from '@/components/schedule/admin-calendar-fee
 import { AdminQuickBookingModal, type AdminQuickBookDraft } from '@/components/schedule/admin-quick-booking-modal'
 
 export default function SchedulePage() {
+  const facilityConfigRef = React.useRef<FacilitySchedulePublishedConfig | null>(null)
+
   const [baseDate, setBaseDate] = useState(() => new Date())
   const [dayIndex, setDayIndex] = useState<DayIndex>(() => new Date().getDay() as DayIndex)
   const [activeTab, setActiveTab] = useState<'calendar' | 'grid' | 'weekly' | 'publish'>('calendar')
@@ -40,6 +42,10 @@ export default function SchedulePage() {
   const [quickBookDraft, setQuickBookDraft] = useState<AdminQuickBookDraft | null>(null)
 
   const [facilityConfig, setFacilityConfig] = useState<FacilitySchedulePublishedConfig | null>(null)
+
+  React.useEffect(() => {
+    facilityConfigRef.current = facilityConfig
+  }, [facilityConfig])
   const [configLoadError, setConfigLoadError] = useState<string | null>(null)
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'ok' | 'err'>('idle')
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
@@ -166,15 +172,30 @@ export default function SchedulePage() {
     setQuickBookDraft({ source: 'block', block })
   }, [facilityConfig, week])
 
-  const commitQuickBookOverride = useCallback((row: ScheduleOverride | null, opts: { openPublishTab: boolean }) => {
-    if (row) {
-      setFacilityConfig(prev => {
-        if (!prev) return prev
-        return { ...prev, overrides: [...prev.overrides, row] }
-      })
-    }
-    if (opts.openPublishTab) setActiveTab('publish')
-  }, [])
+  const commitQuickBookOverride = useCallback(
+    async (row: ScheduleOverride | null, opts: { autoPublish: boolean }) => {
+      if (!row) return
+      const prev = facilityConfigRef.current
+      if (!prev) return
+      const next = { ...prev, overrides: [...prev.overrides, row] }
+      facilityConfigRef.current = next
+      setFacilityConfig(next)
+      if (!opts.autoPublish) return
+      setSaveState('saving')
+      setSaveMessage(null)
+      const r = await saveFacilityScheduleConfigAction(next)
+      if (r.ok) {
+        setSaveState('ok')
+        setSaveMessage('Added to the live calendar and published. Parent portal and this calendar refresh on reload.')
+        await loadCalendarFeed()
+      } else {
+        setSaveState('err')
+        setSaveMessage(r.error)
+        await reloadConfig()
+      }
+    },
+    [loadCalendarFeed, reloadConfig]
+  )
 
   const onSavePublish = async () => {
     if (!facilityConfig) return
@@ -481,9 +502,7 @@ export default function SchedulePage() {
               weekStart={week.weekStart}
               draft={quickBookDraft}
               week={week}
-              onSave={(row, opts) => {
-                commitQuickBookOverride(row, opts)
-              }}
+              onSave={(row, opts) => void commitQuickBookOverride(row, opts)}
               onOpenRentalCheckIn={b => setFeedDetailBlock(b)}
               onOpenRotationRoster={(slot, related) => {
                 setDetailRelatedSlots(related)

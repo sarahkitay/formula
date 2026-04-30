@@ -243,6 +243,7 @@ export function HomeFacilityTour() {
           </div>
           <FacilityTourStaticFloor
             activeZoneId={activeId}
+            autoPlay={autoPlay}
             hotspots={
               <>
                 {hotspotsOrdered.map(stop => (
