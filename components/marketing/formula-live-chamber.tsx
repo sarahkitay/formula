@@ -172,10 +172,18 @@ function PillarRow({
   )
 }
 
+export type FormulaLiveChamberProps = {
+  /**
+   * When true, omits the built-in H2 / eyebrow so a parent `<section>` can own the heading (use one H2 per page section).
+   * The animated diagram is unchanged.
+   */
+  embedded?: boolean
+}
+
 /**
  * Full-bleed emotional centerpiece for /fpi: weighted model as a calm, awakening instrument, not a slogan.
  */
-export function FormulaLiveChamber() {
+export function FormulaLiveChamber({ embedded = false }: FormulaLiveChamberProps) {
   const reduce = useReducedMotion() === true
   const [gridOn, setGridOn] = useState(reduce ?? false)
   const [perimeterOn, setPerimeterOn] = useState(reduce ?? false)
@@ -248,13 +256,17 @@ export function FormulaLiveChamber() {
   const perimeterClass =
     'font-mono text-[8px] uppercase tracking-[0.26em] text-formula-frost/22 transition-opacity duration-[1.4s]'
 
+  const Root = embedded ? 'div' : 'section'
+  const rootA11y = embedded
+    ? ({ role: 'group' as const, 'aria-label': 'The Formula weighted scoring model' } as const)
+    : ({ 'aria-labelledby': 'formula-live-chamber-heading' } as const)
   return (
-    <section
+    <Root
       className={cn(
         'formula-live-chamber not-prose relative my-8 overflow-hidden border border-formula-frost/12 bg-formula-deep/40 px-4 py-7 md:my-12 md:px-10 md:py-14',
         settled && 'formula-live-chamber--settled'
       )}
-      aria-labelledby="formula-live-chamber-heading"
+      {...rootA11y}
     >
       <div className={cn('formula-live-chamber__grid', gridOn && 'is-on')} aria-hidden />
       <div className={cn('formula-live-chamber__grain', settled && 'is-settled')} aria-hidden />
@@ -304,17 +316,26 @@ export function FormulaLiveChamber() {
       </div>
 
       <div className="relative z-10">
-        <p className="font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-frost/32">Living model</p>
-        <h2
-          id="formula-live-chamber-heading"
-          className="mt-4 max-w-[26ch] font-mono text-xl font-semibold leading-snug tracking-tight text-formula-paper md:max-w-[30ch] md:text-2xl"
-        >
-          The Formula is not a slogan. It is revealed as a living weighted system.
-        </h2>
-        <p className="sr-only">
-          Six domains combine with age-specific weights into an internal composite for coaching and placement. Animation illustrates the model; figures are
-          representative.
-        </p>
+        {embedded ? null : (
+          <>
+            <p className="font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-frost/32">Living model</p>
+            <h2
+              id="formula-live-chamber-heading"
+              className="mt-4 max-w-[26ch] font-mono text-xl font-semibold leading-snug tracking-tight text-formula-paper md:max-w-[30ch] md:text-2xl"
+            >
+              The Formula is not a slogan. It is revealed as a living weighted system.
+            </h2>
+            <p className="sr-only">
+              Six domains combine with age-specific weights into an internal composite for coaching and placement. Animation illustrates the model; figures are
+              representative.
+            </p>
+          </>
+        )}
+        {embedded ? (
+          <p className="sr-only">
+            Weighted performance model: six pillars stream into a composite score. Animation is illustrative; weights are age-specific.
+          </p>
+        ) : null}
 
         <div className="mt-6 flex flex-col gap-6 md:mt-10 md:gap-10 lg:flex-row lg:items-stretch lg:gap-5 xl:gap-7">
           <div className="flex flex-1 flex-col">
@@ -431,6 +452,6 @@ export function FormulaLiveChamber() {
           </p>
         </motion.div>
       </div>
-    </section>
+    </Root>
   )
 }

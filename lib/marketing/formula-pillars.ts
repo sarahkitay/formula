@@ -1,36 +1,44 @@
 /** Shared six-pillar model: titles align everywhere; descriptions can vary by page. */
 
-export type FormulaPillar = { title: string; description: string }
+export type FormulaPillar = { title: string; description: string; kicker?: string }
 
 /** Copy used on /fpi (The Formula). */
 export const FPI_PILLARS: readonly FormulaPillar[] = [
   {
-    title: 'Speed and explosiveness',
+    kicker: 'SPEED AND EXPLOSIVENESS',
+    title: 'Speed & Explosiveness',
     description:
-      'First step, separation, repeat sprint capacity. Measured on our Speed Track with and without the ball.',
+      'Timed sprints on the Speed Track. First step, separation, and repeat sprint capacity — all captured, not estimated.',
   },
   {
-    title: 'Agility and change of direction',
+    kicker: 'AGILITY AND CHANGE OF DIRECTION',
+    title: 'Agility & Change of Direction',
     description:
-      'Lateral movement, deceleration, reactive cuts, and directional efficiency. Measured on our Double Speed Court with structured change-of-direction tasks.',
+      'Reactive movement under time pressure on the Double Speed Court. Deceleration, sharp cuts, and lateral quickness — logged every rep.',
   },
   {
-    title: 'Decision-making and cognitive speed',
+    kicker: 'DECISION-MAKING AND COGNITIVE SPEED',
+    title: 'Decision-Making & Cognitive Speed',
     description:
-      'Reading the field, scanning under pressure, choosing correctly and quickly. Captured in applied play, small-sided work, and coach evaluation on the floor.',
+      'Structured scenarios that force choices under pressure. We measure when the right decision is made, not just whether it was.',
   },
   {
-    title: 'Technical execution',
-    description: 'Passing, receiving, control, and ball manipulation under structured conditions. Measured with and by Footbot.',
-  },
-  {
-    title: 'Game application',
+    kicker: 'TECHNICAL EXECUTION',
+    title: 'Technical Execution',
     description:
-      'How skills transfer when it matters, in small-sided play, circuit scenarios, and applied pressure situations.',
+      'High-volume reps on the Footbot. Ball-control load and precision distribution — counted, not assumed.',
   },
   {
-    title: 'Consistency and coachability',
-    description: 'Effort, response to feedback, and performance under repeated stress. Evaluated by coaching staff across sessions.',
+    kicker: 'GAME APPLICATION',
+    title: 'Game Application',
+    description:
+      'How the athlete translates isolated skills into live play contexts. Observed across structured game-format segments.',
+  },
+  {
+    kicker: 'CONSISTENCY AND COACHABILITY',
+    title: 'Consistency & Coachability',
+    description:
+      'Performance across the full session — early reps vs. late reps, response to instruction, behavior under fatigue.',
   },
 ] as const
 

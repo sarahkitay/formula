@@ -1,11 +1,30 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import Image from 'next/image'
+import type { FormulaPillar } from '@/lib/marketing/formula-pillars'
 import { cn } from '@/lib/utils'
 
-export type FpiPillar = { title: string; description: string }
+export type FpiPillar = FormulaPillar
 
-export function FpiPillarsInteractive({ intro, pillars }: { intro: string; pillars: readonly FpiPillar[] }) {
+export type FpiPillarsInteractiveProps = {
+  intro: string
+  pillars: readonly FpiPillar[]
+  /**
+   * `toggle` — tap/hover reveals assessment copy (e.g. Skills Check page).
+   * `expanded` — kicker, title, optional shared photo, and assessment sentence always visible (e.g. The Formula page).
+   */
+  cardLayout?: 'toggle' | 'expanded'
+  /** Used with `cardLayout="expanded"` — one action shot reused on every pillar card until pillar-specific art exists. */
+  expandedCardImageSrc?: string
+}
+
+export function FpiPillarsInteractive({
+  intro,
+  pillars,
+  cardLayout = 'toggle',
+  expandedCardImageSrc,
+}: FpiPillarsInteractiveProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   const toggle = useCallback((i: number) => {
@@ -29,14 +48,46 @@ export function FpiPillarsInteractive({ intro, pillars }: { intro: string; pilla
     return () => mq.removeEventListener('change', clear)
   }, [])
 
+  const expanded = cardLayout === 'expanded'
+
   return (
     <div className="not-prose my-10">
       <p className="mb-8 max-w-[52ch] text-[15px] leading-relaxed text-formula-frost/85">{intro}</p>
       <ul
-        className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4"
+        className={cn(
+          'm-0 grid list-none gap-3 p-0',
+          expanded ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4'
+        )}
         role="list"
       >
         {pillars.map((p, i) => {
+          if (expanded) {
+            return (
+              <li key={p.title} className="m-0 p-0 before:hidden">
+                <article className="flex h-full flex-col rounded-sm border border-white/[0.12] bg-formula-deep/50 p-3 sm:p-4">
+                  {p.kicker ? (
+                    <p className="mb-1 font-mono text-[8px] font-semibold uppercase leading-snug tracking-[0.14em] text-formula-volt sm:text-[9px]">
+                      {p.kicker}
+                    </p>
+                  ) : null}
+                  <h3 className="m-0 font-mono text-[12px] font-semibold leading-snug tracking-wide text-formula-paper sm:text-[13px]">{p.title}</h3>
+                  {expandedCardImageSrc ? (
+                    <div className="relative mt-3 aspect-[4/3] w-full shrink-0 overflow-hidden rounded border border-white/[0.12]">
+                      <Image
+                        src={expandedCardImageSrc}
+                        alt="Youth athletes on indoor turf at Formula Soccer Center — representative of the assessment environment."
+                        fill
+                        className="object-cover"
+                        sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
+                      />
+                    </div>
+                  ) : null}
+                  <p className="mt-3 text-left text-[13px] leading-relaxed text-zinc-300">{p.description}</p>
+                </article>
+              </li>
+            )
+          }
+
           const open = openIndex === i
           return (
             <li key={p.title} className="m-0 p-0 before:hidden">
@@ -54,21 +105,23 @@ export function FpiPillarsInteractive({ intro, pillars }: { intro: string; pilla
                 aria-controls={`fpi-pillar-panel-${i}`}
                 id={`fpi-pillar-trigger-${i}`}
               >
-                <h3 className="m-0 min-h-[2.5rem] font-mono text-[10px] font-semibold uppercase leading-snug tracking-[0.1em] text-formula-paper sm:min-h-0 sm:text-[11px] sm:tracking-[0.12em]">
+                {p.kicker ? (
+                  <p className="mb-1 font-mono text-[8px] font-semibold uppercase leading-snug tracking-[0.14em] text-formula-volt sm:text-[9px]">
+                    {p.kicker}
+                  </p>
+                ) : null}
+                <h3 className="m-0 min-h-[2.5rem] font-mono text-[11px] font-semibold leading-snug tracking-wide text-formula-paper sm:min-h-0 sm:text-[12px] md:tracking-tight">
                   {p.title}
                 </h3>
                 <div className="relative mt-2 flex min-h-[88px] flex-1 flex-col justify-end sm:min-h-[100px] md:mt-3 md:min-h-[132px]">
                   <div
-                    className="fpi-pillar-bar relative w-full overflow-hidden rounded-[1px] border border-formula-frost/18 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-formula-volt)_22%,transparent)_0%,color-mix(in_srgb,var(--color-formula-frost)_10%,transparent)_38%,transparent_95%)] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.07)]"
+                    className="relative w-full overflow-hidden rounded-[2px] border border-white/[0.12] bg-white/[0.04] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_.06)]"
                     style={{
                       height: `${52 + (i % 5) * 7}%`,
                       animationDelay: `${100 + i * 70}ms`,
                     }}
                     aria-hidden
-                  >
-                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,rgb(255_255_255_/_.05),transparent)] opacity-50" />
-                    <div className="pointer-events-none absolute left-0 top-0 h-full w-px bg-formula-volt/25" />
-                  </div>
+                  />
                 </div>
                 <div
                   id={`fpi-pillar-panel-${i}`}
@@ -94,9 +147,11 @@ export function FpiPillarsInteractive({ intro, pillars }: { intro: string; pilla
           )
         })}
       </ul>
-      <p className="mt-5 hidden font-mono text-[9px] uppercase tracking-[0.16em] text-formula-olive md:block">
-        Hover or focus a pillar for detail
-      </p>
+      {expanded ? null : (
+        <p className="mt-5 hidden font-mono text-[9px] uppercase tracking-[0.16em] text-formula-olive md:block">
+          Hover or focus a pillar for detail
+        </p>
+      )}
     </div>
   )
 }

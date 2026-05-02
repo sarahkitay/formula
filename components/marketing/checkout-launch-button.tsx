@@ -16,6 +16,8 @@ type Props = {
   checkoutType: CheckoutType
   label: string
   className?: string
+  /** When true, the pay button is disabled (e.g. form incomplete). */
+  disabled?: boolean
   /** Allowed server values; extends Stripe success URL for post-checkout UX (e.g. portal assessment). */
   successNext?: CheckoutSuccessNext
   /** Merged into Stripe session metadata (string values only; server sanitizes). */
@@ -28,6 +30,7 @@ export function CheckoutLaunchButton({
   checkoutType,
   label,
   className,
+  disabled = false,
   successNext,
   metadata,
   hideSmsConsent = false,
@@ -161,7 +164,12 @@ export function CheckoutLaunchButton({
           </div>
         </div>
       ) : null}
-      <button type="button" disabled={loading} onClick={() => void handleClick()} className={cn(primaryCtaClass, className)}>
+      <button
+        type="button"
+        disabled={loading || disabled}
+        onClick={() => void handleClick()}
+        className={cn(primaryCtaClass, className)}
+      >
         {loading ? 'Redirecting…' : label}
       </button>
       {error ? <span className="max-w-xs font-mono text-[10px] text-red-300/95">{error}</span> : null}

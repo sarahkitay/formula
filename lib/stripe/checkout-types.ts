@@ -6,6 +6,9 @@ export const CHECKOUT_TYPES = [
   'sunday-child-10wk-500',
   'field-rental-booking',
   'party-booking-1k',
+  'friday-friendlies-player',
+  'summer-camp-week-495',
+  'summer-camp-month-1780',
 ] as const
 
 export type CheckoutType = (typeof CHECKOUT_TYPES)[number]

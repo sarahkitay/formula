@@ -17,6 +17,7 @@ import {
   SUNDAY_CHILD_PROGRAM_PACK_SESSIONS,
 } from '@/lib/marketing/sunday-child-program-tracks'
 import { FORMULA_SUNDAY_CHILD_PROGRAM_10_WK } from '@/lib/marketing/public-pricing'
+import { isSummerCampMonthBundleId, isSummerCampWeekNumber } from '@/lib/marketing/summer-camp-2026-data'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
@@ -269,14 +270,75 @@ export async function POST(req: Request) {
     }
   }
 
+  if (type === 'friday-friendlies-player') {
+    const guardian = metadataExtra.fnf_guardian_name?.trim()
+    const players = metadataExtra.fnf_player_names?.trim()
+    const count = parseInt(metadataExtra.fnf_player_count ?? '1', 10)
+    if (!guardian || guardian.length < 2) {
+      return NextResponse.json(
+        { error: 'fnf_guardian_name is required (guardian / payer full name).' },
+        { status: 400 }
+      )
+    }
+    if (!players || players.length < 3) {
+      return NextResponse.json(
+        { error: 'fnf_player_names is required (athlete first names or comma-separated list).' },
+        { status: 400 }
+      )
+    }
+    if (!Number.isInteger(count) || count < 1 || count > 8) {
+      return NextResponse.json({ error: 'fnf_player_count must be an integer from 1 to 8.' }, { status: 400 })
+    }
+    line_items = lineItemsForCheckoutType(type, { fridayFriendliesPlayerCount: count })
+  }
+
+  if (type === 'summer-camp-week-495') {
+    const guardian = metadataExtra.sc_guardian_name?.trim()
+    const athletes = metadataExtra.sc_athlete_names?.trim()
+    const weekNum = parseInt(metadataExtra.sc_week_number ?? '', 10)
+    if (!guardian || guardian.length < 2) {
+      return NextResponse.json({ error: 'sc_guardian_name is required (guardian / payer full name).' }, { status: 400 })
+    }
+    if (!athletes || athletes.length < 2) {
+      return NextResponse.json({ error: 'sc_athlete_names is required (athlete first name(s)).' }, { status: 400 })
+    }
+    if (!isSummerCampWeekNumber(weekNum)) {
+      return NextResponse.json({ error: 'sc_week_number must be an integer from 1 to 8.' }, { status: 400 })
+    }
+  }
+
+  if (type === 'summer-camp-month-1780') {
+    const guardian = metadataExtra.sc_guardian_name?.trim()
+    const athletes = metadataExtra.sc_athlete_names?.trim()
+    const bundle = metadataExtra.sc_month_bundle?.trim() ?? ''
+    if (!guardian || guardian.length < 2) {
+      return NextResponse.json({ error: 'sc_guardian_name is required (guardian / payer full name).' }, { status: 400 })
+    }
+    if (!athletes || athletes.length < 2) {
+      return NextResponse.json({ error: 'sc_athlete_names is required (athlete first name(s)).' }, { status: 400 })
+    }
+    if (!isSummerCampMonthBundleId(bundle)) {
+      return NextResponse.json({ error: 'sc_month_bundle must be weeks-1-4 or weeks-5-8.' }, { status: 400 })
+    }
+  }
+
   const emailHint = metadataExtra.parent_email_hint?.trim().toLowerCase() ?? ''
   const partyEmail = metadataExtra.party_contact_email?.trim().toLowerCase() ?? ''
+  const fnfEmail = metadataExtra.fnf_contact_email?.trim().toLowerCase() ?? ''
+  const scEmail = metadataExtra.sc_contact_email?.trim().toLowerCase() ?? ''
   const prefillEmail =
     type === 'assessment' && emailHint.length > 3 && emailHint.includes('@') && emailHint.includes('.')
       ? emailHint
       : type === 'party-booking-1k' && partyEmail.length > 3 && partyEmail.includes('@') && partyEmail.includes('.')
         ? partyEmail
-        : undefined
+        : type === 'friday-friendlies-player' && fnfEmail.length > 3 && fnfEmail.includes('@') && fnfEmail.includes('.')
+          ? fnfEmail
+          : (type === 'summer-camp-week-495' || type === 'summer-camp-month-1780') &&
+              scEmail.length > 3 &&
+              scEmail.includes('@') &&
+              scEmail.includes('.')
+            ? scEmail
+            : undefined
 
   try {
     const session = await stripe.checkout.sessions.create({

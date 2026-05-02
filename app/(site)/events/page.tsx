@@ -13,6 +13,8 @@ export const metadata: Metadata = {
 }
 
 const PATH_CARDS: { title: string; line: string; href: string }[] = [
+  { title: 'Summer Camp 2026', line: 'Mon–Fri day camp · themed weeks · register online.', href: MARKETING_HREF.summerCamp2026 },
+  { title: 'Friday Friendlies', line: 'Pickup soccer ages 6–13 · pre-register $20.', href: MARKETING_HREF.fridayNightFriendlies },
   { title: 'Birthday parties', line: 'Deposits, windows, policies.', href: MARKETING_HREF.parties },
   { title: 'Footbot', line: 'Structured reps + rentals context.', href: MARKETING_HREF.footbot },
   { title: 'Tournaments', line: 'Controlled weekends.', href: MARKETING_HREF.tournaments },
@@ -54,6 +56,14 @@ export default function EventsHubPage() {
               <li key={block.id} className="rounded-lg border border-formula-frost/14 bg-formula-paper/[0.03] p-4 sm:p-5">
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/90">{block.title}</p>
                 <p className="mt-2 text-sm leading-relaxed text-formula-frost/85">{block.summary}</p>
+                {block.href ? (
+                  <Link
+                    href={block.href}
+                    className="mt-4 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt underline-offset-2 hover:underline"
+                  >
+                    {block.ctaLabel ?? 'See more'}
+                  </Link>
+                ) : null}
               </li>
             ))}
           </ul>

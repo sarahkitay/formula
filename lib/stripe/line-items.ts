@@ -4,6 +4,9 @@ import {
   FORMULA_SKILLS_CHECK,
   FORMULA_MINIS_SIX_WEEK,
   FORMULA_SUNDAY_CHILD_PROGRAM_10_WK,
+  FRIDAY_NIGHT_FRIENDLIES_CHECKOUT,
+  SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT,
+  SUMMER_CAMP_2026_WEEK_CHECKOUT,
   PARTY_BOOKING_1K_CHECKOUT,
   SESSION_PACKAGE_5,
   SESSION_PACKAGE_10,
@@ -13,6 +16,8 @@ import type { CheckoutType } from '@/lib/stripe/checkout-types'
 export type LineItemsOptions = {
   /** Skills Check: one line item per athlete (quantity 1–4). */
   assessmentQuantity?: number
+  /** Friday Friendlies: number of players (quantity 1–8). */
+  fridayFriendliesPlayerCount?: number
   /** Field rental: number of weekly sessions (quantity). */
   fieldRentalSessionWeeks?: number
   /** Field rental: Stripe unit_amount (cents) for one session deposit (duration-priced on server). */
@@ -127,6 +132,64 @@ export function lineItemsForCheckoutType(
             description: PARTY_BOOKING_1K_CHECKOUT.summary,
           },
           unit_amount: Math.round(PARTY_BOOKING_1K_CHECKOUT.priceUsd * 100),
+        },
+      },
+    ]
+  }
+
+  if (type === 'summer-camp-week-495') {
+    return [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          tax_behavior: 'exclusive',
+          product_data: {
+            name: SUMMER_CAMP_2026_WEEK_CHECKOUT.productName,
+            description: SUMMER_CAMP_2026_WEEK_CHECKOUT.summary,
+          },
+          unit_amount: Math.round(SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd * 100),
+        },
+      },
+    ]
+  }
+
+  if (type === 'summer-camp-month-1780') {
+    return [
+      {
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          tax_behavior: 'exclusive',
+          product_data: {
+            name: SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.productName,
+            description: SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.summary,
+          },
+          unit_amount: Math.round(SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd * 100),
+        },
+      },
+    ]
+  }
+
+  if (type === 'friday-friendlies-player') {
+    const q = Math.min(
+      FRIDAY_NIGHT_FRIENDLIES_CHECKOUT.maxPlayers,
+      Math.max(1, Math.floor(options?.fridayFriendliesPlayerCount ?? 1))
+    )
+    return [
+      {
+        quantity: q,
+        price_data: {
+          currency: 'usd',
+          tax_behavior: 'exclusive',
+          product_data: {
+            name: FRIDAY_NIGHT_FRIENDLIES_CHECKOUT.productName,
+            description:
+              q === 1
+                ? FRIDAY_NIGHT_FRIENDLIES_CHECKOUT.summary
+                : `${q} players · ${FRIDAY_NIGHT_FRIENDLIES_CHECKOUT.summary}`,
+          },
+          unit_amount: Math.round(FRIDAY_NIGHT_FRIENDLIES_CHECKOUT.pricePerPlayerUsd * 100),
         },
       },
     ]

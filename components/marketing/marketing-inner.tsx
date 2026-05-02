@@ -20,8 +20,12 @@ function marketingTitleContent(title: string | ReactNode): ReactNode {
   ))
 }
 
-export function SectionLabel({ children }: { children: ReactNode }) {
-  return <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">{children}</p>
+export function SectionLabel({ children, id }: { children: ReactNode; id?: string }) {
+  return (
+    <p id={id} className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-mist">
+      {children}
+    </p>
+  )
 }
 
 export function MarketingInnerPage({

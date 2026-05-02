@@ -127,3 +127,29 @@ export const PARTIES_PRICING_STATUS =
   'Party deposit $1,000 online (Stripe). Book below — include field rental window so ops can schedule.' as const
 
 export const GENERAL_EVENTS_PRICING_STATUS = 'Hosted event pricing TBA. See parties, Footbot, and tournaments for paths.' as const
+
+/** Friday Night Friendlies · public pre-registration ($20 per player per night). */
+export const FRIDAY_NIGHT_FRIENDLIES_CHECKOUT = {
+  pricePerPlayerUsd: 20,
+  minPlayers: 1,
+  maxPlayers: 8,
+  productName: 'Friday Night Friendlies · player pre-registration',
+  summary:
+    'Per player for Friday Night Friendlies (ages 6–13). Pre-register to save your spot; walk-ups still welcome at check-in. 5:30 arrival · games 6:00–7:30 PM · Formula Soccer Center. First night Friday May 8, 2026.',
+} as const
+
+/** Summer Camp 2026 · Mon–Fri weekly day camp (ages 6–13, 9:00 AM–2:30 PM). */
+export const SUMMER_CAMP_2026_WEEK_CHECKOUT = {
+  priceUsd: 495,
+  productName: 'Summer Camp 2026 · one week (Mon–Fri)',
+  summary:
+    'Single week · Formula Soccer Center summer camp 2026. Ages 6–13 · Mon–Fri · 9:00 AM–2:30 PM · themed rotations across facility assets. Staff confirms age group and final roster after payment.',
+} as const
+
+/** Four consecutive weeks within the published 8-week season (bundled month blocks). */
+export const SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT = {
+  priceUsd: 1780,
+  productName: 'Summer Camp 2026 · four-week bundle',
+  summary:
+    'Four-week bundle (weeks 1–4 or weeks 5–8) · Formula Soccer Center summer camp 2026. Ages 6–13 · Mon–Fri · 9:00 AM–2:30 PM. Staff confirms placement and week continuity after payment.',
+} as const

@@ -181,6 +181,13 @@ export default function CampsPage() {
 
   <h2>Registration</h2>
   <p>
+    <strong>Summer Camp 2026</strong> — themed weeks, Mon–Fri day schedule, and live pricing are on the{' '}
+    <Link href={MARKETING_HREF.summerCamp2026} className="text-formula-volt underline-offset-2 hover:underline">
+      Summer Camp 2026
+    </Link>{' '}
+    events page (pre-pay checkout).
+  </p>
+  <p>
   <strong>Parent portal</strong> when rosters open - returning sign in; new accounts same flow.
   </p>
 

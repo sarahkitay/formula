@@ -17,6 +17,8 @@ export const MARKETING_HREF = {
   camps: '/camps',
   facility: '/facility',
   events: '/events',
+  fridayNightFriendlies: '/events/friday-night-friendlies',
+  summerCamp2026: '/events/summer-camp-2026',
   parties: '/events/parties',
   footbot: '/events/footbot',
   tournaments: '/events/tournaments',
@@ -50,6 +52,8 @@ export const HEADER_MAIN: { label: string; href: string }[] = [
 
 /** Header: “More” menu - programs & revenue lines. */
 export const HEADER_MORE: { label: string; href: string }[] = [
+  { label: 'Summer Camp 2026', href: MARKETING_HREF.summerCamp2026 },
+  { label: 'Friday Friendlies', href: MARKETING_HREF.fridayNightFriendlies },
   { label: 'Friday circuit', href: MARKETING_HREF.fridayCircuit },
   { label: 'Clinics', href: MARKETING_HREF.clinics },
   { label: 'Camps', href: MARKETING_HREF.camps },
