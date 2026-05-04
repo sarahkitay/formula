@@ -622,6 +622,27 @@
   opacity: 0.9;
 }
 
+/* Homepage hero: single faint Cartesian grid (system readout, not decoration stack). */
+.marketing-hero-system-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-formula-frost) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-formula-frost) 14%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 85% 70% at 50% 38%, black 0%, transparent 72%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero-system-grid {
+    opacity: 0.08;
+  }
+}
+
 .marketing-hero-char {
   opacity: 0;
   transform: translateY(8px);

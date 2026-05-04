@@ -3,11 +3,10 @@
 import Link from 'next/link'
 import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { HOME_ASSESSMENT_POSTER, HOME_ASSESSMENT_VIDEO } from '@/lib/marketing/home-video-assets'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
 import { useLazyAutoplayVideo } from '@/lib/marketing/use-lazy-autoplay-video'
 import { MEDIA_SCRIM_BOTTOM, MEDIA_SCRIM_TOP } from '@/lib/marketing/media-scrims'
-
-const VIDEO_SRC = '/IMG_6200_4.mp4'
 
 /**
  * Homepage: full-bleed assessment video; overlay is the “How it works” step grid.
@@ -30,6 +29,7 @@ export function HomeAssessmentVideoSection() {
             <video
               ref={videoRef}
               className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
+              poster={HOME_ASSESSMENT_POSTER}
               autoPlay
               muted
               loop
@@ -37,7 +37,7 @@ export function HomeAssessmentVideoSection() {
               preload="none"
               aria-label="Athletes during a Formula assessment on the training floor"
             >
-              <source src={VIDEO_SRC} type="video/mp4" />
+              <source src={HOME_ASSESSMENT_VIDEO} type="video/mp4" />
             </video>
           ) : (
             <div className="absolute inset-0 bg-formula-deep" aria-hidden />

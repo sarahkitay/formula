@@ -1,9 +1,8 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import { FACILITY_WALKTHROUGH_POSTER, FACILITY_WALKTHROUGH_VIDEO } from '@/lib/marketing/home-video-assets'
 import { useLazyAutoplayVideo } from '@/lib/marketing/use-lazy-autoplay-video'
-
-const SRC_MP4 = '/IMG_6200_5.mp4'
 
 /**
  * Facility walkthrough (MP4). Mounted only when near the viewport so the homepage and upper facility page stay light.
@@ -22,10 +21,10 @@ export function FacilityWalkthroughVideo() {
         <p className="max-w-md text-[14px] leading-relaxed text-formula-frost/85">
           This browser couldn&apos;t play the facility video. Use an MP4 with{' '}
           <strong className="font-medium text-formula-paper">H.264 video and AAC audio</strong> and keep it at{' '}
-          <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[12px] text-formula-volt/90">public/IMG_6200_5.mp4</code>.
+          <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[12px] text-formula-volt/90">public/media/home/facility-walkthrough.mp4</code>.
         </p>
         <a
-          href={SRC_MP4}
+          href={FACILITY_WALKTHROUGH_VIDEO}
           className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt underline-offset-4 hover:underline"
           download
         >
@@ -41,6 +40,7 @@ export function FacilityWalkthroughVideo() {
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
+          poster={FACILITY_WALKTHROUGH_POSTER}
           autoPlay
           muted
           loop
@@ -50,7 +50,7 @@ export function FacilityWalkthroughVideo() {
           aria-label="Formula Soccer Center facility walkthrough video"
           onError={onError}
         >
-          <source src={SRC_MP4} type="video/mp4" />
+          <source src={FACILITY_WALKTHROUGH_VIDEO} type="video/mp4" />
         </video>
       ) : (
         <div className="absolute inset-0 bg-formula-deep" aria-hidden />
