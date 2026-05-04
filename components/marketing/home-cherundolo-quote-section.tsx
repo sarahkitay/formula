@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
-import { HOME_SPLIT_PHOTO_QUALITY, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
+import { HOME_SPLIT_PHOTO_QUALITY_DEFERRED, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
 
 const PARTNER_PHOTO_SRC = '/steve2.jpg'
@@ -19,10 +19,11 @@ export function HomeCherundoloQuoteSection() {
             src={PARTNER_PHOTO_SRC}
             alt="Steve Cherundolo, arms crossed, at a stadium - professional portrait for Formula partnership."
             fill
-            quality={HOME_SPLIT_PHOTO_QUALITY}
+            quality={HOME_SPLIT_PHOTO_QUALITY_DEFERRED}
             sizes={HOME_SPLIT_PHOTO_SIZES}
             decoding="async"
             fetchPriority="low"
+            loading="lazy"
             className="object-cover object-[center_22%] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] md:hover:scale-[1.02]"
             priority={false}
           />

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
-import { HOME_SPLIT_PHOTO_QUALITY, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
+import { HOME_SPLIT_PHOTO_QUALITY_DEFERRED, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
 
 const FACILITY_PHOTO_SRC = '/8E3A2988.jpg'
@@ -20,12 +20,12 @@ export function HomeFacilitySection() {
             src={FACILITY_PHOTO_SRC}
             alt="Indoor match-grade turf training lane at Formula Soccer Center, viewed through perimeter netting."
             fill
-            quality={HOME_SPLIT_PHOTO_QUALITY}
+            quality={HOME_SPLIT_PHOTO_QUALITY_DEFERRED}
             sizes={HOME_SPLIT_PHOTO_SIZES}
             decoding="async"
-            fetchPriority="high"
+            fetchPriority="low"
+            loading="lazy"
             className="object-cover object-[28%_center] transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] md:hover:scale-[1.02]"
-            priority
           />
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-formula-deep/60 to-transparent md:hidden"

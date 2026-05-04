@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+/** Default IO margin for lazy MP4s: load only when the section is close to the viewport. */
+export const DEFAULT_LAZY_VIDEO_ROOT_MARGIN = '40px'
+
 /**
  * Defer mounting a <video> until the container is near the viewport, then autoplay (unless reduced motion).
  * Tighter rootMargin = less upfront bandwidth; pair `<video preload="none">` so the file isn’t fetched until mount.
  */
-export function useLazyAutoplayVideo(rootMargin = '140px') {
+export function useLazyAutoplayVideo(rootMargin: string = DEFAULT_LAZY_VIDEO_ROOT_MARGIN) {
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [ready, setReady] = useState(false)

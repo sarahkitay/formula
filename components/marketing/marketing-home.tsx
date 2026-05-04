@@ -1,14 +1,40 @@
+import dynamic from 'next/dynamic'
 import { HomeFacilitySection } from '@/components/marketing/home-facility-section'
-import { HomeAssessmentVideoSection } from '@/components/marketing/home-assessment-video-section'
-import { HomeWhatWeTrainIntro } from '@/components/marketing/home-what-we-train-intro'
-import { HomeSpeedCourtSection } from '@/components/marketing/home-speed-court-section'
-import { HomeSpeedTrackSection } from '@/components/marketing/home-speed-track-section'
-import { HomeFieldsFormulaSection } from '@/components/marketing/home-fields-formula-section'
-import { HomeCherundoloQuoteSection } from '@/components/marketing/home-cherundolo-quote-section'
-import { HomeTeamworkSection } from '@/components/marketing/home-teamwork-section'
 import { MarketingHero } from '@/components/marketing/marketing-hero'
-import { HomeNextSteps } from '@/components/marketing/home-next-steps'
-import { HomeStartHereSection } from '@/components/marketing/home-start-here-section'
+
+const HomeAssessmentVideoSection = dynamic(() =>
+  import('@/components/marketing/home-assessment-video-section').then(m => ({ default: m.HomeAssessmentVideoSection }))
+)
+
+const HomeWhatWeTrainIntro = dynamic(() =>
+  import('@/components/marketing/home-what-we-train-intro').then(m => ({ default: m.HomeWhatWeTrainIntro }))
+)
+
+const HomeFieldsFormulaSection = dynamic(() =>
+  import('@/components/marketing/home-fields-formula-section').then(m => ({ default: m.HomeFieldsFormulaSection }))
+)
+
+const HomeSpeedCourtSection = dynamic(() =>
+  import('@/components/marketing/home-speed-court-section').then(m => ({ default: m.HomeSpeedCourtSection }))
+)
+
+const HomeSpeedTrackSection = dynamic(() =>
+  import('@/components/marketing/home-speed-track-section').then(m => ({ default: m.HomeSpeedTrackSection }))
+)
+
+const HomeTeamworkSection = dynamic(() =>
+  import('@/components/marketing/home-teamwork-section').then(m => ({ default: m.HomeTeamworkSection }))
+)
+
+const HomeNextSteps = dynamic(() => import('@/components/marketing/home-next-steps').then(m => ({ default: m.HomeNextSteps })))
+
+const HomeCherundoloQuoteSection = dynamic(() =>
+  import('@/components/marketing/home-cherundolo-quote-section').then(m => ({ default: m.HomeCherundoloQuoteSection }))
+)
+
+const HomeStartHereSection = dynamic(() =>
+  import('@/components/marketing/home-start-here-section').then(m => ({ default: m.HomeStartHereSection }))
+)
 
 function SectionDivider() {
   return <div className="marketing-section-divider" aria-hidden />

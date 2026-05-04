@@ -1,15 +1,28 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { Fragment } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
 import { AmbientGeometry } from '@/components/marketing/ambient-geometry'
 import { FieldAmbient } from '@/components/marketing/field-ambient'
-import { HomeField3DHero } from '@/components/marketing/home-field-3d/home-field-3d-hero'
+import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
 import { cn } from '@/lib/utils'
+
+const HomeField3DHero = dynamic(
+  () => import('@/components/marketing/home-field-3d/home-field-3d-hero').then(m => ({ default: m.HomeField3DHero })),
+  {
+    ssr: true,
+    loading: () => (
+      <div
+        className="mx-auto min-h-[min(200px,36vh)] w-full max-w-[min(100%,680px)] rounded-md bg-formula-deep/25 md:min-h-[min(260px,42vh)]"
+        aria-hidden
+      />
+    ),
+  }
+)
 
 const WORD = 'FORMULA'
 
@@ -36,8 +49,6 @@ function HexLetterO({ index }: { index: number }) {
 }
 
 export function MarketingHero() {
-  const reduceMotion = useReducedMotion()
-
   return (
     <section className="relative flex min-h-[100dvh] flex-col overflow-x-hidden">
       <FieldAmbient />
@@ -102,15 +113,11 @@ export function MarketingHero() {
           <div className="w-full max-w-[min(100%,720px)] max-lg:translate-y-0 scale-[0.44] max-sm:origin-left max-sm:translate-x-[min(2.25rem,12vw)] sm:translate-x-0 sm:origin-center sm:scale-[0.92] md:max-lg:scale-[0.96] lg:max-w-none lg:scale-[0.9] xl:scale-[0.96]">
             <HomeField3DHero />
           </div>
-          <motion.p
-            initial={reduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 28 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.4, margin: '0px 0px -8% 0px' }}
-            transition={{ duration: 0.65, delay: reduceMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-20 mt-2 max-w-[16rem] text-center font-mono text-[9px] uppercase tracking-[0.28em] text-formula-mist [text-shadow:0_1px_12px_rgba(0,0,0,0.55)] max-sm:text-left max-sm:translate-x-[min(2.25rem,12vw)] sm:translate-x-0 lg:mt-2 lg:text-center"
-          >
-            Slow drift - pointer adds a gentle tilt
-          </motion.p>
+          <ScrollFadeIn className="relative z-20 mt-2 max-w-[16rem] text-center max-sm:translate-x-[min(2.25rem,12vw)] sm:translate-x-0 lg:mt-2 lg:text-center">
+            <p className="font-mono text-[9px] uppercase tracking-[0.28em] text-formula-mist [text-shadow:0_1px_12px_rgba(0,0,0,0.55)] max-sm:text-left lg:text-center">
+              Slow drift - pointer adds a gentle tilt
+            </p>
+          </ScrollFadeIn>
         </div>
       </div>
     </section>

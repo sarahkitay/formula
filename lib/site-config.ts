@@ -54,8 +54,8 @@ export const FORMULA_OS = {
 
 export const SITE = {
   facilityName: 'Formula Soccer Center',
-  /** Public line for marketing (homepage header). E.164 without separators for `tel:`. */
-  publicPhoneDisplay: '747 688 9668',
+  /** Public line for marketing (homepage header). `tel:` uses E.164 in `publicPhoneTel`. */
+  publicPhoneDisplay: '+1 (747) 688-9668',
   publicPhoneTel: '+17476889668',
   /** Street line for headers (booking hub, parent portal). */
   facilityAddressLine: '15001 Calvert Street, Los Angeles, CA 91411',
