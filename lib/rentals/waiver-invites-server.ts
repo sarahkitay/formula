@@ -307,7 +307,7 @@ export type PaidInPersonFieldRentalInviteParams = {
 }
 
 /**
- * Admin: field rental paid in person — roster waiver link (same snapshot columns as Stripe checkout invites)
+ * Admin: field rental paid in person - roster waiver link (same snapshot columns as Stripe checkout invites)
  * plus a `stripe_purchases` row with a synthetic session id so Payments / revenue include the deposit.
  */
 export async function createPaidInPersonFieldRentalInvite(
@@ -583,7 +583,7 @@ export async function listWaiverInvitesWithProgress(limit = 50): Promise<WaiverI
       participant_email: w.participant_email,
       submitted_at: w.submitted_at,
       is_organizer_waiver: Boolean(orgEm && signerEm === orgEm),
-      session_summary: session_summary === '—' ? null : session_summary,
+      session_summary: session_summary === '-' ? null : session_summary,
     })
     byInvite.set(w.waiver_invite_id, list)
   }

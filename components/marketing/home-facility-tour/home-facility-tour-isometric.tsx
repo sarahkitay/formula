@@ -110,7 +110,7 @@ export function FacilityTourStaticFloor({
                 <TourFieldPitch />
               </div>
 
-              {/* Entrance / front desk — warmer slab, less flat grey */}
+              {/* Entrance / front desk - warmer slab, less flat grey */}
               <div className="absolute left-[12.5%] top-[59%] h-[11%] w-[30%] border border-white/18 bg-[linear-gradient(180deg,#aeb5a8,#7d8478)] shadow-[0_6px_16px_rgba(0,0,0,0.12)]">
                 <div className="absolute left-[6%] top-[18%] h-[52%] w-[22%] rounded-sm border border-white/35 bg-white/28" />
                 <div className="absolute right-[8%] top-[14%] h-[58%] w-[48%] border border-zinc-700/30 bg-zinc-800/25" />
@@ -124,7 +124,7 @@ export function FacilityTourStaticFloor({
                 <div className="absolute inset-y-0 left-[12%] w-px bg-black/30" />
               </div>
 
-              {/* Support / gym / flex — muted sage, not bright grey */}
+              {/* Support / gym / flex - muted sage, not bright grey */}
               <div className="absolute left-[43.5%] top-[59%] h-[11%] w-[13%] border border-white/14 bg-[linear-gradient(180deg,#9aa396,#6f756b)] shadow-[0_8px_20px_rgba(0,0,0,0.1)]">
                 <div className="absolute left-[10%] top-[18%] h-[28%] w-[22%] bg-[#4a5048]/90" />
                 <div className="absolute left-[10%] top-[52%] h-[28%] w-[22%] bg-[#4a5048]/90" />

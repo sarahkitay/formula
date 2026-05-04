@@ -8,7 +8,7 @@ import { MARKETING_HREF } from '@/lib/marketing/nav'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
 const primaryCtaClass =
-  'inline-flex h-11 items-center justify-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50'
+  'inline-flex min-h-12 w-full items-center justify-center border border-black/20 bg-formula-volt px-4 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] !text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50 sm:h-11 sm:min-h-0 sm:w-auto sm:px-6 sm:text-[11px]'
 
 export type CheckoutSuccessNext = 'portal-assessment' | 'field-rental'
 
@@ -71,10 +71,10 @@ export function CheckoutLaunchButton({
   }
 
   return (
-    <div className="inline-flex max-w-md flex-col gap-3">
+    <div className="flex w-full max-w-md flex-col gap-3">
       {!hideSmsConsent ? (
         <div
-          className="cursor-pointer rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-4 transition-colors hover:border-formula-frost/22"
+          className="cursor-pointer rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-3 transition-colors hover:border-formula-frost/22 sm:p-4"
           onClick={() => setSmsLegalOpen(o => !o)}
         >
           <div className="flex items-start gap-3">
@@ -172,7 +172,9 @@ export function CheckoutLaunchButton({
       >
         {loading ? 'Redirecting…' : label}
       </button>
-      {error ? <span className="max-w-xs font-mono text-[10px] text-red-300/95">{error}</span> : null}
+      {error ? (
+        <span className="w-full break-words font-mono text-[10px] leading-snug text-red-300/95">{error}</span>
+      ) : null}
     </div>
   )
 }

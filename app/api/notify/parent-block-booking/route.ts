@@ -78,7 +78,7 @@ export async function POST(req: Request) {
         <li><strong>Week start</strong>: ${escapeHtml(String(b.week_start))}</li>
         <li><strong>Title</strong>: ${escapeHtml(b.title)}</li>
         <li><strong>Starts</strong>: ${escapeHtml(b.starts_at)}</li>
-        <li><strong>Ends</strong>: ${escapeHtml(b.ends_at ?? '—')}</li>
+        <li><strong>Ends</strong>: ${escapeHtml(b.ends_at ?? '-')}</li>
       </ul>
     `,
     text: `Parent block booking\nid: ${bookingId}\nslot_ref: ${b.slot_ref}\nweek: ${b.week_start}\n${b.title}`,

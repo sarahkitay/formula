@@ -2,7 +2,7 @@ import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 
 /** Short date + time in the facility IANA zone (matches ops expectations; avoids UTC server default). */
 export function formatFacilityDateTimeShort(iso: string | null | undefined): string {
-  if (!iso) return '—'
+  if (!iso) return '-'
   try {
     const d = new Date(iso)
     if (Number.isNaN(d.getTime())) return String(iso)

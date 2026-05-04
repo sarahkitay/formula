@@ -24,7 +24,7 @@ export default function CoachFridayPage() {
 
   <div className="border border-white/10 bg-[#0f0f0f] p-4 font-mono text-[11px] text-zinc-400">
   <span className="text-zinc-500">TEAM</span> · {r.teamLabel} · {r.ageBand} · balanced roster{' '}
-  {r.balanced ? '✓' : '-'}
+  {r.balanced ? 'Yes' : '-'}
   </div>
 
   <div className="border border-white/10 bg-[#0f0f0f] p-5">

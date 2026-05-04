@@ -481,7 +481,7 @@ export function ParentDashboardPageClient() {
           <div className="mt-4 space-y-4">
             {homeNotes.length === 0 ? (
               <p className="text-sm text-formula-frost/70">
-                No assessment notes on file yet. After staff log an assessment, the latest summary can appear here — check back post-assessment.
+                No assessment notes on file yet. After staff log an assessment, the latest summary can appear here - check back post-assessment.
               </p>
             ) : (
               homeNotes.map((u) => (
@@ -533,7 +533,7 @@ export function ParentDashboardPageClient() {
           />
           {myPlayers.length === 0 ? (
             <p className="text-sm text-text-muted">
-              No athletes linked to this account yet. If you just registered, linking may still be processing — otherwise contact the front desk.
+              No athletes linked to this account yet. If you just registered, linking may still be processing - otherwise contact the front desk.
             </p>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

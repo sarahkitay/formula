@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       <p><strong>Waitlist / email capture</strong></p>
       <ul>
         <li><strong>Email</strong>: ${escapeHtml(payload.email)}</li>
-        <li><strong>Name</strong>: ${escapeHtml(payload.name ?? '—')}</li>
+        <li><strong>Name</strong>: ${escapeHtml(payload.name ?? '-')}</li>
         <li><strong>Source</strong>: ${escapeHtml(payload.source)}</li>
         <li><strong>At</strong>: ${escapeHtml(payload.at)}</li>
       </ul>

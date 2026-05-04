@@ -16,12 +16,12 @@ export const parentFpiReportEmpty: ParentFpiReportContent = {
   compositeLabel: 'Development index',
   compositeValue: 0,
   compositeNarrative: 'FPI summaries appear after staff log assessments for this athlete.',
-  percentileBand: '—',
-  trendLabel: '—',
+  percentileBand: '-',
+  trendLabel: '-',
   domains: [],
   priorities: [],
-  focus12Week: '—',
+  focus12Week: '-',
   clinicSuggestions: [],
   supportiveFooter:
-    'Development is non-linear. Formula uses FPI internally to guide coaching priorities — not as a public leaderboard.',
+    'Development is non-linear. Formula uses FPI internally to guide coaching priorities - not as a public leaderboard.',
 }

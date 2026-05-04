@@ -68,11 +68,11 @@ export async function submitCareerApplication(
         <li><strong>Role</strong>: ${escapeHtml(roleLabel)}</li>
         <li><strong>Name</strong>: ${escapeHtml(fullName)}</li>
         <li><strong>Email</strong>: ${escapeHtml(email)}</li>
-        <li><strong>Phone</strong>: ${escapeHtml(phone || '—')}</li>
-        <li><strong>Availability</strong>: ${escapeHtml(availability || '—')}</li>
+        <li><strong>Phone</strong>: ${escapeHtml(phone || '-')}</li>
+        <li><strong>Availability</strong>: ${escapeHtml(availability || '-')}</li>
         ${
           positionRaw === 'coach'
-            ? `<li><strong>Coaching background</strong>: ${escapeHtml(coachingBackground || '—')}</li>`
+            ? `<li><strong>Coaching background</strong>: ${escapeHtml(coachingBackground || '-')}</li>`
             : ''
         }
         <li><strong>Message</strong>: ${escapeHtml(message)}</li>
@@ -85,6 +85,6 @@ export async function submitCareerApplication(
 
   return {
     ok: true,
-    message: 'Thanks — we received your application. Our team will reach out by email if there is a fit.',
+    message: 'Thanks - we received your application. Our team will reach out by email if there is a fit.',
   }
 }

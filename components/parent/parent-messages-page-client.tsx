@@ -19,7 +19,7 @@ export function ParentMessagesPageClient() {
             <Inbox className="h-10 w-10 text-formula-mist/50" aria-hidden />
             <p className="mt-4 text-sm font-medium text-formula-paper">No messages yet</p>
             <p className="mt-2 max-w-md text-sm text-formula-frost/75">
-              When staff or the system send reminders and updates, they&apos;ll show here. This inbox isn&apos;t connected to demo data — your real thread starts
+              When staff or the system send reminders and updates, they&apos;ll show here. This inbox isn&apos;t connected to demo data - your real thread starts
               empty.
             </p>
           </div>

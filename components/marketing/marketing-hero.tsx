@@ -47,7 +47,7 @@ export function MarketingHero() {
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/18 to-transparent" />
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pb-12 pt-24 max-lg:gap-4 max-lg:pb-14 max-sm:gap-3 max-sm:pt-32 sm:pt-24 lg:max-w-[min(100%,1480px)] lg:flex-row lg:items-center lg:justify-start lg:gap-8 lg:pl-4 lg:pr-10 lg:pb-16 lg:pt-20 xl:gap-12 xl:pl-6 xl:pr-14 2xl:pl-8 2xl:pr-16">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-8 px-6 pb-12 pt-24 max-lg:gap-4 max-lg:pb-14 max-sm:mt-2 max-sm:gap-3 max-sm:pt-40 sm:mt-0 sm:pt-24 lg:max-w-[min(100%,1480px)] lg:flex-row lg:items-center lg:justify-start lg:gap-8 lg:pl-4 lg:pr-10 lg:pb-16 lg:pt-20 xl:gap-12 xl:pl-6 xl:pr-14 2xl:pl-8 2xl:pr-16">
         <div className="relative z-20 flex min-w-0 flex-col max-lg:flex-none max-lg:pt-3 lg:shrink-0 lg:basis-[min(100%,22rem)] lg:pt-0 xl:basis-[min(100%,24rem)]">
           <p className="font-mono text-[10px] font-medium uppercase tracking-[0.35em] text-formula-mist [text-shadow:0_1px_18px_rgba(0,0,0,0.45)]">
             Formula Soccer Center
@@ -74,20 +74,23 @@ export function MarketingHero() {
             ))}
           </p>
           <p className="mt-5 max-w-[38rem] text-[14px] leading-relaxed text-formula-frost/78 [text-shadow:0_1px_16px_rgba(0,0,0,0.35)]">
-            {SITE_VOICE.homeParentOneLiner}
+            {SITE_VOICE.homeHeroLead}
+          </p>
+          <p className="mt-4 max-w-[38rem] text-[14px] font-medium leading-relaxed text-formula-frost/88 [text-shadow:0_1px_16px_rgba(0,0,0,0.35)]">
+            {SITE_VOICE.homeHeroTagline}
           </p>
           <div className="mt-8 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <Link
               href={MARKETING_HREF.bookAssessmentPortal}
               className="inline-flex h-11 w-fit items-center border border-formula-volt/50 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-base transition-[filter] duration-300 hover:brightness-105"
             >
-              Book an assessment
+              Book an Assessment
             </Link>
             <Link
               href={MARKETING_HREF.youthMembership}
               className="inline-flex h-11 w-fit items-center border border-formula-paper/35 bg-transparent px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] transition-colors duration-300 hover:border-formula-volt/45 hover:bg-formula-paper/[0.06] hover:text-formula-paper"
             >
-              Packages
+              View Programs
             </Link>
           </div>
         </div>
@@ -106,7 +109,7 @@ export function MarketingHero() {
             transition={{ duration: 0.65, delay: reduceMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-20 mt-2 max-w-[16rem] text-center font-mono text-[9px] uppercase tracking-[0.28em] text-formula-mist [text-shadow:0_1px_12px_rgba(0,0,0,0.55)] max-sm:text-left max-sm:translate-x-[min(2.25rem,12vw)] sm:translate-x-0 lg:mt-2 lg:text-center"
           >
-            Slow drift — pointer adds a gentle tilt
+            Slow drift - pointer adds a gentle tilt
           </motion.p>
         </div>
       </div>

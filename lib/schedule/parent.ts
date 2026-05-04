@@ -4,7 +4,7 @@ import { MINIS_BLOCK_CAPACITY, YOUTH_BLOCK_CAPACITY } from '@/lib/schedule/rules
 
 /**
  * One bookable row per youth block (Performance Center anchor only, system-generated roster).
- * @param enrollmentBySlotRef — counts from `parent_block_bookings` keyed by bookable id (`book-${youthBlockId}`); omit for zeros.
+ * @param enrollmentBySlotRef - counts from `parent_block_bookings` keyed by bookable id (`book-${youthBlockId}`); omit for zeros.
  */
 export function getBookableYouthSlots(
   week: GeneratedWeek,

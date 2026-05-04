@@ -56,7 +56,7 @@ export function RosterWaiverInviteFlow({
             <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-mist">Option 2</span>
             <span className="text-base font-semibold text-formula-paper">RSVP only</span>
             <span className="text-sm leading-relaxed text-formula-frost/85">
-              You already signed our digital waiver on file with Formula (same email in our system). Enter name + email to be counted on this roster — no new
+              You already signed our digital waiver on file with Formula (same email in our system). Enter name + email to be counted on this roster - no new
               signature.
             </span>
           </button>

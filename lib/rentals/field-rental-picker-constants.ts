@@ -66,7 +66,7 @@ export const RENTAL_FIELD_OPTIONS = [
   { value: 'field_3', label: 'Field 3 (outdoor)' },
 ] as const
 
-/** Older checkout / waiver rows may still store these ids — keep labels and API validation in sync. */
+/** Older checkout / waiver rows may still store these ids - keep labels and API validation in sync. */
 export const RENTAL_FIELD_LEGACY_LABELS: Readonly<Record<string, string>> = {
   field_a: 'Field 1',
   field_b: 'Field 2',

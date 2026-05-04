@@ -56,7 +56,7 @@ export function parseWallTimeToMinutes(raw: string): number | null {
     return from12hClock(parseInt(m[1]!, 10), parseInt(m[2]!, 10), m[3] as 'am' | 'pm')
   }
 
-  // h:mm am (space required between minute and am for this branch — already covered)
+  // h:mm am (space required between minute and am for this branch - already covered)
 
   // Compact HMMam e.g. 630pm, 1030am (no colon)
   m = s.match(/^(\d{1,2})(\d{2})(am|pm)$/)

@@ -28,7 +28,7 @@ export const MARKETING_HREF = {
   terms: '/terms',
   /** Public booking hub (landing + links into split flows). */
   bookAssessment: '/book-assessment',
-  /** Booking hub landing — public (legacy hash URLs still scroll to `#${BOOKING_HUB_DIRECTORY_ID}` on that page). */
+  /** Booking hub landing - public (legacy hash URLs still scroll to `#${BOOKING_HUB_DIRECTORY_ID}` on that page). */
   bookAssessmentDirectory: `/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,
   /** Parent booking hub landing. */
   parentBookAssessmentDirectory: `/parent/book-assessment#${BOOKING_HUB_DIRECTORY_ID}`,

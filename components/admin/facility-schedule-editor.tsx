@@ -210,7 +210,7 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
             <code className="text-formula-volt">youthBlockId</code> anchors.
           </p>
           {config.overrides.length === 0 ? (
-            <p className="mt-3 font-mono text-[11px] text-formula-mist">No overrides — generator defaults only.</p>
+            <p className="mt-3 font-mono text-[11px] text-formula-mist">No overrides - generator defaults only.</p>
           ) : (
             <ul className="mt-3 space-y-3">
               {config.overrides.map(o => (
@@ -246,7 +246,7 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                     ))}
                   </select>
                   <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
-                    e.g. Performance Center — which space this window applies to
+                    e.g. Performance Center - which space this window applies to
                   </span>
                 </label>
                 <label className="text-formula-mist">
@@ -311,7 +311,7 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                     ))}
                   </select>
                   <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
-                    e.g. Flex: ops / misc — drives generator behavior + parent labels
+                    e.g. Flex: ops / misc - drives generator behavior + parent labels
                   </span>
                 </label>
                 <label className="text-formula-mist md:col-span-3">

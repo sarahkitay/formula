@@ -34,7 +34,7 @@ export default function CoachFloorPage() {
   const [selectedId, setSelectedId] = useState<FloorSectionId | null>(null)
   const [actingAs, setActingAs] = useState(PEER_COACHES[0] ?? 'Staff')
   const [log, setLog] = useState<{ time: string; message: string }[]>([
-    { time: new Date().toLocaleTimeString(), message: 'Floor map loaded — select a section to update status.' },
+    { time: new Date().toLocaleTimeString(), message: 'Floor map loaded - select a section to update status.' },
   ])
 
   const selected = selectedId ? FLOOR_PROGRAM_BY_SECTION[selectedId] : null

@@ -70,12 +70,12 @@ export function ParentPlayersPageClient() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg border border-border bg-surface-raised p-3 text-center">
-                    <p className="text-2xl font-black text-text-primary">—</p>
+                    <p className="text-2xl font-black text-text-primary">-</p>
                     <p className="mt-0.5 text-xs text-text-muted">Sessions attended</p>
                     <p className="mt-1 text-[10px] text-text-muted">When attendance syncs</p>
                   </div>
                   <div className="rounded-lg border border-border bg-surface-raised p-3 text-center">
-                    <p className="text-2xl font-black text-accent-foreground">—</p>
+                    <p className="text-2xl font-black text-accent-foreground">-</p>
                     <p className="mt-0.5 text-xs text-text-muted">Sessions left</p>
                     <p className="mt-1 text-[10px] text-text-muted">Ask at desk</p>
                   </div>

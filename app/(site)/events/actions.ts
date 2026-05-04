@@ -65,13 +65,13 @@ export async function submitEventRequest(_prev: EventRequestState | undefined, f
         <li><strong>Budget</strong>: ${escapeHtml(budgetLabel)}</li>
         <li><strong>Areas count</strong>: ${escapeHtml(String(spaceCount))}</li>
         <li><strong>Space</strong>: ${escapeHtml(spaceLabel)}</li>
-        <li><strong>Dates / timing</strong>: ${escapeHtml(preferredDates || '—')}</li>
+        <li><strong>Dates / timing</strong>: ${escapeHtml(preferredDates || '-')}</li>
         <li><strong>Contact</strong>: ${escapeHtml(contactName)} · ${escapeHtml(contactEmail)}${contactPhone ? ` · ${escapeHtml(contactPhone)}` : ''}</li>
-        <li><strong>Notes</strong>: ${escapeHtml(notes || '—')}</li>
+        <li><strong>Notes</strong>: ${escapeHtml(notes || '-')}</li>
       </ul>
     `,
     text: `Event request\n${typeLabel}\n${contactName} <${contactEmail}>`,
   })
 
-  return { ok: true, message: 'Thanks — our team will follow up by email.' }
+  return { ok: true, message: 'Thanks - our team will follow up by email.' }
 }

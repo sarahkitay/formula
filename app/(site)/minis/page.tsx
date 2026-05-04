@@ -17,7 +17,7 @@ import {
 export const metadata: Metadata = {
   title: 'Formula Minis',
   description:
-    'Formula Minis weekday program (ages 2–3) and Sunday Weekend Program (ages 2–5) at Formula Soccer Center — schedules, capacity, and published pricing ($300 / $500).',
+    'Formula Minis weekday program (ages 2–3) and Sunday Weekend Program (ages 2–5) at Formula Soccer Center - schedules, capacity, and published pricing ($300 / $500).',
 }
 
 const tableWrap = 'not-prose overflow-x-auto rounded-lg border border-formula-frost/12 bg-formula-paper/[0.02]'
@@ -29,7 +29,7 @@ export default function MinisPage() {
       wide
       eyebrow="Children's programming"
       title="Formula Minis & Sunday weekend"
-      intro={`Formula Minis covers our youngest players: weekday blocks for ages 2–3 ($${FORMULA_MINIS_SIX_WEEK.priceUsd} · 6-week package, ${FORMULA_MINIS_SIX_WEEK.sessionsInPack} sessions — one per week on your chosen day) and the Sunday Weekend Program for ages 2–5 (${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.priceUsd} / ${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.sessionsInPack} scheduled Sundays). Everything below matches the published v4 family guide.`}
+      intro={`Formula Minis covers our youngest players: weekday blocks for ages 2–3 ($${FORMULA_MINIS_SIX_WEEK.priceUsd} · 6-week package, ${FORMULA_MINIS_SIX_WEEK.sessionsInPack} sessions - one per week on your chosen day) and the Sunday Weekend Program for ages 2–5 (${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.priceUsd} / ${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.sessionsInPack} scheduled Sundays). Everything below matches the published v4 family guide.`}
     >
       <nav className="not-prose mb-10 flex flex-wrap gap-2 border-b border-formula-frost/10 pb-4 font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
         <a href="#overview" className="text-formula-volt hover:underline">
@@ -57,8 +57,8 @@ export default function MinisPage() {
             <strong>one</strong> session time (A or B) on <strong>one</strong> weekday and attend <strong>once per week</strong> for six weeks ($300 · six sessions total).
           </li>
           <li>
-            <strong className="text-formula-paper">Sunday Weekend Program</strong> (ages 2–5): four age-specific sessions on Sunday — Formula Minis for ages 2 and
-            3, Formula Juniors for ages 4 and 5 — each with its own weekly time and length (30 or 45 minutes).
+            <strong className="text-formula-paper">Sunday Weekend Program</strong> (ages 2–5): four age-specific sessions on Sunday - Formula Minis for ages 2 and
+            3, Formula Juniors for ages 4 and 5 - each with its own weekly time and length (30 or 45 minutes).
           </li>
           <li>
             <strong className="text-formula-paper">Rosters</strong>: after you pay, link your child in the parent portal (U6 band for weekday Minis ages 2–3),
@@ -70,7 +70,7 @@ export default function MinisPage() {
           <Link href={MARKETING_HREF.youthMembership} className="text-formula-volt underline-offset-2 hover:underline">
             programs &amp; pricing
           </Link>{' '}
-          page — not the same product as Minis packs below.
+          page - not the same product as Minis packs below.
         </p>
       </section>
 
@@ -105,7 +105,7 @@ export default function MinisPage() {
             <ul className="mt-3 space-y-2 text-sm text-formula-frost/88">
               <li>Minimum <strong className="text-formula-paper">6</strong> participants per session (may cancel or consolidate below that)</li>
               <li>Maximum <strong className="text-formula-paper">24</strong> per session</li>
-              <li>6-week package only — no drop-ins</li>
+              <li>6-week package only - no drop-ins</li>
             </ul>
           </div>
         </div>
@@ -234,11 +234,11 @@ export default function MinisPage() {
         <h2 className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-formula-mist">Policies (summary)</h2>
         <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-formula-frost/85">
           <li>No refunds after enrollment is confirmed.</li>
-          <li>No formal make-up sessions; staff may try to place your child in another slot the same week (weekday) or same day (Sunday), subject to capacity — not guaranteed.</li>
+          <li>No formal make-up sessions; staff may try to place your child in another slot the same week (weekday) or same day (Sunday), subject to capacity - not guaranteed.</li>
           <li>Sunday alternate slots must stay age-appropriate.</li>
         </ul>
         <p className="text-sm text-formula-frost/70">
-          Formula Juniors <strong className="text-formula-paper">weekday</strong> programming (ages 4–5) is still being finalized — this page covers Sunday
+          Formula Juniors <strong className="text-formula-paper">weekday</strong> programming (ages 4–5) is still being finalized - this page covers Sunday
           weekend ages 4–5 and all weekday Minis (2–3) enrollment.
         </p>
       </section>

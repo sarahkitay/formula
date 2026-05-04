@@ -28,7 +28,7 @@ export async function listRentalWaiverCheckinsForBooking(
       error.message.includes('schema cache') ||
       error.code === '42P01'
     ) {
-      console.warn('[rental-waiver-checkins] table missing — run supabase/field_rental_slot_waiver_checkins.sql')
+      console.warn('[rental-waiver-checkins] table missing - run supabase/field_rental_slot_waiver_checkins.sql')
     } else {
       console.warn('[rental-waiver-checkins] list:', error.message)
     }

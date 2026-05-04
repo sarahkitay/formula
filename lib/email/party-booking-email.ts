@@ -16,21 +16,21 @@ export async function sendPartyBookingEmails(session: Stripe.Checkout.Session, b
     row('Amount', `$${amount} USD`),
     row('Contact name', m.party_contact_name ?? ''),
     row('Contact email', email),
-    row('Contact phone', m.party_contact_phone ?? '—'),
+    row('Contact phone', m.party_contact_phone ?? '-'),
     row('Party preferred date', m.party_preferred_date ?? ''),
     row('Party guest count', m.party_guest_count ?? ''),
-    row('Birthday child / honoree', m.party_child_name ?? '—'),
-    row('Party notes', m.party_notes ?? '—'),
+    row('Birthday child / honoree', m.party_child_name ?? '-'),
+    row('Party notes', m.party_notes ?? '-'),
     row('Rental field', m.rental_field ?? ''),
     row('Rental session date', m.rental_date ?? ''),
     row('Rental time window', m.rental_time_slot ?? ''),
     row('Rental headcount', m.rental_headcount ?? ''),
-    row('Organization', m.rental_org ?? '—'),
-    row('Rental notes', m.rental_notes ?? '—'),
+    row('Organization', m.rental_org ?? '-'),
+    row('Rental notes', m.rental_notes ?? '-'),
   ].join('')
 
   const html = `
-    <p><strong>Party deposit paid</strong> — follow up to confirm schedule and any balance.</p>
+    <p><strong>Party deposit paid</strong> - follow up to confirm schedule and any balance.</p>
     <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">${bodyRows}</table>
   `
 
@@ -43,7 +43,7 @@ export async function sendPartyBookingEmails(session: Stripe.Checkout.Session, b
   if (email.includes('@')) {
     await sendTransactionalEmail({
       to: email,
-      subject: `Formula — we received your party deposit ($${amount})`,
+      subject: `Formula - we received your party deposit ($${amount})`,
       html: `
         <p>Hi ${escapeHtml(m.party_contact_name ?? 'there')},</p>
         <p>Thanks for your <strong>$${amount}</strong> party deposit. Our team will confirm your date, headcount, and field window shortly.</p>
@@ -51,7 +51,7 @@ export async function sendPartyBookingEmails(session: Stripe.Checkout.Session, b
         <table style="border-collapse:collapse;font-size:13px">${bodyRows}</table>
         <p style="margin-top:16px;font-size:12px;color:#555">Reference: ${escapeHtml(bookingId)}</p>
       `,
-      text: `Thanks — we received your party deposit of $${amount}. Reference: ${bookingId}. We'll be in touch.`,
+      text: `Thanks - we received your party deposit of $${amount}. Reference: ${bookingId}. We'll be in touch.`,
     })
   }
 }

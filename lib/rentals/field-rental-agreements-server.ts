@@ -65,7 +65,7 @@ export type FieldRentalAgreementRow = {
   roster_organizer_email?: string | null
   /** Total waivers linked to the same invite / expected headcount (same on every row for that invite). */
   waiver_invite_roster_progress?: string | null
-  /** public_site | coach_booking | roster_link — from insert; older rows may be null/undefined. */
+  /** public_site | coach_booking | roster_link - from insert; older rows may be null/undefined. */
   source?: string | null
 }
 

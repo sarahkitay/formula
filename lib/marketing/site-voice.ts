@@ -3,38 +3,78 @@
  * Prefer importing from here for homepage and program-framing copy; keep ops-specific pages flexible.
  */
 export const SITE_VOICE = {
-  /**
-   * Homepage hero lead: differentiation (no fabricated metrics or credentials).
-   */
-  homeParentOneLiner:
-    "Formula isn't a gym you drop into and hope for the best. It's a full soccer development system: advanced training technology, structured sessions, and real performance data, all under one roof.",
-
   /** Primary lines under the FORMULA wordmark (rendered with line breaks in the hero). */
-  heroHeadlineLines: ['Elite training.', 'Real data.', 'Built for every player.'] as const,
+  heroHeadlineLines: ['Serious soccer training.', 'Clear results.'] as const,
 
-  /** Facility intro / first homepage band (right column). */
-  trainingCenterPrograms:
-    'Formula Soccer Center is an elite soccer development facility in Van Nuys, built for players of all ages and skill levels, from recreational players to aspiring professionals. We use cutting-edge technology and structured programming, measuring where your player is today and building a clear path to where they need to be.',
+  homeHeroLead:
+    'Formula is a structured training system that helps players improve faster using real data, proven coaching, and focused sessions.',
 
-  trainingCenterFollowOn:
-    'Every athlete who walks in gets assessed, placed in the right program, and trained against a measurable standard. Progress is tracked. Families can see it. Coaches can act on it.',
+  homeHeroTagline: 'No guesswork. No wasted time. Just clear development.',
 
-  trainingCenterClosing:
-    "Whether your kid plays for a competitive club or just loves the game, there's a lane here for them.",
+  /** “What this is” band (homepage split). */
+  homeWhatThisIsLead: 'Formula is not drop-in play or random drills.',
 
-  whoWeTrain:
-    'Built for club athletes sharpening beside their team schedule, families tired of chaotic open gyms, and competitors who expect pro floor ops, on-time sessions, and honest feedback.',
+  homeWhatThisIsBody:
+    'Every player is assessed, placed into the right program, and trained with a clear plan. We track progress so players improve and families can see it.',
 
-  partners:
-    'Clubs, schools, and academies tap our coaching standard and floor ops when they need real capacity, not a rental block with a logo.',
+  homeWhatThisIsClosing: 'You always know what your player is working on and why.',
 
-  /** Training / program catalog context (Membership page, FPI training block if used). */
-  programDesign:
-    'We run published blocks, not drop-in chaos: technical lanes, application zones, and clear ratios so every session targets a limiter (technique, decisions, speed, or transfer). Same bar from youth development through adult leagues and elite small-group work.',
+  /** “How it works” steps (homepage assessment band). */
+  homeHowItWorksSteps: [
+    {
+      title: 'Assessment',
+      body: 'Every player completes the same evaluation covering speed, agility, technique, and decision-making.',
+    },
+    {
+      title: 'Placement',
+      body: 'We build a training plan based on results, not guesswork.',
+    },
+    {
+      title: 'Training',
+      body: 'Structured sessions focused on what each player actually needs.',
+    },
+    {
+      title: 'Progress',
+      body: 'We measure improvement over time so results are clear.',
+    },
+  ] as const,
 
-  programInventoryLine:
-    'Youth development and leagues · Adult leagues · Elite and small-group technical · Fitness conditioning',
+  homeWhatWeTrainHeadline: 'We focus on the skills that show up in real games.',
 
-  whatWeBuildLine:
-    'Possession, distribution, and control under pressure: the on-ball habits we train at every level.',
+  homeBallControlTitle: 'Ball control',
+  homeBallControlBody:
+    'High-repetition technical work using Footbot. Every touch is tracked.',
+
+  homeAgilityTitle: 'Agility',
+  homeAgilityBody: 'Change of direction, reaction speed, and movement under pressure.',
+
+  homeSpeedTitle: 'Speed',
+  homeSpeedBody: 'Acceleration and sprinting built for real match situations.',
+
+  homeWhatWeTrainClosing: 'Everything is trained at game speed, with decisions, not just drills.',
+
+  homeWhoClub: 'Improve the areas your team does not have time to focus on.',
+  homeWhoRec: 'Learn the right habits early in a structured setting.',
+  homeWhoCompetitive: 'Train against real standards with measurable progress.',
+  homeWhoParents: 'See exactly what your player is working on and how they are improving.',
+
+  homeProgramsItems: [
+    { label: 'Assessment and development plan', description: 'The starting point for every player.' },
+    { label: 'Youth training', description: 'Structured sessions with small groups.' },
+    { label: 'Clinics', description: 'Focused skill sessions with high repetition.' },
+    { label: 'Game circuit', description: 'Organized games with balanced teams.' },
+    { label: 'Camps', description: 'Full training days with structure and coaching.' },
+    { label: 'Adult programs', description: 'Leagues and pickup with the same standards.' },
+    { label: 'Rentals and events', description: 'Field time, team sessions, and private bookings.' },
+  ] as const,
+
+  homeStartHereBody:
+    'If you are not sure where to begin, start with an assessment. That is how we build everything else.',
+
+  homeStayUpdatedTitle: 'Stay updated',
+  homeStayUpdatedBody: 'Be the first to hear about programs, clinics, and memberships.',
+
+  /** Steve Cherundolo — keep wording exactly as approved. */
+  cherundoloPartnershipQuote:
+    'I have partnered with Formula because it reflects my own personal philosophy of player development in the modern game. Every soccer action has three critical moments which increase in difficulty when time and space are reduced. By combining elite coaching with cutting-edge technology, Formula will develop players who think faster, make intelligent decisions and execute at the highest of levels.',
 } as const

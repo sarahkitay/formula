@@ -193,7 +193,7 @@ export function ParentPlayerProgressPageClient({ playerId }: { playerId: string 
                     key={a.id}
                     className="flex flex-col gap-1 border-b border-border/60 py-2 text-sm last:border-0 sm:flex-row sm:items-start sm:justify-between"
                   >
-                    <span className="text-text-primary">{a.summary?.trim() || '—'}</span>
+                    <span className="text-text-primary">{a.summary?.trim() || '-'}</span>
                     <span className="shrink-0 font-mono text-xs text-text-muted">
                       {new Date(a.completed_at!).toLocaleDateString('en-US', {
                         month: 'short',

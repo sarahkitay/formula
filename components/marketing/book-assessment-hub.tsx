@@ -77,7 +77,7 @@ export function BookAssessmentHub({ variant }: { variant: HubVariant }) {
             Full party story + policies
           </p>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-formula-frost/80 md:text-[15px]">
-            Hosted parties, pricing context, and facility rules live on the dedicated parties page — open it before you book the deposit from the hub.
+            Hosted parties, pricing context, and facility rules live on the dedicated parties page - open it before you book the deposit from the hub.
           </p>
         </div>
         <span className="mt-4 inline-flex shrink-0 items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-volt md:mt-0">

@@ -3,14 +3,11 @@
 import Link from 'next/link'
 import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { SITE_VOICE } from '@/lib/marketing/site-voice'
 import { useLazyAutoplayVideo } from '@/lib/marketing/use-lazy-autoplay-video'
 import { MEDIA_SCRIM_BOTTOM, MEDIA_SCRIM_TOP } from '@/lib/marketing/media-scrims'
-import { cn } from '@/lib/utils'
 
 const VIDEO_SRC = '/IMG_6200_1.mp4'
-
-const overlaySubtitleClass =
-  'font-mono text-[clamp(0.7rem,2vw,0.8125rem)] font-semibold uppercase leading-snug tracking-[0.2em] text-formula-paper/95'
 
 /**
  * Homepage: full-bleed Speed Court video; same overlay panel treatment as Speed Track (`MediaOverlayTextPanel`).
@@ -44,19 +41,14 @@ export function HomeSpeedCourtSection() {
         <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 md:pt-32">
           <div className="mx-auto w-full max-w-[1200px]">
             <MediaOverlayTextPanel className="mr-auto w-full max-w-[min(100%,52rem)]">
-              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/90">Agility layer</p>
               <h2
                 id="home-speed-court-title"
-                className="mt-4 font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]"
+                className="font-mono text-2xl font-semibold tracking-tight text-formula-paper md:text-[1.65rem]"
               >
-                Double Speed Court
+                {SITE_VOICE.homeAgilityTitle}
               </h2>
-              <p className={cn(overlaySubtitleClass, 'mt-3 max-w-[42rem]')}>
-                Change of direction, deceleration, and reactive movement under pressure
-              </p>
-              <p className="mt-5 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
-                The agility side of the game, trained and measured. We stress lateral quickness, sharp cuts, and repeatability so movement holds up when space
-                disappears and the game speeds up.
+              <p className="mt-3 max-w-[42rem] text-[15px] leading-relaxed text-formula-paper/95 md:text-[16px] md:leading-relaxed">
+                {SITE_VOICE.homeAgilityBody}
               </p>
               <Link
                 href={MARKETING_HREF.facility}

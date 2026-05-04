@@ -84,7 +84,7 @@ const HIGHLIGHTS: {
   {
     label: 'Field rentals',
     line: 'Structured deposits · default 2 hr blocks.',
-    more: 'Not the same checkout as hosted birthday parties — separate booking type.',
+    more: 'Not the same checkout as hosted birthday parties - separate booking type.',
     href: MARKETING_HREF.rentals,
     tier: 'quiet',
     band: 'tier2',
@@ -94,7 +94,7 @@ const HIGHLIGHTS: {
   {
     label: 'Events',
     line: 'Corporate, tournaments, large blocks.',
-    more: 'Staff inquiry — separate from field rental deposit checkout.',
+    more: 'Staff inquiry - separate from field rental deposit checkout.',
     href: MARKETING_HREF.events,
     tier: 'quiet',
     band: 'tier2',
@@ -138,13 +138,13 @@ const SECONDARY_PATHS: { label: string; line: string; href: string; tier: 'defau
   },
   {
     label: 'Field rental booking',
-    line: 'Deposits · default 2 hr — not party checkout.',
+    line: 'Deposits · default 2 hr - not party checkout.',
     href: MARKETING_HREF.rentals,
     tier: 'quiet',
   },
   {
     label: 'Event inquiry',
-    line: 'Corporate · tournaments — staff follows up.',
+    line: 'Corporate · tournaments - staff follows up.',
     href: `${MARKETING_HREF.events}#event-request`,
     tier: 'quiet',
   },

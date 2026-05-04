@@ -79,7 +79,7 @@ function snapshotFromStripeSession(session: Stripe.Checkout.Session, sessionId: 
 }
 
 /**
- * Load paid checkout metadata for a field-rental roster link. Safe when Stripe is misconfigured — still returns session id.
+ * Load paid checkout metadata for a field-rental roster link. Safe when Stripe is misconfigured - still returns session id.
  */
 export async function loadFieldRentalCheckoutSnapshot(stripeCheckoutSessionId: string): Promise<FieldRentalAgreementCheckoutSnapshot> {
   const sid = stripeCheckoutSessionId.trim()

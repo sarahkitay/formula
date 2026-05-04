@@ -45,7 +45,7 @@ export function ParentMembershipsLinkedAthletes() {
               </p>
               <p className="mt-1 text-xs text-text-muted">{player.ageGroup}</p>
               <p className="mt-2 text-sm text-text-secondary">
-                {`No membership details in the portal yet. ${SESSION_PACKAGE_EARLY_BIRD.headline}: ${SESSION_PACKAGE_5.sessions} sessions ($${SESSION_PACKAGE_5.priceUsd}) or ${SESSION_PACKAGE_10.sessions} ($${SESSION_PACKAGE_10.priceUsd}) — ${SESSION_PACKAGE_EARLY_BIRD.validThrough} Ask staff at your next visit or assessment to purchase or redeem sessions.`}
+                {`No membership details in the portal yet. ${SESSION_PACKAGE_EARLY_BIRD.headline}: ${SESSION_PACKAGE_5.sessions} sessions ($${SESSION_PACKAGE_5.priceUsd}) or ${SESSION_PACKAGE_10.sessions} ($${SESSION_PACKAGE_10.priceUsd}) - ${SESSION_PACKAGE_EARLY_BIRD.validThrough} Ask staff at your next visit or assessment to purchase or redeem sessions.`}
               </p>
             </div>
           ))

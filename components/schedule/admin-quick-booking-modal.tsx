@@ -485,7 +485,7 @@ export function AdminQuickBookingModal({
               />
               <span>
                 Adds a <strong className="text-text-primary">live calendar</strong> block when you press{' '}
-                <strong className="text-text-primary">Add</strong> — no separate publish step. Turn off for payment-only (no
+                <strong className="text-text-primary">Add</strong> - no separate publish step. Turn off for payment-only (no
                 calendar change).
               </span>
             </label>
@@ -606,7 +606,7 @@ export function AdminQuickBookingModal({
                   className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary focus-visible:ring-2 focus-visible:ring-ring/40"
                 />
                 <span>
-                  <strong className="text-text-primary">Complimentary</strong> — no charge; nothing is posted to
+                  <strong className="text-text-primary">Complimentary</strong> - no charge; nothing is posted to
                   Payments. The draft override label will include “Complimentary”.
                 </span>
               </label>

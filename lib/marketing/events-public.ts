@@ -15,6 +15,8 @@ export type PublicUpcomingEvent = {
   /** When set, the hub shows a CTA link (e.g. full event landing + checkout). */
   href?: string
   ctaLabel?: string
+  /** Extra deep links (e.g. theme anchors, pricing) shown under the card summary. */
+  subLinks?: { label: string; href: string }[]
 }
 
 /** @deprecated Use UPCOMING_PUBLIC_EVENTS (same array). */
@@ -33,18 +35,26 @@ export const UPCOMING_PUBLIC_EVENTS: PublicUpcomingEvent[] = [
     summary: `${SUMMER_CAMP_2026.ageRange} · Mon–Fri 9:00 AM–2:30 PM · eight themed weeks. $${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}/week or $${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd} for a four-week bundle (weeks 1–4 or 5–8).`,
     href: MARKETING_HREF.summerCamp2026,
     ctaLabel: 'See themes & register',
+    subLinks: [
+      { label: 'Pricing', href: `${MARKETING_HREF.summerCamp2026}#pricing` },
+      { label: 'Play Sharp', href: `${MARKETING_HREF.summerCamp2026}#theme-play-sharp` },
+      { label: 'Speed Lab', href: `${MARKETING_HREF.summerCamp2026}#theme-speed-lab` },
+      { label: 'Finish Strong', href: `${MARKETING_HREF.summerCamp2026}#theme-finish-strong` },
+      { label: 'Duel & Dominate', href: `${MARKETING_HREF.summerCamp2026}#theme-duel-dominate` },
+    ],
   },
   {
     id: 'friday-night-friendlies-may-2026',
     title: 'Friday Friendlies',
     summary:
-      'Coach-run pickup for ages 6–13. First night Friday May 8, 2026 — 5:30 arrival, games 6:00–7:30 PM. $20 per player; walk-ups OK. Pre-register online.',
+      'Coach-run pickup for ages 6–13. First night Friday May 8, 2026 - 5:30 arrival, games 6:00–7:30 PM. $20 per player; walk-ups OK. Pre-register online.',
     href: MARKETING_HREF.fridayNightFriendlies,
     ctaLabel: 'See details & save your spot',
+    subLinks: [{ label: 'Pricing & register', href: `${MARKETING_HREF.fridayNightFriendlies}#register` }],
   },
 ]
 
-/** Backward-compatible alias — edit `UPCOMING_PUBLIC_EVENTS` only. */
+/** Backward-compatible alias - edit `UPCOMING_PUBLIC_EVENTS` only. */
 export const SUMMER_EVENT_SECTIONS = UPCOMING_PUBLIC_EVENTS
 
 /** Events hub is always published (request form + paths); use `UPCOMING_PUBLIC_EVENTS.length` for empty state UI only. */

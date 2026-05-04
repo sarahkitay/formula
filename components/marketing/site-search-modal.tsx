@@ -19,9 +19,51 @@ function isEditableTarget(el: EventTarget | null): boolean {
   return Boolean(el.closest('input, textarea, select, [contenteditable="true"]'))
 }
 
-export function SiteSearchModal() {
+export type SiteSearchModalProps = {
+  /** Controlled open state (use with `onOpenChange` + `hideTrigger` for multiple triggers). */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  /** Omit the default icon trigger (parent renders `SiteSearchOpenButton` or drawer row). */
+  hideTrigger?: boolean
+}
+
+export function SiteSearchOpenButton({
+  open,
+  onOpen,
+  className,
+}: {
+  open: boolean
+  onOpen: () => void
+  className?: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={cn(
+        'inline-flex items-center gap-2 rounded-sm border border-formula-frost/18 bg-formula-paper/[0.04] px-2.5 py-1.5',
+        'font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-formula-mist transition-colors',
+        'hover:border-formula-volt/35 hover:text-formula-paper md:px-3 md:py-2 md:text-[10px]',
+        className
+      )}
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      aria-label="Open site search"
+    >
+      <Search className="h-3.5 w-3.5 shrink-0 text-formula-volt/90 md:h-4 md:w-4" aria-hidden />
+      <span className="hidden sm:inline">Search</span>
+      <kbd className="hidden rounded border border-formula-frost/25 bg-formula-deep/80 px-1.5 py-0.5 font-mono text-[8px] font-normal text-formula-mist/90 lg:inline">
+        ⌘K
+      </kbd>
+    </button>
+  )
+}
+
+export function SiteSearchModal({ open: openProp, onOpenChange, hideTrigger = false }: SiteSearchModalProps) {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const controlled = openProp !== undefined
+  const open = controlled ? openProp : internalOpen
   const [q, setQ] = useState('')
   const [active, setActive] = useState(0)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -56,11 +98,19 @@ export function SiteSearchModal() {
     }
   }, [open])
 
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (!controlled) setInternalOpen(next)
+      onOpenChange?.(next)
+    },
+    [controlled, onOpenChange]
+  )
+
   const close = useCallback(() => {
     setOpen(false)
     setQ('')
     setActive(0)
-  }, [])
+  }, [setOpen])
 
   const go = useCallback(
     (item: SiteSearchItem) => {
@@ -75,12 +125,16 @@ export function SiteSearchModal() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         if (isEditableTarget(e.target) && !panelRef.current?.contains(e.target as Node)) return
         e.preventDefault()
-        setOpen(o => !o)
+        if (controlled) {
+          onOpenChange?.(!open)
+        } else {
+          setInternalOpen(o => !o)
+        }
       }
     }
     window.addEventListener('keydown', onPalette)
     return () => window.removeEventListener('keydown', onPalette)
-  }, [])
+  }, [controlled, onOpenChange, open])
 
   useEffect(() => {
     if (!open) return
@@ -113,27 +167,10 @@ export function SiteSearchModal() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className={cn(
-          'inline-flex items-center gap-2 rounded-sm border border-formula-frost/18 bg-formula-paper/[0.04] px-2.5 py-1.5',
-          'font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-formula-mist transition-colors',
-          'hover:border-formula-volt/35 hover:text-formula-paper md:px-3 md:py-2 md:text-[10px]'
-        )}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label="Open site search"
-      >
-        <Search className="h-3.5 w-3.5 shrink-0 text-formula-volt/90 md:h-4 md:w-4" aria-hidden />
-        <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden rounded border border-formula-frost/25 bg-formula-deep/80 px-1.5 py-0.5 font-mono text-[8px] font-normal text-formula-mist/90 lg:inline">
-          ⌘K
-        </kbd>
-      </button>
+      {!hideTrigger ? <SiteSearchOpenButton open={open} onOpen={() => setOpen(true)} /> : null}
 
       {open ? (
-        <div className="fixed inset-0 z-[100]" data-site-search>
+        <div className="fixed inset-0 z-[110]" data-site-search>
           <button
             type="button"
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -207,7 +244,7 @@ export function SiteSearchModal() {
 
             {q.trim() && results.length === 0 ? (
               <p className="border-t border-formula-frost/10 px-4 py-3 text-sm text-formula-mist">
-                No matches — try “minis”, “rentals”, “assessment”, or “parties”.
+                No matches - try “minis”, “rentals”, “assessment”, or “parties”.
               </p>
             ) : null}
           </div>

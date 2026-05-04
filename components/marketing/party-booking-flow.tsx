@@ -110,7 +110,7 @@ export function PartyBookingFlow() {
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-formula-mist">Book online</p>
         <h3 className="mt-1 text-lg font-semibold text-formula-paper">Party deposit · ${PARTY_BOOKING_1K_CHECKOUT.priceUsd.toLocaleString()}</h3>
         <p className="mt-2 max-w-2xl font-mono text-[11px] leading-relaxed text-formula-frost/85">
-          {PARTY_BOOKING_1K_CHECKOUT.summary} Complete both sections — your details are saved with the deposit, and you and our
+          {PARTY_BOOKING_1K_CHECKOUT.summary} Complete both sections - your details are saved with the deposit, and you and our
           events team each get a confirmation email.
         </p>
       </div>
@@ -157,7 +157,7 @@ export function PartyBookingFlow() {
         <div className="space-y-4">
           <p className="font-mono text-[10px] font-bold uppercase tracking-wide text-formula-volt">Field rental window (required)</p>
           <p className="font-mono text-[10px] text-formula-frost/75">
-            Same picker as public field rentals — helps staff align turf / indoor holds with your party.
+            Same picker as public field rentals - helps staff align turf / indoor holds with your party.
           </p>
           <label className="block font-mono text-[10px] text-formula-mist">
             Field

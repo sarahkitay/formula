@@ -23,7 +23,7 @@ export function YouthPackageAckStrip() {
         }}
         className="mt-4 inline-flex h-10 items-center border border-formula-volt/50 bg-formula-volt/90 px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-black disabled:cursor-default disabled:opacity-60"
       >
-        {done ? 'Saved on this browser' : 'I purchased a package — unlock calendar booking'}
+        {done ? 'Saved on this browser' : 'I purchased a package - unlock calendar booking'}
       </button>
     </div>
   )

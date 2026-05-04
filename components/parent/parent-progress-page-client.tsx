@@ -143,7 +143,7 @@ export function ParentProgressPageClient() {
 
         <ParentSoftBanner>
           Formula shares progress constructively. If you don&apos;t see data yet, check back after your athlete&apos;s
-          assessment — or follow up with the front desk. For the full report experience, open{' '}
+          assessment - or follow up with the front desk. For the full report experience, open{' '}
           <Link href="/parent/fpi-report" className={parentPortalTextLink}>
             FPI reports
           </Link>
@@ -154,7 +154,7 @@ export function ParentProgressPageClient() {
           <div className="rounded-xl border border-border bg-surface p-6 text-center">
             <p className="text-sm font-medium text-text-primary">No linked athletes yet</p>
             <p className="mt-2 text-sm text-text-muted">
-              After registration and linking, progress will show here. No data collected until an assessment is on file —
+              After registration and linking, progress will show here. No data collected until an assessment is on file -
               follow up post-assessment if you expected to see results.
             </p>
           </div>
@@ -179,7 +179,7 @@ export function ParentProgressPageClient() {
         <ParentPanel title="Recent focus" eyebrow="FROM ASSESSMENTS">
           <p className="text-sm leading-relaxed text-formula-frost/82">
             {recentFocusText ??
-              'No notes on file yet. After staff complete an assessment, a summary can appear here — check back post-assessment or ask at the desk.'}
+              'No notes on file yet. After staff complete an assessment, a summary can appear here - check back post-assessment or ask at the desk.'}
           </p>
         </ParentPanel>
       </div>

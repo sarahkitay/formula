@@ -45,7 +45,7 @@ export function ParentPortalQuickSearch() {
               setOpen(true)
             }}
             onFocus={() => setOpen(true)}
-            placeholder="Search portal — e.g. book assessment, progress, schedule…"
+            placeholder="Search portal - e.g. book assessment, progress, schedule…"
             className={cn(
               'w-full rounded-sm border border-formula-frost/15 bg-formula-paper/[0.04] py-2.5 pl-10 pr-3',
               'font-sans text-[13px] font-normal normal-case tracking-normal text-formula-paper',
@@ -76,7 +76,7 @@ export function ParentPortalQuickSearch() {
       ) : null}
       {open && q.trim() && results.length === 0 ? (
         <p className="absolute z-50 mt-1 w-full rounded-sm border border-formula-frost/15 bg-formula-deep/95 px-3 py-2 text-sm text-formula-mist">
-          No matches — try “schedule”, “progress”, or “billing”.
+          No matches - try “schedule”, “progress”, or “billing”.
         </p>
       ) : null}
     </div>

@@ -48,7 +48,7 @@ export default async function CoachAttendancePage() {
           <StatCard
             label="Checked in"
             value={<CountUp end={checkedIn} format="integer" />}
-            sublabel="No check-in store yet — rate N/A until check_ins exists"
+            sublabel="No check-in store yet - rate N/A until check_ins exists"
           />
         </div>
 

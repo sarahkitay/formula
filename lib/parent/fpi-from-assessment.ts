@@ -27,7 +27,7 @@ export function fpiReportFromPillarScores(
   const domains = DOMAIN_LABELS.map(({ key, name }) => {
     const n = Number(o[key])
     const value = Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : 0
-    return { name, value, note: value > 0 ? 'From latest assessment' : '—' }
+    return { name, value, note: value > 0 ? 'From latest assessment' : '-' }
   })
 
   const values = domains.map(d => d.value).filter(v => v > 0)

@@ -1,5 +1,5 @@
 -- Skills Check windows: weekdays only, five starts per day, 8:00–16:00 Los Angeles wall time
--- (60 min blocks; last start 15:00 ends 16:00 — adjust times array if you want 16:00 starts ending 17:00).
+-- (60 min blocks; last start 15:00 ends 16:00 - adjust times array if you want 16:00 starts ending 17:00).
 --
 -- Parent portal vs this data:
 --   • Clearing ONLY assessment_slots / assessment_bookings does NOT delete auth users, profiles,

@@ -160,7 +160,7 @@ export function PaidInPersonFieldRentalInviteForm() {
         </label>
 
         <label className="flex flex-col gap-1.5 md:col-span-2">
-          <span className="text-formula-mist">Booking ref (optional — auto if empty)</span>
+          <span className="text-formula-mist">Booking ref (optional - auto if empty)</span>
           <input name="rentalRef" type="text" maxLength={120} className={fieldBase} placeholder="Internal id or receipt #" />
         </label>
         <label className="flex flex-col gap-1.5 md:col-span-2">

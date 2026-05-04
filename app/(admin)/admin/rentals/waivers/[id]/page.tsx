@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!agreement) return { title: 'Waiver not found' }
   return {
     title: `Waiver · ${agreement.participant_name}`,
-    description: `${formatRentalTypeForDisplay(agreement.rental_type)} — submitted ${agreement.submitted_at ?? ''}`,
+    description: `${formatRentalTypeForDisplay(agreement.rental_type)} - submitted ${agreement.submitted_at ?? ''}`,
   }
 }
 
@@ -80,7 +80,7 @@ export default async function FieldRentalWaiverPage({ params }: Props) {
         purchaserName: inv.purchaser_name ?? null,
         purchaserEmail: inv.purchaser_email ?? null,
         paidLabel: formatCheckoutAmount(inv.checkout_amount_total_cents ?? null, inv.checkout_currency ?? null),
-        paidAtLabel: inv.checkout_completed_at ? formatFacilityDateTimeShort(inv.checkout_completed_at) : '—',
+        paidAtLabel: inv.checkout_completed_at ? formatFacilityDateTimeShort(inv.checkout_completed_at) : '-',
         sessionSummary: formatRosterInviteBookingSummary({
           booking_rental_field: inv.booking_rental_field ?? null,
           booking_rental_window: inv.booking_rental_window ?? null,

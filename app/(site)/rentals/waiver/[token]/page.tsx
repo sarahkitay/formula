@@ -77,7 +77,7 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
           Share (same link for everyone): {shareUrl}
         </p>
         <p className="mt-2 text-xs text-formula-frost/75">
-          Coaches: send this URL once — parents pick <strong className="text-formula-paper/90">Sign the waiver</strong> or{' '}
+          Coaches: send this URL once - parents pick <strong className="text-formula-paper/90">Sign the waiver</strong> or{' '}
           <strong className="text-formula-paper/90">RSVP only</strong> if they already signed digitally with us.
         </p>
       </div>

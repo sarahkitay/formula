@@ -1,6 +1,6 @@
 import type { Player } from '@/types'
 
-/** Populated from Supabase `players` via `/api/facility/players` in admin UI — no fabricated roster. */
+/** Populated from Supabase `players` via `/api/facility/players` in admin UI - no fabricated roster. */
 export const mockPlayers: Player[] = []
 
 export function getPlayerById(id: string): Player | undefined {

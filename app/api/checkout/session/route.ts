@@ -390,7 +390,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            'Stripe rejected the server API key (401). For checkout, set STRIPE_SECRET_KEY to your standard Secret key (sk_live_… or sk_test_…) from Stripe Dashboard → Developers → API keys — use Reveal secret key, not Publishable. If you intend to use a restricted key (rk_…), it must be valid, not revoked, and allowed to create Checkout Sessions; otherwise Stripe returns invalid key. Details: ' +
+            'Stripe rejected the server API key (401). For checkout, set STRIPE_SECRET_KEY to your standard Secret key (sk_live_… or sk_test_…) from Stripe Dashboard → Developers → API keys - use Reveal secret key, not Publishable. If you intend to use a restricted key (rk_…), it must be valid, not revoked, and allowed to create Checkout Sessions; otherwise Stripe returns invalid key. Details: ' +
             e.message,
         },
         { status: 503 }

@@ -25,7 +25,7 @@ function buildInvoiceText(params: { payeeName: string; amount: string; memo: str
 function buildSubject(payeeName: string, amount: string): string {
   const who = payeeName.trim() || 'Customer'
   const amt = amount.trim() || 'Amount TBD'
-  return `Formula invoice — ${who} — ${amt}`
+  return `Formula invoice - ${who} - ${amt}`
 }
 
 function clientAmountLooksValid(amountRaw: string): boolean {
@@ -105,7 +105,7 @@ export function InvoiceSendForm() {
       }
       setPaymentUrl(data.url)
     } catch {
-      setLinkError('Network error — try again')
+      setLinkError('Network error - try again')
       setPaymentUrl(null)
     } finally {
       setLinkLoading(false)

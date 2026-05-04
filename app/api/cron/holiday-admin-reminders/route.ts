@@ -29,7 +29,7 @@ export async function GET(req: Request) {
   const due = holidaysDueForLeadReminder(today, LEAD_DAYS)
 
   for (const h of due) {
-    const subject = `[Formula] ${h.name} in 30 days (${h.ymd}) — plan a special event`
+    const subject = `[Formula] ${h.name} in 30 days (${h.ymd}) - plan a special event`
     const html = `<p>Hi team,</p>
 <p><strong>${escapeHtml(h.name)}</strong> is <strong>30 days away</strong> (date <strong>${escapeHtml(h.ymd)}</strong> on the ${escapeHtml(TZ)} calendar).</p>
 <p>Please put together a plan for any <strong>special event</strong>, promotion, staffing, or programming you want around this holiday.</p>

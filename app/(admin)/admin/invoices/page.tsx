@@ -9,7 +9,7 @@ export default function AdminInvoicesPage() {
       <div className="mx-auto max-w-2xl space-y-6">
         <PageHeader
           title="Invoices"
-          subtitle="Create a Stripe payment link for the amount you enter, then share it by Mail, Messages, or copy — same message body everywhere."
+          subtitle="Create a Stripe payment link for the amount you enter, then share it by Mail, Messages, or copy - same message body everywhere."
         />
         <div className="rounded-xl border border-border-subtle bg-surface-elevated/40 p-5 sm:p-6">
           <div className="mb-5 flex items-center gap-2 text-text-muted">

@@ -24,10 +24,10 @@ const idle = (sectionName: string, surfaceType: string, capacity: string): Floor
   sectionName,
   surfaceType,
   capacity,
-  leadProgram: '—',
-  groupLabel: '—',
-  window: '—',
-  leadCoachName: '—',
+  leadProgram: '-',
+  groupLabel: '-',
+  window: '-',
+  leadCoachName: '-',
   yourRole: 'rotation',
 })
 

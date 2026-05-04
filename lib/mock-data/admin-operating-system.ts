@@ -1,5 +1,5 @@
 /**
- * Admin OS types + static copy. Operational numbers come from Supabase / APIs — no fabricated clients.
+ * Admin OS types + static copy. Operational numbers come from Supabase / APIs - no fabricated clients.
  */
 
 import type { FpiPillar } from '@/lib/admin/fpi-weights'
@@ -177,10 +177,10 @@ export const clinicRows: {
 export const rentalPackages: { category: string; active: number; mrr: number }[] = []
 
 export const eventsLayerSummary = {
-  camps: { summerWeeks: 0, enrolled: 0, conversionToMembership: '—' },
-  tournaments: { perCycle: 0, nextDate: '—', fieldsBooked: 0 },
+  camps: { summerWeeks: 0, enrolled: 0, conversionToMembership: '-' },
+  tournaments: { perCycle: 0, nextDate: '-', fieldsBooked: 0 },
   parties: { fixedWindows: 0, thisMonth: 0 },
-  footbot: { sundayStandalone: false, nextSlot: '—', mode: '—' },
+  footbot: { sundayStandalone: false, nextSlot: '-', mode: '-' },
 }
 
 export const fpiWorkflowQueue: { id: string; athlete: string; type: string; due: string; pillarGap: FpiPillar }[] = []

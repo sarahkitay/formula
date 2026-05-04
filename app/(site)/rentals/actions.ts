@@ -31,7 +31,7 @@ function getRequiredString(formData: FormData, key: string): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
-/** Coach / renter booking waiver — must match form values. */
+/** Coach / renter booking waiver - must match form values. */
 const COACH_BOOKING_RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
 
 export async function submitFieldRentalAgreement(
@@ -195,7 +195,7 @@ export async function submitFieldRentalAgreement(
       ? `<li><strong>Roster link</strong>: invite in use · expected ${rosterExpected} waivers (counts in admin Rentals)</li>`
       : ''
 
-  // Roster invite: email ops for each new signer until the roster is full (then skip — checkout/payment emails still fire from Stripe).
+  // Roster invite: email ops for each new signer until the roster is full (then skip - checkout/payment emails still fire from Stripe).
   let notifyRosterWaiverToAdmin = true
   if (waiverInviteId && rosterExpected != null) {
     const signed = await countWaiversForInviteId(waiverInviteId)
@@ -218,7 +218,7 @@ export async function submitFieldRentalAgreement(
         <li><strong>Team / org</strong>: ${escapeHtml(organizationName)}</li>
         <li><strong>DOB</strong>: ${escapeHtml(participantDob)}</li>
         <li><strong>Printed signer</strong>: ${escapeHtml(signatureName)}</li>
-        <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '—'}</li>
+        <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '-'}</li>
         ${rosterLine}
       </ul>
       <p>Signature image is stored securely with this waiver for staff review.</p>
@@ -230,7 +230,7 @@ export async function submitFieldRentalAgreement(
   return {
     ok: true,
     message: waiverInviteId
-      ? 'Waiver saved. The roster count updates on this page — share the same link with anyone who has not signed yet.'
+      ? 'Waiver saved. The roster count updates on this page - share the same link with anyone who has not signed yet.'
       : 'Agreement saved.',
   }
 }

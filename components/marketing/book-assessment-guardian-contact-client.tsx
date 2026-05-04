@@ -61,8 +61,8 @@ export function BookAssessmentGuardianContactClient({
         <h2 id="ba-account-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
           Your account
         </h2>
-        <p className="mt-2 text-sm font-medium text-formula-paper">{guardianFullName.trim() || '—'}</p>
-        <p className="mt-1 text-[13px] text-formula-frost/75">{guardianEmail.trim() || '—'}</p>
+        <p className="mt-2 text-sm font-medium text-formula-paper">{guardianFullName.trim() || '-'}</p>
+        <p className="mt-1 text-[13px] text-formula-frost/75">{guardianEmail.trim() || '-'}</p>
         <p className="mt-4 text-[12px] leading-relaxed text-formula-frost/65">
           Receipts and Skills Check confirmations use this email. Update it in the portal if it needs to change.
         </p>

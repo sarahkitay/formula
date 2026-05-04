@@ -27,13 +27,14 @@ type AdminPaymentStreamProps = {
   maxRows?: number
 }
 
+
 export function AdminPaymentStream({ configured, initialPayments, maxRows = 10 }: AdminPaymentStreamProps) {
   const [payments, setPayments] = useState<Payment[]>(() => initialPayments.slice(0, maxRows))
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const remove = useCallback(async (payment: Payment) => {
     const ok = window.confirm(
-      'Remove this entry from the admin ledger? This does not refund or cancel anything in Stripe — it only deletes the stored row.'
+      'Remove this entry from the admin ledger? This does not refund or cancel anything in Stripe - it only deletes the stored row.'
     )
     if (!ok) return
     setDeletingId(payment.id)

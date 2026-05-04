@@ -7,7 +7,7 @@ import { careerPositionLabel } from '@/lib/careers/career-positions'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 
 function clip(s: string | null | undefined, max: number) {
-  if (!s) return '—'
+  if (!s) return '-'
   return s.length <= max ? s : `${s.slice(0, max)}…`
 }
 
@@ -30,7 +30,7 @@ export default async function AdminCareersPage() {
         <AdminPanel title="Applications" eyebrow="HIRING">
           {!serviceConfigured ? (
             <p className="font-mono text-[11px] text-amber-200/90">
-              Supabase service role is not set — applications cannot be loaded. Configure the key to enable this list.
+              Supabase service role is not set - applications cannot be loaded. Configure the key to enable this list.
             </p>
           ) : rows.length === 0 ? (
             <p className="font-mono text-[11px] text-formula-mist">
@@ -57,7 +57,7 @@ export default async function AdminCareersPage() {
                 careerPositionLabel(r.position),
                 r.full_name,
                 r.email,
-                r.phone ?? '—',
+                r.phone ?? '-',
                 clip(r.availability, 36),
                 clip(r.coaching_background, 40),
                 clip(r.message, 72),

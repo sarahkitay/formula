@@ -181,7 +181,7 @@ export default function CampsPage() {
 
   <h2>Registration</h2>
   <p>
-    <strong>Summer Camp 2026</strong> — themed weeks, Mon–Fri day schedule, and live pricing are on the{' '}
+    <strong>Summer Camp 2026</strong> - themed weeks, Mon–Fri day schedule, and live pricing are on the{' '}
     <Link href={MARKETING_HREF.summerCamp2026} className="text-formula-volt underline-offset-2 hover:underline">
       Summer Camp 2026
     </Link>{' '}

@@ -21,7 +21,7 @@ export type RosterInvitePickOption = {
 }
 
 function clip(s: string | null, max: number) {
-  if (!s) return '—'
+  if (!s) return '-'
   return s.length <= max ? s : `${s.slice(0, max)}…`
 }
 
@@ -91,7 +91,7 @@ export function SignedRentalWaiversLinkTable({
           </thead>
           <tbody>
             {rows.map(r => {
-              const bookedBy = [r.roster_organizer_name, r.roster_organizer_email].filter(Boolean).join(' · ') || '—'
+              const bookedBy = [r.roster_organizer_name, r.roster_organizer_email].filter(Boolean).join(' · ') || '-'
               const selectVal = r.waiver_invite_id ?? ''
               return (
                 <tr key={r.id} className="border-b border-formula-frost/[0.08] text-formula-frost/90">
@@ -128,7 +128,7 @@ export function SignedRentalWaiversLinkTable({
                       disabled={busyId === r.id}
                       onChange={e => void onLinkSelect(r.id, e.target.value)}
                     >
-                      <option value="">— Not linked</option>
+                      <option value="">- Not linked</option>
                       {inviteOptions.map(opt => (
                         <option key={opt.id} value={opt.id}>
                           {opt.label}
@@ -157,10 +157,10 @@ export function SignedRentalWaiversLinkTable({
                   </td>
                   <td className="py-2 pr-4 align-top">{r.participant_email}</td>
                   <td className="py-2 pr-4 align-top">{r.participant_dob}</td>
-                  <td className="py-2 pr-4 align-top">{r.participant_count != null ? String(r.participant_count) : '—'}</td>
+                  <td className="py-2 pr-4 align-top">{r.participant_count != null ? String(r.participant_count) : '-'}</td>
                   <td className="py-2 pr-4 align-top">{r.signature_name}</td>
-                  <td className="py-2 pr-4 align-top">{r.parent_guardian_name ?? '—'}</td>
-                  <td className="py-2 pr-4 align-top">{r.organization_name ?? '—'}</td>
+                  <td className="py-2 pr-4 align-top">{r.parent_guardian_name ?? '-'}</td>
+                  <td className="py-2 pr-4 align-top">{r.organization_name ?? '-'}</td>
                   <td className="py-2 pr-4 align-top">{clip(r.notes, 48)}</td>
                 </tr>
               )

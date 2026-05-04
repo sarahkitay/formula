@@ -14,7 +14,7 @@ export const PARENT_PROGRESS_PLAYER_SELECT = `
   )
 ` as const
 
-/** Same shape without `pillar_scores` — avoids PostgREST errors on older databases until migrated. */
+/** Same shape without `pillar_scores` - avoids PostgREST errors on older databases until migrated. */
 export const PARENT_PROGRESS_PLAYER_SELECT_LEGACY = `
   id,
   first_name,

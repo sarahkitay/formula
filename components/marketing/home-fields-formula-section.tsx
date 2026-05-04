@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { HOME_SPLIT_PHOTO_QUALITY, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { SITE_VOICE } from '@/lib/marketing/site-voice'
 
 const FIELDS_PHOTO_SRC = '/8E3A3278.jpg'
 
@@ -36,50 +37,27 @@ export function HomeFieldsFormulaSection() {
 
         <div className="flex flex-col justify-center border-b border-formula-frost/10 bg-formula-deep px-8 py-14 md:px-12 md:py-16 lg:px-16">
           <ScrollFadeIn>
-            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/60">
-              State-of-the-art technology. Actual results.
-            </p>
-
             <h2
               id="fields-formula-heading"
-              className="mt-4 font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
+              className="font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
             >
-              Footbot
+              {SITE_VOICE.homeBallControlTitle}
             </h2>
 
-            <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">
-              Precision ball training that captures technical reps with data, not just repetition for repetition&apos;s sake.
-            </p>
-
-            <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">
-              <strong className="font-medium text-formula-paper">The Formula</strong> is how we track progress and prove it. After an assessment, athletes
-              receive scores across six measurable pillars. Objective data from our technology, reviewed by staff, tells us where to focus and how to measure
-              improvement over time.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              {['Precision reps', 'Data capture', 'Technical work', 'Measured progress'].map(tag => (
-                <span
-                  key={tag}
-                  className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-volt/70"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">{SITE_VOICE.homeBallControlBody}</p>
 
             <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
               <Link
-                href={MARKETING_HREF.fpi}
+                href={MARKETING_HREF.footbot}
                 className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
               >
-                See how The Formula works →
+                Footbot →
               </Link>
               <Link
-                href={MARKETING_HREF.facility}
+                href={MARKETING_HREF.fpi}
                 className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/80 transition-colors hover:text-formula-volt"
               >
-                Tour the facility →
+                The Formula →
               </Link>
             </div>
           </ScrollFadeIn>

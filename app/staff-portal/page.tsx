@@ -397,7 +397,7 @@ export default function StaffPortalHubPage() {
                                 [pl.id]: { ...prev[pl.id], [key]: e.target.value },
                               }))
                             }
-                            placeholder="—"
+                            placeholder="-"
                             className="h-10 w-full border border-formula-frost/20 bg-formula-paper/[0.04] px-2.5 font-sans text-[13px] font-normal normal-case tracking-normal text-formula-paper placeholder:text-formula-mist/45 outline-none [-moz-appearance:textfield] focus:border-formula-volt/40 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                         </label>

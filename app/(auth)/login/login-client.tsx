@@ -195,7 +195,7 @@ export function LoginPageClient() {
                 <h2 className="text-xl font-semibold text-formula-paper">Staff sign-in</h2>
                 <div className="mt-5 space-y-1.5">
                   <p className="text-[11px] font-medium uppercase tracking-wider text-formula-mist">
-                    Who is signing in (must match your profile role — we route coaches to Coach OS and admins to Admin OS)
+                    Who is signing in (must match your profile role - we route coaches to Coach OS and admins to Admin OS)
                   </p>
                   <div className="grid grid-cols-2 gap-2.5">
                     {(Object.entries(staffRoleConfig) as [StaffRole, (typeof staffRoleConfig)[StaffRole]][]).map(

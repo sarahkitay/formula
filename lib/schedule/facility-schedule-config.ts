@@ -13,7 +13,7 @@ function pad2(n: number): string {
 
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
 
-/** Civil calendar day difference (ymd strings, UTC noon anchor — safe for whole days). */
+/** Civil calendar day difference (ymd strings, UTC noon anchor - safe for whole days). */
 function civilDaysBetweenUtc(fromYmd: string, toYmd: string): number {
   const [fy, fm, fd] = fromYmd.split('-').map(Number)
   const [ty, tm, td] = toYmd.split('-').map(Number)
@@ -76,7 +76,7 @@ export interface FacilitySchedulePublishedConfig {
   totalWeeksInCycle: number
   nextCycleStartDisplay: string
   overrides: ScheduleOverride[]
-  /** ISO YYYY-MM-DD — entire facility closed; all slots removed for that calendar day */
+  /** ISO YYYY-MM-DD - entire facility closed; all slots removed for that calendar day */
   blockedDates: string[]
 }
 

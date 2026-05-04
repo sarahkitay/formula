@@ -175,7 +175,7 @@ export function PortalSignupClient() {
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-formula-mist">Your athletes · portal header</p>
         <p className="mt-2 text-[14px] leading-relaxed text-formula-frost/88">
           Names, birth date, and age group are saved to your athlete profile. The age group controls which youth training blocks you can book in the parent
-          portal — choose the band your child trains in (ask staff if unsure).
+          portal - choose the band your child trains in (ask staff if unsure).
         </p>
         <div className="mt-5 space-y-4">
           {kids.map((k, i) => (

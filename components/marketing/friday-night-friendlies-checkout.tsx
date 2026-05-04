@@ -33,22 +33,22 @@ export function FridayNightFriendliesCheckout() {
   return (
     <div
       id="register"
-      className="not-prose mt-10 rounded-xl border border-formula-frost/16 bg-formula-paper/[0.04] p-5 sm:p-7"
+      className="not-prose mt-8 scroll-mt-28 rounded-xl border border-formula-frost/16 bg-formula-paper/[0.04] p-4 sm:mt-10 sm:p-7"
     >
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Save your spot</p>
       <h2 className="mt-2 font-mono text-sm font-semibold uppercase tracking-[0.14em] text-formula-paper">Pre-register & pay</h2>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-formula-frost/80">
-        {pricePerPlayerUsd} per player for the night you are booking toward (starting May 8, 2026). Walk-ups are still welcome at the desk — pre-pay holds your
+        {pricePerPlayerUsd} per player for the night you are booking toward (starting May 8, 2026). Walk-ups are still welcome at the desk - pre-pay holds your
         spot and speeds check-in.
       </p>
-      <div className="mt-6 flex max-w-md flex-col gap-4">
+      <div className="mt-5 flex max-w-md flex-col gap-3.5 sm:mt-6 sm:gap-4">
         <label className="flex flex-col gap-1.5">
           <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-formula-frost/75">Guardian / payer full name</span>
           <input
             value={guardianName}
             onChange={e => setGuardianName(e.target.value)}
             autoComplete="name"
-            className="min-h-11 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper placeholder:text-formula-mist/50"
+            className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper placeholder:text-formula-mist/50 sm:min-h-11 sm:py-2 sm:text-[13px]"
             placeholder="Full name"
           />
         </label>
@@ -59,7 +59,7 @@ export function FridayNightFriendliesCheckout() {
             value={contactEmail}
             onChange={e => setContactEmail(e.target.value)}
             autoComplete="email"
-            className="min-h-11 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper placeholder:text-formula-mist/50"
+            className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper placeholder:text-formula-mist/50 sm:min-h-11 sm:py-2 sm:text-[13px]"
             placeholder="you@example.com"
           />
         </label>
@@ -69,7 +69,7 @@ export function FridayNightFriendliesCheckout() {
             value={playerNames}
             onChange={e => setPlayerNames(e.target.value)}
             rows={2}
-            className="resize-y rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper placeholder:text-formula-mist/50"
+            className="resize-y rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper placeholder:text-formula-mist/50 sm:py-2 sm:text-[13px]"
             placeholder="e.g. Jordan or Jordan, Riley"
           />
         </label>
@@ -78,7 +78,7 @@ export function FridayNightFriendliesCheckout() {
           <select
             value={playerCount}
             onChange={e => setPlayerCount(parseInt(e.target.value, 10))}
-            className="min-h-11 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper"
+            className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper sm:min-h-11 sm:py-2 sm:text-[13px]"
           >
             {Array.from({ length: maxPlayers - minPlayers + 1 }, (_, i) => minPlayers + i).map(n => (
               <option key={n} value={n}>

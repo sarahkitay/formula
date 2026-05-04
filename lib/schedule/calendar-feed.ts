@@ -304,7 +304,7 @@ export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
           id: `partyb-${row.id}`,
           category: 'party',
           label,
-          sublabel: `${row.rental_field_id as string} · HC ${row.rental_headcount ?? '—'}`,
+          sublabel: `${row.rental_field_id as string} · HC ${row.rental_headcount ?? '-'}`,
           dayIndex,
           startMinute,
           endMinute,

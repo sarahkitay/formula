@@ -338,7 +338,7 @@ export default function ParentBookingsPage() {
       if (r.ok) setPendingGridEnroll(null)
       else if ('duplicate' in r && r.duplicate) {
         setPendingGridEnroll(null)
-        setBookingFlash('Already enrolled — refreshed your list.')
+        setBookingFlash('Already enrolled - refreshed your list.')
       } else if ('message' in r && r.message) setBookingFlash(r.message)
     } finally {
       setGridConfirmBusy(false)
@@ -360,7 +360,7 @@ export default function ParentBookingsPage() {
     setRowActionId(slot.id)
     try {
       const r = await persistPayload(payload)
-      if (!r.ok && 'duplicate' in r && r.duplicate) setBookingFlash('Already enrolled — list updated.')
+      if (!r.ok && 'duplicate' in r && r.duplicate) setBookingFlash('Already enrolled - list updated.')
       else if (!r.ok && 'message' in r && r.message) setBookingFlash(r.message)
     } finally {
       setRowActionId(null)
@@ -584,7 +584,7 @@ export default function ParentBookingsPage() {
                     {sessionsLeft === 0 ? 'No sessions remaining' : `${sessionsLeft} sessions remaining`}
                   </p>
                   <p className="mt-0.5 text-xs text-text-muted">
-                    Session balance in the portal isn&apos;t connected yet — confirm credits at the desk. You can still
+                    Session balance in the portal isn&apos;t connected yet - confirm credits at the desk. You can still
                     save blocks here; staff reconcile capacity and membership.
                   </p>
                 </div>

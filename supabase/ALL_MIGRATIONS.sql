@@ -2,7 +2,7 @@
 -- FORMULA: consolidated schema (idempotent where possible)
 --
 -- Paste the whole file into the Supabase SQL editor and run once. Most sections use
--- IF NOT EXISTS / OR REPLACE / DROP IF EXISTS — safe to re-run when objects already exist.
+-- IF NOT EXISTS / OR REPLACE / DROP IF EXISTS - safe to re-run when objects already exist.
 --
 -- Optional: comment out or skip the block labeled SOURCE: assessment_slots_seed_la_weekdays.sql
 -- if you already have assessment slot rows you want to keep (that file inserts LA weekday slots).
@@ -16,7 +16,7 @@
 -- Supabase flags this script because it contains DROP POLICY (and a small DO block that drops
 -- every policy on public.profiles before recreating a safe one). Nothing here DROP TABLE or
 -- TRUNCATEs data. Those drops are intentional so policies can be recreated idempotently.
--- If you already ran these migrations before, confirming is still normal—the editor cannot
+-- If you already ran these migrations before, confirming is still normal-the editor cannot
 -- tell "safe" drops from dangerous ones. Review once, then proceed if this matches your repo.
 -- =============================================================================
 
@@ -399,7 +399,7 @@ create policy "assessment_bookings_select_own"
 -- SOURCE: assessment_slots_seed_la_weekdays.sql
 -- -----------------------------------------------------------------------------
 -- Skills Check windows: weekdays only, five starts per day, 8:00–16:00 Los Angeles wall time
--- (60 min blocks; last start 15:00 ends 16:00 — adjust times array if you want 16:00 starts ending 17:00).
+-- (60 min blocks; last start 15:00 ends 16:00 - adjust times array if you want 16:00 starts ending 17:00).
 --
 -- Parent portal vs this data:
 --   • Clearing ONLY assessment_slots / assessment_bookings does NOT delete auth users, profiles,

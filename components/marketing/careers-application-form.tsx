@@ -61,7 +61,7 @@ export function CareersApplicationForm() {
           name="coachingBackground"
           className={textareaClass}
           rows={4}
-          placeholder="Licenses, age groups coached, playing level — optional for front desk."
+          placeholder="Licenses, age groups coached, playing level - optional for front desk."
         />
       </label>
 

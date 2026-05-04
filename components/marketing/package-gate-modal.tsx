@@ -16,7 +16,7 @@ type Props = {
   open: boolean
   onClose: () => void
   bandLabel: string
-  /** e.g. U10 / U12 — copy only */
+  /** e.g. U10 / U12 - copy only */
   rosterAgeHint: string
   /** When set, surface Formula Minis / weekend published pricing instead of generic session packages. */
   scheduleAgeBand?: ScheduleAgeBand | null
@@ -50,7 +50,7 @@ export function PackageGateModal({ open, onClose, bandLabel, rosterAgeHint, sche
             {isMinisBand ? (
               <ul className="mt-2 space-y-1.5 text-xs leading-snug text-black/90">
                 <li>
-                  <strong>Weekday Formula Minis</strong> (ages 2–3): {FORMULA_MINIS_SIX_WEEK.label} —{' '}
+                  <strong>Weekday Formula Minis</strong> (ages 2–3): {FORMULA_MINIS_SIX_WEEK.label} -{' '}
                   <strong>${FORMULA_MINIS_SIX_WEEK.priceUsd}</strong> ({FORMULA_MINIS_SIX_WEEK.sessionsInPack} sessions · ~$
                   {FORMULA_MINIS_SIX_WEEK.perSessionUsd}/session).
                 </li>
@@ -62,14 +62,14 @@ export function PackageGateModal({ open, onClose, bandLabel, rosterAgeHint, sche
             ) : (
               <ul className="mt-2 space-y-1.5 text-xs leading-snug text-black/90">
                 <li>
-                  <strong>Sunday Weekend Program</strong> (ages 2–5): Formula Juniors ages 4 &amp; 5 —{' '}
+                  <strong>Sunday Weekend Program</strong> (ages 2–5): Formula Juniors ages 4 &amp; 5 -{' '}
                   <strong>${FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.priceUsd}</strong> / {FORMULA_SUNDAY_CHILD_PROGRAM_10_WK.sessionsInPack} Sundays.
                 </li>
                 <li>Weekday Formula Juniors blocks are still being finalized; weekend enrollment uses the Sunday package.</li>
               </ul>
             )}
             <p className="mt-2 text-[11px] leading-snug text-black/70">
-              Session <em>count</em> packages ($150 / $250) on the programs page are for older youth tracks — not the same checkout as Minis.
+              Session <em>count</em> packages ($150 / $250) on the programs page are for older youth tracks - not the same checkout as Minis.
             </p>
           </div>
         ) : null}

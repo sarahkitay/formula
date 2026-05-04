@@ -57,7 +57,7 @@ export function WaiverRosterLinkControls({
     <section className="rounded-lg border border-formula-frost/18 bg-formula-paper/[0.04] p-5 md:p-6">
       <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-mist">Roster link association</h2>
       <p className="mt-2 text-xs leading-relaxed text-formula-frost/80">
-        Link this signed waiver to a roster invite so it counts toward <strong className="text-formula-paper/90">waivers signed</strong> for that organizer — even
+        Link this signed waiver to a roster invite so it counts toward <strong className="text-formula-paper/90">waivers signed</strong> for that organizer - even
         if the participant used the public waiver form instead of the share link.
       </p>
       <div className="mt-4 flex flex-wrap items-end gap-3">
@@ -69,7 +69,7 @@ export function WaiverRosterLinkControls({
             disabled={saving}
             onChange={e => setValue(e.target.value)}
           >
-            <option value="">— Not linked</option>
+            <option value="">- Not linked</option>
             {inviteOptions.map(opt => (
               <option key={opt.id} value={opt.id}>
                 {opt.label}

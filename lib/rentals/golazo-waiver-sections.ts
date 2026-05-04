@@ -1,5 +1,5 @@
 /**
- * Golazo Soccer Center LLC d/b/a Formula Soccer — release text for field rental waivers.
+ * Golazo Soccer Center LLC d/b/a Formula Soccer - release text for field rental waivers.
  * Used by the public legal document, PDF export, and admin detail.
  */
 
@@ -22,7 +22,7 @@ export const GOLAZO_WAIVER_ENTITY_LINES = [
   '15001 Calvert St., Los Angeles, CA 91411',
 ] as const
 
-/** Shown above the participant form fields — ties blanks to the agreement. */
+/** Shown above the participant form fields - ties blanks to the agreement. */
 export const GOLAZO_WAIVER_PARTICIPANT_HEADER =
   'Participant name, date of birth, address, phone, and emergency contact name & phone (as stated above) are part of this agreement.' as const
 

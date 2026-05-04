@@ -73,7 +73,7 @@ export function CheckoutFieldRentalWaiverLink({ sessionId }: { sessionId: string
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      setMessage('Copy failed — select the link and copy manually.')
+      setMessage('Copy failed - select the link and copy manually.')
     }
   }, [payload])
 

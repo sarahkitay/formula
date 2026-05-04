@@ -97,7 +97,7 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
   const rentalType =
     invite.rental_type && COACH_BOOKING_RENTAL_TYPES.has(invite.rental_type) ? invite.rental_type : PARTICIPANT_SELF_WAIVER_RENTAL_TYPE
 
-  const rsvpNote = `RSVP — prior signed waiver on file (agreement ${prior.id}${prior.submitted_at ? `, submitted ${prior.submitted_at}` : ''}). Counts toward roster without a new signature.`
+  const rsvpNote = `RSVP - prior signed waiver on file (agreement ${prior.id}${prior.submitted_at ? `, submitted ${prior.submitted_at}` : ''}). Counts toward roster without a new signature.`
 
   const source: FieldRentalAgreementSource = 'roster_rsvp'
 
@@ -135,7 +135,7 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
     await sendAdminNotification({
       subject: `[Formula] Roster RSVP (prior waiver) · ${participantName}`,
       html: `
-      <p><strong>Roster RSVP</strong> — prior digital waiver matched</p>
+      <p><strong>Roster RSVP</strong> - prior digital waiver matched</p>
       <ul>
         <li><strong>New row id</strong>: ${escapeHtml(saved.id)}</li>
         <li><strong>Prior waiver id</strong>: ${escapeHtml(prior.id)}</li>
@@ -150,6 +150,6 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
 
   return {
     ok: true,
-    message: 'You are on the roster. This page will refresh — the count above includes your RSVP.',
+    message: 'You are on the roster. This page will refresh - the count above includes your RSVP.',
   }
 }

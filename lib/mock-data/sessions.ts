@@ -1,6 +1,6 @@
 import type { Session } from '@/types'
 
-/** Legacy export — no fabricated sessions; wire to Supabase sessions when available. */
+/** Legacy export - no fabricated sessions; wire to Supabase sessions when available. */
 export const mockSessions: Session[] = []
 
 export function getSessionById(_id: string): Session | undefined {

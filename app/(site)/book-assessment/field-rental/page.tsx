@@ -14,7 +14,7 @@ export default function BookAssessmentFieldRentalPage() {
     <MarketingInnerPage eyebrow="Booking hub" title="Field rental deposit" wide>
       <BookingHubBackLink href={BOOKING_HUB_PUBLIC.hub} />
       <p className="not-prose mb-8 max-w-2xl text-sm leading-relaxed text-formula-frost/80">
-        This page is only field rental checkout — not the hosted birthday party deposit.
+        This page is only field rental checkout - not the hosted birthday party deposit.
       </p>
       <FieldRentalBookingFlow sectionId="field-rental-booking" />
     </MarketingInnerPage>

@@ -17,7 +17,7 @@ export type TodayBlockBookingRow = {
 
 /**
  * Confirmed parent portal block bookings whose slot start falls on the facility’s
- * local calendar day. Check-ins are not queried yet — use counts for “booked” only.
+ * local calendar day. Check-ins are not queried yet - use counts for “booked” only.
  */
 export async function listParentBlockBookingsForFacilityToday(): Promise<{
   bookings: TodayBlockBookingRow[]

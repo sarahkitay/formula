@@ -57,7 +57,7 @@ export function ParentPerformanceScoresBlock({
           <Zap className="mx-auto h-6 w-6 text-text-muted" />
           <p className="text-sm font-medium text-text-primary">No pillar scores on file yet</p>
           <p className="text-xs text-text-muted">
-            An assessment is on file, but detailed pillar scores aren&apos;t showing yet. Staff may still be updating — check back soon or follow up post-assessment.
+            An assessment is on file, but detailed pillar scores aren&apos;t showing yet. Staff may still be updating - check back soon or follow up post-assessment.
           </p>
         </div>
       </div>
@@ -100,7 +100,7 @@ export function ParentPerformanceScoresBlock({
         </div>
       ) : (
         <p className="text-sm text-text-muted">
-          Scores will fill in once staff save pillar values on an assessment — follow up post-assessment if this stays empty.
+          Scores will fill in once staff save pillar values on an assessment - follow up post-assessment if this stays empty.
         </p>
       )}
       {overall != null ? (
@@ -123,7 +123,7 @@ export function ParentAssessmentNotesBlock({ assessments }: { assessments: Asses
       <p className="text-sm font-semibold text-text-primary">Assessment notes</p>
       {timeline.length === 0 ? (
         <p className="text-sm text-text-muted">
-          No written notes yet. Staff summaries appear after they&apos;re added to an assessment — check back post-assessment.
+          No written notes yet. Staff summaries appear after they&apos;re added to an assessment - check back post-assessment.
         </p>
       ) : (
         <div className="space-y-3">

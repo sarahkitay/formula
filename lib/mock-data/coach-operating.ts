@@ -122,18 +122,18 @@ export function getCoachSessionForFloorSection(section: FloorSectionId): CoachSe
 export const sessionDetailById: Record<string, SessionDetailExtended> = {}
 
 export const fridayCoachRoster: FridayRosterCoach = {
-  teamLabel: '—',
-  ageBand: '—',
+  teamLabel: '-',
+  ageBand: '-',
   balanced: true,
   athletes: [],
 }
 
 export const clinicDeliveryDemo: ClinicDeliveryCoach = {
-  id: '—',
+  id: '-',
   title: 'No clinic session on file',
-  focus: '—',
-  ratio: '—',
-  format: '—',
+  focus: '-',
+  ratio: '-',
+  format: '-',
   rosterCount: 0,
   nextSteps: 'Connect schedule / clinic data in Supabase',
 }
@@ -141,14 +141,14 @@ export const clinicDeliveryDemo: ClinicDeliveryCoach = {
 export function getAthleteCoachSnapshot(playerId: string): AthleteCoachSnapshot {
   return {
     playerId,
-    attendanceTrend: '—',
-    membershipTier: '—',
-    fpiSummary: '—',
+    attendanceTrend: '-',
+    membershipTier: '-',
+    fpiSummary: '-',
     priorities: [],
     recentNotes: [],
-    clinicsRecent: '—',
-    fridayRecent: '—',
-    suggestedEmphasis: '—',
+    clinicsRecent: '-',
+    fridayRecent: '-',
+    suggestedEmphasis: '-',
   }
 }
 

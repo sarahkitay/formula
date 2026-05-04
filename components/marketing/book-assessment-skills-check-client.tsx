@@ -172,10 +172,10 @@ export function BookAssessmentSkillsCheckClient({
 
       <section id="skills-check" className="scroll-mt-28 space-y-5" aria-labelledby="ba-slots-heading">
         <h2 id="ba-slots-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">
-          Skills Check — June pre-book
+          Skills Check - June pre-book
         </h2>
         <p className="max-w-2xl text-[13px] leading-relaxed text-formula-frost/70">
-          Assessment slots open <strong className="font-medium text-formula-paper">June {ASSESSMENT_JUNE_PREBOOK_YEAR}</strong> — pre-book now. Times are
+          Assessment slots open <strong className="font-medium text-formula-paper">June {ASSESSMENT_JUNE_PREBOOK_YEAR}</strong> - pre-book now. Times are
           Pacific. Each hour is capped at <strong className="font-medium text-formula-paper">four athletes total</strong> across all families (you can book 1–4
           in one checkout if space allows). Pick a June day, then an open hour.
         </p>
@@ -186,7 +186,7 @@ export function BookAssessmentSkillsCheckClient({
           <p className="text-sm text-amber-300/95">{slotsError}</p>
         ) : slots.length === 0 ? (
           <p className="text-sm text-formula-frost/70">
-            No June windows available yet. If you expected to see times, try again later or call the front desk — we may still be opening that month.
+            No June windows available yet. If you expected to see times, try again later or call the front desk - we may still be opening that month.
           </p>
         ) : (
           <AssessmentMonthCalendar

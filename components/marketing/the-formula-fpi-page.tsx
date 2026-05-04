@@ -7,7 +7,7 @@ import { FPI_PILLARS } from '@/lib/marketing/formula-pillars'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { HOME_SPLIT_PHOTO_QUALITY } from '@/lib/marketing/home-marketing-images'
 
-/** Facility photo for The Formula hero — youth training on indoor turf (not reused on homepage hero). */
+/** Facility photo for The Formula hero - youth training on indoor turf (not reused on homepage hero). */
 const FORMULA_HERO_IMAGE = '/8E3A3813.jpg'
 
 /** Temporary shared image on pillar cards until pillar-specific photography exists (Footbot / fields context from site photography). */
@@ -19,7 +19,7 @@ const CHERUNDOLO_QUOTE =
   'I have partnered with Formula because it reflects my own personal philosophy of player development in the modern game. Every soccer action has three critical moments which increase in difficulty when time and space are reduced.'
 
 const PARENT_QUOTE_BODY =
-  "I had no idea what my son's actual weak point was until Formula showed us the scores. Turns out his speed was fine — his decision speed under pressure was the ceiling. That changed everything about how we thought about his training."
+  "I had no idea what my son's actual weak point was until Formula showed us the scores. Turns out his speed was fine - his decision speed under pressure was the ceiling. That changed everything about how we thought about his training."
 
 const sectionShell = 'px-4 sm:px-6'
 const innerMax = 'mx-auto w-full max-w-[1100px]'
@@ -52,7 +52,7 @@ function SecondaryLink({ href, children }: { href: string; children: React.React
 export function TheFormulaFpiPage() {
   return (
     <div className="not-prose bg-[#1a2820] text-white">
-      {/* SECTION 01 — HERO */}
+      {/* SECTION 01 - HERO */}
       <section className={`${sectionShell} scroll-mt-28 border-b border-white/[0.08] pt-28 pb-20 md:pb-28 lg:pt-32 lg:pb-[120px]`} aria-labelledby="formula-hero-heading">
         <div className={`${innerMax} grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-14`}>
           <div className="min-w-0">
@@ -74,7 +74,7 @@ export function TheFormulaFpiPage() {
           <div className="relative min-h-[220px] w-full overflow-hidden rounded border border-white/[0.12] sm:min-h-[280px] lg:min-h-[340px]">
             <Image
               src={FORMULA_HERO_IMAGE}
-              alt="Youth soccer players on indoor turf at Formula Soccer Center — training and game-style movement with facility netting and lighting visible."
+              alt="Youth soccer players on indoor turf at Formula Soccer Center - training and game-style movement with facility netting and lighting visible."
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
@@ -85,7 +85,7 @@ export function TheFormulaFpiPage() {
         </div>
       </section>
 
-      {/* SECTION 02 — INTERACTIVE SYSTEM */}
+      {/* SECTION 02 - INTERACTIVE SYSTEM */}
       <section className={`${sectionShell} border-b border-white/[0.06] bg-[#1e2d24] py-20 md:py-28 lg:py-[120px]`} aria-labelledby="formula-system-heading">
         <div className={innerMax}>
           <p className={eyebrowClass}>The system</p>
@@ -93,7 +93,7 @@ export function TheFormulaFpiPage() {
             {"The Formula is not a slogan. It's a weighted scoring architecture."}
           </h2>
           <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-zinc-400">
-            Follow the flow from inputs through weighting to the composite score — the animation walks the architecture on load.
+            Follow the flow from inputs through weighting to the composite score - the animation walks the architecture on load.
           </p>
           <p className="sr-only">
             Animated model: six pillars stream into a composite performance score. Perimeter labels read Input, Signal, Weighting, Evaluation, and Composite.
@@ -107,7 +107,7 @@ export function TheFormulaFpiPage() {
         </div>
       </section>
 
-      {/* SECTION 03 — SIX PILLARS */}
+      {/* SECTION 03 - SIX PILLARS */}
       <section className={`${sectionShell} py-20 md:py-28 lg:py-[120px]`} aria-labelledby="formula-pillars-heading">
         <div className={innerMax}>
           <p className={eyebrowClass}>What we measure</p>
@@ -124,12 +124,12 @@ export function TheFormulaFpiPage() {
             expandedCardImageSrc={FORMULA_PILLAR_CARD_IMAGE}
           />
           <p className="mx-auto mt-8 max-w-[56ch] text-center text-sm leading-relaxed text-zinc-500">
-            Every athlete is scored on all six. No pillar is skipped. Scores are age-weighted — a U10 is not held to a U16 standard.
+            Every athlete is scored on all six. No pillar is skipped. Scores are age-weighted - a U10 is not held to a U16 standard.
           </p>
         </div>
       </section>
 
-      {/* SECTION 04 — CREDIBILITY */}
+      {/* SECTION 04 - CREDIBILITY */}
       <section className={`${sectionShell} border-y border-white/[0.06] bg-[#1e2d24] py-20 md:py-28`} aria-labelledby="formula-proof-heading">
         <div className={innerMax}>
           <p className={eyebrowClass}>Proof</p>
@@ -141,7 +141,7 @@ export function TheFormulaFpiPage() {
               <div className="relative mx-auto aspect-[3/4] w-full max-w-[160px] overflow-hidden rounded border border-white/[0.12] sm:mx-0 sm:max-w-none">
                 <Image
                   src={PARTNER_PHOTO_SRC}
-                  alt="Steve Cherundolo — LA Galaxy Head Coach, Formula partner."
+                  alt="Steve Cherundolo - LA Galaxy Head Coach, Formula partner."
                   fill
                   className="object-cover object-[center_22%]"
                   sizes="160px"
@@ -170,7 +170,7 @@ export function TheFormulaFpiPage() {
         </div>
       </section>
 
-      {/* SECTION 05 — TIMELINE */}
+      {/* SECTION 05 - TIMELINE */}
       <section className={`${sectionShell} py-20 md:py-28 lg:py-[120px]`} aria-labelledby="formula-timeline-heading">
         <div className={innerMax}>
           <p className={eyebrowClass}>How scoring works</p>
@@ -213,7 +213,7 @@ export function TheFormulaFpiPage() {
         </div>
       </section>
 
-      {/* SECTION 06 — FAMILY REPORTING */}
+      {/* SECTION 06 - FAMILY REPORTING */}
       <section className={`${sectionShell} border-t border-white/[0.06] bg-[#1e2d24] py-20 md:py-28`} aria-labelledby="formula-reporting-heading">
         <div className={innerMax}>
           <p className={eyebrowClass}>Family reporting</p>
@@ -229,7 +229,7 @@ export function TheFormulaFpiPage() {
               },
               {
                 title: 'Within a week',
-                body: "Full pillar scores, your athlete's Formula profile, and a training priority report — all in the parent portal.",
+                body: "Full pillar scores, your athlete's Formula profile, and a training priority report - all in the parent portal.",
                 icon: false,
               },
               {
@@ -239,7 +239,7 @@ export function TheFormulaFpiPage() {
               },
               {
                 title: 'When it matters',
-                body: "Injury return, a growth spurt, or a tier change — we reassess when the athlete's situation changes, not just when the calendar says so.",
+                body: "Injury return, a growth spurt, or a tier change - we reassess when the athlete's situation changes, not just when the calendar says so.",
                 icon: false,
               },
             ].map(card => (
@@ -270,7 +270,7 @@ export function TheFormulaFpiPage() {
         </div>
       </section>
 
-      {/* SECTION 07 — PRIVACY */}
+      {/* SECTION 07 - PRIVACY */}
       <section className={`${sectionShell} py-20 md:py-28`} aria-labelledby="formula-privacy-heading">
         <div className={`${innerMax} max-w-[640px]`}>
           <div className="rounded border border-white/[0.1] bg-white/[0.03] px-6 py-10 md:px-10 md:py-12">
@@ -280,7 +280,7 @@ export function TheFormulaFpiPage() {
             </h2>
             <p className="mt-5 text-base leading-relaxed text-zinc-300">
               The Formula is not a public scoreboard. Scores are never posted publicly, never shared with other families, and never used to rank athletes against
-              each other in front of their peers. We stress behavior and development in structured environments — not permanent online rankings for kids.
+              each other in front of their peers. We stress behavior and development in structured environments - not permanent online rankings for kids.
             </p>
             <p className="mt-6 text-sm leading-relaxed text-zinc-500">
               Internal coaching tools may reference scores for placement and programming. That data does not leave your coaching relationship.
@@ -290,13 +290,13 @@ export function TheFormulaFpiPage() {
               <Link href={MARKETING_HREF.fridayCircuit} className="text-formula-volt underline-offset-2 hover:underline">
                 Friday Youth Game Circuit
               </Link>{' '}
-              for live application — not public leaderboards for youth.
+              for live application - not public leaderboards for youth.
             </p>
           </div>
         </div>
       </section>
 
-      {/* SECTION 08 — CLOSING CTA */}
+      {/* SECTION 08 - CLOSING CTA */}
       <section className={`${sectionShell} border-t border-white/[0.08] bg-[#1e2d24] py-20 md:py-28 lg:py-[120px]`} aria-labelledby="formula-close-heading">
         <div className={`${innerMax} text-center`}>
           <p className={eyebrowClass}>Start here</p>
@@ -305,7 +305,7 @@ export function TheFormulaFpiPage() {
           </h2>
           <p className="mx-auto mt-6 max-w-[52ch] text-base leading-relaxed text-zinc-300">
             Every athlete at Formula starts with a Skills Check. One hour. Six pillars. You leave with a score, a plan, and a clear picture of what your athlete
-            is actually working on — and why.
+            is actually working on - and why.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <PrimaryLink href={MARKETING_HREF.bookAssessmentPortal}>Book an Assessment →</PrimaryLink>

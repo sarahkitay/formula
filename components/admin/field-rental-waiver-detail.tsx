@@ -42,7 +42,7 @@ function safePdfFileStem(name: string): string {
 }
 
 function row(label: string, value: string | null | undefined) {
-  const display = value != null && String(value).trim() !== '' ? String(value) : '—'
+  const display = value != null && String(value).trim() !== '' ? String(value) : '-'
   return (
     <div className="grid gap-1 py-3 sm:grid-cols-[minmax(0,200px)_1fr] sm:gap-6">
       <dt className="font-mono text-[10px] uppercase tracking-wide text-formula-mist">{label}</dt>
@@ -114,15 +114,15 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrga
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(15)
-  doc.text('Field Rental Agreement — Signed waiver', margin, y)
+  doc.text('Field Rental Agreement - Signed waiver', margin, y)
   y += 10
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
 
   paragraph('Submitted', formatFacilityDateTimeShort(a.submitted_at))
   if (roster) {
-    paragraph('Roster organizer (paid deposit)', roster.purchaserName ?? '—')
-    paragraph('Organizer email', roster.purchaserEmail ?? '—')
+    paragraph('Roster organizer (paid deposit)', roster.purchaserName ?? '-')
+    paragraph('Organizer email', roster.purchaserEmail ?? '-')
     paragraph('Organizer paid', roster.paidLabel)
     paragraph('Organizer paid at', roster.paidAtLabel)
     paragraph('Booked session (roster link)', roster.sessionSummary)
@@ -133,28 +133,28 @@ async function downloadWaiverPdf(a: FieldRentalAgreementFull, roster: RosterOrga
   paragraph('Rental type', formatRentalTypeForDisplay(a.rental_type))
   paragraph('Participant', a.participant_name)
   paragraph('Email', a.participant_email)
-  paragraph('Phone', a.participant_phone ?? '—')
-  paragraph('Address', a.participant_address ?? '—')
-  paragraph('Emergency contact', a.emergency_contact ?? '—')
+  paragraph('Phone', a.participant_phone ?? '-')
+  paragraph('Address', a.participant_address ?? '-')
+  paragraph('Emergency contact', a.emergency_contact ?? '-')
   paragraph('Date of birth', a.participant_dob)
-  paragraph('Participant count', a.participant_count != null ? String(a.participant_count) : '—')
-  paragraph('Parent / guardian', a.parent_guardian_name ?? '—')
-  paragraph('Organization / team', a.organization_name ?? '—')
+  paragraph('Participant count', a.participant_count != null ? String(a.participant_count) : '-')
+  paragraph('Parent / guardian', a.parent_guardian_name ?? '-')
+  paragraph('Organization / team', a.organization_name ?? '-')
   paragraph('Printed signer name', a.signature_name)
-  paragraph('Notes', a.notes ?? '—')
+  paragraph('Notes', a.notes ?? '-')
   paragraph('Facility use agreement accepted', a.agreement_accepted ? 'Yes' : 'No')
   paragraph('Risk / indemnity accepted', a.risk_accepted ? 'Yes' : 'No')
   paragraph('Rules / cancellation accepted', a.rules_accepted ? 'Yes' : 'No')
-  paragraph('Stripe checkout session', a.stripe_checkout_session_id ?? '—')
+  paragraph('Stripe checkout session', a.stripe_checkout_session_id ?? '-')
   paragraph('Checkout paid', formatCheckoutAmount(a.checkout_amount_total_cents ?? null, a.checkout_currency ?? null))
   paragraph('Booking summary', formatFieldRentalBookingSummaryLine(a))
   paragraph('Field (checkout)', rentalFieldLabel(a.booking_rental_field))
-  paragraph('Time window (checkout)', a.booking_rental_window ? humanRentalWindowSummary(a.booking_rental_window) : '—')
-  paragraph('Anchor session date', a.booking_rental_date ?? '—')
+  paragraph('Time window (checkout)', a.booking_rental_window ? humanRentalWindowSummary(a.booking_rental_window) : '-')
+  paragraph('Anchor session date', a.booking_rental_date ?? '-')
   const decoded = a.booking_rental_dates_compact ? decodeRentalDatesCompact(a.booking_rental_dates_compact) : []
-  paragraph('Session dates (checkout)', decoded.length > 0 ? decoded.join(', ') : '—')
-  paragraph('Weeks billed (checkout)', a.booking_session_weeks != null ? String(a.booking_session_weeks) : '—')
-  paragraph('Headcount at checkout', a.booking_headcount_at_checkout != null ? String(a.booking_headcount_at_checkout) : '—')
+  paragraph('Session dates (checkout)', decoded.length > 0 ? decoded.join(', ') : '-')
+  paragraph('Weeks billed (checkout)', a.booking_session_weeks != null ? String(a.booking_session_weeks) : '-')
+  paragraph('Headcount at checkout', a.booking_headcount_at_checkout != null ? String(a.booking_headcount_at_checkout) : '-')
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12)
@@ -338,7 +338,7 @@ export function FieldRentalWaiverDetail({
         <header className="border-b border-formula-frost/12 pb-6">
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-formula-mist">Field rental</p>
           <h1 className="mt-2 font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl">
-            Signed waiver — full record
+            Signed waiver - full record
           </h1>
           <p className="mt-2 font-mono text-[11px] text-formula-mist">
             Submitted {formatFacilityDateTimeShort(agreement.submitted_at)}
@@ -399,7 +399,7 @@ export function FieldRentalWaiverDetail({
               const checked = [agreement.agreement_accepted, agreement.risk_accepted, agreement.rules_accepted][i]
               return (
                 <li key={label} className="flex gap-2">
-                  <span className="shrink-0 text-formula-volt">{checked ? '✓' : '—'}</span>
+                  <span className="shrink-0 text-formula-volt">{checked ? 'Yes' : '-'}</span>
                   <span className="text-formula-frost/90">{label}</span>
                 </li>
               )

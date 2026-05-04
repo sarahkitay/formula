@@ -14,8 +14,8 @@ export function defaultIdleFacilityAssets(): FacilityAsset[] {
       .toUpperCase(),
     status: 'available',
     utilizationPct: 0,
-    currentProgram: '—',
-    nextProgram: '—',
+    currentProgram: '-',
+    nextProgram: '-',
     load: 0,
   }))
 }

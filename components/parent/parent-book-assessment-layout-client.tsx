@@ -113,7 +113,7 @@ export function ParentBookAssessmentLayoutClient({ children }: { children: React
       <PageContainer>
         <PageHeader
           title="Reserve your spot"
-          subtitle={`${SITE.facilityName} · signed in. Each booking type opens on its own page — use the hub to pick a flow.`}
+          subtitle={`${SITE.facilityName} · signed in. Each booking type opens on its own page - use the hub to pick a flow.`}
         />
         <p className="mt-6 max-w-3xl rounded-lg border border-formula-frost/14 bg-formula-paper/[0.04] px-4 py-3 text-sm leading-relaxed text-formula-frost/90 md:px-5">
           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Attire · </span>

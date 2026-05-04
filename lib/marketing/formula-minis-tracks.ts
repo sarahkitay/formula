@@ -1,7 +1,7 @@
 import { FORMULA_MINIS_SESSIONS_IN_PACK } from '@/lib/marketing/public-pricing'
 
 /**
- * Formula Minis (ages 2–3) 6-week checkout tracks — `youthBlockId` must match `lib/schedule/generator` (`pushFormulaMinis`).
+ * Formula Minis (ages 2–3) 6-week checkout tracks - `youthBlockId` must match `lib/schedule/generator` (`pushFormulaMinis`).
  * Stripe metadata key remains `littles_track` for backward compatibility with existing checkout sessions.
  */
 export const FORMULA_MINIS_CHECKOUT_TRACK_IDS = [

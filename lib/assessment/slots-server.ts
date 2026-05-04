@@ -34,7 +34,7 @@ function juneRangeIsoBounds(timeZone: string = ASSESSMENT_SLOT_TIMEZONE): { star
 
 /**
  * Idempotent upsert of June pre-book windows (weekday hourly, 4 kids per hour).
- * Replaces legacy “seed from today” behavior — only June pre-book slots are offered.
+ * Replaces legacy “seed from today” behavior - only June pre-book slots are offered.
  */
 export async function ensureJune2026AssessmentSlotsSeeded(): Promise<void> {
   const sb = getServiceSupabase()

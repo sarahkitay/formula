@@ -35,7 +35,7 @@ export default function PartiesPage() {
   <PartyBookingFlow />
   <h2>Questions first?</h2>
   <p>
-  Send dates, age band, headcount — availability + packages aligned to scheduling cycles.
+  Send dates, age band, headcount - availability + packages aligned to scheduling cycles.
   </p>
   <p>
   Return to <Link href={MARKETING_HREF.events}>events hub</Link> or explore <Link href={MARKETING_HREF.facility}>facility</Link>.

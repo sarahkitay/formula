@@ -71,7 +71,7 @@ export async function findPriorSignedAgreementForRsvp(email: string): Promise<Pr
     const sig = String(row.signature_data_url ?? '')
     if (sig.length < 200) continue
     const notes = String(row.notes ?? '')
-    if (notes.includes('RSVP — prior signed waiver on file')) continue
+    if (notes.includes('RSVP - prior signed waiver on file')) continue
     return row
   }
   return null

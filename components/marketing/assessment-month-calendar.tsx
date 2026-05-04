@@ -156,7 +156,7 @@ export function AssessmentMonthCalendar({
                   {open > 0 ? `${open} open` : 'Full'}
                 </span>
               ) : (
-                <span className="mt-auto font-mono text-[8px] text-formula-mist/60">—</span>
+                <span className="mt-auto font-mono text-[8px] text-formula-mist/60">-</span>
               )}
             </button>
           )

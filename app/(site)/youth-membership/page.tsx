@@ -51,7 +51,7 @@ export default function YouthMembershipPage() {
 
         <h2 className="!mt-14">Current offering</h2>
         <p>
-          <strong>{SESSION_PACKAGE_EARLY_BIRD.headline}</strong> ({SESSION_PACKAGE_EARLY_BIRD.validThrough}) — choose a session block:
+          <strong>{SESSION_PACKAGE_EARLY_BIRD.headline}</strong> ({SESSION_PACKAGE_EARLY_BIRD.validThrough}) - choose a session block:
         </p>
         <ul>
           <li>
@@ -72,7 +72,7 @@ export default function YouthMembershipPage() {
         <h2 className="!mt-14">Formula Minis &amp; youngest ages</h2>
         <p>
           <strong>Formula Minis</strong> (weekday ages 2–3) and the <strong>Sunday Weekend Program</strong> (ages 2–5) use their own published packs and Stripe
-          checkout — not the 5- or 10-session early-bird blocks above. Schedules, calendar tables, capacity, policies, and both checkouts live on the dedicated page.
+          checkout - not the 5- or 10-session early-bird blocks above. Schedules, calendar tables, capacity, policies, and both checkouts live on the dedicated page.
         </p>
         <div className="not-prose mt-4 flex flex-wrap gap-3">
           <Link
@@ -111,7 +111,7 @@ export default function YouthMembershipPage() {
             </thead>
             <tbody>
               {[
-                ['Formula Minis', '2–3', 'Weekday + Sunday weekend — link above'],
+                ['Formula Minis', '2–3', 'Weekday + Sunday weekend - link above'],
                 ['Formula Juniors', '4–5', 'Sunday weekend on Minis page; weekday TBA'],
                 ['U8', '6–7', 'Standard membership'],
                 ['U10', '8–9', 'Standard membership'],
@@ -165,10 +165,10 @@ export default function YouthMembershipPage() {
             <Link href={MARKETING_HREF.rentals}>Field rentals</Link> · structured field time (default 2 hr blocks). Different checkout than parties.
           </li>
           <li>
-            <Link href={MARKETING_HREF.parties}>Birthday parties</Link> · hosted party deposit path — not field rental checkout.
+            <Link href={MARKETING_HREF.parties}>Birthday parties</Link> · hosted party deposit path - not field rental checkout.
           </li>
           <li>
-            <Link href={MARKETING_HREF.events}>Events</Link> · corporate, tournaments, large blocks — staff inquiry form.
+            <Link href={MARKETING_HREF.events}>Events</Link> · corporate, tournaments, large blocks - staff inquiry form.
           </li>
         </ul>
 

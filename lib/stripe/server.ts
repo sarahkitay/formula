@@ -2,7 +2,7 @@ import dns from 'node:dns'
 import https from 'node:https'
 import Stripe from 'stripe'
 
-/** Prefer IPv4 for outbound HTTPS — avoids flaky IPv6 routes that often surface as StripeConnectionError. */
+/** Prefer IPv4 for outbound HTTPS - avoids flaky IPv6 routes that often surface as StripeConnectionError. */
 dns.setDefaultResultOrder('ipv4first')
 
 const stripeHttpsAgent = new https.Agent({
@@ -23,7 +23,7 @@ let stripeSingleton: Stripe | null = null
 
 /**
  * Stripe keys must be a single header-safe token. Vercel / shell pastes often add
- * trailing `\n`, `\r`, BOM, or wrapping quotes — Node then throws
+ * trailing `\n`, `\r`, BOM, or wrapping quotes - Node then throws
  * `TypeError: Invalid character in header content ["Authorization"]` (ERR_INVALID_CHAR).
  */
 export function normalizeStripeSecretKey(raw: string): string {

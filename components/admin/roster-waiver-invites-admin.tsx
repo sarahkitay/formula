@@ -202,7 +202,7 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
           />
         </label>
         <label className="block font-mono text-[10px] text-formula-mist sm:col-span-2">
-          Paid at (local time — leave empty to clear)
+          Paid at (local time - leave empty to clear)
           <input
             type="datetime-local"
             className="mt-0.5 w-full max-w-md border border-formula-frost/14 bg-formula-base/50 px-2 py-1.5 text-[12px] text-formula-paper"
@@ -217,7 +217,7 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
             value={field}
             onChange={e => setField(e.target.value)}
           >
-            <option value="">—</option>
+            <option value="">-</option>
             {field && !RENTAL_FIELD_OPTIONS.some(o => o.value === field) ? (
               <option value={field}>{field} (current)</option>
             ) : null}
@@ -257,7 +257,7 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
           />
         </label>
         <label className="block font-mono text-[10px] text-formula-mist sm:col-span-2">
-          All session dates compact (optional — same as Stripe metadata)
+          All session dates compact (optional - same as Stripe metadata)
           <input
             className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/50 px-2 py-1.5 font-mono text-[10px] text-formula-paper"
             value={datesCompact}
@@ -396,13 +396,13 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
         const paid =
           inv.checkout_amount_total_cents != null
             ? formatCheckoutAmount(inv.checkout_amount_total_cents, inv.checkout_currency ?? null)
-            : '—'
+            : '-'
         const paidWhen =
           inv.checkout_completed_at != null && String(inv.checkout_completed_at).trim() !== ''
             ? formatFacilityDateTimeShort(inv.checkout_completed_at)
             : inv.created_at != null && String(inv.created_at).trim() !== ''
               ? `${formatFacilityDateTimeShort(inv.created_at)} (invite created)`
-              : '—'
+              : '-'
         const sessionLine = formatRosterInviteBookingSummary({
           booking_rental_field: inv.booking_rental_field ?? null,
           booking_rental_window: inv.booking_rental_window ?? null,
@@ -496,7 +496,7 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
               </p>
               {inv.signed_waivers.length === 0 ? (
                 <p className="mt-2 font-mono text-[11px] text-formula-mist/80">
-                  No waivers on this invite yet — use the drop zone above or link rows from the signed waivers table so walk-up signers count here.
+                  No waivers on this invite yet - use the drop zone above or link rows from the signed waivers table so walk-up signers count here.
                 </p>
               ) : (
                 <ul className="mt-2 divide-y divide-formula-frost/10 rounded-md border border-formula-frost/10">

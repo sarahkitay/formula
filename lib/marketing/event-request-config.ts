@@ -1,10 +1,10 @@
 /** Options for the public /events request form (labels stable for ops inbox). */
 
-/** Field rental checkout is its own flow (`/rentals`, booking hub); parties use the party deposit path — keep types distinct for ops. */
+/** Field rental checkout is its own flow (`/rentals`, booking hub); parties use the party deposit path - keep types distinct for ops. */
 export const EVENT_REQUEST_TYPES = [
   { value: 'corporate', label: 'Corporate / team building' },
-  { value: 'hosted_birthday_party', label: 'Hosted birthday party (party deposit — not field rental checkout)' },
-  { value: 'field_rental_block', label: 'Field rental window (book on Rentals · default 2 hr — not event pricing)' },
+  { value: 'hosted_birthday_party', label: 'Hosted birthday party (party deposit - not field rental checkout)' },
+  { value: 'field_rental_block', label: 'Field rental window (book on Rentals · default 2 hr - not event pricing)' },
   { value: 'club', label: 'Club / team event' },
   { value: 'tournament', label: 'Tournament / showcase' },
   { value: 'camp_clinic', label: 'Camp or clinic block' },
@@ -30,7 +30,7 @@ export const EVENT_SPACE_PRESETS = [
   { value: 'field_2', label: 'Field 2' },
   { value: 'field_3', label: 'Field 3 (outdoor)' },
   { value: 'multi_mixed', label: 'Multiple areas (detail in notes)' },
-  { value: 'unsure', label: 'Not sure — recommend for us' },
+  { value: 'unsure', label: 'Not sure - recommend for us' },
 ] as const
 
 export type EventSpacePresetValue = (typeof EVENT_SPACE_PRESETS)[number]['value']

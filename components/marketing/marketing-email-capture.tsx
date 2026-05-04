@@ -2,6 +2,7 @@
 
 import { useCallback, useId, useState } from 'react'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
+import { SITE_VOICE } from '@/lib/marketing/site-voice'
 import { cn } from '@/lib/utils'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
@@ -67,11 +68,9 @@ export function MarketingEmailCapture() {
             id="marketing-email-capture-heading"
             className="mx-auto mt-3 max-w-xl font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl"
           >
-            Stay in the loop.
+            {SITE_VOICE.homeStayUpdatedTitle}
           </h2>
-          <p className="mx-auto mt-2 max-w-[46ch] text-[14px] leading-relaxed text-formula-frost/80">
-            Memberships are coming. So are new programs, clinic dates, and facility updates. Get notified first. No spam, low volume.
-          </p>
+          <p className="mx-auto mt-2 max-w-[46ch] text-[14px] leading-relaxed text-formula-frost/80">{SITE_VOICE.homeStayUpdatedBody}</p>
 
           {status === 'success' ? (
             <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-formula-frost/90" role="status">
@@ -94,7 +93,7 @@ export function MarketingEmailCapture() {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="Enter email"
                   className="w-full border border-formula-frost/14 bg-formula-base/80 px-3 py-2.5 text-center font-sans text-sm text-formula-paper placeholder:text-formula-mist/45 focus:border-formula-volt/40 focus:outline-none focus:ring-1 focus:ring-formula-volt/30 sm:text-left"
                 />
               </div>

@@ -34,8 +34,8 @@ export type FieldRentalRosterInvite = {
 type FormProps = {
   rosterInvite?: FieldRentalRosterInvite
   /**
-   * `public` (default): participant / roster shared links — no rental type or headcount fields.
-   * `coach`: staff booking waiver — rental type + participant count required (see `/coach/field-rental-waiver`).
+   * `public` (default): participant / roster shared links - no rental type or headcount fields.
+   * `coach`: staff booking waiver - rental type + participant count required (see `/coach/field-rental-waiver`).
    */
   variant?: 'public' | 'coach'
 }
@@ -208,7 +208,7 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
         </label>
 
         <label className="flex flex-col gap-2 md:col-span-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Emergency contact — name & phone *</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Emergency contact - name & phone *</span>
           <textarea
             name="emergencyContact"
             required

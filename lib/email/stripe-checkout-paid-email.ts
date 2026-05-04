@@ -10,7 +10,7 @@ function metaLines(session: Stripe.Checkout.Session): string {
 /** One email per paid Checkout completion (webhook). */
 export async function sendStripeCheckoutPaidAdminEmail(session: Stripe.Checkout.Session): Promise<void> {
   const email = session.customer_details?.email ?? session.customer_email ?? ''
-  const amount = session.amount_total != null ? (session.amount_total / 100).toFixed(2) : '—'
+  const amount = session.amount_total != null ? (session.amount_total / 100).toFixed(2) : '-'
   const currency = (session.currency ?? 'usd').toUpperCase()
 
   await sendAdminNotification({
@@ -19,7 +19,7 @@ export async function sendStripeCheckoutPaidAdminEmail(session: Stripe.Checkout.
       <p><strong>Stripe Checkout completed</strong></p>
       <ul>
         <li><strong>Session</strong>: ${escapeHtml(session.id)}</li>
-        <li><strong>Customer email</strong>: ${escapeHtml(email || '—')}</li>
+        <li><strong>Customer email</strong>: ${escapeHtml(email || '-')}</li>
         <li><strong>Amount</strong>: ${escapeHtml(amount)} ${escapeHtml(currency)}</li>
         <li><strong>Payment status</strong>: ${escapeHtml(session.payment_status)}</li>
       </ul>

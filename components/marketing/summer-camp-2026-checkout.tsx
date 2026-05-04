@@ -50,33 +50,33 @@ export function SummerCamp2026Checkout() {
   return (
     <div
       id="register"
-      className="not-prose mt-10 rounded-xl border border-formula-frost/16 bg-formula-paper/[0.04] p-5 sm:p-7"
+      className="not-prose mt-8 scroll-mt-28 rounded-xl border border-formula-frost/16 bg-formula-paper/[0.04] p-4 sm:mt-10 sm:p-7"
     >
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Registration</p>
       <h2 className="mt-2 font-mono text-sm font-semibold uppercase tracking-[0.14em] text-formula-paper">Pre-pay · secure checkout</h2>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-formula-frost/80">
-        Staff confirms age group, roster, and week placement after payment. Use the same guardian email you check most often — Stripe sends the receipt there.
+        Staff confirms age group, roster, and week placement after payment. Use the same guardian email you check most often - Stripe sends the receipt there.
       </p>
 
-      <fieldset className="mt-6 flex flex-wrap gap-3">
+      <fieldset className="mt-5 flex flex-col gap-2 sm:mt-6 sm:flex-row sm:flex-wrap sm:gap-3">
         <legend className="sr-only">Purchase type</legend>
-        <label className="flex cursor-pointer items-center gap-2 rounded-md border border-formula-frost/18 bg-formula-base/60 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-paper has-[:checked]:border-formula-volt/50 has-[:checked]:bg-formula-volt/[0.08]">
+        <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-md border border-formula-frost/18 bg-formula-base/60 px-4 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper has-[:checked]:border-formula-volt/50 has-[:checked]:bg-formula-volt/[0.08] sm:min-h-0 sm:flex-1 sm:px-3 sm:py-2 sm:text-[10px]">
           <input
             type="radio"
             name="sc-purchase-kind"
             checked={purchaseKind === 'week'}
             onChange={() => setPurchaseKind('week')}
-            className="accent-formula-volt"
+            className="h-4 w-4 shrink-0 accent-formula-volt"
           />
           One week · ${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}
         </label>
-        <label className="flex cursor-pointer items-center gap-2 rounded-md border border-formula-frost/18 bg-formula-base/60 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-paper has-[:checked]:border-formula-volt/50 has-[:checked]:bg-formula-volt/[0.08]">
+        <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-md border border-formula-frost/18 bg-formula-base/60 px-4 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper has-[:checked]:border-formula-volt/50 has-[:checked]:bg-formula-volt/[0.08] sm:min-h-0 sm:flex-1 sm:px-3 sm:py-2 sm:text-[10px]">
           <input
             type="radio"
             name="sc-purchase-kind"
             checked={purchaseKind === 'month'}
             onChange={() => setPurchaseKind('month')}
-            className="accent-formula-volt"
+            className="h-4 w-4 shrink-0 accent-formula-volt"
           />
           Four-week bundle · ${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd}
         </label>
@@ -88,7 +88,7 @@ export function SummerCamp2026Checkout() {
           <select
             value={weekNumber}
             onChange={e => setWeekNumber(parseInt(e.target.value, 10))}
-            className="min-h-11 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper"
+            className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper sm:min-h-11 sm:py-2 sm:text-[13px]"
           >
             {SUMMER_CAMP_2026_WEEKS.map(row => (
               <option key={row.week} value={row.week}>
@@ -103,7 +103,7 @@ export function SummerCamp2026Checkout() {
           <select
             value={monthBundle}
             onChange={e => setMonthBundle(e.target.value as SummerCampMonthBundleId)}
-            className="min-h-11 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper"
+            className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper sm:min-h-11 sm:py-2 sm:text-[13px]"
           >
             <option value="weeks-1-4">Weeks 1–4 · June block</option>
             <option value="weeks-5-8">Weeks 5–8 · July–August block</option>
@@ -118,7 +118,7 @@ export function SummerCamp2026Checkout() {
             value={guardianName}
             onChange={e => setGuardianName(e.target.value)}
             autoComplete="name"
-            className="min-h-11 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper placeholder:text-formula-mist/50"
+            className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper placeholder:text-formula-mist/50 sm:min-h-11 sm:py-2 sm:text-[13px]"
             placeholder="Full name"
           />
         </label>
@@ -129,7 +129,7 @@ export function SummerCamp2026Checkout() {
             value={contactEmail}
             onChange={e => setContactEmail(e.target.value)}
             autoComplete="email"
-            className="min-h-11 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper placeholder:text-formula-mist/50"
+            className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper placeholder:text-formula-mist/50 sm:min-h-11 sm:py-2 sm:text-[13px]"
             placeholder="you@example.com"
           />
         </label>
@@ -139,7 +139,7 @@ export function SummerCamp2026Checkout() {
             value={athleteNames}
             onChange={e => setAthleteNames(e.target.value)}
             rows={2}
-            className="resize-y rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2 font-sans text-[13px] text-formula-paper placeholder:text-formula-mist/50"
+            className="resize-y rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper placeholder:text-formula-mist/50 sm:py-2 sm:text-[13px]"
             placeholder="e.g. Alex or Alex, Sam"
           />
         </label>

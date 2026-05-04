@@ -70,7 +70,7 @@ export async function POST(req: Request) {
 
   const origin = getSiteOrigin()
   const productName = trimMeta(`Formula invoice · ${payeeName}`, 120)
-  const description = memo ? trimMeta(memo, 450) : 'Custom invoice — Formula Soccer Center'
+  const description = memo ? trimMeta(memo, 450) : 'Custom invoice - Formula Soccer Center'
 
   try {
     const session = await stripe.checkout.sessions.create({

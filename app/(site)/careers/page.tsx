@@ -14,7 +14,7 @@ export default function CareersPage() {
     <MarketingInnerPage
       eyebrow="Careers"
       title="Join the Formula team"
-      intro="We hire for front desk and coaching roles as the facility grows. Submit the form below — applications are stored for staff review and you will hear from us by email when there is a match."
+      intro="We hire for front desk and coaching roles as the facility grows. Submit the form below - applications are stored for staff review and you will hear from us by email when there is a match."
       wide
     >
       <section className="not-prose space-y-8">
@@ -30,7 +30,7 @@ export default function CareersPage() {
         <div className="w-full min-w-0 max-w-full overflow-x-clip rounded-xl border border-formula-frost/16 bg-formula-paper/[0.04] p-4 sm:p-5 md:p-8">
           <h2 className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-formula-mist">Apply</h2>
           <p className="mt-2 max-w-2xl text-sm text-formula-frost/80">
-            No file uploads on this form — link a resume in your message if you would like. Equal opportunity employer.
+            No file uploads on this form - link a resume in your message if you would like. Equal opportunity employer.
           </p>
           <div className="mt-6">
             <CareersApplicationForm />

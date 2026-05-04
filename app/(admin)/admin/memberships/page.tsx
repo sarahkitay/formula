@@ -110,7 +110,7 @@ export default async function MembershipsPage() {
                   ))}
                 </ul>
                 <p className="border-t border-border pt-2 text-xs text-text-muted">
-                  Subscriber counts require a membership table — not shown until connected.
+                  Subscriber counts require a membership table - not shown until connected.
                 </p>
               </div>
             ))}

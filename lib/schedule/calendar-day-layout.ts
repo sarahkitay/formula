@@ -1,6 +1,6 @@
 import type { CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
 
-/** Los Angeles wall clock minutes [0, 1440) — matches facility-week-calendar. */
+/** Los Angeles wall clock minutes [0, 1440) - matches facility-week-calendar. */
 export const CAL_DISPLAY_START = 6 * 60
 export const CAL_DISPLAY_END = 23 * 60
 export const CAL_PX_PER_HOUR = 44

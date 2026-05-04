@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { HOME_SPLIT_PHOTO_QUALITY, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { SITE_VOICE } from '@/lib/marketing/site-voice'
 
 const TEAMWORK_PHOTO_SRC = '/8E3A3155.jpg'
 
@@ -36,58 +37,60 @@ export function HomeTeamworkSection() {
 
         <div className="flex flex-col justify-center border-b border-formula-frost/10 bg-formula-deep px-8 py-14 md:px-12 md:py-16 lg:px-16">
           <ScrollFadeIn>
-            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/60">
-              Who this is for
-            </p>
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/60">Who it&apos;s for</p>
 
-            <h2
-              id="teamwork-heading"
-              className="mt-4 font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
-            >
-              Built for every level of player.
+            <h2 id="teamwork-heading" className="sr-only">
+              Audiences we train
             </h2>
 
             <p className="mt-6 text-[15px] leading-[1.65] text-formula-frost/80">
-              <strong className="font-medium text-formula-paper">Club athletes:</strong> sharpen the skills your team doesn&apos;t have time to isolate. Stay
-              sharp between seasons.
+              <strong className="font-medium text-formula-paper">Club players</strong>
+              <span aria-hidden className="text-formula-frost/45">
+                {' '}
+                -{' '}
+              </span>
+              <span className="text-formula-frost/75">{SITE_VOICE.homeWhoClub}</span>
             </p>
 
             <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/80">
-              <strong className="font-medium text-formula-paper">Recreational players:</strong> learn the right habits early. Get better in a structured,
-              supportive environment.
+              <strong className="font-medium text-formula-paper">Recreational players</strong>
+              <span aria-hidden className="text-formula-frost/45">
+                {' '}
+                -{' '}
+              </span>
+              <span className="text-formula-frost/75">{SITE_VOICE.homeWhoRec}</span>
             </p>
 
             <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/80">
-              <strong className="font-medium text-formula-paper">Competitive and elite players:</strong> train against real standards with real data. No fluff.
+              <strong className="font-medium text-formula-paper">Competitive and elite players</strong>
+              <span aria-hidden className="text-formula-frost/45">
+                {' '}
+                -{' '}
+              </span>
+              <span className="text-formula-frost/75">{SITE_VOICE.homeWhoCompetitive}</span>
             </p>
 
             <p className="mt-4 text-[15px] leading-[1.65] text-formula-frost/65">
-              <strong className="font-medium text-formula-paper">Families:</strong> know exactly what your athlete is working on and why. No black box.
+              <strong className="font-medium text-formula-paper">Parents</strong>
+              <span aria-hidden className="text-formula-frost/45">
+                {' '}
+                -{' '}
+              </span>
+              <span className="text-formula-frost/75">{SITE_VOICE.homeWhoParents}</span>
             </p>
-
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              {['Every level', 'Clear standards', 'Real data', 'Family-visible plans'].map(tag => (
-                <span
-                  key={tag}
-                  className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-volt/70"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
               <Link
                 href={MARKETING_HREF.bookAssessmentPortal}
                 className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
               >
-                Book an assessment →
+                Book an Assessment →
               </Link>
               <Link
                 href={MARKETING_HREF.youthMembership}
                 className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/55 transition-colors hover:text-formula-volt"
               >
-                Memberships coming soon →
+                View Programs →
               </Link>
             </div>
           </ScrollFadeIn>

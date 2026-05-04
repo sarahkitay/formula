@@ -4,7 +4,7 @@ import { humanRentalWindowSummary } from '@/lib/rentals/rental-time-window'
 import type { FieldRentalAgreementRow } from '@/lib/rentals/field-rental-agreements-server'
 
 export function rentalFieldLabel(fieldId: string | null | undefined): string {
-  if (!fieldId) return '—'
+  if (!fieldId) return '-'
   const hit = RENTAL_FIELD_OPTIONS.find(f => f.value === fieldId)
   if (hit) return hit.label
   const legacy = RENTAL_FIELD_LEGACY_LABELS[fieldId]
@@ -19,11 +19,11 @@ export function formatFieldRentalWaiverSource(raw: string | null | undefined): s
   if (s === 'roster_link') return 'Roster link'
   if (s === 'roster_rsvp') return 'Roster RSVP (prior waiver)'
   if (s === 'public_site') return 'Public / desk'
-  return s || '—'
+  return s || '-'
 }
 
 export function formatCheckoutAmount(cents: number | null | undefined, currency: string | null | undefined): string {
-  if (cents == null) return '—'
+  if (cents == null) return '-'
   const code = (currency ?? 'usd').toUpperCase()
   try {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: code }).format(cents / 100)
@@ -46,7 +46,7 @@ type BookingPick = Pick<
 export function formatFieldRentalBookingSummaryLine(a: BookingPick): string {
   const field = rentalFieldLabel(a.booking_rental_field)
   const windowHuman = a.booking_rental_window ? humanRentalWindowSummary(a.booking_rental_window) : ''
-  let dates = '—'
+  let dates = '-'
   if (a.booking_rental_dates_compact) {
     const decoded = decodeRentalDatesCompact(a.booking_rental_dates_compact)
     if (decoded.length >= 2) {
@@ -62,8 +62,8 @@ export function formatFieldRentalBookingSummaryLine(a: BookingPick): string {
   }
   const hc =
     a.booking_headcount_at_checkout != null ? `${a.booking_headcount_at_checkout} at checkout` : ''
-  const parts = [field !== '—' ? field : '', windowHuman, dates !== '—' ? dates : '', hc].filter(Boolean)
-  return parts.length > 0 ? parts.join(' · ') : '—'
+  const parts = [field !== '-' ? field : '', windowHuman, dates !== '-' ? dates : '', hc].filter(Boolean)
+  return parts.length > 0 ? parts.join(' · ') : '-'
 }
 
 /** Session summary for a roster invite row (uses expected headcount as roster size). */

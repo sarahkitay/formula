@@ -70,7 +70,7 @@ export interface FacilityWeekCalendarProps {
   onProgramSlotClick?: (slot: ScheduleSlot, opts?: { relatedSlots: ScheduleSlot[] }) => void
   /** Assessments, rentals, agreements, etc. */
   onFeedBlockClick?: (block: CalendarFeedBlock) => void
-  /** Empty grid — parent opens quick-book / override flow. */
+  /** Empty grid - parent opens quick-book / override flow. */
   onEmptySlotClick?: (payload: { dayIndex: DayIndex; startMinute: number; endMinute: number }) => void
   /** Vertical drag on field-rental booking blocks commits new wall times (minutes from midnight). */
   onRentalBookingTimeCommit?: (payload: { bookingId: string; startMinute: number; endMinute: number }) => void | Promise<void>
@@ -103,7 +103,7 @@ export function FacilityWeekCalendar({
   } | null>(null)
   const movedPxRef = React.useRef(0)
 
-  /** One row per hour in [CAL_DISPLAY_START, CAL_DISPLAY_END) — length × CAL_PX_PER_HOUR must equal totalPx. */
+  /** One row per hour in [CAL_DISPLAY_START, CAL_DISPLAY_END) - length × CAL_PX_PER_HOUR must equal totalPx. */
   const hours = React.useMemo(() => {
     const out: number[] = []
     const first = Math.floor(CAL_DISPLAY_START / 60)

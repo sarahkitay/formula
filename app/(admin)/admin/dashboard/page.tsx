@@ -78,7 +78,7 @@ export default async function AdminDashboardPage() {
       ? stripeSummary.stripeRevenueByCategory
       : revenueByCategory
   const youthShareRow = stripeCategoryRows.find(r => r.category.startsWith('Youth'))
-  const youthShareLabel = youthShareRow != null ? `${Math.round(youthShareRow.pct)}%` : '—'
+  const youthShareLabel = youthShareRow != null ? `${Math.round(youthShareRow.pct)}%` : '-'
 
   const navTiles = adminNav.filter(item => item.href !== '/admin/dashboard')
 
@@ -151,7 +151,7 @@ export default async function AdminDashboardPage() {
             { label: 'Total active', value: activePlayers },
             {
               label: rosterStats.configured ? 'New (45d)' : 'Roster',
-              value: rosterStats.configured ? `+${newEnrolls}` : '—',
+              value: rosterStats.configured ? `+${newEnrolls}` : '-',
               highlight: rosterStats.configured && newEnrolls > 0 ? 'green' : undefined,
             },
             { label: 'Pending docs', value: pendingDocs, highlight: pendingDocs ? 'volt' : undefined },

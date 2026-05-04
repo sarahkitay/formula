@@ -13,7 +13,7 @@ export default function FridayNightFriendliesPage() {
     <MarketingInnerPage
       eyebrow="Events"
       title="Friday Night Friendlies"
-      intro="Coach-run pickup soccer for ages 6–13 — balanced teams, small-sided games, and Friday-night energy. First night Friday May 8, 2026. $20 per player; walk-ups welcome."
+      intro="Coach-run pickup soccer for ages 6–13 - balanced teams, small-sided games, and Friday-night energy. First night Friday May 8, 2026. $20 per player; walk-ups welcome."
       wide
     >
       <FridayNightFriendliesLanding />

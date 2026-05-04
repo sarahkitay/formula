@@ -43,7 +43,7 @@ export default function PaymentsPage() {
 
   const removePayment = useCallback(async (p: Payment) => {
     const ok = window.confirm(
-      'Remove this entry from the ledger? This does not refund or cancel anything in Stripe — it only deletes the stored row.'
+      'Remove this entry from the ledger? This does not refund or cancel anything in Stripe - it only deletes the stored row.'
     )
     if (!ok) return
     setDeletingId(p.id)
@@ -150,7 +150,7 @@ export default function PaymentsPage() {
       <div className="space-y-6">
         <PageHeader
           title="Payments"
-          subtitle="Stripe Checkout sessions from webhook — includes field rental deposits, party deposits, assessments, packages, and custom invoices."
+          subtitle="Stripe Checkout sessions from webhook - includes field rental deposits, party deposits, assessments, packages, and custom invoices."
           actions={
             <Button variant="secondary" leftIcon={<Download className="h-4 w-4" />} type="button" disabled>
               Export CSV

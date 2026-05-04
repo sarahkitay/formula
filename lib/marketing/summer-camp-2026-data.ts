@@ -10,7 +10,7 @@ export const SUMMER_CAMP_2026 = {
   dayHours: '9:00 AM – 2:30 PM',
   /** Published capacity note */
   capacityNote: 'Up to 54 athletes per week (subject to final staffing ratios).',
-  /** Ops contact — confirm before launch */
+  /** Ops contact - confirm before launch */
   inquiriesEmail: 'info@formulasoccercenter.com',
 } as const
 

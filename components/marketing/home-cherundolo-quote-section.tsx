@@ -1,10 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { HOME_SPLIT_PHOTO_QUALITY, HOME_SPLIT_PHOTO_SIZES } from '@/lib/marketing/home-marketing-images'
-import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { SITE_VOICE } from '@/lib/marketing/site-voice'
 
 const PARTNER_PHOTO_SRC = '/steve2.jpg'
 
@@ -18,7 +17,7 @@ export function HomeCherundoloQuoteSection() {
         <div className="relative min-h-[min(48vh,380px)] overflow-hidden border-b border-formula-frost/10 md:min-h-0 md:border-b-0 md:border-r md:border-formula-frost/10">
           <Image
             src={PARTNER_PHOTO_SRC}
-            alt="Steve Cherundolo, arms crossed, at a stadium — professional portrait for Formula partnership."
+            alt="Steve Cherundolo, arms crossed, at a stadium - professional portrait for Formula partnership."
             fill
             quality={HOME_SPLIT_PHOTO_QUALITY}
             sizes={HOME_SPLIT_PHOTO_SIZES}
@@ -37,38 +36,18 @@ export function HomeCherundoloQuoteSection() {
           <ScrollFadeIn>
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-formula-frost/60">Partnership</p>
 
-            <h2
-              id="cherundolo-quote-heading"
-              className="mt-4 font-mono text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold leading-[1.05] tracking-tight text-formula-paper"
-            >
-              Three critical moments
+            <h2 id="cherundolo-quote-heading" className="sr-only">
+              Partnership quote
             </h2>
 
-            <blockquote className="mt-6 border-l-2 border-formula-volt/45 pl-6">
+            <blockquote className="mt-4 border-l-2 border-formula-volt/45 pl-6">
               <p className="text-[15px] font-normal leading-[1.7] text-formula-frost/88 md:text-[16px] md:leading-[1.75]">
-                I have partnered with Formula because it reflects my own personal philosophy of player development in the modern game. Every soccer action has
-                three critical moments which increase in difficulty when time and space are reduced. By combining elite coaching with cutting-edge technology,
-                Formula will develop players who think faster, make intelligent decisions and execute at the highest of levels.
+                {SITE_VOICE.cherundoloPartnershipQuote}
               </p>
               <footer className="mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-formula-frost/55">
                 <cite className="not-italic">Steve Cherundolo</cite>
               </footer>
             </blockquote>
-
-            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
-              <Link
-                href={MARKETING_HREF.bookAssessmentPortal}
-                className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
-              >
-                Book an assessment →
-              </Link>
-              <Link
-                href={MARKETING_HREF.fpi}
-                className="inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-frost/55 transition-colors hover:text-formula-volt"
-              >
-                The Formula →
-              </Link>
-            </div>
           </ScrollFadeIn>
         </div>
       </div>

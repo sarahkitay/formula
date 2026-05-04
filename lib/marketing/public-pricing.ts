@@ -15,7 +15,7 @@ export const SESSION_PACKAGE_5 = {
   sessions: 5,
   priceUsd: 150,
   label: '5-session package',
-  summary: `5 sessions for $150. ${SESSION_PACKAGE_EARLY_BIRD.headline} — ${SESSION_PACKAGE_EARLY_BIRD.validThrough}`,
+  summary: `5 sessions for $150. ${SESSION_PACKAGE_EARLY_BIRD.headline} - ${SESSION_PACKAGE_EARLY_BIRD.validThrough}`,
   purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
 } as const
 
@@ -35,7 +35,7 @@ export const FORMULA_MINIS_SIX_WEEK = {
   label: 'Formula Minis · 6-week weekday package',
   /** Condensed from Children's Programming Summary v4 (April 2026). */
   summary:
-    'Formula Minis (ages 2–3), weekdays: pick one recurring slot on Monday, Wednesday, or Friday — Session A (10:00–10:30 AM) or Session B (10:45–11:15 AM). That slot meets once per week for six weeks (six sessions total) for $300 per participant. Program dates May 11–June 19, 2026; Monday enrollments span seven calendar weeks through June 22 so Memorial Day (May 25) is a built-in skip — still six Monday sessions. Minimum 6 participants per session (below that, sessions may be cancelled or consolidated); maximum 24 per session. Enrollment is by 6-week package only; no drop-ins. Refunds: none after enrollment is confirmed; no formal make-ups — staff may try to place your child in another session the same week if capacity allows (not guaranteed).',
+    'Formula Minis (ages 2–3), weekdays: pick one recurring slot on Monday, Wednesday, or Friday - Session A (10:00–10:30 AM) or Session B (10:45–11:15 AM). That slot meets once per week for six weeks (six sessions total) for $300 per participant. Program dates May 11–June 19, 2026; Monday enrollments span seven calendar weeks through June 22 so Memorial Day (May 25) is a built-in skip - still six Monday sessions. Minimum 6 participants per session (below that, sessions may be cancelled or consolidated); maximum 24 per session. Enrollment is by 6-week package only; no drop-ins. Refunds: none after enrollment is confirmed; no formal make-ups - staff may try to place your child in another session the same week if capacity allows (not guaranteed).',
 } as const
 
 /** Sunday Weekend Program (ages 2–5): four age-specific sessions; 10 weeks; v4 April 2026. */
@@ -60,7 +60,7 @@ export const SESSION_PACKAGE_10 = {
   sessions: 10,
   priceUsd: 250,
   label: '10-session package',
-  summary: `10 sessions for $250. ${SESSION_PACKAGE_EARLY_BIRD.headline} — ${SESSION_PACKAGE_EARLY_BIRD.validThrough}`,
+  summary: `10 sessions for $250. ${SESSION_PACKAGE_EARLY_BIRD.headline} - ${SESSION_PACKAGE_EARLY_BIRD.validThrough}`,
   purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
 } as const
 
@@ -124,7 +124,7 @@ export const PARTY_BOOKING_1K_CHECKOUT = {
 } as const
 
 export const PARTIES_PRICING_STATUS =
-  'Party deposit $1,000 online (Stripe). Book below — include field rental window so ops can schedule.' as const
+  'Party deposit $1,000 online (Stripe). Book below - include field rental window so ops can schedule.' as const
 
 export const GENERAL_EVENTS_PRICING_STATUS = 'Hosted event pricing TBA. See parties, Footbot, and tournaments for paths.' as const
 

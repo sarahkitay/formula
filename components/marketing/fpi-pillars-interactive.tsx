@@ -11,11 +11,11 @@ export type FpiPillarsInteractiveProps = {
   intro: string
   pillars: readonly FpiPillar[]
   /**
-   * `toggle` — tap/hover reveals assessment copy (e.g. Skills Check page).
-   * `expanded` — kicker, title, optional shared photo, and assessment sentence always visible (e.g. The Formula page).
+   * `toggle` - tap/hover reveals assessment copy (e.g. Skills Check page).
+   * `expanded` - kicker, title, optional shared photo, and assessment sentence always visible (e.g. The Formula page).
    */
   cardLayout?: 'toggle' | 'expanded'
-  /** Used with `cardLayout="expanded"` — one action shot reused on every pillar card until pillar-specific art exists. */
+  /** Used with `cardLayout="expanded"` - one action shot reused on every pillar card until pillar-specific art exists. */
   expandedCardImageSrc?: string
 }
 
@@ -75,7 +75,7 @@ export function FpiPillarsInteractive({
                     <div className="relative mt-3 aspect-[4/3] w-full shrink-0 overflow-hidden rounded border border-white/[0.12]">
                       <Image
                         src={expandedCardImageSrc}
-                        alt="Youth athletes on indoor turf at Formula Soccer Center — representative of the assessment environment."
+                        alt="Youth athletes on indoor turf at Formula Soccer Center - representative of the assessment environment."
                         fill
                         className="object-cover"
                         sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"

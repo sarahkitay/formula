@@ -19,7 +19,7 @@ import { formatCurrency } from '@/lib/utils'
 import { SITE } from '@/lib/site-config'
 
 function clip(s: string | null, max: number) {
-  if (!s) return '—'
+  if (!s) return '-'
   return s.length <= max ? s : `${s.slice(0, max)}…`
 }
 
@@ -101,7 +101,7 @@ export default async function RentalsPage() {
               rows={partyRows.map(r => [
                 formatFacilityDateTimeShort(r.created_at),
                 r.contact_name,
-                r.customer_email ?? '—',
+                r.customer_email ?? '-',
                 r.party_preferred_date,
                 String(r.party_guest_count),
                 r.rental_field_id,
@@ -131,7 +131,7 @@ export default async function RentalsPage() {
               </p>
               <details open className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
                 <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-                  <span className="text-formula-volt">▸</span> Quick roster link — comp / internal (no payment row)
+                  <span className="text-formula-volt">▸</span> Quick roster link - comp / internal (no payment row)
                 </summary>
                 <div className="mt-3 border-t border-formula-frost/10 pt-3">
                   <ManualWaiverInviteForm />
@@ -139,7 +139,7 @@ export default async function RentalsPage() {
               </details>
               <details className="mt-4 rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
                 <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-                  <span className="text-formula-volt">▸</span> Paid in person — desk deposit + same waiver URL + Payments entry
+                  <span className="text-formula-volt">▸</span> Paid in person - desk deposit + same waiver URL + Payments entry
                 </summary>
                 <div className="mt-3 border-t border-formula-frost/10 pt-3">
                   <PaidInPersonFieldRentalInviteForm />
@@ -162,7 +162,7 @@ export default async function RentalsPage() {
                   rel="noopener noreferrer"
                   className="text-formula-volt underline-offset-2 hover:underline"
                 >
-                  Open full waiver form (reference — same as guests)
+                  Open full waiver form (reference - same as guests)
                 </Link>
                 . Each signed row links to the full record, agreement language, and signature. Use the <strong className="text-formula-paper/90">Attach to</strong>{' '}
                 column or drag the <strong className="text-formula-paper/90">⣿</strong> handle onto a roster invite above so walk-up / public-form signers count

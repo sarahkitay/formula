@@ -45,7 +45,7 @@ export default function ParentMembershipsPage() {
               </div>
             </div>
             <p className="mt-6 max-w-2xl text-sm leading-relaxed text-text-secondary">
-              Purchase and scheduling are handled at the front desk, on the public programs page, or during your assessment — not in this portal yet.
+              Purchase and scheduling are handled at the front desk, on the public programs page, or during your assessment - not in this portal yet.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link

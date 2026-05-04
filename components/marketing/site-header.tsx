@@ -4,8 +4,8 @@ import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
-import { SiteSearchModal } from '@/components/marketing/site-search-modal'
+import { Menu, Search, X } from 'lucide-react'
+import { SiteSearchModal, SiteSearchOpenButton } from '@/components/marketing/site-search-modal'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
 import { getSiteHeaderPrimaryNav, MARKETING_HREF } from '@/lib/marketing/nav'
 import { FACILITY_APPLE_MAPS_URL, SITE } from '@/lib/site-config'
@@ -22,7 +22,7 @@ function NavLink({ href, children }: { href: string; children: ReactNode }) {
 }
 
 /** `key={pathname}` on this subtree resets open state on navigation without an effect. */
-function SiteHeaderMobileNav() {
+function SiteHeaderMobileNav({ onOpenSiteSearch }: { onOpenSiteSearch: () => void }) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function SiteHeaderMobileNav() {
     <>
       <button
         type="button"
-        className="inline-flex h-9 w-9 items-center justify-center rounded border border-formula-frost/20 text-formula-paper transition-colors hover:border-formula-frost/40 hover:bg-formula-frost/5 md:hidden"
+        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded border border-formula-frost/20 text-formula-paper transition-colors hover:border-formula-frost/40 hover:bg-formula-frost/5 md:hidden"
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
         aria-controls="site-header-mobile-nav"
@@ -71,15 +71,26 @@ function SiteHeaderMobileNav() {
           />
           <nav
             id="site-header-mobile-nav"
-            className="absolute right-0 top-0 flex h-full w-[min(100%,18rem)] flex-col gap-1 border-l border-formula-frost/15 bg-formula-deep/98 px-4 pb-6 pt-16 shadow-2xl"
+            className="absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col gap-0.5 border-l border-formula-frost/15 bg-formula-deep/98 px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(4.25rem,env(safe-area-inset-top,0px)+3.25rem)] shadow-2xl sm:px-4"
             aria-label="Primary"
           >
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                queueMicrotask(() => onOpenSiteSearch())
+              }}
+              className="flex min-h-12 items-center gap-2 rounded-md px-3 py-2 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-formula-paper transition-colors hover:bg-formula-frost/10 active:bg-formula-frost/15"
+            >
+              <Search className="h-4 w-4 shrink-0 text-formula-volt/90" aria-hidden />
+              Search
+            </button>
             {getSiteHeaderPrimaryNav().map(item => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-md px-3 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-formula-paper transition-colors hover:bg-formula-frost/10"
+                className="flex min-h-12 items-center rounded-md px-3 py-2 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-formula-paper transition-colors hover:bg-formula-frost/10 active:bg-formula-frost/15"
               >
                 {item.label}
               </Link>
@@ -93,6 +104,7 @@ function SiteHeaderMobileNav() {
 
 export function SiteHeader() {
   const pathname = usePathname()
+  const [searchOpen, setSearchOpen] = useState(false)
   const showFacilityAddress =
     pathname === '/' ||
     pathname === '/book-assessment' ||
@@ -117,8 +129,13 @@ export function SiteHeader() {
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5 md:gap-3 lg:gap-4">
-            <SiteHeaderMobileNav key={pathname} />
-            <SiteSearchModal />
+            <SiteHeaderMobileNav key={pathname} onOpenSiteSearch={() => setSearchOpen(true)} />
+            <SiteSearchModal open={searchOpen} onOpenChange={setSearchOpen} hideTrigger />
+            <SiteSearchOpenButton
+              className="hidden md:inline-flex"
+              open={searchOpen}
+              onOpen={() => setSearchOpen(true)}
+            />
             <Link
               href={MARKETING_HREF.bookAssessmentPortal}
               className="inline-flex h-9 items-center border border-formula-volt/55 bg-formula-volt/95 px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-base transition-[filter] hover:brightness-105 md:h-10 md:px-4 md:tracking-[0.14em]"

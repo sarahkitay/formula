@@ -41,7 +41,7 @@ export function MarketingFooter() {
   <div>
   <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-formula-olive">Formula Soccer Center</p>
   <p className="mt-4 max-w-xs text-sm leading-relaxed text-formula-mist">
-    Scheduled blocks, coached standards, real layout — not open-gym noise.
+    Scheduled blocks, coached standards, real layout - not open-gym noise.
   </p>
   <p className="mt-4 max-w-sm text-xs leading-relaxed text-formula-olive/90">
     Booking confirms visit details. Assessment + staff coordination keep the floor disciplined.
