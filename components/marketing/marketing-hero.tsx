@@ -25,13 +25,16 @@ const HomeField3DHero = dynamic(
 
 const WORD = 'FORMULA'
 
+const READOUT_STAGGER_MS = 95
+const readoutDelay = (step: number) => ({ animationDelay: `${360 + step * READOUT_STAGGER_MS}ms` })
+
 function HexLetterO({ index }: { index: number }) {
   const delay = `${80 + index * 58}ms`
   return (
     <span className="marketing-hero-char inline-flex translate-y-[0.04em] align-middle" style={{ animationDelay: delay }}>
       <svg
         viewBox="0 0 32 36"
-        className="h-[0.64em] w-[0.54em] sm:h-[0.68em] sm:w-[0.58em]"
+        className="marketing-hero-hex h-[0.64em] w-[0.54em] sm:h-[0.68em] sm:w-[0.58em]"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden
@@ -58,10 +61,10 @@ export function MarketingHero() {
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/18 to-transparent" />
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/10 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[min(100%,1360px)] flex-1 flex-col px-5 pb-12 pt-24 max-sm:mt-2 max-sm:pt-40 sm:px-6 sm:mt-0 sm:pt-24 lg:pb-16 lg:pt-20">
+      <div className="relative z-10 mx-auto flex w-full max-w-[min(100%,1360px)] flex-1 flex-col px-5 pb-12 pt-44 max-sm:pt-[max(11.5rem,calc(env(safe-area-inset-top,0px)+10rem))] sm:px-6 sm:pt-48 md:pt-48 lg:pb-16 lg:pt-52">
         {/* Centered wordmark — primary title */}
         <div className="flex w-full justify-center px-1 sm:px-2">
-          <h1 className={cn(marketingHeroWordmarkClassName, 'max-w-[100%]')} aria-label={WORD}>
+          <h1 className={cn(marketingHeroWordmarkClassName, 'marketing-hero-wordmark-anim max-w-[100%]')} aria-label={WORD}>
             <span aria-hidden="true" className="inline-flex flex-nowrap justify-center whitespace-nowrap">
               {WORD.split('').map((ch, i) =>
                 ch === 'O' ? (
@@ -79,10 +82,16 @@ export function MarketingHero() {
         {/* Readout column + field: aligned to bottom band on large screens */}
         <div className="mt-6 flex min-h-0 flex-1 flex-col gap-8 max-lg:mt-5 max-lg:gap-6 lg:mt-7 lg:flex-row lg:items-end lg:justify-between lg:gap-6 xl:gap-10">
           <div className="relative z-20 flex min-w-0 max-w-[min(100%,26.5rem)] flex-col border-l border-formula-frost/18 pl-4 sm:pl-5 lg:max-w-[min(100%,28rem)] lg:shrink-0 lg:pb-1">
-            <p className="font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-mist/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.45)]">
+            <p
+              className="marketing-hero-readout font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-mist/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.45)]"
+              style={readoutDelay(0)}
+            >
               Formula Soccer Center
             </p>
-            <p className="mt-2.5 max-w-[38rem] font-mono text-[clamp(0.95rem,2.2vw,1.2rem)] font-semibold leading-[1.22] tracking-[0.06em] text-formula-paper [text-shadow:0_2px_20px_rgba(0,0,0,0.48)]">
+            <p
+              className="marketing-hero-readout mt-2.5 max-w-[38rem] font-mono text-[clamp(0.95rem,2.2vw,1.2rem)] font-semibold leading-[1.22] tracking-[0.06em] text-formula-paper [text-shadow:0_2px_20px_rgba(0,0,0,0.48)]"
+              style={readoutDelay(1)}
+            >
               {SITE_VOICE.heroHeadlineLines.map((line, i) => (
                 <Fragment key={`hero-headline-${i}`}>
                   {i > 0 ? <br /> : null}
@@ -90,22 +99,31 @@ export function MarketingHero() {
                 </Fragment>
               ))}
             </p>
-            <p className="mt-2.5 max-w-[38rem] font-mono text-[12px] font-medium leading-[1.42] tracking-[0.04em] text-formula-frost/76 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]">
+            <p
+              className="marketing-hero-readout mt-2.5 max-w-[38rem] font-mono text-[12px] font-medium leading-[1.42] tracking-[0.04em] text-formula-frost/76 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]"
+              style={readoutDelay(2)}
+            >
               {SITE_VOICE.homeHeroLead}
             </p>
-            <p className="mt-2 max-w-[38rem] font-mono text-[11px] font-semibold leading-[1.38] tracking-[0.08em] text-formula-frost/82 [text-shadow:0_1px_12px_rgba(0,0,0,0.32)]">
+            <p
+              className="marketing-hero-readout mt-2 max-w-[38rem] font-mono text-[11px] font-semibold leading-[1.38] tracking-[0.08em] text-formula-frost/82 [text-shadow:0_1px_12px_rgba(0,0,0,0.32)]"
+              style={readoutDelay(3)}
+            >
               {SITE_VOICE.homeHeroTagline}
             </p>
-            <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+            <div
+              className="marketing-hero-readout mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
+              style={readoutDelay(4)}
+            >
               <Link
                 href={MARKETING_HREF.bookAssessmentPortal}
-                className="inline-flex h-10 w-fit items-center border border-formula-volt/50 bg-formula-volt px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-base transition-[filter] duration-300 hover:brightness-105 sm:h-11 sm:px-6 sm:text-[11px] sm:tracking-[0.14em]"
+                className="inline-flex h-10 w-fit items-center border border-formula-volt/50 bg-formula-volt px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-base transition-[filter,transform] duration-300 hover:brightness-105 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 sm:h-11 sm:px-6 sm:text-[11px] sm:tracking-[0.14em]"
               >
                 Book an Assessment
               </Link>
               <Link
                 href={MARKETING_HREF.youthMembership}
-                className="inline-flex h-10 w-fit items-center border border-formula-paper/32 bg-transparent px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-paper shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] transition-colors duration-300 hover:border-formula-volt/45 hover:bg-formula-paper/[0.06] sm:h-11 sm:px-6 sm:text-[11px] sm:tracking-[0.14em]"
+                className="inline-flex h-10 w-fit items-center border border-formula-paper/32 bg-transparent px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-paper shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] transition-[colors,transform] duration-300 hover:border-formula-volt/45 hover:bg-formula-paper/[0.06] hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 sm:h-11 sm:px-6 sm:text-[11px] sm:tracking-[0.14em]"
               >
                 View Programs
               </Link>
@@ -117,7 +135,9 @@ export function MarketingHero() {
             className="relative z-10 flex min-h-0 w-full min-w-0 flex-1 flex-col justify-end lg:relative lg:min-h-[min(260px,32vh)] lg:overflow-visible lg:pb-0"
           >
             <div className="relative mx-auto w-full max-w-[min(100%,760px)] translate-x-0 scale-[0.56] max-sm:origin-[18%_85%] max-sm:translate-y-1 sm:scale-[0.82] sm:origin-[50%_88%] md:max-lg:scale-[0.88] lg:mx-0 lg:ml-auto lg:max-w-[min(100%,820px)] lg:translate-x-[min(6%,3.5rem)] lg:translate-y-2 lg:scale-[0.88] lg:origin-[85%_92%] xl:translate-x-[min(8%,4.5rem)] xl:scale-[0.92]">
-              <HomeField3DHero />
+              <div className="marketing-hero-field-enter will-change-[opacity,transform]">
+                <HomeField3DHero />
+              </div>
             </div>
           </div>
         </div>

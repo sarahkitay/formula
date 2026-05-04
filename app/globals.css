@@ -628,31 +628,146 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.14;
   background-image:
     linear-gradient(color-mix(in srgb, var(--color-formula-frost) 14%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--color-formula-frost) 14%, transparent) 1px, transparent 1px);
   background-size: 56px 56px;
   background-position: center top;
   mask-image: radial-gradient(ellipse 85% 70% at 50% 38%, black 0%, transparent 72%);
+  animation: marketing-hero-grid-drift 14s ease-in-out infinite;
+}
+
+@keyframes marketing-hero-grid-drift {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .marketing-hero-system-grid {
     opacity: 0.08;
+    animation: none;
   }
 }
 
 .marketing-hero-char {
   opacity: 0;
-  transform: translateY(8px);
-  animation: marketing-hero-char 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: translate3d(0, 18px, 0) scale(0.9);
+  animation: marketing-hero-char 0.92s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes marketing-hero-char {
+  55% {
+    opacity: 1;
+  }
   to {
-  opacity: 1;
-  transform: translateY(0);
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero-char {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Wordmark: slow volt-forward wash on shadows (technical, not bouncy). */
+.marketing-hero-wordmark-anim {
+  animation: marketing-hero-wordmark-glow 7s ease-in-out infinite;
+}
+
+@keyframes marketing-hero-wordmark-glow {
+  0%,
+  100% {
+    text-shadow:
+      0 4px 40px rgba(0, 0, 0, 0.58),
+      0 2px 14px rgba(0, 0, 0, 0.42),
+      0 0 42px color-mix(in srgb, var(--color-formula-volt) 0%, transparent);
+  }
+  50% {
+    text-shadow:
+      0 4px 44px rgba(0, 0, 0, 0.52),
+      0 2px 16px rgba(0, 0, 0, 0.38),
+      0 0 52px color-mix(in srgb, var(--color-formula-volt) 14%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero-wordmark-anim {
+    animation: none;
+  }
+}
+
+/* Hex O: restrained pulse on the volt stroke. */
+.marketing-hero-hex {
+  animation: marketing-hero-hex-pulse 4.2s ease-in-out infinite;
+}
+
+@keyframes marketing-hero-hex-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-formula-volt) 28%, transparent));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-formula-volt) 55%, transparent));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero-hex {
+    animation: none;
+    filter: none;
+  }
+}
+
+/* Readout column: staggered rise (mono HUD). */
+.marketing-hero-readout {
+  opacity: 0;
+  transform: translate3d(-10px, 14px, 0);
+  animation: marketing-hero-readout-in 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes marketing-hero-readout-in {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero-readout {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 3D field: late fade + slide (parent keeps responsive scale). */
+.marketing-hero-field-enter {
+  opacity: 0;
+  transform: translate3d(20px, 18px, 0);
+  animation: marketing-hero-field-in 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.48s forwards;
+}
+
+@keyframes marketing-hero-field-in {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero-field-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
