@@ -656,13 +656,21 @@
 
 .marketing-hero-char {
   opacity: 0;
-  transform: translate3d(0, 18px, 0) scale(0.9);
-  animation: marketing-hero-char 0.92s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: translate3d(0, 48px, 0) scale(0.76);
+  animation: marketing-hero-char 1.18s cubic-bezier(0.28, 1.35, 0.32, 1) forwards;
 }
 
 @keyframes marketing-hero-char {
-  55% {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 48px, 0) scale(0.76);
+  }
+  62% {
     opacity: 1;
+    transform: translate3d(0, -8px, 0) scale(1.06);
+  }
+  82% {
+    transform: translate3d(0, 2px, 0) scale(0.99);
   }
   to {
     opacity: 1;
@@ -680,7 +688,7 @@
 
 /* Wordmark: slow volt-forward wash on shadows (technical, not bouncy). */
 .marketing-hero-wordmark-anim {
-  animation: marketing-hero-wordmark-glow 7s ease-in-out infinite;
+  animation: marketing-hero-wordmark-glow 4.8s ease-in-out infinite;
 }
 
 @keyframes marketing-hero-wordmark-glow {
@@ -689,13 +697,13 @@
     text-shadow:
       0 4px 40px rgba(0, 0, 0, 0.58),
       0 2px 14px rgba(0, 0, 0, 0.42),
-      0 0 42px color-mix(in srgb, var(--color-formula-volt) 0%, transparent);
+      0 0 48px color-mix(in srgb, var(--color-formula-volt) 4%, transparent);
   }
   50% {
     text-shadow:
-      0 4px 44px rgba(0, 0, 0, 0.52),
-      0 2px 16px rgba(0, 0, 0, 0.38),
-      0 0 52px color-mix(in srgb, var(--color-formula-volt) 14%, transparent);
+      0 6px 52px rgba(0, 0, 0, 0.48),
+      0 3px 20px rgba(0, 0, 0, 0.34),
+      0 0 72px color-mix(in srgb, var(--color-formula-volt) 28%, transparent);
   }
 }
 
@@ -707,16 +715,16 @@
 
 /* Hex O: restrained pulse on the volt stroke. */
 .marketing-hero-hex {
-  animation: marketing-hero-hex-pulse 4.2s ease-in-out infinite;
+  animation: marketing-hero-hex-pulse 3.2s ease-in-out infinite;
 }
 
 @keyframes marketing-hero-hex-pulse {
   0%,
   100% {
-    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-formula-volt) 28%, transparent));
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-formula-volt) 35%, transparent));
   }
   50% {
-    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-formula-volt) 55%, transparent));
+    filter: drop-shadow(0 0 22px color-mix(in srgb, var(--color-formula-volt) 72%, transparent));
   }
 }
 
@@ -730,11 +738,19 @@
 /* Readout column: staggered rise (mono HUD). */
 .marketing-hero-readout {
   opacity: 0;
-  transform: translate3d(-10px, 14px, 0);
-  animation: marketing-hero-readout-in 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: translate3d(-22px, 26px, 0);
+  animation: marketing-hero-readout-in 0.95s cubic-bezier(0.26, 1.25, 0.34, 1) forwards;
 }
 
 @keyframes marketing-hero-readout-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(-22px, 26px, 0);
+  }
+  72% {
+    opacity: 1;
+    transform: translate3d(3px, -3px, 0);
+  }
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
@@ -752,11 +768,19 @@
 /* 3D field: late fade + slide (parent keeps responsive scale). */
 .marketing-hero-field-enter {
   opacity: 0;
-  transform: translate3d(20px, 18px, 0);
-  animation: marketing-hero-field-in 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.48s forwards;
+  transform: translate3d(44px, 32px, 0);
+  animation: marketing-hero-field-in 1.2s cubic-bezier(0.26, 1.2, 0.34, 1) 0.58s forwards;
 }
 
 @keyframes marketing-hero-field-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(44px, 32px, 0);
+  }
+  70% {
+    opacity: 1;
+    transform: translate3d(-6px, -4px, 0);
+  }
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);

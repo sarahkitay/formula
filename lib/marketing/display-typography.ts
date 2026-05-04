@@ -10,4 +10,4 @@ export const marketingDisplayH1ClassName =
  * tight tracking for an intentional technical mark, not “scaled up body text”.
  */
 export const marketingHeroWordmarkClassName =
-  'font-mono text-[clamp(2.95rem,min(16vw,18dvh),6.9rem)] font-semibold leading-[0.86] tracking-[-0.055em] text-formula-paper [text-shadow:0_4px_40px_rgba(0,0,0,0.58),0_2px_14px_rgba(0,0,0,0.42)]'
+  'font-mono text-[clamp(3.2rem,min(19.5vw,22dvh),8.4rem)] font-semibold leading-[0.82] tracking-[-0.06em] text-formula-paper [text-shadow:0_4px_40px_rgba(0,0,0,0.58),0_2px_14px_rgba(0,0,0,0.42)]'

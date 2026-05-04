@@ -25,11 +25,11 @@ const HomeField3DHero = dynamic(
 
 const WORD = 'FORMULA'
 
-const READOUT_STAGGER_MS = 95
-const readoutDelay = (step: number) => ({ animationDelay: `${360 + step * READOUT_STAGGER_MS}ms` })
+const READOUT_STAGGER_MS = 88
+const readoutDelay = (step: number) => ({ animationDelay: `${520 + step * READOUT_STAGGER_MS}ms` })
 
 function HexLetterO({ index }: { index: number }) {
-  const delay = `${80 + index * 58}ms`
+  const delay = `${60 + index * 78}ms`
   return (
     <span className="marketing-hero-char inline-flex translate-y-[0.04em] align-middle" style={{ animationDelay: delay }}>
       <svg
@@ -63,14 +63,14 @@ export function MarketingHero() {
 
       <div className="relative z-10 mx-auto flex w-full max-w-[min(100%,1360px)] flex-1 flex-col px-5 pb-12 pt-44 max-sm:pt-[max(11.5rem,calc(env(safe-area-inset-top,0px)+10rem))] sm:px-6 sm:pt-48 md:pt-48 lg:pb-16 lg:pt-52">
         {/* Centered wordmark — primary title */}
-        <div className="flex w-full justify-center px-1 sm:px-2">
+        <div className="flex w-full justify-center px-1 pb-0 pt-0 sm:px-2">
           <h1 className={cn(marketingHeroWordmarkClassName, 'marketing-hero-wordmark-anim max-w-[100%]')} aria-label={WORD}>
             <span aria-hidden="true" className="inline-flex flex-nowrap justify-center whitespace-nowrap">
               {WORD.split('').map((ch, i) =>
                 ch === 'O' ? (
                   <HexLetterO key={`hex-o-${i}`} index={i} />
                 ) : (
-                  <span key={`${ch}-${i}`} className="marketing-hero-char inline-block" style={{ animationDelay: `${80 + i * 58}ms` }}>
+                  <span key={`${ch}-${i}`} className="marketing-hero-char inline-block" style={{ animationDelay: `${60 + i * 78}ms` }}>
                     {ch}
                   </span>
                 )
@@ -79,8 +79,8 @@ export function MarketingHero() {
           </h1>
         </div>
 
-        {/* Readout column + field: aligned to bottom band on large screens */}
-        <div className="mt-6 flex min-h-0 flex-1 flex-col gap-8 max-lg:mt-5 max-lg:gap-6 lg:mt-7 lg:flex-row lg:items-end lg:justify-between lg:gap-6 xl:gap-10">
+        {/* Readout column + field: tucked under wordmark; field anchors low on large screens */}
+        <div className="mt-1 flex min-h-0 flex-1 flex-col gap-5 max-lg:mt-1 max-lg:gap-5 lg:mt-2 lg:flex-row lg:items-start lg:justify-between lg:gap-5 xl:gap-8">
           <div className="relative z-20 flex min-w-0 max-w-[min(100%,26.5rem)] flex-col border-l border-formula-frost/18 pl-4 sm:pl-5 lg:max-w-[min(100%,28rem)] lg:shrink-0 lg:pb-1">
             <p
               className="marketing-hero-readout font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-mist/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.45)]"
@@ -112,7 +112,7 @@ export function MarketingHero() {
               {SITE_VOICE.homeHeroTagline}
             </p>
             <div
-              className="marketing-hero-readout mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
+              className="marketing-hero-readout mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
               style={readoutDelay(4)}
             >
               <Link
