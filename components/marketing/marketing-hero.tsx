@@ -80,37 +80,34 @@ export function MarketingHero() {
         </div>
 
         {/* Readout column + field: tucked under wordmark; field anchors low on large screens */}
-        <div className="mt-1 flex min-h-0 flex-1 flex-col gap-5 max-lg:mt-1 max-lg:gap-5 lg:mt-2 lg:flex-row lg:items-start lg:justify-between lg:gap-5 xl:gap-8">
+        <div className="mt-5 flex min-h-0 flex-1 flex-col gap-5 max-lg:mt-4 max-lg:gap-5 lg:mt-7 lg:flex-row lg:items-start lg:justify-between lg:gap-5 xl:gap-8">
           <div className="relative z-20 flex min-w-0 max-w-[min(100%,26.5rem)] flex-col border-l border-formula-frost/18 pl-4 sm:pl-5 lg:max-w-[min(100%,28rem)] lg:shrink-0 lg:pb-1">
-            <p
-              className="marketing-hero-readout font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-mist/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.45)]"
+            <Link
+              href={MARKETING_HREF.youthMembership}
+              className="marketing-hero-readout group -mx-1 block rounded-md border border-transparent px-2 py-1.5 text-left outline-none transition-colors hover:border-formula-frost/20 hover:bg-formula-paper/[0.04] focus-visible:ring-2 focus-visible:ring-formula-volt/40 focus-visible:ring-offset-2 focus-visible:ring-offset-formula-deep"
               style={readoutDelay(0)}
             >
-              Formula Soccer Center
-            </p>
-            <p
-              className="marketing-hero-readout mt-2.5 max-w-[38rem] font-mono text-[clamp(0.95rem,2.2vw,1.2rem)] font-semibold leading-[1.22] tracking-[0.06em] text-formula-paper [text-shadow:0_2px_20px_rgba(0,0,0,0.48)]"
-              style={readoutDelay(1)}
-            >
-              {SITE_VOICE.heroHeadlineLines.map((line, i) => (
-                <Fragment key={`hero-headline-${i}`}>
-                  {i > 0 ? <br /> : null}
-                  {line}
-                </Fragment>
-              ))}
-            </p>
-            <p
-              className="marketing-hero-readout mt-2.5 max-w-[38rem] font-mono text-[12px] font-medium leading-[1.42] tracking-[0.04em] text-formula-frost/76 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]"
-              style={readoutDelay(2)}
-            >
-              {SITE_VOICE.homeHeroLead}
-            </p>
-            <p
-              className="marketing-hero-readout mt-2 max-w-[38rem] font-mono text-[11px] font-semibold leading-[1.38] tracking-[0.08em] text-formula-frost/82 [text-shadow:0_1px_12px_rgba(0,0,0,0.32)]"
-              style={readoutDelay(3)}
-            >
-              {SITE_VOICE.homeHeroTagline}
-            </p>
+              <span className="block font-mono text-[9px] font-medium uppercase tracking-[0.28em] text-formula-mist/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.45)]">
+                Formula Soccer Center
+              </span>
+              <span className="mt-2.5 block max-w-[38rem] font-mono text-[clamp(0.95rem,2.2vw,1.2rem)] font-semibold leading-[1.22] tracking-[0.06em] text-formula-paper [text-shadow:0_2px_20px_rgba(0,0,0,0.48)]">
+                {SITE_VOICE.heroHeadlineLines.map((line, i) => (
+                  <Fragment key={`hero-headline-${i}`}>
+                    {i > 0 ? <br /> : null}
+                    {line}
+                  </Fragment>
+                ))}
+              </span>
+              <span className="mt-2.5 block max-w-[38rem] font-mono text-[12px] font-medium leading-[1.42] tracking-[0.04em] text-formula-frost/76 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]">
+                {SITE_VOICE.homeHeroLead}
+              </span>
+              <span className="mt-2 block max-w-[38rem] font-mono text-[11px] font-semibold leading-[1.38] tracking-[0.08em] text-formula-frost/82 [text-shadow:0_1px_12px_rgba(0,0,0,0.32)]">
+                {SITE_VOICE.homeHeroTagline}
+              </span>
+              <span className="mt-3 block font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-formula-volt opacity-0 transition-opacity group-hover:opacity-100">
+                View programs
+              </span>
+            </Link>
             <div
               className="marketing-hero-readout mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
               style={readoutDelay(4)}

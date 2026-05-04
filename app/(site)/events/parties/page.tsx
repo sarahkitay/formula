@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
 import { PartyBookingFlow } from '@/components/marketing/party-booking-flow'
+import { marketingInnerH1CompactClassName } from '@/lib/marketing/display-typography'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { PARTIES_PRICING_STATUS } from '@/lib/marketing/public-pricing'
 
@@ -15,7 +16,8 @@ export default function PartiesPage() {
   return (
   <MarketingInnerPage
   eyebrow="Hosted experiences"
-  title="Birthday parties - disciplined hosting."
+  title="Birthday parties<br />Disciplined hosting."
+  titleClassName={marketingInnerH1CompactClassName}
   intro="Same ops seriousness as training: protected windows, clear roles - celebrate without inheriting chaos."
   >
   <h2>Premium, not improvised</h2>

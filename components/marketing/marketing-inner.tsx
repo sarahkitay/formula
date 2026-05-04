@@ -32,6 +32,7 @@ export function MarketingInnerPage({
   prepend,
   eyebrow,
   title,
+  titleClassName,
   intro,
   children,
   wide = false,
@@ -41,6 +42,8 @@ export function MarketingInnerPage({
   prepend?: ReactNode
   eyebrow: string
   title: string | ReactNode
+  /** Overrides default display H1 scale (e.g. `marketingInnerH1CompactClassName` for long titles). */
+  titleClassName?: string
   intro?: string
   children: ReactNode
   wide?: boolean
@@ -58,7 +61,7 @@ export function MarketingInnerPage({
       {prepend}
       <ScrollFadeIn className="min-w-0 w-full">
         <SectionLabel>{eyebrow}</SectionLabel>
-        <h1 className={cn(marketingDisplayH1ClassName, 'mt-3 sm:mt-4')}>
+        <h1 className={cn(marketingDisplayH1ClassName, 'mt-3 sm:mt-4', titleClassName)}>
           {marketingTitleContent(title)}
         </h1>
         {intro ? (

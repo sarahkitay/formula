@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { HomeFacilitySection } from '@/components/marketing/home-facility-section'
+import { HomeWhatWeOfferNow } from '@/components/marketing/home-what-we-offer-now'
 import { MarketingHero } from '@/components/marketing/marketing-hero'
 
 const HomeAssessmentVideoSection = dynamic(() =>
@@ -44,6 +45,9 @@ export function MarketingHome() {
   return (
     <>
       <MarketingHero />
+
+      <SectionDivider />
+      <HomeWhatWeOfferNow />
 
       <SectionDivider />
       <HomeFacilitySection />

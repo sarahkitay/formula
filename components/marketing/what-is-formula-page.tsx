@@ -3,6 +3,7 @@ import { FormulaPositioningBackground } from '@/components/marketing/formula-pos
 import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { WHAT_WE_OFFER_NOW } from '@/lib/marketing/what-we-offer-now'
 import { cn } from '@/lib/utils'
 
 const CLUB_VS_FORMULA: [string, string][] = [
@@ -11,29 +12,6 @@ const CLUB_VS_FORMULA: [string, string][] = [
   ['Group coaching', 'Personalized training plans'],
   ['Game application', 'Measured technical reps'],
   ['Season structure', 'Year-round development arc'],
-]
-
-const OFFER_NOW: { title: string; body: string }[] = [
-  {
-    title: 'Session packages (early bird)',
-    body: '5 for $150 or 10 for $250 - valid through June. Start after your assessment.',
-  },
-  {
-    title: 'Friday Youth Game Circuit',
-    body: 'Live now. Structured competitive play.',
-  },
-  {
-    title: 'Adult programming',
-    body: 'Live now. Pickup and leagues.',
-  },
-  {
-    title: 'Clinics',
-    body: 'Small group, coach-led sessions. Check availability.',
-  },
-  {
-    title: 'Memberships',
-    body: 'Coming within the next month. Join the waitlist to get first access.',
-  },
 ]
 
 export function WhatIsFormulaPageContent() {
@@ -146,23 +124,36 @@ export function WhatIsFormulaPageContent() {
           </div>
         </section>
 
-        <section className="border-b border-white/10">
+        <section className="border-b border-white/10" aria-labelledby="what-formula-offer-now-heading">
           <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
-            <h2 className="max-w-xl font-sans text-[clamp(2rem,3.8vw,3.35rem)] leading-[1.04] tracking-[-0.04em] text-[#eef2ed]">
-              What we offer right now
-            </h2>
-            <div className="mt-10 grid gap-5 md:grid-cols-2">
-              {OFFER_NOW.map(item => (
-                <article
-                  key={item.title}
-                  className="min-h-[140px] border border-white/10 bg-white/[0.025] p-6 transition duration-300 hover:border-formula-volt/40 hover:bg-white/[0.04]"
-                >
-                  <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">Live or next</h3>
-                  <p className="mt-3 text-[1.2rem] font-semibold tracking-tight text-white/92">{item.title}</p>
-                  <p className="mt-3 text-[15px] leading-7 text-white/62">{item.body}</p>
-                </article>
-              ))}
-            </div>
+            <ScrollFadeIn>
+              <h2
+                id="what-formula-offer-now-heading"
+                className="max-w-xl font-sans text-[clamp(2rem,3.8vw,3.35rem)] leading-[1.04] tracking-[-0.04em] text-[#eef2ed]"
+              >
+                What we offer right now
+              </h2>
+              <div className="mt-10 grid gap-5 md:grid-cols-2">
+                {WHAT_WE_OFFER_NOW.map(item => (
+                  <Link
+                    key={item.title}
+                    href={item.href}
+                    className={cn(
+                      'group flex min-h-[140px] flex-col border border-white/10 bg-white/[0.025] p-6 text-left transition duration-300',
+                      'hover:border-formula-volt/40 hover:bg-white/[0.04]',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-formula-volt/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0d0c]'
+                    )}
+                  >
+                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">Live or next</span>
+                    <span className="mt-3 block text-[1.2rem] font-semibold tracking-tight text-white/92">{item.title}</span>
+                    <span className="mt-3 block flex-1 text-[15px] leading-7 text-white/62">{item.body}</span>
+                    <span className="mt-4 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt opacity-0 transition-opacity group-hover:opacity-100">
+                      Open
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </ScrollFadeIn>
           </div>
         </section>
 

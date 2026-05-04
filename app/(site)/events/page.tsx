@@ -5,6 +5,7 @@ import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { UPCOMING_PUBLIC_EVENTS } from '@/lib/marketing/events-public'
 import { GENERAL_EVENTS_PRICING_STATUS } from '@/lib/marketing/public-pricing'
+import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
   title: 'Events',
@@ -39,34 +40,58 @@ export default function EventsHubPage() {
           <p className="mt-3 text-sm leading-relaxed text-formula-frost/70">Nothing listed yet - check back or submit a request below.</p>
         ) : (
           <ul className="mt-5 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4">
-            {upcoming.map(block => (
-              <li key={block.id} className="rounded-lg border border-formula-frost/14 bg-formula-paper/[0.03] p-4 sm:p-5">
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/90">{block.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-formula-frost/85">{block.summary}</p>
-                {block.subLinks && block.subLinks.length > 0 ? (
-                  <ul className="mt-4 flex flex-col gap-1 border-t border-formula-frost/10 pt-4 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] sm:flex-row sm:flex-wrap sm:gap-x-4 sm:gap-y-2">
-                    {block.subLinks.map(link => (
-                      <li key={link.href} className="min-w-0 sm:inline-flex">
-                        <Link
-                          href={link.href}
-                          className="-mx-1 block rounded-md px-1 py-2.5 text-formula-volt underline-offset-2 hover:bg-formula-frost/5 hover:underline sm:inline sm:py-1"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                {block.href ? (
-                  <Link
-                    href={block.href}
-                    className="mt-3 inline-flex min-h-11 items-center font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt underline-offset-2 hover:underline sm:mt-4"
-                  >
-                    {block.ctaLabel ?? 'See more'}
-                  </Link>
-                ) : null}
-              </li>
-            ))}
+            {upcoming.map(block => {
+              const mainHref = block.href
+              const cardIsLink = Boolean(mainHref)
+
+              return (
+                <li
+                  key={block.id}
+                  className={cn(
+                    'relative rounded-lg border border-formula-frost/14 bg-formula-paper/[0.03] p-4 sm:p-5',
+                    cardIsLink &&
+                      'transition-[border-color,background-color] hover:border-formula-volt/35 hover:bg-formula-paper/[0.055]'
+                  )}
+                >
+                  {cardIsLink && mainHref ? (
+                    <Link
+                      href={mainHref}
+                      aria-label={`${block.title}. ${block.summary}`}
+                      className="absolute inset-0 z-0 rounded-lg outline-none ring-offset-2 ring-offset-formula-deep focus-visible:ring-2 focus-visible:ring-formula-volt/50"
+                    />
+                  ) : null}
+                  <div className={cn('relative z-[1]', cardIsLink && 'pointer-events-none')}>
+                    <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/90">{block.title}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-formula-frost/85">{block.summary}</p>
+                  </div>
+                  {block.subLinks && block.subLinks.length > 0 ? (
+                    <ul
+                      role="list"
+                      className={cn(
+                        'mt-4 flex list-none flex-wrap items-center gap-2 border-t border-formula-frost/10 pt-4 pl-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
+                        cardIsLink && 'relative z-[2] pointer-events-auto'
+                      )}
+                    >
+                      {block.subLinks.map(link => (
+                        <li key={link.href} className="flex min-w-0 shrink-0">
+                          <Link
+                            href={link.href}
+                            className="inline-flex min-h-9 items-center whitespace-nowrap rounded-md border border-formula-frost/14 bg-formula-paper/[0.03] px-3 py-2 text-formula-volt underline-offset-2 transition-colors hover:border-formula-volt/35 hover:bg-formula-frost/5 hover:underline"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {cardIsLink ? (
+                    <p className="pointer-events-none relative z-[2] mt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt/95 sm:mt-4">
+                      <span className="inline-flex min-h-11 items-center">{block.ctaLabel ?? 'See more'}</span>
+                    </p>
+                  ) : null}
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
