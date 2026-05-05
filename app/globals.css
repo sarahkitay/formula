@@ -589,6 +589,9 @@
   --formula-volt: var(--color-formula-volt);
   background: linear-gradient(180deg, var(--formula-deep) 0%, var(--formula-base) 38%, #1a1d1c 100%);
   color: var(--formula-paper);
+  /* Avoid horizontal rubber-band revealing default white behind the public shell. */
+  overflow-x: clip;
+  overscroll-behavior-x: none;
 }
 
 .marketing-glass {
@@ -713,9 +716,23 @@
   }
 }
 
-/* Hex O: restrained pulse on the volt stroke. */
+/* Hex O: volt pulse on SVG; spin on outer wrapper so filter + transform never fight. */
 .marketing-hero-hex {
   animation: marketing-hero-hex-pulse 3.2s ease-in-out infinite;
+}
+
+.marketing-hero-hex-spin-outer {
+  transform-origin: 50% 54%;
+  animation: marketing-hero-hex-soccer-spin 5.25s linear infinite;
+}
+
+@keyframes marketing-hero-hex-soccer-spin {
+  from {
+    transform: rotate3d(0.2, 1, 0.12, 0deg);
+  }
+  to {
+    transform: rotate3d(0.2, 1, 0.12, 360deg);
+  }
 }
 
 @keyframes marketing-hero-hex-pulse {
@@ -732,6 +749,11 @@
   .marketing-hero-hex {
     animation: none;
     filter: none;
+  }
+
+  .marketing-hero-hex-spin-outer {
+    animation: none;
+    transform: none;
   }
 }
 
