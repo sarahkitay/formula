@@ -17,6 +17,69 @@ type Props = {
   siteOrigin: string
 }
 
+/** Same payer / organizer → one card with multiple sessions (email preferred). */
+function organizerGroupKey(inv: WaiverInviteWithProgress): string {
+  const e = inv.purchaser_email?.trim().toLowerCase()
+  if (e) return `e:${e}`
+  const n = inv.purchaser_name?.trim().toLowerCase().replace(/\s+/g, ' ')
+  if (n) return `n:${n}`
+  return `id:${inv.id}`
+}
+
+function sessionSummaryLine(inv: WaiverInviteWithProgress): string {
+  return formatRosterInviteBookingSummary({
+    booking_rental_field: inv.booking_rental_field ?? null,
+    booking_rental_window: inv.booking_rental_window ?? null,
+    booking_rental_date: inv.booking_rental_date ?? null,
+    booking_rental_dates_compact: inv.booking_rental_dates_compact ?? null,
+    booking_session_weeks: inv.booking_session_weeks ?? null,
+    expected_waiver_count: inv.expected_waiver_count,
+  })
+}
+
+function inviteSearchBlob(inv: WaiverInviteWithProgress): string {
+  const sessionLine = sessionSummaryLine(inv)
+  return [
+    inv.purchaser_name,
+    inv.purchaser_email,
+    inv.token,
+    inv.id,
+    inv.rental_ref,
+    inv.notes,
+    sessionLine,
+    ...inv.signed_waivers.flatMap(w => [w.participant_name, w.participant_email, w.session_summary ?? '']),
+  ]
+    .filter((x): x is string => Boolean(x && String(x).trim()))
+    .join(' ')
+    .toLowerCase()
+}
+
+function inviteMatchesSearch(inv: WaiverInviteWithProgress, query: string): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return true
+  const blob = inviteSearchBlob(inv)
+  const tokens = q.split(/\s+/).filter(Boolean)
+  return tokens.every(t => blob.includes(t))
+}
+
+function buildOrganizerGroups(list: WaiverInviteWithProgress[]): [string, WaiverInviteWithProgress[]][] {
+  const m = new Map<string, WaiverInviteWithProgress[]>()
+  for (const inv of list) {
+    const k = organizerGroupKey(inv)
+    const g = m.get(k) ?? []
+    g.push(inv)
+    m.set(k, g)
+  }
+  for (const g of m.values()) {
+    g.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  }
+  return [...m.entries()].sort(([, a], [, b]) => {
+    const ta = Math.max(...a.map(i => new Date(i.created_at).getTime()))
+    const tb = Math.max(...b.map(i => new Date(i.created_at).getTime()))
+    return tb - ta
+  })
+}
+
 function toDatetimeLocalInput(iso: string | null | undefined): string {
   if (!iso) return ''
   const d = new Date(iso)
@@ -353,8 +416,142 @@ function InviteOrganizerEditor({ invite }: { invite: WaiverInviteWithProgress })
   )
 }
 
+function InviteRosterExpandedBody({
+  invite: inv,
+  siteOrigin,
+  dragOverInviteId,
+  setDragOverInviteId,
+  onDropAgreement,
+}: {
+  invite: WaiverInviteWithProgress
+  siteOrigin: string
+  dragOverInviteId: string | null
+  setDragOverInviteId: (id: string | null) => void
+  onDropAgreement: (inviteId: string, agreementId: string) => void
+}) {
+  const waiverUrl = `${siteOrigin}/rentals/waiver/${inv.token}`
+  const displayName = inv.purchaser_name?.trim() ?? ''
+  const displayEmail = inv.purchaser_email?.trim() ?? ''
+  const organizerFoot = displayName || displayEmail || 'this link’s payer'
+
+  return (
+    <>
+      <InviteDeleteButton invite={inv} />
+      <div
+        className={cn(
+          'mb-3 rounded-md border border-dashed px-3 py-2.5 text-center font-mono text-[10px] leading-snug transition-colors',
+          dragOverInviteId === inv.id
+            ? 'border-formula-volt/60 bg-formula-volt/15 text-formula-paper'
+            : 'border-formula-frost/25 bg-black/15 text-formula-mist/90'
+        )}
+        onDragOver={e => {
+          e.preventDefault()
+          e.dataTransfer.dropEffect = 'copy'
+          setDragOverInviteId(inv.id)
+        }}
+        onDragEnter={e => {
+          e.preventDefault()
+          setDragOverInviteId(inv.id)
+        }}
+        onDragLeave={e => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setDragOverInviteId(null)
+          }
+        }}
+        onDrop={e => {
+          e.preventDefault()
+          setDragOverInviteId(null)
+          const agreementId =
+            e.dataTransfer.getData(FIELD_RENTAL_WAIVER_DRAG_MIME) || e.dataTransfer.getData('text/plain').trim()
+          if (!agreementId) return
+          void onDropAgreement(inv.id, agreementId)
+        }}
+      >
+        <span className="text-formula-frost/95">Drop a signed waiver here</span>
+        <span className="mt-1 block text-formula-mist/75">
+          (use the ⣿ handle in the table below, or the dropdown on each row)
+        </span>
+      </div>
+      <InviteOrganizerEditor invite={inv} />
+      <InviteSnapshotEditor invite={inv} />
+      <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Share link</p>
+      <code className="mt-1 block max-w-full break-all rounded border border-formula-frost/12 bg-black/20 px-2 py-1.5 font-mono text-[10px] text-formula-frost/88">
+        {waiverUrl}
+      </code>
+      <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Signers (this rental)</p>
+      <p className="mt-1 text-[10px] text-formula-mist/75">
+        “Organizer / payer” when the signer&apos;s email matches the invite payer email. Session lines are copied from checkout + invite when each waiver is
+        submitted.
+      </p>
+      {inv.signed_waivers.length === 0 ? (
+        <p className="mt-2 font-mono text-[11px] text-formula-mist/80">
+          No waivers on this invite yet - use the drop zone above or link rows from the signed waivers table so walk-up signers count here.
+        </p>
+      ) : (
+        <ul className="mt-2 divide-y divide-formula-frost/10 rounded-md border border-formula-frost/10">
+          {inv.signed_waivers.map(w => (
+            <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 font-mono text-[11px]">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link href={`/admin/rentals/waivers/${w.id}`} className="font-medium text-formula-volt hover:underline">
+                    {w.participant_name}
+                  </Link>
+                  {w.is_organizer_waiver ? (
+                    <span className="rounded border border-emerald-500/35 bg-emerald-950/40 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-emerald-100">
+                      Organizer / payer
+                    </span>
+                  ) : null}
+                </div>
+                <span className="block truncate text-formula-mist/85">{w.participant_email}</span>
+                {w.session_summary ? (
+                  <span className="mt-1 block text-[10px] leading-snug text-formula-frost/80">
+                    Session on file: {w.session_summary}
+                  </span>
+                ) : (
+                  <span className="mt-1 block text-[10px] text-amber-200/70">No field / window / dates stored on this waiver row.</span>
+                )}
+              </div>
+              <span className="shrink-0 text-right text-formula-mist/80">
+                Signed
+                <br />
+                {formatFacilityDateTimeShort(w.submitted_at)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-3 text-[10px] leading-relaxed text-formula-mist/75">
+        The roster link offers full sign or RSVP (prior waiver on file). Organizer ({organizerFoot}) paid the deposit (online or in person). Rows without this
+        invite appear only in Signed waivers below.
+      </p>
+    </>
+  )
+}
+
+function inviteSummaryHeader(inv: WaiverInviteWithProgress) {
+  const displayName = inv.purchaser_name?.trim() ?? ''
+  const displayEmail = inv.purchaser_email?.trim() ?? ''
+  const organizer =
+    displayName ||
+    displayEmail ||
+    (inv.stripe_checkout_session_id ? 'Paid checkout (name not captured)' : 'Manual / comp link')
+  const paid =
+    inv.checkout_amount_total_cents != null
+      ? formatCheckoutAmount(inv.checkout_amount_total_cents, inv.checkout_currency ?? null)
+      : '-'
+  const paidWhen =
+    inv.checkout_completed_at != null && String(inv.checkout_completed_at).trim() !== ''
+      ? formatFacilityDateTimeShort(inv.checkout_completed_at)
+      : inv.created_at != null && String(inv.created_at).trim() !== ''
+        ? `${formatFacilityDateTimeShort(inv.created_at)} (invite created)`
+        : '-'
+  const sessionLine = sessionSummaryLine(inv)
+  return { displayName, displayEmail, organizer, paid, paidWhen, sessionLine }
+}
+
 export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
   const router = useRouter()
+  const [search, setSearch] = React.useState('')
   const [dragOverInviteId, setDragOverInviteId] = React.useState<string | null>(null)
   const [dropBusy, setDropBusy] = React.useState(false)
   const [dropError, setDropError] = React.useState<string | null>(null)
@@ -381,160 +578,174 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
     [router]
   )
 
+  const filteredInvites = React.useMemo(
+    () => invites.filter(inv => inviteMatchesSearch(inv, search)),
+    [invites, search]
+  )
+
+  const organizerGroups = React.useMemo(() => buildOrganizerGroups(filteredInvites), [filteredInvites])
+
   return (
-    <div className="mt-6 space-y-3">
+    <div className="mt-6 space-y-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <label className="block max-w-md font-mono text-[10px] uppercase tracking-[0.14em] text-formula-mist">
+          Search roster rentals
+          <input
+            type="search"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Name, email, field, date, token…"
+            className="mt-1 w-full border border-formula-frost/18 bg-formula-base/60 px-3 py-2 text-[13px] text-formula-paper placeholder:text-formula-mist/50 focus:border-formula-volt/40 focus:outline-none"
+            autoComplete="off"
+          />
+        </label>
+        <p className="font-mono text-[10px] text-formula-mist/80">
+          {filteredInvites.length} of {invites.length} invite{invites.length === 1 ? '' : 's'}
+          {search.trim() ? ' match' : ''} · same email (or name if no email) groups into one row
+        </p>
+      </div>
       {dropError ? <p className="font-mono text-[11px] text-amber-200/90">{dropError}</p> : null}
       {dropBusy ? <p className="font-mono text-[10px] text-formula-mist/80">Linking waiver…</p> : null}
-      {invites.map(inv => {
-        const waiverUrl = `${siteOrigin}/rentals/waiver/${inv.token}`
-        const displayName = inv.purchaser_name?.trim() ?? ''
-        const displayEmail = inv.purchaser_email?.trim() ?? ''
-        const organizer =
-          displayName ||
-          displayEmail ||
-          (inv.stripe_checkout_session_id ? 'Paid checkout (name not captured)' : 'Manual / comp link')
-        const paid =
-          inv.checkout_amount_total_cents != null
-            ? formatCheckoutAmount(inv.checkout_amount_total_cents, inv.checkout_currency ?? null)
-            : '-'
-        const paidWhen =
-          inv.checkout_completed_at != null && String(inv.checkout_completed_at).trim() !== ''
-            ? formatFacilityDateTimeShort(inv.checkout_completed_at)
-            : inv.created_at != null && String(inv.created_at).trim() !== ''
-              ? `${formatFacilityDateTimeShort(inv.created_at)} (invite created)`
-              : '-'
-        const sessionLine = formatRosterInviteBookingSummary({
-          booking_rental_field: inv.booking_rental_field ?? null,
-          booking_rental_window: inv.booking_rental_window ?? null,
-          booking_rental_date: inv.booking_rental_date ?? null,
-          booking_rental_dates_compact: inv.booking_rental_dates_compact ?? null,
-          booking_session_weeks: inv.booking_session_weeks ?? null,
-          expected_waiver_count: inv.expected_waiver_count,
-        })
-        const organizerFoot = displayName || displayEmail || 'this link’s payer'
+      {organizerGroups.map(([groupKey, list]) => {
+        if (list.length === 1) {
+          const inv = list[0]!
+          const { displayName, displayEmail, organizer, paid, paidWhen, sessionLine } = inviteSummaryHeader(inv)
+          return (
+            <details
+              key={inv.id}
+              className="group/invite rounded-lg border border-formula-frost/14 bg-formula-base/50 open:border-formula-frost/22"
+            >
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-3 font-mono text-[11px] text-formula-frost/90 [&::-webkit-details-marker]:hidden">
+                <span className="min-w-0 flex-1 space-y-1">
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    {displayName ? (
+                      <>
+                        <span className="font-semibold text-formula-paper">{displayName}</span>
+                        {displayEmail ? <span className="text-formula-mist/90">{displayEmail}</span> : null}
+                      </>
+                    ) : (
+                      <span className="font-semibold text-formula-paper">{organizer}</span>
+                    )}
+                  </span>
+                  <span className="block text-formula-mist/85">
+                    Paid {paid} · {paidWhen}
+                  </span>
+                  <span className="block text-formula-frost/88">Session (on invite): {sessionLine}</span>
+                  <span className="inline-flex items-center gap-2 text-formula-volt">
+                    Waivers signed {inv.completed_count} / {inv.expected_waiver_count}
+                    {inv.remaining_count > 0 ? (
+                      <span className="text-formula-mist">({inv.remaining_count} remaining)</span>
+                    ) : (
+                      <span className="text-emerald-400/90">(complete)</span>
+                    )}
+                  </span>
+                </span>
+                <ChevronDown
+                  className="mt-0.5 h-4 w-4 shrink-0 text-formula-mist transition-transform group-open/invite:rotate-180"
+                  aria-hidden
+                />
+              </summary>
+              <div className="border-t border-formula-frost/10 px-4 pb-4 pt-2">
+                <InviteRosterExpandedBody
+                  invite={inv}
+                  siteOrigin={siteOrigin}
+                  dragOverInviteId={dragOverInviteId}
+                  setDragOverInviteId={setDragOverInviteId}
+                  onDropAgreement={onDropAgreement}
+                />
+              </div>
+            </details>
+          )
+        }
+
+        const lead = list[0]!
+        const leadName = lead.purchaser_name?.trim() ?? ''
+        const leadEmail = lead.purchaser_email?.trim() ?? ''
+        const leadOrganizer =
+          leadName ||
+          leadEmail ||
+          (lead.stripe_checkout_session_id ? 'Paid checkout (name not captured)' : 'Manual / comp link')
+        const totalExpected = list.reduce((s, i) => s + i.expected_waiver_count, 0)
+        const totalSigned = list.reduce((s, i) => s + i.completed_count, 0)
+        const totalRemaining = Math.max(0, totalExpected - totalSigned)
 
         return (
           <details
-            key={inv.id}
-            className="group rounded-lg border border-formula-frost/14 bg-formula-base/50 open:border-formula-frost/22"
+            key={groupKey}
+            className="group/org rounded-lg border border-formula-frost/14 bg-formula-base/50 open:border-formula-frost/22"
           >
             <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-3 font-mono text-[11px] text-formula-frost/90 [&::-webkit-details-marker]:hidden">
               <span className="min-w-0 flex-1 space-y-1">
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  {displayName ? (
+                  {leadName ? (
                     <>
-                      <span className="font-semibold text-formula-paper">{displayName}</span>
-                      {displayEmail ? <span className="text-formula-mist/90">{displayEmail}</span> : null}
+                      <span className="font-semibold text-formula-paper">{leadName}</span>
+                      {leadEmail ? <span className="text-formula-mist/90">{leadEmail}</span> : null}
                     </>
                   ) : (
-                    <span className="font-semibold text-formula-paper">{organizer}</span>
+                    <span className="font-semibold text-formula-paper">{leadOrganizer}</span>
                   )}
-                </span>
-                <span className="block text-formula-mist/85">
-                  Paid {paid} · {paidWhen}
+                  <span className="rounded border border-formula-volt/30 bg-formula-volt/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-formula-volt">
+                    {list.length} rentals
+                  </span>
                 </span>
                 <span className="block text-formula-frost/88">
-                  Session (on invite): {sessionLine}
-                </span>
-                <span className="inline-flex items-center gap-2 text-formula-volt">
-                  Waivers signed {inv.completed_count} / {inv.expected_waiver_count}
-                  {inv.remaining_count > 0 ? (
-                    <span className="text-formula-mist">({inv.remaining_count} remaining)</span>
+                  Open for each session (deposit, roster link, waivers). Combined waivers across invites:{' '}
+                  <span className="text-formula-volt">
+                    {totalSigned} / {totalExpected}
+                  </span>
+                  {totalRemaining > 0 ? (
+                    <span className="text-formula-mist"> ({totalRemaining} remaining)</span>
                   ) : (
-                    <span className="text-emerald-400/90">(complete)</span>
+                    <span className="text-emerald-400/90"> (all invites complete)</span>
                   )}
                 </span>
               </span>
-              <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-formula-mist transition-transform group-open:rotate-180" aria-hidden />
+              <ChevronDown
+                className="mt-0.5 h-4 w-4 shrink-0 text-formula-mist transition-transform group-open/org:rotate-180"
+                aria-hidden
+              />
             </summary>
-            <div className="border-t border-formula-frost/10 px-4 pb-4 pt-2">
-              <InviteDeleteButton invite={inv} />
-              <div
-                className={cn(
-                  'mb-3 rounded-md border border-dashed px-3 py-2.5 text-center font-mono text-[10px] leading-snug transition-colors',
-                  dragOverInviteId === inv.id
-                    ? 'border-formula-volt/60 bg-formula-volt/15 text-formula-paper'
-                    : 'border-formula-frost/25 bg-black/15 text-formula-mist/90'
-                )}
-                onDragOver={e => {
-                  e.preventDefault()
-                  e.dataTransfer.dropEffect = 'copy'
-                  setDragOverInviteId(inv.id)
-                }}
-                onDragEnter={e => {
-                  e.preventDefault()
-                  setDragOverInviteId(inv.id)
-                }}
-                onDragLeave={e => {
-                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                    setDragOverInviteId(null)
-                  }
-                }}
-                onDrop={e => {
-                  e.preventDefault()
-                  setDragOverInviteId(null)
-                  const agreementId =
-                    e.dataTransfer.getData(FIELD_RENTAL_WAIVER_DRAG_MIME) || e.dataTransfer.getData('text/plain').trim()
-                  if (!agreementId) return
-                  void onDropAgreement(inv.id, agreementId)
-                }}
-              >
-                <span className="text-formula-frost/95">Drop a signed waiver here</span>
-                <span className="mt-1 block text-formula-mist/75">
-                  (use the ⣿ handle in the table below, or the dropdown on each row)
-                </span>
-              </div>
-              <InviteOrganizerEditor invite={inv} />
-              <InviteSnapshotEditor invite={inv} />
-              <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Share link</p>
-              <code className="mt-1 block max-w-full break-all rounded border border-formula-frost/12 bg-black/20 px-2 py-1.5 font-mono text-[10px] text-formula-frost/88">
-                {waiverUrl}
-              </code>
-              <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Signers (this rental)</p>
-              <p className="mt-1 text-[10px] text-formula-mist/75">
-                “Organizer / payer” when the signer&apos;s email matches the invite payer email. Session lines are copied from checkout + invite when each waiver is submitted.
-              </p>
-              {inv.signed_waivers.length === 0 ? (
-                <p className="mt-2 font-mono text-[11px] text-formula-mist/80">
-                  No waivers on this invite yet - use the drop zone above or link rows from the signed waivers table so walk-up signers count here.
-                </p>
-              ) : (
-                <ul className="mt-2 divide-y divide-formula-frost/10 rounded-md border border-formula-frost/10">
-                  {inv.signed_waivers.map(w => (
-                    <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 font-mono text-[11px]">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Link href={`/admin/rentals/waivers/${w.id}`} className="font-medium text-formula-volt hover:underline">
-                            {w.participant_name}
-                          </Link>
-                          {w.is_organizer_waiver ? (
-                            <span className="rounded border border-emerald-500/35 bg-emerald-950/40 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-emerald-100">
-                              Organizer / payer
-                            </span>
-                          ) : null}
-                        </div>
-                        <span className="block truncate text-formula-mist/85">{w.participant_email}</span>
-                        {w.session_summary ? (
-                          <span className="mt-1 block text-[10px] leading-snug text-formula-frost/80">
-                            Session on file: {w.session_summary}
-                          </span>
-                        ) : (
-                          <span className="mt-1 block text-[10px] text-amber-200/70">No field / window / dates stored on this waiver row.</span>
-                        )}
-                      </div>
-                      <span className="shrink-0 text-right text-formula-mist/80">
-                        Signed
-                        <br />
-                        {formatFacilityDateTimeShort(w.submitted_at)}
+            <div className="space-y-3 border-t border-formula-frost/10 px-3 pb-4 pt-3">
+              {list.map(inv => {
+                const { paid, paidWhen, sessionLine } = inviteSummaryHeader(inv)
+                return (
+                  <details
+                    key={inv.id}
+                    className="group/session rounded-md border border-formula-frost/12 bg-black/20 open:border-formula-frost/20"
+                  >
+                    <summary className="flex cursor-pointer list-none items-start justify-between gap-2 px-3 py-2.5 font-mono text-[10px] text-formula-frost/90 [&::-webkit-details-marker]:hidden">
+                      <span className="min-w-0 flex-1 space-y-0.5">
+                        <span className="block text-formula-mist/85">
+                          Paid {paid} · {paidWhen}
+                        </span>
+                        <span className="block text-formula-paper/95">Session: {sessionLine}</span>
+                        <span className="inline-flex items-center gap-2 text-formula-volt">
+                          Waivers {inv.completed_count} / {inv.expected_waiver_count}
+                          {inv.remaining_count > 0 ? (
+                            <span className="text-formula-mist">({inv.remaining_count} left)</span>
+                          ) : (
+                            <span className="text-emerald-400/90">(complete)</span>
+                          )}
+                        </span>
                       </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <p className="mt-3 text-[10px] leading-relaxed text-formula-mist/75">
-                The roster link offers full sign or RSVP (prior waiver on file). Organizer ({organizerFoot}) paid the deposit (online or in person). Rows without
-                this invite appear only in Signed waivers below.
-              </p>
+                      <ChevronDown
+                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-formula-mist transition-transform group-open/session:rotate-180"
+                        aria-hidden
+                      />
+                    </summary>
+                    <div className="border-t border-formula-frost/10 px-3 pb-3 pt-2">
+                      <InviteRosterExpandedBody
+                        invite={inv}
+                        siteOrigin={siteOrigin}
+                        dragOverInviteId={dragOverInviteId}
+                        setDragOverInviteId={setDragOverInviteId}
+                        onDropAgreement={onDropAgreement}
+                      />
+                    </div>
+                  </details>
+                )
+              })}
             </div>
           </details>
         )

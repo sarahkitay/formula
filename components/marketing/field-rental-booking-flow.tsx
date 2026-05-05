@@ -25,11 +25,66 @@ import {
   rentalWindowsOverlap,
 } from '@/lib/rentals/rental-time-window'
 import { SITE } from '@/lib/site-config'
+import { cn } from '@/lib/utils'
 
 const PAYMENT_STEP = 6
-const STEP_LABELS = ['Type', 'Slot', 'Participants', 'Tier', 'Rules', 'Pay'] as const
 
 const FIELDS = [...RENTAL_FIELD_OPTIONS]
+
+type PackagePresentationId = 'full' | 'half' | 'cage' | 'team_private'
+
+const PACKAGE_CARDS: {
+  id: PackagePresentationId
+  rentalType: RentalType
+  title: string
+  bestFor: string
+  durationNote: string
+  depositLine: string
+}[] = [
+  {
+    id: 'full',
+    rentalType: 'club_team_practice',
+    title: 'Full Field Rental',
+    bestFor: 'Clubs and teams that need a full field for structured training or match prep.',
+    durationNote: 'Hold length is set in the next step (30 min–4 hr).',
+    depositLine: `Deposit in 30-minute steps at $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr (e.g. 2 hr = $${fieldRentalDepositUsd(FIELD_RENTAL_DEFAULT_DURATION_MINUTES)} per session).`,
+  },
+  {
+    id: 'half',
+    rentalType: 'general_pickup',
+    title: 'Half Field Rental',
+    bestFor: 'Smaller-sided play, scrimmages, and informal blocks—up to 15 on the field.',
+    durationNote: 'Pick your window; staff may assign a half-field segment at check-in.',
+    depositLine: `Same published rate: $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr applied to your reserved minutes.`,
+  },
+  {
+    id: 'cage',
+    rentalType: 'private_semi_private',
+    title: 'Cage Rental',
+    bestFor: 'Technical work, finishing, and small-group reps where a compact space fits best.',
+    durationNote: 'Choose field and start time below; cage-style use maps to private / small-group rules.',
+    depositLine: `Tier 1 (1–4) or group clinic tier (5+)—deposit still scales at $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr.`,
+  },
+  {
+    id: 'team_private',
+    rentalType: 'private_semi_private',
+    title: 'Team / Private Event',
+    bestFor: 'Private training, semi-private sessions, or larger clinic-style groups on one field (up to 20).',
+    durationNote: 'Headcount in a later step sets Tier 1 vs group / clinic classification.',
+    depositLine: `Certificate of insurance may be required for some classifications; deposit holds the calendar.`,
+  },
+]
+
+function scrollToParticipantWaiver() {
+  if (typeof document === 'undefined') return
+  document.getElementById('participant-waiver')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+const PROCESS_STRIP_STEPS = [
+  { phase: 1 as const, title: 'Pick your package', copy: 'How you use the field sets capacity rules.' },
+  { phase: 2 as const, title: 'Choose your slot', copy: 'Date, field, window, and recurring weeks.' },
+  { phase: 3 as const, title: 'Sign + submit', copy: 'Classification, rules, deposit, then participant waiver.' },
+] as const
 
 function classificationSummary(c: Classification): string {
   switch (c.status) {
@@ -68,6 +123,7 @@ async function releasePendingHold(rentalRef: string) {
 export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRentalBookingFlowProps) {
   const [step, setStep] = useState(1)
   const [rentalType, setRentalType] = useState<RentalType | ''>('')
+  const [packageId, setPackageId] = useState<PackagePresentationId | ''>('')
   const [sessionDate, setSessionDate] = useState('')
   const [slotStart, setSlotStart] = useState('')
   /** Default field rental block: 2 hr - separate product from hosted party deposits. */
@@ -256,493 +312,658 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
     setStep(PAYMENT_STEP)
   }
 
+  const checkoutMetadata = useMemo((): Record<string, string> | null => {
+    if (!confirmedRef || !classification || rentalType === '' || !sessionDate || !rentalWindow || !fieldId) return null
+    return {
+      rental_ref: confirmedRef,
+      rental_type: rentalType,
+      rental_date: sessionDate.slice(0, 40),
+      rental_window: rentalWindow.slice(0, 120),
+      rental_field: fieldId.slice(0, 40),
+      rental_weeks: String(sessionCount),
+      rental_dates_compact: encodeRentalDatesCompact(selectedSessionDates),
+      rental_participants: String(countNum),
+      renter_name: renterName.trim().slice(0, 80),
+      renter_email: renterEmail.trim().slice(0, 80),
+    }
+  }, [
+    confirmedRef,
+    classification,
+    rentalType,
+    sessionDate,
+    rentalWindow,
+    fieldId,
+    sessionCount,
+    selectedSessionDates,
+    countNum,
+    renterName,
+    renterEmail,
+  ])
+
+  const processPhase = step === 1 ? 1 : step === 2 || step === 3 ? 2 : 3
+
+  const selectedPackageMeta = useMemo(
+    () => (packageId ? PACKAGE_CARDS.find(p => p.id === packageId) : undefined),
+    [packageId]
+  )
+
+  const advanceFromSticky = () => {
+    if (step === 1 && rentalType) setStep(2)
+    else if (step === 2 && step2Valid) setStep(3)
+    else if (step === 3 && step3Valid) setStep(4)
+    else if (step === 4 && classification && rentalType) setStep(5)
+    else if (step === 5 && rulesOk && agreementOk && renterName.trim() && renterEmail.trim()) goToPaymentStep()
+  }
+
+  const stickyPrimaryDisabled =
+    step === PAYMENT_STEP ||
+    (step === 1 && !rentalType) ||
+    (step === 2 && !step2Valid) ||
+    (step === 3 && !step3Valid) ||
+    (step === 4 && (!classification || rentalType === '')) ||
+    (step === 5 && (!rulesOk || !agreementOk || !renterName.trim() || !renterEmail.trim()))
+
+  const stickyPrimaryLabel =
+    step === PAYMENT_STEP
+      ? 'Pay in main column'
+      : step === 1
+        ? 'Continue to schedule'
+        : step === 2
+          ? 'Continue to participants'
+          : step === 3
+            ? 'Continue to classification'
+            : step === 4
+              ? 'Continue to rules'
+              : step === 5
+                ? 'Continue to payment'
+                : 'Next'
+
   return (
     <section
       id={sectionId}
-      className="not-prose my-14 scroll-mt-28 border border-formula-frost/12 bg-formula-base/70 p-5 md:p-8"
+      className="not-prose my-12 scroll-mt-28 border border-formula-frost/12 bg-formula-base/[0.38] px-4 py-10 sm:px-6 md:my-16 md:px-8 md:py-12"
     >
-      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Booking flow</p>
-      <h3 className="mt-4 font-mono text-xl font-semibold tracking-tight text-formula-paper md:text-2xl">
-        Classify, pick a free slot, then pay the deposit
-      </h3>
-      <p className="mt-3 max-w-3xl text-sm leading-relaxed text-formula-mist">
-        Each field and time window can only hold one booking at a time. Taken windows are marked automatically. When you pay, your slot is locked in after
-        Stripe confirms payment (no separate staff approval step).
-      </p>
-
-      <ol className="mt-8 flex flex-wrap gap-2 border border-formula-frost/10 bg-formula-paper/[0.02] p-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">
-        {STEP_LABELS.map((label, i) => (
-          <li
-            key={label}
-            className={`rounded-sm px-2 py-1 ${step === i + 1 ? 'bg-formula-volt/20 text-formula-paper' : ''}`}
-          >
-            {i + 1}. {label}
-          </li>
-        ))}
-      </ol>
-
-      {step === 1 ? (
-        <div className="mt-8 space-y-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 1  -  Rental type</p>
-          <p className="text-sm text-formula-mist">Selection sets rules, capacity limits, and pricing logic.</p>
-          <div className="grid gap-3 md:grid-cols-3">
-            {(
-              [
-                { value: 'club_team_practice' as const, title: 'Club / Team Practice', hint: 'Max 20 per field' },
-                {
-                  value: 'private_semi_private' as const,
-                  title: 'Private / Semi-Private',
-                  hint: '1–4 Tier 1; 5+ group / clinic (same field)',
-                },
-                { value: 'general_pickup' as const, title: 'General Use / Pick-Up', hint: 'Max 15; no organized coaching' },
-              ] as const
-            ).map(opt => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setRentalType(opt.value)}
-                className={`border p-4 text-left transition-colors ${
-                  rentalType === opt.value
-                    ? 'border-formula-volt/50 bg-formula-volt/10'
-                    : 'border-formula-frost/14 bg-formula-paper/[0.02] hover:border-formula-frost/24'
-                }`}
-              >
-                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-formula-paper">{opt.title}</span>
-                <span className="mt-2 block text-xs text-formula-mist">{opt.hint}</span>
-              </button>
-            ))}
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              disabled={!rentalType}
-              onClick={() => setStep(2)}
-              className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black disabled:opacity-40"
+      <nav aria-label="Booking steps" className="border-b border-formula-frost/12 pb-8">
+        <ol className="grid gap-3 md:grid-cols-3">
+          {PROCESS_STRIP_STEPS.map((s, i) => (
+            <li
+              key={s.phase}
+              className={cn(
+                'border px-4 py-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] transition-colors',
+                processPhase === s.phase
+                  ? 'border-formula-volt/50 bg-formula-volt/[0.07]'
+                  : 'border-formula-frost/14 bg-formula-paper/[0.02]'
+              )}
             >
-              Continue
-            </button>
-          </div>
-        </div>
-      ) : null}
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-formula-volt/90">
+                {i + 1}. {s.title}
+              </p>
+              <p className="mt-2 text-[13px] leading-snug text-formula-frost/80">{s.copy}</p>
+            </li>
+          ))}
+        </ol>
+      </nav>
 
-      {step === 2 ? (
-        <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 2  -  Date, time, and field</p>
-          <p className="text-sm text-formula-mist">
-            <strong className="text-formula-paper">Field rental checkout only</strong> - not the hosted birthday party deposit (that is a separate booking type in
-            the hub). Start times every 30 minutes; duration defaults to <strong className="text-formula-paper">2 hours</strong> (change if you need a different length).
-            Deposit scales at ${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr (e.g. 2 hr = ${fieldRentalDepositUsd(FIELD_RENTAL_DEFAULT_DURATION_MINUTES).toFixed(0)} per session). Overlapping holds
-            are blocked.
-          </p>
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Date *</span>
-              <input
-                type="date"
-                value={sessionDate}
-                onChange={e => setSessionDate(e.target.value)}
-                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Field *</span>
-              <select
-                value={fieldId}
-                onChange={e => setFieldId(e.target.value)}
-                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              >
-                <option value="">Select field</option>
-                {FIELDS.map(f => (
-                  <option key={f.value} value={f.value}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Start time *</span>
-              <select
-                value={slotStart}
-                onChange={e => setSlotStart(e.target.value)}
-                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-                disabled={!fieldId}
-              >
-                <option value="">{fieldId ? 'Select start' : 'Choose a field first'}</option>
-                {FIELD_RENTAL_SLOT_STARTS.map(s => {
-                  const key = encodeRentalWindow(s, durationMinutes)
-                  const taken = fieldId ? isWindowUnavailable(fieldId, key) : false
+      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0 space-y-12 lg:space-y-14">
+          {step === 1 ? (
+            <div id="field-rental-packages" className="scroll-mt-28 space-y-6">
+              <div>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 1 · Package</p>
+                <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
+                  Choose the option that best matches your use. Capacity and deposit logic follow the published field-rental rate (
+                  <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> in 30-minute steps).
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {PACKAGE_CARDS.map(card => {
+                  const selected = packageId === card.id
                   return (
-                    <option key={s} value={s} disabled={taken}>
-                      {s}
-                      {taken ? ' (booked)' : ''}
-                    </option>
+                    <button
+                      key={card.id}
+                      type="button"
+                      onClick={() => {
+                        setPackageId(card.id)
+                        setRentalType(card.rentalType)
+                      }}
+                      className={cn(
+                        'rounded-none border p-5 text-left shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] transition-[border-color,background-color] duration-150',
+                        selected
+                          ? 'border-formula-volt/55 bg-formula-volt/[0.09]'
+                          : 'border-formula-frost/16 bg-formula-paper/[0.02] hover:border-formula-frost/26'
+                      )}
+                    >
+                      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper">{card.title}</span>
+                      <span className="mt-3 block text-[13px] leading-relaxed text-formula-frost/82">{card.bestFor}</span>
+                      <span className="mt-3 block font-mono text-[10px] uppercase tracking-[0.12em] text-formula-mist">{card.durationNote}</span>
+                      <span className="mt-2 block text-[12px] leading-snug text-formula-mist/90">{card.depositLine}</span>
+                    </button>
                   )
                 })}
-              </select>
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Duration *</span>
-              <select
-                value={String(durationMinutes)}
-                onChange={e => setDurationMinutes(parseInt(e.target.value, 10))}
-                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-                disabled={!slotStart}
-              >
-                {!slotStart ? (
-                  <option value="">Pick a start time first</option>
-                ) : (
-                  allowedDurations.map(m => (
-                    <option key={m} value={m}>
-                      {m} min · ${fieldRentalDepositUsd(m).toFixed(0)} deposit
-                    </option>
-                  ))
-                )}
-              </select>
-            </label>
-          </div>
-          {slotStart ? (
-            <p className="font-mono text-[11px] text-formula-frost/80">
-              Window: {humanRentalWindowSummary(rentalWindow) || '-'}
-            </p>
+              </div>
+              <div className="flex flex-wrap justify-end gap-3">
+                <button
+                  type="button"
+                  disabled={!rentalType || !packageId}
+                  onClick={() => setStep(2)}
+                  className="inline-flex min-h-12 items-center border border-black/25 bg-formula-volt px-7 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Continue to schedule
+                </button>
+              </div>
+            </div>
           ) : null}
-          <div className="max-w-xl space-y-3">
-            <label className="flex max-w-md flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">
-                Weeks to show (same weekday as your anchor date)
-              </span>
-              <input
-                type="text"
-                inputMode="numeric"
-                autoComplete="off"
-                aria-label="Number of consecutive weekly rows to offer, 1 to 52"
-                value={weekHorizonRaw}
-                onChange={e => {
-                  const digits = e.target.value.replace(/\D/g, '').slice(0, 2)
-                  setWeekHorizonRaw(digits)
-                }}
-                onBlur={() => {
-                  if (weekHorizonRaw.trim() === '') {
-                    setWeekHorizonRaw('1')
-                    return
-                  }
-                  const n = parseInt(weekHorizonRaw, 10)
-                  if (!Number.isFinite(n) || n < 1) setWeekHorizonRaw('1')
-                  else if (n > 52) setWeekHorizonRaw('52')
-                }}
-                className="h-11 max-w-[10rem] border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              />
-              <span className="text-xs text-formula-mist">
-                Type 1–52 (you can clear the field to replace the number). We list that many weekly slots starting from your anchor date; you choose which to
-                book below.
-              </span>
-            </label>
-            {candidateDates.length > 0 ? (
-              <fieldset className="space-y-2 border border-formula-frost/12 bg-formula-paper/[0.02] p-4">
-                <legend className="px-1 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-formula-mist">
-                  Select session dates ({sessionCount} selected)
-                </legend>
-                <ul className="max-h-64 space-y-2 overflow-y-auto pr-1">
-                  {candidateDates.map(iso => {
-                    const taken = slotTakenByDate[iso] === true
-                    const checked = selectedSessionDates.includes(iso)
+
+          {step === 2 ? (
+            <div className="space-y-8">
+              <div>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 2 · Schedule</p>
+                <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
+                  <strong className="text-formula-paper">Field rental checkout only</strong>—not the hosted party deposit. Starts every 30 minutes through the
+                  evening; default hold is <strong className="text-formula-paper">2 hours</strong>. Deposit scales at{' '}
+                  <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> (e.g. 2 hr = $
+                  {fieldRentalDepositUsd(FIELD_RENTAL_DEFAULT_DURATION_MINUTES).toFixed(0)} per session). Overlapping windows are blocked automatically.
+                </p>
+              </div>
+
+              <label className="flex max-w-md flex-col gap-2">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Anchor date *</span>
+                <input
+                  type="date"
+                  value={sessionDate}
+                  onChange={e => setSessionDate(e.target.value)}
+                  className="min-h-12 rounded-none border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-base text-formula-paper outline-none focus:border-formula-volt/45"
+                />
+              </label>
+
+              <div className="space-y-3">
+                <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Field *</span>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {FIELDS.map(f => (
+                    <button
+                      key={f.value}
+                      type="button"
+                      onClick={() => setFieldId(f.value)}
+                      className={cn(
+                        'min-h-[4.5rem] rounded-none border px-4 py-3 text-left transition-colors',
+                        fieldId === f.value
+                          ? 'border-formula-volt/55 bg-formula-volt/[0.08] shadow-[inset_0_0_0_1px_rgba(220,255,0,0.12)]'
+                          : 'border-formula-frost/16 bg-formula-paper/[0.02] hover:border-formula-frost/26'
+                      )}
+                    >
+                      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper">{f.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Start time *</span>
+                  {slotStart && fieldId ? (
+                    <span className="font-mono text-[11px] text-formula-frost/70">
+                      Window · {humanRentalWindowSummary(rentalWindow) || '—'}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="divide-y divide-formula-frost/10 overflow-hidden rounded-none border border-formula-frost/14">
+                  {FIELD_RENTAL_SLOT_STARTS.map(s => {
+                    const key = encodeRentalWindow(s, durationMinutes)
+                    const taken = fieldId ? isWindowUnavailable(fieldId, key) : false
+                    const active = slotStart === s && !taken
                     return (
-                      <li key={iso}>
-                        <label
-                          className={`flex cursor-pointer items-start gap-3 rounded-sm border px-3 py-2 text-sm ${
-                            taken
-                              ? 'cursor-not-allowed border-formula-frost/8 bg-formula-base/40 text-formula-mist/70'
-                              : checked
-                                ? 'border-formula-volt/35 bg-formula-volt/[0.06] text-formula-paper'
-                                : 'border-formula-frost/14 bg-formula-paper/[0.02] text-formula-frost/90'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            className="mt-1 h-4 w-4 accent-formula-volt"
-                            checked={checked}
-                            disabled={taken}
-                            onChange={() => toggleSessionDate(iso)}
-                          />
-                          <span>
-                            {formatSessionDateLabel(iso)}
-                            {taken ? <span className="ml-2 font-mono text-[10px] text-amber-200/90">(booked)</span> : null}
-                          </span>
-                        </label>
-                      </li>
+                      <button
+                        key={s}
+                        type="button"
+                        disabled={!fieldId || taken}
+                        onClick={() => setSlotStart(s)}
+                        className={cn(
+                          'flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left transition-colors',
+                          taken && 'cursor-not-allowed opacity-40',
+                          active && 'bg-formula-volt/[0.08] shadow-[inset_3px_0_0_0_var(--color-formula-volt)]',
+                          !taken && !active && 'bg-formula-paper/[0.02] hover:bg-formula-paper/[0.05]'
+                        )}
+                      >
+                        <span className="text-[15px] font-medium text-formula-paper">{s}</span>
+                        <span className="shrink-0 font-mono text-[11px] text-formula-mist">
+                          {taken ? <span className="text-amber-200/95">Booked</span> : <span>${fieldRentalDepositUsd(durationMinutes)} deposit</span>}
+                        </span>
+                      </button>
                     )
                   })}
-                </ul>
-              </fieldset>
-            ) : sessionDate && /^\d{4}-\d{2}-\d{2}$/.test(sessionDate) ? (
-              <p className="text-xs text-formula-mist">Enter how many weeks to list (1–52), or choose an anchor date first.</p>
-            ) : null}
-            <p className="text-xs text-formula-mist">
-              {sessionCount} session{sessionCount === 1 ? '' : 's'} × ${depositPerSessionUsd.toFixed(0)} ={' '}
-              <strong className="text-formula-paper">${rentalCheckoutCents.toFixed(0)}</strong> charged at checkout (Stripe).
-            </p>
-          </div>
-          {recurringChecking ? (
-            <p className="font-mono text-[10px] text-formula-frost/55">Checking calendar for each listed week…</p>
-          ) : null}
-          {recurringConflict ? (
-            <p className="text-sm text-amber-200/95">
-              A selected date conflicts with an existing booking for this field and window. Uncheck blocked dates or pick a different anchor, field, or time.
-            </p>
-          ) : null}
-          <div className="flex flex-wrap justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="inline-flex h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
-            >
-              Back
-            </button>
-            <button
-              type="button"
-              disabled={!step2Valid}
-              onClick={() => setStep(3)}
-              className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black disabled:opacity-40"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      ) : null}
+                </div>
+                {!fieldId ? <p className="text-[13px] text-formula-mist">Select a field to load availability.</p> : null}
+              </div>
 
-      {step === 3 ? (
-        <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 3  -  Field rental headcount (classification)</p>
-          <ul className="list-inside list-disc text-sm text-formula-mist">
-            <li>Private: 1–4 → Tier 1 (Standard). 5+ → group / clinic tier on the same field (up to 20).</li>
-            <li>Club / Team: max 20 per field (booking blocked above).</li>
-            <li>General / Pick-Up: max 15 (booking blocked above).</li>
-          </ul>
-          <label className="flex max-w-xs flex-col gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Total participants *</span>
-            <input
-              type="number"
-              min={1}
-              value={participantCount}
-              onChange={e => setParticipantCount(e.target.value)}
-              className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-            />
-          </label>
-          {classification ? (
-            <div
-              className={`border p-4 text-sm ${
-                classification.status === 'blocked'
-                  ? 'border-red-500/35 bg-red-500/10 text-red-100'
-                  : 'border-formula-volt/35 bg-formula-volt/10 text-formula-paper'
-              }`}
-              role="status"
-            >
-              {classificationSummary(classification)}
+              <label className="flex max-w-md flex-col gap-2">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Duration *</span>
+                <select
+                  value={String(durationMinutes)}
+                  onChange={e => setDurationMinutes(parseInt(e.target.value, 10))}
+                  className="min-h-12 rounded-none border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                  disabled={!slotStart}
+                >
+                  {!slotStart ? (
+                    <option value="">Pick a start time first</option>
+                  ) : (
+                    allowedDurations.map(m => (
+                      <option key={m} value={m}>
+                        {m} min · ${fieldRentalDepositUsd(m).toFixed(0)} deposit
+                      </option>
+                    ))
+                  )}
+                </select>
+              </label>
+
+              <div className="max-w-xl space-y-4">
+                <label className="flex max-w-md flex-col gap-2">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">
+                    Weeks on calendar (same weekday)
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    aria-label="Number of consecutive weekly rows to offer, 1 to 52"
+                    value={weekHorizonRaw}
+                    onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 2)
+                      setWeekHorizonRaw(digits)
+                    }}
+                    onBlur={() => {
+                      if (weekHorizonRaw.trim() === '') {
+                        setWeekHorizonRaw('1')
+                        return
+                      }
+                      const n = parseInt(weekHorizonRaw, 10)
+                      if (!Number.isFinite(n) || n < 1) setWeekHorizonRaw('1')
+                      else if (n > 52) setWeekHorizonRaw('52')
+                    }}
+                    className="min-h-12 max-w-[10rem] rounded-none border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                  />
+                  <span className="text-[13px] leading-relaxed text-formula-mist">
+                    Enter 1–52. We list that many weekly occurrences from your anchor date; toggle which sessions you are buying.
+                  </span>
+                </label>
+                {candidateDates.length > 0 ? (
+                  <fieldset className="space-y-2 rounded-none border border-formula-frost/14 bg-formula-paper/[0.02] p-4">
+                    <legend className="px-1 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">
+                      Session dates ({sessionCount} selected)
+                    </legend>
+                    <ul className="max-h-64 space-y-2 overflow-y-auto pr-1">
+                      {candidateDates.map(iso => {
+                        const taken = slotTakenByDate[iso] === true
+                        const checked = selectedSessionDates.includes(iso)
+                        return (
+                          <li key={iso}>
+                            <label
+                              className={cn(
+                                'flex cursor-pointer items-start gap-3 border px-3 py-2.5 text-[14px] transition-colors',
+                                taken && 'cursor-not-allowed border-formula-frost/8 bg-formula-base/40 text-formula-mist/70',
+                                !taken && checked && 'border-formula-volt/40 bg-formula-volt/[0.06] text-formula-paper',
+                                !taken && !checked && 'border-formula-frost/14 bg-formula-paper/[0.02] text-formula-frost/90'
+                              )}
+                            >
+                              <input
+                                type="checkbox"
+                                className="mt-1 h-4 w-4 accent-formula-volt"
+                                checked={checked}
+                                disabled={taken}
+                                onChange={() => toggleSessionDate(iso)}
+                              />
+                              <span>
+                                {formatSessionDateLabel(iso)}
+                                {taken ? <span className="ml-2 font-mono text-[10px] text-amber-200/90">Booked</span> : null}
+                              </span>
+                            </label>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </fieldset>
+                ) : sessionDate && /^\d{4}-\d{2}-\d{2}$/.test(sessionDate) ? (
+                  <p className="text-[13px] text-formula-mist">Enter weeks (1–52), or set your anchor date first.</p>
+                ) : null}
+                <p className="text-[13px] text-formula-mist">
+                  {sessionCount} session{sessionCount === 1 ? '' : 's'} × ${depositPerSessionUsd.toFixed(0)} ={' '}
+                  <strong className="text-formula-paper">${rentalCheckoutCents.toFixed(0)}</strong> at checkout (Stripe).
+                </p>
+              </div>
+              {recurringChecking ? (
+                <p className="font-mono text-[11px] text-formula-frost/55">Checking each listed week…</p>
+              ) : null}
+              {recurringConflict ? (
+                <p className="text-[14px] leading-relaxed text-amber-200/95">
+                  A selected date conflicts with an existing booking for this field and window. Uncheck blocked dates or change anchor, field, or time.
+                </p>
+              ) : null}
+              <div className="flex flex-wrap justify-between gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="inline-flex min-h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist transition-colors hover:border-formula-frost/28"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  disabled={!step2Valid}
+                  onClick={() => setStep(3)}
+                  className="inline-flex min-h-12 items-center border border-black/25 bg-formula-volt px-7 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Continue to participants
+                </button>
+              </div>
             </div>
-          ) : (
-            <p className="text-sm text-formula-mist">Enter headcount to validate against your rental type.</p>
-          )}
-          <div className="flex flex-wrap justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setStep(2)}
-              className="inline-flex h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
-            >
-              Back
-            </button>
-            <button
-              type="button"
-              disabled={!step3Valid}
-              onClick={() => setStep(4)}
-              className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black disabled:opacity-40"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      ) : null}
+          ) : null}
 
-      {step === 4 && classification && rentalType ? (
-        <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 4  -  Classification and deposit</p>
-          <div className="border border-formula-frost/12 bg-formula-paper/[0.03] p-5">
-            <p className="text-sm font-medium text-formula-paper">{classificationSummary(classification)}</p>
-            {classification.status === 'private_tier1' ? (
-              <p className="mt-3 text-sm text-formula-mist">
-                Tier 1 rate applies for published windows. You&apos;ll place a{' '}
-                <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> deposit per session at checkout (scales with the duration you
-                chose) if the slot is still available.
-              </p>
-            ) : null}
-            {classification.status === 'group_training_ok' ? (
-              <p className="mt-3 text-sm text-formula-mist">
-                Group / clinic use on one field (up to {classification.maxParticipants} participants). COI may still be required. Deposit{' '}
-                <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> per session locks the calendar slot at checkout.
-              </p>
-            ) : null}
-            {needsInsurance ? (
-              <p className="mt-3 border-l-2 border-formula-volt/50 pl-3 text-sm text-formula-mist">
-                <strong className="text-formula-paper">Insurance:</strong> Certificate of Insurance may be required with Formula Soccer Center named as
-                additional insured ($1M+ per occurrence). Upload timing is coordinated after the booking is paid.
-              </p>
-            ) : null}
-            {(classification.status === 'club_ok' || classification.status === 'general_ok') && (
-              <p className="mt-3 text-sm text-formula-mist">
-                After rules and agreement, you&apos;ll pay a{' '}
-                <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> booking deposit per session via Stripe (based on your
-                selected duration). The calendar prevents overlapping bookings on the same field.
-              </p>
-            )}
-          </div>
-          <div className="flex flex-wrap justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setStep(3)}
-              className="inline-flex h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
-            >
-              Back
-            </button>
-            <button
-              type="button"
-              onClick={() => setStep(5)}
-              className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      ) : null}
-
-      {step === 5 ? (
-        <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 5  -  Rules and agreement</p>
-          <p className="text-sm text-formula-mist">
-            Primary renter (distributes waivers). After payment, the system can send a waiver link for all participants when email is connected.
-          </p>
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Renter name *</span>
-              <input
-                value={renterName}
-                onChange={e => setRenterName(e.target.value)}
-                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Renter email *</span>
-              <input
-                type="email"
-                value={renterEmail}
-                onChange={e => setRenterEmail(e.target.value)}
-                className="h-11 border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
-              />
-            </label>
-          </div>
-          <ul className="space-y-2 border border-formula-frost/10 bg-formula-paper/[0.02] p-4 text-sm text-formula-mist">
-            <li>{SITE.turfShoesAttendeeRule}</li>
-            <li>Water only on the field (no food, gum, or other beverages).</li>
-            <li>Access limited to reserved field and time.</li>
-            <li>All participants must complete waivers before field access.</li>
-            <li>Overstays billed in 30-minute increments; 48-hour cancellation policy applies.</li>
-          </ul>
-          <label className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              checked={rulesOk}
-              onChange={e => setRulesOk(e.target.checked)}
-              className="mt-1 h-4 w-4 accent-formula-volt"
-            />
-            <span className="text-sm text-formula-paper">I have reviewed the key rules above.</span>
-          </label>
-          <label className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              checked={agreementOk}
-              onChange={e => setAgreementOk(e.target.checked)}
-              className="mt-1 h-4 w-4 accent-formula-volt"
-            />
-            <span className="text-sm text-formula-paper">I affirm agreement to the full Field Rental Agreement and Facility Use Waiver.</span>
-          </label>
-          <div className="flex flex-wrap justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setStep(4)}
-              className="inline-flex h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
-            >
-              Back
-            </button>
-            <button
-              type="button"
-              disabled={!rulesOk || !agreementOk || !renterName.trim() || !renterEmail.trim()}
-              onClick={goToPaymentStep}
-              className="inline-flex h-11 items-center border border-formula-volt/40 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-black disabled:opacity-40"
-            >
-              {`Pay $${rentalCheckoutCents.toFixed(0)} deposit (Stripe)`}
-            </button>
-          </div>
-        </div>
-      ) : null}
-
-      {step === PAYMENT_STEP && confirmedRef && classification && rentalType ? (
-        <div className="mt-8 space-y-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Step 6  -  Pay booking deposit</p>
-          <p className="text-sm text-formula-mist">
-            Paying creates a short hold on this field and window while Stripe opens. If the slot was taken by someone else in the last moment, checkout will
-            tell you to pick a new time.
-          </p>
-          <div className="border border-formula-frost/12 bg-formula-paper/[0.03] p-5 text-sm text-formula-mist">
-            <p className="font-mono text-xs font-semibold text-formula-paper">Reference {confirmedRef}</p>
-            <ul className="mt-3 list-inside list-disc space-y-1">
-              <li>Type: {rentalType.replace(/_/g, ' ')}</li>
-              <li>Anchor date (series): {sessionDate}</li>
-              <li>Sessions booked: {sessionCount}</li>
-              <li>Window: {humanRentalWindowSummary(rentalWindow)}</li>
-              <li>Field: {FIELDS.find(f => f.value === fieldId)?.label ?? fieldId}</li>
-              <li>Participants: {countNum}</li>
-              <li>Renter: {renterName.trim()}</li>
-            </ul>
-            <div className="mt-3 border-t border-formula-frost/10 pt-3">
-              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-mist">Session dates</p>
-              <ul className="mt-1 list-inside list-disc space-y-0.5 text-formula-frost/90">
-                {selectedSessionDates.map(d => (
-                  <li key={d}>{formatSessionDateLabel(d)}</li>
-                ))}
+          {step === 3 ? (
+            <div className="space-y-6">
+              <div>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 3 · Participants</p>
+                <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
+                  Headcount drives how your session is classified against the package you chose.
+                </p>
+              </div>
+              <ul className="list-inside list-disc space-y-2 text-[14px] leading-relaxed text-formula-mist">
+                <li>Private: 1–4 → Tier 1 (Standard). 5+ → group / clinic tier on the same field (up to 20).</li>
+                <li>Club / Team: max 20 per field (booking blocked above).</li>
+                <li>General / Pick-Up: max 15 (booking blocked above).</li>
               </ul>
+              <label className="flex max-w-xs flex-col gap-2">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Total participants *</span>
+                <input
+                  type="number"
+                  min={1}
+                  value={participantCount}
+                  onChange={e => setParticipantCount(e.target.value)}
+                  className="min-h-12 rounded-none border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                />
+              </label>
+              {classification ? (
+                <div
+                  className={cn(
+                    'rounded-none border p-5 text-[14px] leading-relaxed',
+                    classification.status === 'blocked'
+                      ? 'border-red-500/35 bg-red-500/10 text-red-100'
+                      : 'border-formula-volt/35 bg-formula-volt/[0.08] text-formula-paper'
+                  )}
+                  role="status"
+                >
+                  {classificationSummary(classification)}
+                </div>
+              ) : (
+                <p className="text-[14px] text-formula-mist">Enter headcount to validate against your rental type.</p>
+              )}
+              <div className="flex flex-wrap justify-between gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="inline-flex min-h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  disabled={!step3Valid}
+                  onClick={() => setStep(4)}
+                  className="inline-flex min-h-12 items-center border border-black/25 bg-formula-volt px-7 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Continue to classification
+                </button>
+              </div>
             </div>
-            <p className="mt-4 text-formula-paper">
-              Total due now: <strong>${rentalCheckoutCents.toFixed(0)}</strong> ({sessionCount} × ${depositPerSessionUsd.toFixed(0)} per session)
-            </p>
-            <p className="mt-2 text-xs">{FIELD_RENTAL_BOOKING_CHECKOUT.summary}</p>
+          ) : null}
+
+          {step === 4 && classification && rentalType ? (
+            <div className="space-y-6">
+              <div>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 4 · Classification & deposit</p>
+              </div>
+              <div className="rounded-none border border-formula-frost/14 bg-formula-paper/[0.03] p-6">
+                <p className="text-[15px] font-medium leading-snug text-formula-paper">{classificationSummary(classification)}</p>
+                {classification.status === 'private_tier1' ? (
+                  <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
+                    Tier 1 rate applies for published windows. You&apos;ll place a{' '}
+                    <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> deposit per session at checkout (scales with the duration
+                    you chose) if the slot is still available.
+                  </p>
+                ) : null}
+                {classification.status === 'group_training_ok' ? (
+                  <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
+                    Group / clinic use on one field (up to {classification.maxParticipants} participants). COI may still be required. Deposit{' '}
+                    <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> per session locks the calendar slot at checkout.
+                  </p>
+                ) : null}
+                {needsInsurance ? (
+                  <p className="mt-4 border-l-2 border-formula-volt/50 pl-4 text-[14px] leading-relaxed text-formula-mist">
+                    <strong className="text-formula-paper">Insurance:</strong> Certificate of Insurance may be required with Formula Soccer Center named as
+                    additional insured ($1M+ per occurrence). Upload timing is coordinated after the booking is paid.
+                  </p>
+                ) : null}
+                {(classification.status === 'club_ok' || classification.status === 'general_ok') && (
+                  <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
+                    After rules and agreement, you&apos;ll pay a{' '}
+                    <strong className="text-formula-paper">${depositPerSessionUsd.toFixed(0)}</strong> booking deposit per session via Stripe (based on your
+                    selected duration). The calendar prevents overlapping bookings on the same field.
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-wrap justify-between gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="inline-flex min-h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(5)}
+                  className="inline-flex min-h-12 items-center border border-black/25 bg-formula-volt px-7 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black transition-[filter] hover:brightness-105"
+                >
+                  Continue to rules
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {step === 5 ? (
+            <div className="space-y-6">
+              <div>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 5 · Rules & renter</p>
+                <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
+                  Primary renter distributes roster waivers. After payment, automated waiver links can go out when email is connected.
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="flex flex-col gap-2">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Renter name *</span>
+                  <input
+                    value={renterName}
+                    onChange={e => setRenterName(e.target.value)}
+                    className="min-h-12 rounded-none border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                  />
+                </label>
+                <label className="flex flex-col gap-2">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Renter email *</span>
+                  <input
+                    type="email"
+                    value={renterEmail}
+                    onChange={e => setRenterEmail(e.target.value)}
+                    className="min-h-12 rounded-none border border-formula-frost/16 bg-formula-paper/[0.03] px-3 text-sm text-formula-paper outline-none focus:border-formula-volt/45"
+                  />
+                </label>
+              </div>
+              <ul className="space-y-2 rounded-none border border-formula-frost/12 bg-formula-paper/[0.02] p-5 text-[14px] leading-relaxed text-formula-mist">
+                <li>{SITE.turfShoesAttendeeRule}</li>
+                <li>Water only on the field (no food, gum, or other beverages).</li>
+                <li>Access limited to reserved field and time.</li>
+                <li>All participants must complete waivers before field access.</li>
+                <li>Overstays billed in 30-minute increments; 48-hour cancellation policy applies.</li>
+              </ul>
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={rulesOk}
+                  onChange={e => setRulesOk(e.target.checked)}
+                  className="mt-1 h-4 w-4 accent-formula-volt"
+                />
+                <span className="text-[14px] text-formula-paper">I have reviewed the key rules above.</span>
+              </label>
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={agreementOk}
+                  onChange={e => setAgreementOk(e.target.checked)}
+                  className="mt-1 h-4 w-4 accent-formula-volt"
+                />
+                <span className="text-[14px] text-formula-paper">I affirm agreement to the full Field Rental Agreement and Facility Use Waiver.</span>
+              </label>
+              <div className="flex flex-wrap justify-between gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setStep(4)}
+                  className="inline-flex min-h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  disabled={!rulesOk || !agreementOk || !renterName.trim() || !renterEmail.trim()}
+                  onClick={goToPaymentStep}
+                  className="inline-flex min-h-12 items-center border border-black/25 bg-formula-volt px-7 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {`Continue to payment · $${rentalCheckoutCents.toFixed(0)} deposit`}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {step === PAYMENT_STEP && confirmedRef && classification && rentalType ? (
+            <div className="space-y-6">
+              <div>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 6 · Pay deposit</p>
+                <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-mist">
+                  Paying creates a short hold on this field and window while Stripe opens. If the slot was taken in the last moment, checkout will ask you to pick
+                  a new time.
+                </p>
+              </div>
+              <div className="rounded-none border border-formula-frost/14 bg-formula-paper/[0.03] p-6 text-[14px] leading-relaxed text-formula-mist">
+                <p className="font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-formula-paper">Reference {confirmedRef}</p>
+                <ul className="mt-4 list-inside list-disc space-y-1.5 text-formula-frost/88">
+                  <li>Type: {rentalType.replace(/_/g, ' ')}</li>
+                  <li>Anchor date (series): {sessionDate}</li>
+                  <li>Sessions booked: {sessionCount}</li>
+                  <li>Window: {humanRentalWindowSummary(rentalWindow)}</li>
+                  <li>Field: {FIELDS.find(f => f.value === fieldId)?.label ?? fieldId}</li>
+                  <li>Participants: {countNum}</li>
+                  <li>Renter: {renterName.trim()}</li>
+                </ul>
+                <div className="mt-4 border-t border-formula-frost/10 pt-4">
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-mist">Session dates</p>
+                  <ul className="mt-2 list-inside list-disc space-y-1 text-formula-frost/90">
+                    {selectedSessionDates.map(d => (
+                      <li key={d}>{formatSessionDateLabel(d)}</li>
+                    ))}
+                  </ul>
+                </div>
+                <p className="mt-5 text-formula-paper">
+                  Total due now: <strong className="text-[16px]">${rentalCheckoutCents.toFixed(0)}</strong> ({sessionCount} × $
+                  {depositPerSessionUsd.toFixed(0)} per session)
+                </p>
+                <p className="mt-3 text-[13px] leading-relaxed text-formula-mist">{FIELD_RENTAL_BOOKING_CHECKOUT.summary}</p>
+              </div>
+              {checkoutMetadata ? (
+                <CheckoutLaunchButton
+                  checkoutType="field-rental-booking"
+                  label={`Pay $${rentalCheckoutCents.toFixed(0)} with Stripe`}
+                  successNext="field-rental"
+                  metadata={checkoutMetadata}
+                />
+              ) : null}
+              <button
+                type="button"
+                onClick={() => {
+                  void releasePendingHold(confirmedRef)
+                  setStep(5)
+                  setConfirmedRef(null)
+                }}
+                className="inline-flex min-h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
+              >
+                Back
+              </button>
+            </div>
+          ) : null}
+        </div>
+
+        <aside className="min-w-0 border border-formula-frost/14 bg-[color-mix(in_srgb,var(--color-formula-deep)_88%,transparent)] p-5 shadow-[inset_0_0_0_1px_rgba(220,255,0,0.04)] md:p-6 lg:sticky lg:top-28 xl:top-32">
+      <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Booking summary</p>
+      <dl className="mt-5 space-y-4 text-sm text-formula-frost/85">
+        <div>
+          <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Package</dt>
+          <dd className="mt-1 text-[15px] font-medium leading-snug text-formula-paper">{selectedPackageMeta?.title ?? '—'}</dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Schedule</dt>
+          <dd className="mt-1 leading-relaxed">
+            {sessionDate && fieldId && slotStart ? (
+              <>
+                <span className="block text-formula-paper">{sessionDate}</span>
+                <span className="mt-1 block text-formula-frost/80">{humanRentalWindowSummary(rentalWindow) || '—'}</span>
+                <span className="mt-1 block font-mono text-[11px] text-formula-mist">{FIELDS.find(f => f.value === fieldId)?.label ?? fieldId}</span>
+              </>
+            ) : (
+              <span className="text-formula-mist">Select a date, field, and start time.</span>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Sessions · deposit</dt>
+          <dd className="mt-1 leading-relaxed">
+            <span className="text-formula-paper">
+              {sessionCount} session{sessionCount === 1 ? '' : 's'} × ${depositPerSessionUsd.toFixed(0)}
+            </span>
+            <span className="mt-1 block text-[15px] font-semibold text-formula-paper">${rentalCheckoutCents.toFixed(0)} due at checkout</span>
+            <span className="mt-2 block text-[13px] leading-relaxed text-formula-mist">
+              Remaining balance, if any, is settled per your rental agreement after the deposit—staff may reconcile for packages or special blocks.
+            </span>
+          </dd>
+        </div>
+        {step >= 5 ? (
+          <div>
+            <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Primary renter</dt>
+            <dd className="mt-1 text-formula-paper">{renterName.trim() || '—'}</dd>
+            <dd className="mt-0.5 font-mono text-[11px] text-formula-mist">{renterEmail.trim() || '—'}</dd>
           </div>
-          <CheckoutLaunchButton
-            checkoutType="field-rental-booking"
-            label={`Pay $${rentalCheckoutCents.toFixed(0)} with Stripe`}
-            successNext="field-rental"
-            metadata={{
-              rental_ref: confirmedRef,
-              rental_type: rentalType,
-              rental_date: sessionDate.slice(0, 40),
-              rental_window: rentalWindow.slice(0, 120),
-              rental_field: fieldId.slice(0, 40),
-              rental_weeks: String(sessionCount),
-              rental_dates_compact: encodeRentalDatesCompact(selectedSessionDates),
-              rental_participants: String(countNum),
-              renter_name: renterName.trim().slice(0, 80),
-              renter_email: renterEmail.trim().slice(0, 80),
-            }}
-          />
+        ) : null}
+      </dl>
+
+      <div className="mt-8 space-y-3 border-t border-formula-frost/12 pt-6">
+        {step === PAYMENT_STEP ? (
+          <p className="text-[13px] leading-relaxed text-formula-mist">
+            Open Stripe from the payment block in the main column—totals match this summary.
+          </p>
+        ) : (
           <button
             type="button"
-            onClick={() => {
-              void releasePendingHold(confirmedRef)
-              setStep(5)
-              setConfirmedRef(null)
-            }}
-            className="inline-flex h-11 items-center border border-formula-frost/18 px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-mist"
+            disabled={stickyPrimaryDisabled}
+            onClick={() => advanceFromSticky()}
+            className="inline-flex min-h-12 w-full items-center justify-center border border-black/25 bg-formula-volt px-4 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45"
           >
-            Back
+            {stickyPrimaryLabel}
           </button>
-        </div>
-      ) : null}
+        )}
+        <button
+          type="button"
+          onClick={() => scrollToParticipantWaiver()}
+          className="w-full border border-formula-frost/18 bg-transparent py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-volt transition-colors hover:border-formula-volt/35 hover:bg-formula-volt/[0.06]"
+        >
+          Continue to waiver
+        </button>
+      </div>
+        </aside>
+      </div>
     </section>
   )
 }
