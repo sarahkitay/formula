@@ -75,6 +75,12 @@ export function ParentPortalShell({ children }: { children: React.ReactNode }) {
         return
       }
 
+      if (role === 'organizer') {
+        router.replace('/organizer/dashboard')
+        setPhase('redirect')
+        return
+      }
+
       if (role !== 'parent') {
         router.replace(`/login?role=parent&next=${encodeURIComponent(pathname ?? '/parent/dashboard')}`)
         setPhase('redirect')

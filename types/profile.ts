@@ -1,5 +1,5 @@
 /** Matches `public.profiles` (sync with Supabase). */
-export type ProfileRole = 'parent' | 'staff' | 'coach' | 'admin'
+export type ProfileRole = 'parent' | 'organizer' | 'staff' | 'coach' | 'admin'
 
 export type ProfileRow = {
   id: string

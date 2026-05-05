@@ -63,12 +63,30 @@ export default async function CheckoutSuccessPage({
           </>
         ) : null}
         {nextStep === 'field-rental' ? (
-          <Link
-            href={`${MARKETING_HREF.rentals}#rental-booking`}
-            className="inline-flex h-11 items-center border border-formula-frost/14 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/22"
-          >
-            Field rentals
-          </Link>
+          <>
+            <Link
+              href={
+                sessionId && sessionId.length > 0
+                  ? `/organizer/signup?session_id=${encodeURIComponent(sessionId)}`
+                  : '/organizer/signup'
+              }
+              className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black hover:brightness-105"
+            >
+              Create organizer log-in
+            </Link>
+            <Link
+              href={`/login?role=organizer&next=${encodeURIComponent('/organizer/dashboard')}`}
+              className="inline-flex h-11 items-center border border-formula-frost/14 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/22"
+            >
+              Organizer sign-in
+            </Link>
+            <Link
+              href={`${MARKETING_HREF.rentals}#rental-booking`}
+              className="inline-flex h-11 items-center border border-formula-frost/14 bg-formula-paper/[0.04] px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper hover:border-formula-frost/22"
+            >
+              Field rentals
+            </Link>
+          </>
         ) : null}
       </div>
 

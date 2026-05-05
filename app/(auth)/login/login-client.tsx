@@ -58,6 +58,9 @@ export function LoginPageClient() {
     if (err === 'role') {
       setFormError('Use the portal that matches your account type.')
     }
+    if (err === 'no-rentals') {
+      setFormError('No field rental roster invites are on file for that account right now.')
+    }
   }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -87,7 +90,70 @@ export function LoginPageClient() {
       return
     }
 
+    const staffRoles = new Set(['admin', 'coach', 'staff'])
     const { profile, error: profileErr } = await loadProfileForUser(user.id)
+
+    if (portal === 'organizer') {
+      const roleNormEarly = (profile?.role ?? '').toLowerCase().trim()
+      if (profile && staffRoles.has(roleNormEarly)) {
+        setLoading(false)
+        router.push(getPortalRoute(profile.role))
+        router.refresh()
+        return
+      }
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      const bearer = session?.access_token
+      if (!bearer) {
+        setFormError('Could not read session token. Try again.')
+        await supabase.auth.signOut()
+        setLoading(false)
+        return
+      }
+
+      const res = await fetch('/api/organizer/waiver-invites', { headers: { Authorization: `Bearer ${bearer}` } })
+      const body = (await res.json()) as { invites?: unknown[]; error?: string }
+      if (!res.ok || !Array.isArray(body.invites)) {
+        setFormError(body.error ?? 'Could not verify field rentals for this account.')
+        await supabase.auth.signOut()
+        setLoading(false)
+        return
+      }
+
+      if (body.invites.length === 0) {
+        setFormError(
+          'No field rental roster invites are on file for this email. Use the same email as your Stripe receipt, create an organizer account from your checkout success page, or try the Parent portal if you are a guardian.'
+        )
+        await supabase.auth.signOut()
+        setLoading(false)
+        return
+      }
+
+      if (profileErr || !profile) {
+        setFormError(
+          'No profile is set up for this sign-in yet. Use “Create organizer log-in” on your field rental checkout success page (needs your Stripe session id), or contact the front desk.'
+        )
+        await supabase.auth.signOut()
+        setLoading(false)
+        return
+      }
+
+      const orgRole = (profile.role ?? '').toLowerCase().trim()
+      if (orgRole !== 'parent' && orgRole !== 'organizer') {
+        setFormError('This tab is for rental organizers or guardians with a field rental on file.')
+        await supabase.auth.signOut()
+        setLoading(false)
+        return
+      }
+
+      setLoading(false)
+      const dest = sanitizePostLoginPath(searchParams.get('next')) ?? '/organizer/dashboard'
+      router.push(dest)
+      router.refresh()
+      return
+    }
 
     if (profileErr || !profile) {
       setFormError(
@@ -107,7 +173,6 @@ export function LoginPageClient() {
       return
     }
 
-    const staffRoles = new Set(['admin', 'coach', 'staff'])
     const roleNorm = (profile.role ?? '').toLowerCase().trim()
     if (portal === 'staff' && !staffRoles.has(roleNorm)) {
       setFormError(
@@ -156,7 +221,8 @@ export function LoginPageClient() {
     router.refresh()
   }
 
-  const signInLabel = portal === 'parent' ? 'Parent portal' : staffRoleConfig[staffRole].label
+  const signInLabel =
+    portal === 'parent' ? 'Parent portal' : portal === 'organizer' ? 'Organizer portal' : staffRoleConfig[staffRole].label
 
   return (
     <div className="relative flex min-h-dvh w-full flex-col overflow-x-hidden text-formula-paper">
@@ -189,32 +255,22 @@ export function LoginPageClient() {
               <>
                 <h2 className="text-xl font-semibold text-formula-paper">Renter / organizer</h2>
                 <p className="mt-2 text-sm leading-relaxed text-formula-mist">
-                  Self-serve log-in for roster waivers, booking history, and payments is not wired here yet. After a paid field rental, use the roster waiver link from checkout (or your receipt). Staff can help merge waivers or adjust headcount.
+                  Sign in with the <strong className="text-formula-paper/95">same email</strong> Stripe used on your paid field-rental checkout. You&apos;ll see each roster link, waiver progress, and a copy button.
                 </p>
-                <p className="mt-4 text-sm leading-relaxed text-formula-mist">
-                  On the roadmap: organizer log-in, waiver reuse across linked weeks for the same roster size, copy-link recovery, roster edits, and booking or payment history in one place.
+                <p className="mt-3 text-sm leading-relaxed text-formula-mist">
+                  First time?{' '}
+                  <Link href="/organizer/signup" className="font-medium text-formula-volt underline-offset-2 hover:underline">
+                    Create your password
+                  </Link>{' '}
+                  using your checkout session id (starts with <span className="font-mono text-formula-frost/90">cs_</span>).
                 </p>
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                  <Link
-                    href="/book-assessment"
-                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-formula-frost/18 bg-formula-paper/[0.06] px-4 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper no-underline transition-colors hover:border-formula-volt/35 hover:bg-formula-paper/[0.09]"
-                  >
-                    Booking hub
-                  </Link>
-                  <Link
-                    href="/rentals"
-                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-formula-frost/18 bg-formula-paper/[0.06] px-4 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper no-underline transition-colors hover:border-formula-volt/35 hover:bg-formula-paper/[0.09]"
-                  >
-                    Field rentals
-                  </Link>
-                </div>
                 <button
                   type="button"
                   onClick={() => {
                     setPortal('staff')
                     setFormError(null)
                   }}
-                  className="mt-6 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
+                  className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
                 >
                   ← Staff sign-in
                 </button>
@@ -280,7 +336,6 @@ export function LoginPageClient() {
               </>
             )}
 
-            {portal !== 'organizer' ? (
             <form onSubmit={handleLogin} className="mt-6 space-y-4">
               {formError ? <p className="text-sm text-red-300/90">{formError}</p> : null}
               <div className="space-y-1.5">
@@ -325,12 +380,14 @@ export function LoginPageClient() {
                 loading={loading}
                 className="mt-2 h-14 w-full rounded-md border border-black/25 !bg-formula-volt !text-base !font-semibold !text-black shadow-[0_4px_24px_rgb(220_255_0_/_0.28)] transition-[filter,transform,box-shadow] hover:!brightness-110 hover:shadow-[0_6px_28px_rgb(220_255_0_/_0.35)] active:translate-y-px"
               >
-                {portal === 'parent' ? 'Sign in to parent portal' : `Sign in as ${signInLabel}`}
+                {portal === 'parent'
+                  ? 'Sign in to parent portal'
+                  : portal === 'organizer'
+                    ? 'Sign in to organizer portal'
+                    : `Sign in as ${signInLabel}`}
               </Button>
             </form>
-            ) : null}
 
-            {portal !== 'organizer' ? (
             <p className="mt-5 text-center text-sm text-formula-mist">
               Forgot your password?{' '}
               <Link
@@ -340,7 +397,6 @@ export function LoginPageClient() {
                 Reset it
               </Link>
             </p>
-            ) : null}
           </div>
 
           <p className="text-center text-sm text-formula-mist">

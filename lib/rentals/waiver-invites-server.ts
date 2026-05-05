@@ -107,6 +107,39 @@ export async function getWaiverInviteByStripeSessionId(sessionId: string): Promi
   return data as WaiverInviteRow | null
 }
 
+export type PurchaserWaiverInviteSummary = WaiverInviteRow & {
+  completed_count: number
+  remaining_count: number
+}
+
+/** Roster invites where the paid checkout email matches (organizer self-serve portal). */
+export async function listWaiverInvitesForPurchaserEmail(email: string): Promise<PurchaserWaiverInviteSummary[]> {
+  const norm = email.trim().toLowerCase()
+  if (!norm.includes('@')) return []
+  const supabase = getServiceSupabase()
+  if (!supabase) return []
+
+  const { data, error } = await supabase.from('field_rental_waiver_invites').select('*').ilike('purchaser_email', norm)
+
+  if (error || !data?.length) {
+    if (error) console.warn('[waiver-invites] purchaser list:', error.message)
+    return []
+  }
+
+  const rows = (data as WaiverInviteRow[]).filter(r => (r.purchaser_email ?? '').trim().toLowerCase() === norm)
+  const out: PurchaserWaiverInviteSummary[] = []
+  for (const row of rows) {
+    const completed = await countWaiversForInviteId(row.id)
+    out.push({
+      ...row,
+      completed_count: completed,
+      remaining_count: Math.max(0, row.expected_waiver_count - completed),
+    })
+  }
+  out.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+  return out
+}
+
 function isPlausibleEmail(s: string): boolean {
   const t = s.trim().toLowerCase()
   return t.length > 3 && t.includes('@') && t.includes('.')

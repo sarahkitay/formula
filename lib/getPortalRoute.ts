@@ -8,6 +8,7 @@
  */
 export type PortalRoute =
   | '/parent/dashboard'
+  | '/organizer/dashboard'
   | '/staff-portal'
   | '/admin/dashboard'
   | '/coach/today'
@@ -16,6 +17,7 @@ export type PortalRoute =
 export function getPortalRoute(role: string | null | undefined): PortalRoute {
   const r = (role ?? '').toLowerCase().trim()
   if (r === 'parent') return '/parent/dashboard'
+  if (r === 'organizer') return '/organizer/dashboard'
   if (r === 'coach') return '/coach/today'
   if (r === 'admin') return '/admin/dashboard'
   if (r === 'staff') return '/staff-portal'

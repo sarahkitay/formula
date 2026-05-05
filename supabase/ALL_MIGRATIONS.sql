@@ -30,7 +30,7 @@
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
-  role text not null check (role in ('parent', 'staff', 'coach', 'admin')),
+  role text not null check (role in ('parent', 'organizer', 'staff', 'coach', 'admin')),
   full_name text,
   email text,
   created_at timestamptz default now(),
@@ -882,4 +882,12 @@ comment on table public.career_applications is
   'Marketing /careers form submissions; coaching_background used when position = coach.';
 
 alter table public.career_applications enable row level security;
+
+-- -----------------------------------------------------------------------------
+-- Organizer profile role (field-rental portal signups)
+-- -----------------------------------------------------------------------------
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles
+  add constraint profiles_role_check
+  check (role in ('parent', 'organizer', 'staff', 'coach', 'admin'));
 

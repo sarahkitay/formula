@@ -10,6 +10,7 @@ export function ShellRoot({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/admin') ||
     pathname.startsWith('/coach') ||
     pathname.startsWith('/parent') ||
+    pathname.startsWith('/organizer') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/forgot-password') ||
     pathname.startsWith('/parent-portal') ||
