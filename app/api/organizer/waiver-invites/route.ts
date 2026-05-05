@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import {
+  listFieldRentalPurchasesForOrganizerEmail,
+  summarizeFieldRentalPurchaseMetadata,
+} from '@/lib/billing/organizer-portal-server'
 import { listWaiverInvitesForPurchaserEmail } from '@/lib/rentals/waiver-invites-server'
 import { getSiteOrigin } from '@/lib/stripe/server'
 
@@ -29,7 +33,10 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Invalid or expired session' }, { status: 401 })
   }
 
-  const invites = await listWaiverInvitesForPurchaserEmail(data.user.email)
+  const [invites, purchases] = await Promise.all([
+    listWaiverInvitesForPurchaserEmail(data.user.email),
+    listFieldRentalPurchasesForOrganizerEmail(data.user.email),
+  ])
   const origin = getSiteOrigin()
   const invitesOut = invites.map(inv => ({
     id: inv.id,
@@ -54,5 +61,18 @@ export async function GET(req: Request) {
     waiver_url: `${origin}/rentals/waiver/${inv.token}`,
   }))
 
-  return NextResponse.json({ invites: invitesOut })
+  const purchasesOut = purchases.map(p => ({
+    stripe_session_id: p.stripe_session_id,
+    created_at: p.created_at,
+    amount: p.amount,
+    currency: p.currency,
+    payment_status: p.payment_status,
+    summary: summarizeFieldRentalPurchaseMetadata(p.metadata),
+    /** Receipt / waiver recovery when Stripe redirected with session id */
+    checkout_success_href: p.stripe_session_id.startsWith('cs_')
+      ? `${origin}/checkout/success?session_id=${encodeURIComponent(p.stripe_session_id)}`
+      : null,
+  }))
+
+  return NextResponse.json({ invites: invitesOut, purchases: purchasesOut })
 }

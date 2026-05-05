@@ -59,7 +59,9 @@ export function LoginPageClient() {
       setFormError('Use the portal that matches your account type.')
     }
     if (err === 'no-rentals') {
-      setFormError('No field rental roster invites are on file for that account right now.')
+      setFormError(
+        'We could not find roster waivers for that email last time. You can still use the organizer hub to book and view paid rentals when they match this sign-in email.'
+      )
     }
   }, [searchParams])
 
@@ -102,35 +104,6 @@ export function LoginPageClient() {
         return
       }
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      const bearer = session?.access_token
-      if (!bearer) {
-        setFormError('Could not read session token. Try again.')
-        await supabase.auth.signOut()
-        setLoading(false)
-        return
-      }
-
-      const res = await fetch('/api/organizer/waiver-invites', { headers: { Authorization: `Bearer ${bearer}` } })
-      const body = (await res.json()) as { invites?: unknown[]; error?: string }
-      if (!res.ok || !Array.isArray(body.invites)) {
-        setFormError(body.error ?? 'Could not verify field rentals for this account.')
-        await supabase.auth.signOut()
-        setLoading(false)
-        return
-      }
-
-      if (body.invites.length === 0) {
-        setFormError(
-          'No field rental roster invites are on file for this email. Use the same email as your Stripe receipt, create an organizer account from your checkout success page, or try the Parent portal if you are a guardian.'
-        )
-        await supabase.auth.signOut()
-        setLoading(false)
-        return
-      }
-
       if (profileErr || !profile) {
         setFormError(
           'No profile is set up for this sign-in yet. Use “Create organizer log-in” on your field rental checkout success page (needs your Stripe session id), or contact the front desk.'
@@ -142,7 +115,7 @@ export function LoginPageClient() {
 
       const orgRole = (profile.role ?? '').toLowerCase().trim()
       if (orgRole !== 'parent' && orgRole !== 'organizer') {
-        setFormError('This tab is for rental organizers or guardians with a field rental on file.')
+        setFormError('This tab is for rental organizers or parent accounts. Use Parent or Staff sign-in for other roles.')
         await supabase.auth.signOut()
         setLoading(false)
         return
@@ -255,7 +228,9 @@ export function LoginPageClient() {
               <>
                 <h2 className="text-xl font-semibold text-formula-paper">Renter / organizer</h2>
                 <p className="mt-2 text-sm leading-relaxed text-formula-mist">
-                  Sign in with the <strong className="text-formula-paper/95">same email</strong> Stripe used on your paid field-rental checkout. You&apos;ll see each roster link, waiver progress, and a copy button.
+                  Sign in with your <strong className="text-formula-paper/95">organizer or parent</strong> account. From the hub you
+                  can open public booking, see paid rentals that match your email in our ledger, open receipt links, and manage
+                  roster waiver links when they exist.
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-formula-mist">
                   First time?{' '}

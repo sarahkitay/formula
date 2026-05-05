@@ -14,8 +14,15 @@ const organizerNav: NavItem[] = [
     label: 'Dashboard',
     href: '/organizer/dashboard',
     icon: 'LayoutDashboard',
-    description: 'Roster links · waiver progress',
+    description: 'Rentals · waivers · receipts',
     gridStatus: 'neutral',
+  },
+  {
+    label: 'Book rental',
+    href: '/rentals',
+    icon: 'CalendarPlus',
+    description: 'Public booking · deposit checkout',
+    gridStatus: 'active',
   },
 ]
 
@@ -40,42 +47,12 @@ export function OrganizerPortalShell({ children }: { children: React.ReactNode }
         return
       }
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      const token = session?.access_token
-      if (!token) {
-        router.replace('/login?role=organizer')
-        setPhase('redirect')
-        return
-      }
-
-      const res = await fetch('/api/organizer/waiver-invites', { headers: { Authorization: `Bearer ${token}` } })
-      const body = (await res.json()) as { invites?: unknown[] }
-      if (cancelled) return
-      if (!res.ok || !Array.isArray(body.invites)) {
-        router.replace('/login?role=organizer')
-        setPhase('redirect')
-        return
-      }
-
       const { profile } = await loadProfileForUser(user.id)
       if (cancelled) return
 
       const rn = (profile?.role ?? '').toLowerCase()
       if (rn === 'coach' || rn === 'staff' || rn === 'admin') {
         router.replace(getPortalRoute(profile?.role))
-        setPhase('redirect')
-        return
-      }
-
-      if (body.invites.length === 0) {
-        if (rn === 'organizer') {
-          await supabase.auth.signOut()
-          router.replace('/login?role=organizer&error=no-rentals')
-        } else {
-          router.replace('/parent/dashboard')
-        }
         setPhase('redirect')
         return
       }
