@@ -32,7 +32,7 @@ function staffRoleFromQuery(value: string | null): StaffRole | null {
 export function LoginPageClient() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [portal, setPortal] = useState<'parent' | 'staff'>('parent')
+  const [portal, setPortal] = useState<'parent' | 'staff' | 'organizer'>('parent')
   const [staffRole, setStaffRole] = useState<StaffRole>('coach')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -50,6 +50,9 @@ export function LoginPageClient() {
     }
     if (q === 'parent') {
       setPortal('parent')
+    }
+    if (q === 'organizer' || q === 'renter') {
+      setPortal('organizer')
     }
     const err = searchParams.get('error')
     if (err === 'role') {
@@ -153,8 +156,7 @@ export function LoginPageClient() {
     router.refresh()
   }
 
-  const signInLabel =
-    portal === 'parent' ? 'Parent portal' : staffRoleConfig[staffRole].label
+  const signInLabel = portal === 'parent' ? 'Parent portal' : staffRoleConfig[staffRole].label
 
   return (
     <div className="relative flex min-h-dvh w-full flex-col overflow-x-hidden text-formula-paper">
@@ -183,7 +185,51 @@ export function LoginPageClient() {
           </div>
 
           <div className="rounded-xl border border-formula-frost/12 bg-formula-deep/45 p-8 shadow-[0_24px_64px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-10">
-            {portal === 'parent' ? (
+            {portal === 'organizer' ? (
+              <>
+                <h2 className="text-xl font-semibold text-formula-paper">Renter / organizer</h2>
+                <p className="mt-2 text-sm leading-relaxed text-formula-mist">
+                  Self-serve log-in for roster waivers, booking history, and payments is not wired here yet. After a paid field rental, use the roster waiver link from checkout (or your receipt). Staff can help merge waivers or adjust headcount.
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-formula-mist">
+                  On the roadmap: organizer log-in, waiver reuse across linked weeks for the same roster size, copy-link recovery, roster edits, and booking or payment history in one place.
+                </p>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  <Link
+                    href="/book-assessment"
+                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-formula-frost/18 bg-formula-paper/[0.06] px-4 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper no-underline transition-colors hover:border-formula-volt/35 hover:bg-formula-paper/[0.09]"
+                  >
+                    Booking hub
+                  </Link>
+                  <Link
+                    href="/rentals"
+                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-formula-frost/18 bg-formula-paper/[0.06] px-4 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper no-underline transition-colors hover:border-formula-volt/35 hover:bg-formula-paper/[0.09]"
+                  >
+                    Field rentals
+                  </Link>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPortal('staff')
+                    setFormError(null)
+                  }}
+                  className="mt-6 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
+                >
+                  ← Staff sign-in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPortal('parent')
+                    setFormError(null)
+                  }}
+                  className="mt-2 block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
+                >
+                  ← Parent portal
+                </button>
+              </>
+            ) : portal === 'parent' ? (
               <>
                 <h2 className="text-xl font-semibold text-formula-paper">Parent portal</h2>
                 <p className="mt-2 text-sm leading-relaxed text-formula-mist">
@@ -224,9 +270,17 @@ export function LoginPageClient() {
                 >
                   ← Parent portal
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setPortal('organizer')}
+                  className="mt-2 block w-full text-left font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
+                >
+                  Renter / organizer portal →
+                </button>
               </>
             )}
 
+            {portal !== 'organizer' ? (
             <form onSubmit={handleLogin} className="mt-6 space-y-4">
               {formError ? <p className="text-sm text-red-300/90">{formError}</p> : null}
               <div className="space-y-1.5">
@@ -274,7 +328,9 @@ export function LoginPageClient() {
                 {portal === 'parent' ? 'Sign in to parent portal' : `Sign in as ${signInLabel}`}
               </Button>
             </form>
+            ) : null}
 
+            {portal !== 'organizer' ? (
             <p className="mt-5 text-center text-sm text-formula-mist">
               Forgot your password?{' '}
               <Link
@@ -284,6 +340,7 @@ export function LoginPageClient() {
                 Reset it
               </Link>
             </p>
+            ) : null}
           </div>
 
           <p className="text-center text-sm text-formula-mist">
@@ -298,13 +355,20 @@ export function LoginPageClient() {
       </div>
 
       {portal === 'parent' ? (
-        <div className="relative z-10 pb-5 pt-2 text-center">
+        <div className="relative z-10 flex flex-col items-center gap-2 pb-5 pt-2 text-center">
           <button
             type="button"
             onClick={() => setPortal('staff')}
             className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-mist/80 underline-offset-4 transition-colors hover:text-formula-frost hover:underline"
           >
             Staff sign-in
+          </button>
+          <button
+            type="button"
+            onClick={() => setPortal('organizer')}
+            className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-mist/80 underline-offset-4 transition-colors hover:text-formula-frost hover:underline"
+          >
+            Renter / organizer portal
           </button>
         </div>
       ) : null}

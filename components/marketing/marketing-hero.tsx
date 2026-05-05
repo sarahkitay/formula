@@ -63,7 +63,7 @@ export function MarketingHero() {
 
       <div className="relative z-10 mx-auto flex w-full max-w-[min(100%,1360px)] flex-1 flex-col px-5 pb-12 pt-44 max-sm:pt-[max(11.5rem,calc(env(safe-area-inset-top,0px)+10rem))] sm:px-6 sm:pt-48 md:pt-48 lg:pb-16 lg:pt-52">
         {/* Centered wordmark — primary title */}
-        <div className="flex w-full justify-center px-1 pb-0 pt-0 sm:px-2">
+        <div className="flex w-full justify-center px-1 py-6 sm:px-2 sm:py-0">
           <h1 className={cn(marketingHeroWordmarkClassName, 'marketing-hero-wordmark-anim max-w-[100%]')} aria-label={WORD}>
             <span aria-hidden="true" className="inline-flex flex-nowrap justify-center whitespace-nowrap">
               {WORD.split('').map((ch, i) =>

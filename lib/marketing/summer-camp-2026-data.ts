@@ -99,3 +99,17 @@ export function getSummerCampWeekRow(week: number): SummerCampWeekRow | undefine
 export function isSummerCampWeekNumber(value: number): boolean {
   return Number.isInteger(value) && value >= 1 && value <= 8
 }
+
+export type SummerCampThemeTitle = 'Play Sharp' | 'Speed Lab' | 'Finish Strong' | 'Duel & Dominate'
+
+/** Longer theme copy for expandable rows on the Summer Camp 2026 landing (reused when the same theme runs twice). */
+export const SUMMER_CAMP_THEME_EXPLANATIONS: Record<SummerCampThemeTitle, string> = {
+  'Play Sharp':
+    'This week centers first touch under rhythm, clean passing lanes, and scanning before the ball arrives. Athletes rotate through Footbot for high-rep reception and Speed Brain for decision windows so habits transfer into small-sided play by Friday.',
+  'Speed Lab':
+    'Acceleration, deceleration, and change-of-direction get measured reps—not just sprints. Speed Track work emphasizes posture and first three steps; Double Speed Court layers reactive reads so quickness shows up with the ball, not only in straight lines.',
+  'Finish Strong':
+    'Striking technique, composure in the box, and rebound finishes are coached in progressions. Performance Center blocks isolate foot choice and body shape, then blend into live sequences so players leave with a repeatable prep touch before they shoot.',
+  'Duel & Dominate':
+    '1v1 and 2v2 frames teach body position, timing the challenge, and when to jump the pass. Performance Center and small-sided duel grids keep outcomes tight so every player gets high-volume duels with immediate coach feedback.',
+}

@@ -1,25 +1,11 @@
 import Link from 'next/link'
 import { SummerCamp2026Checkout } from '@/components/marketing/summer-camp-2026-checkout'
+import { SummerCamp2026WeeksTable } from '@/components/marketing/summer-camp-2026-weeks-table'
 import { SectionLabel } from '@/components/marketing/marketing-inner'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT, SUMMER_CAMP_2026_WEEK_CHECKOUT } from '@/lib/marketing/public-pricing'
 import { SITE, FACILITY_APPLE_MAPS_URL } from '@/lib/site-config'
-import { SUMMER_CAMP_2026, SUMMER_CAMP_2026_WEEKS } from '@/lib/marketing/summer-camp-2026-data'
-
-const THEME_ANCHOR: Record<string, string> = {
-  'Play Sharp': 'theme-play-sharp',
-  'Speed Lab': 'theme-speed-lab',
-  'Finish Strong': 'theme-finish-strong',
-  'Duel & Dominate': 'theme-duel-dominate',
-}
-
-function themeRowId(week: number): string | undefined {
-  if (week === 1) return 'theme-play-sharp'
-  if (week === 2) return 'theme-speed-lab'
-  if (week === 3) return 'theme-finish-strong'
-  if (week === 4) return 'theme-duel-dominate'
-  return undefined
-}
+import { SUMMER_CAMP_2026 } from '@/lib/marketing/summer-camp-2026-data'
 
 const facilityAssets = [
   { name: 'Footbot', line: 'Automated ball return · high-rep first touch' },
@@ -57,51 +43,10 @@ export function SummerCamp2026Landing() {
       <section id="themes" aria-labelledby="sc-themes-heading" className="scroll-mt-24 sm:scroll-mt-28">
         <SectionLabel id="sc-themes-heading">Themed weeks</SectionLabel>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-formula-frost/80">
-          Each theme runs twice across the summer (weeks 1 &amp; 5, 2 &amp; 6, 3 &amp; 7, 4 &amp; 8) so families can align travel or double down on a favorite block.
+          Each theme runs twice across the summer (weeks 1 &amp; 5, 2 &amp; 6, 3 &amp; 7, 4 &amp; 8) so families can align travel or double down on a favorite block. Expand any week for a fuller theme description, then use{' '}
+          <strong className="text-formula-paper">Pay now</strong> to jump to secure signup below.
         </p>
-        <div className="-mx-4 mt-5 overflow-x-auto border-y border-formula-frost/12 sm:mx-0 sm:mt-6 sm:rounded-lg sm:border">
-          <table className="w-full min-w-[520px] border-collapse text-left text-[13px] sm:text-sm">
-            <thead>
-              <tr className="border-b border-formula-frost/12 bg-formula-paper/[0.04] font-mono text-[9px] uppercase tracking-[0.12em] text-formula-mist sm:text-[10px] sm:tracking-[0.14em]">
-                <th className="px-3 py-3 font-medium sm:py-2.5">Week</th>
-                <th className="px-3 py-3 font-medium sm:py-2.5">Dates</th>
-                <th className="min-w-[7.5rem] px-3 py-3 font-medium sm:py-2.5">Theme</th>
-                <th className="px-3 py-3 font-medium sm:py-2.5">Featured assets</th>
-              </tr>
-            </thead>
-            <tbody className="text-formula-frost/85">
-              {SUMMER_CAMP_2026_WEEKS.map(row => {
-                const anchor = THEME_ANCHOR[row.themeTitle]
-                const rowId = themeRowId(row.week)
-                return (
-                  <tr key={row.week} id={rowId} className="scroll-mt-20 border-b border-formula-frost/8 last:border-0">
-                    <td className="px-3 py-3.5 font-mono text-[11px] text-formula-paper sm:py-2.5">{row.week}</td>
-                    <td className="whitespace-nowrap px-3 py-3.5 text-[12px] sm:py-2.5 sm:text-[inherit]">{row.datesLabel}</td>
-                    <td className="px-3 py-3.5 sm:py-2.5">
-                      {anchor ? (
-                        <Link
-                          href={`#${anchor}`}
-                          className="group -mx-1 block rounded-md px-1 py-1.5 text-left no-underline transition-colors hover:bg-formula-frost/5 hover:text-formula-volt active:bg-formula-frost/10 sm:py-0.5"
-                        >
-                          <span className="font-medium text-formula-paper group-hover:underline">{row.themeTitle}</span>
-                          <span className="mt-0.5 block text-[12px] leading-snug text-formula-frost/70 group-hover:text-formula-frost/90">
-                            {row.themeTagline}
-                          </span>
-                        </Link>
-                      ) : (
-                        <>
-                          <span className="font-medium text-formula-paper">{row.themeTitle}</span>
-                          <span className="mt-0.5 block text-[12px] leading-snug text-formula-frost/70">{row.themeTagline}</span>
-                        </>
-                      )}
-                    </td>
-                    <td className="px-3 py-3.5 text-[12px] leading-snug sm:py-2.5 sm:text-[13px]">{row.primaryAssets}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <SummerCamp2026WeeksTable />
       </section>
 
       <section aria-labelledby="sc-assets-heading" className="scroll-mt-24 sm:scroll-mt-28">
