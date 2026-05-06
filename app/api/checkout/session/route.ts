@@ -388,27 +388,16 @@ export async function POST(req: Request) {
     console.error('[checkout/session]', e)
     if (e instanceof Stripe.errors.StripeAuthenticationError) {
       return NextResponse.json(
-        {
-          error:
-            'Stripe rejected the server API key (401). For checkout, set STRIPE_SECRET_KEY to your standard Secret key (sk_live_… or sk_test_…) from Stripe Dashboard → Developers → API keys - use Reveal secret key, not Publishable. If you intend to use a restricted key (rk_…), it must be valid, not revoked, and allowed to create Checkout Sessions; otherwise Stripe returns invalid key. Details: ' +
-            e.message,
-        },
+        { error: 'Payments are temporarily unavailable. Please try again later.' },
         { status: 503 }
       )
     }
     if (e instanceof Stripe.errors.StripeConnectionError) {
       return NextResponse.json(
-        {
-          error:
-            'Payment service could not be reached from the server (network). Wait a minute and try again. If this keeps happening, confirm STRIPE_SECRET_KEY is set on Vercel and the deployment can reach api.stripe.com (firewall / IPv6 issues).',
-        },
+        { error: 'Payment service could not be reached. Please try again in a moment.' },
         { status: 502 }
       )
     }
-    const stripeDetail = e instanceof Stripe.errors.StripeError ? e.message : null
-    return NextResponse.json(
-      { error: stripeDetail ?? 'Failed to create checkout session' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
   }
 }

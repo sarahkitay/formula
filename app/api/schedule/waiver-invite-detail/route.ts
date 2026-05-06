@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { listAgreementsForWaiverInvite } from '@/lib/rentals/field-rental-agreements-server'
 import { getWaiverInviteById } from '@/lib/rentals/waiver-invites-server'
 
@@ -8,6 +9,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 
 /** Admin calendar: roster invite snapshot + signed waivers linked to that invite. */
 export async function GET(req: Request) {
+  const gate = await requireStaffRoles(req, ['admin', 'staff'])
+  if (gate instanceof NextResponse) return gate
+
   const id = new URL(req.url).searchParams.get('id')?.trim() ?? ''
   if (!UUID.test(id)) {
     return NextResponse.json({ error: 'Invalid invite id' }, { status: 400 })

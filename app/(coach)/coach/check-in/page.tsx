@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { CoachGuardrailsStrip } from '@/components/coach/coach-guardrails'
 import { coachGuardrails, coachSessionsToday } from '@/lib/mock-data/coach-operating'
 import { cn } from '@/lib/utils'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 import type { Player } from '@/types'
 
 type Mark = 'present' | 'late' | 'absent'
@@ -21,7 +22,7 @@ export default function CoachCheckInPage() {
   const [roster, setRoster] = React.useState<Player[]>([])
   React.useEffect(() => {
     let cancelled = false
-    void fetch('/api/facility/players')
+    void staffApiFetch('/api/facility/players')
       .then(r => r.json() as Promise<{ players?: Player[] }>)
       .then(body => {
         if (!cancelled) setRoster(body.players ?? [])

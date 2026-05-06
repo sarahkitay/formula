@@ -5,7 +5,7 @@ import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
 export const metadata: Metadata = {
   title: 'Friday Night Friendlies',
   description:
-    'Coach-run pickup soccer for ages 6–13 at Formula Soccer Center. First night Friday May 8, 2026. $20 per player; pre-register or walk up. King of the Hill small-sided games.',
+    'Coach-run pickup soccer for ages 6–14 at Formula Soccer Center. First night Friday May 8, 2026. $20 per player; pre-register or walk up. King of the Hill small-sided games.',
 }
 
 export default function FridayNightFriendliesPage() {
@@ -13,7 +13,7 @@ export default function FridayNightFriendliesPage() {
     <MarketingInnerPage
       eyebrow="Events"
       title="Friday Night Friendlies"
-      intro="Coach-run pickup soccer for ages 6–13 - balanced teams, small-sided games, and Friday-night energy. First night Friday May 8, 2026. $20 per player; walk-ups welcome."
+      intro="Coach-run pickup soccer for ages 6–14 - balanced teams, small-sided games, and Friday-night energy. First night Friday May 8, 2026. $20 per player; walk-ups welcome."
       wide
     >
       <FridayNightFriendliesLanding />

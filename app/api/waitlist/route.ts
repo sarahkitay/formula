@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'Could not save request' }, { status: 502 })
     }
   } else {
-    console.info('[waitlist] capture (set WAITLIST_WEBHOOK_URL to persist)', payload)
+    console.info('[waitlist] capture (set WAITLIST_WEBHOOK_URL to persist); email not logged')
   }
 
   await sendAdminNotification({

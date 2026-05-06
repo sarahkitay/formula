@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
+import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { linkFieldRentalAgreementWaiverInvite } from '@/lib/rentals/field-rental-agreements-server'
 
 export const runtime = 'nodejs'
 
 /** Admin: set `field_rental_agreements.waiver_invite_id` so the waiver counts toward a roster link (or clear it). */
 export async function PATCH(req: Request) {
+  const gate = await requireStaffRoles(req, ['admin', 'staff'])
+  if (gate instanceof NextResponse) return gate
+
   let body: unknown
   try {
     body = await req.json()

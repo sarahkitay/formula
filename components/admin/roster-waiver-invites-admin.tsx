@@ -11,6 +11,7 @@ import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-date
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { FIELD_RENTAL_WAIVER_DRAG_MIME } from '@/lib/rentals/field-rental-waiver-labels'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 type Props = {
   invites: WaiverInviteWithProgress[]
@@ -114,7 +115,7 @@ function InviteDeleteButton({ invite }: { invite: WaiverInviteWithProgress }) {
     setBusy(true)
     setErr(null)
     try {
-      const res = await fetch(`/api/admin/waiver-invite/${encodeURIComponent(invite.id)}`, { method: 'DELETE' })
+      const res = await staffApiFetch(`/api/admin/waiver-invite/${encodeURIComponent(invite.id)}`, { method: 'DELETE' })
       const body = (await res.json()) as { error?: string }
       if (!res.ok) throw new Error(body.error ?? 'Delete failed')
       router.refresh()
@@ -213,7 +214,7 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
     }
     setSaving(true)
     try {
-      const res = await fetch('/api/admin/waiver-invite-snapshot', {
+      const res = await staffApiFetch('/api/admin/waiver-invite-snapshot', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -358,7 +359,7 @@ function InviteOrganizerEditor({ invite }: { invite: WaiverInviteWithProgress })
     setError(null)
     setSaving(true)
     try {
-      const res = await fetch('/api/admin/waiver-invite-organizer', {
+      const res = await staffApiFetch('/api/admin/waiver-invite-organizer', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -561,7 +562,7 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
       setDropError(null)
       setDropBusy(true)
       try {
-        const res = await fetch('/api/admin/field-rental-agreement-waiver-invite', {
+        const res = await staffApiFetch('/api/admin/field-rental-agreement-waiver-invite', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ agreementId, waiverInviteId: inviteId }),

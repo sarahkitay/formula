@@ -34,7 +34,7 @@ export const WHAT_WE_OFFER_NOW = [
   },
   {
     title: 'Friday Friendlies',
-    body: 'Coach-run pickup for ages 6–13. Pre-register online; walk-ups OK. Schedule and checkout on the event page.',
+    body: 'Coach-run pickup for ages 6–14. Pre-register online; walk-ups OK. Schedule and checkout on the event page.',
     href: MARKETING_HREF.fridayNightFriendlies,
   },
 ] as const

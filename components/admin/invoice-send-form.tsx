@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Mail, MessageSquare, Copy, Check, CreditCard, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 function normalizeSmsAddress(raw: string): string | null {
   const t = raw.trim()
@@ -82,7 +83,7 @@ export function InvoiceSendForm() {
     setLinkError(null)
     setLinkLoading(true)
     try {
-      const res = await fetch('/api/admin/invoice-checkout', {
+      const res = await staffApiFetch('/api/admin/invoice-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

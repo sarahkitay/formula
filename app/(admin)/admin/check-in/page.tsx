@@ -15,6 +15,7 @@ import { decrementSession } from '@/lib/booking-engine'
 import { Card } from '@/components/ui/card'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 export default function CheckInPage() {
   const [query, setQuery] = useState('')
@@ -27,7 +28,7 @@ export default function CheckInPage() {
   const loadRoster = useCallback(async () => {
     setRosterError(null)
     try {
-      const res = await fetch('/api/facility/players')
+      const res = await staffApiFetch('/api/facility/players')
       const body = (await res.json()) as { players?: Player[]; error?: string }
       if (!res.ok) throw new Error(body.error ?? 'Failed to load roster')
       setRosterPlayers(body.players ?? [])

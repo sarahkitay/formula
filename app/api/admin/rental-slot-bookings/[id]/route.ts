@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { getServiceSupabase } from '@/lib/supabase/service'
 import { encodeRentalWindow, formatMinutesAsUsTime, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
 
@@ -20,6 +21,9 @@ function sessionDateString(v: unknown): string {
  * Body: `{ "startMinute": number, "endMinute": number }` (facility wall clock, minutes from midnight).
  */
 export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  const gate = await requireStaffRoles(req, ['admin', 'staff'])
+  if (gate instanceof NextResponse) return gate
+
   const { id: rawId } = await ctx.params
   const id = rawId?.trim() ?? ''
   if (!UUID.test(id)) {
@@ -92,7 +96,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
       return NextResponse.json({ error: 'Unique slot conflict for this field/date/window.' }, { status: 409 })
     }
     console.error('[rental-slot-bookings PATCH]', upErr.message)
-    return NextResponse.json({ error: upErr.message }, { status: 500 })
+    return NextResponse.json({ error: 'Could not update booking' }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true, time_slot })

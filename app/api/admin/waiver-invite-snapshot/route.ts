@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
+import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { updateWaiverInviteSessionAndPayment } from '@/lib/rentals/waiver-invites-server'
 
 export const runtime = 'nodejs'
 
 /** Admin: amount paid + field rental session snapshot on `field_rental_waiver_invites`. */
 export async function PATCH(req: Request) {
+  const gate = await requireStaffRoles(req, ['admin', 'staff'])
+  if (gate instanceof NextResponse) return gate
+
   let body: unknown
   try {
     body = await req.json()

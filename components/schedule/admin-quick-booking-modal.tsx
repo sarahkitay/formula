@@ -13,6 +13,7 @@ import { DAY_LABELS } from '@/components/schedule/control-schedule-grid'
 import { clampDayMinutes, formatWallTimeForInput, parseWallTimeToMinutes } from '@/lib/schedule/wall-time'
 import { CAL_DISPLAY_END, CAL_DISPLAY_START } from '@/lib/schedule/calendar-day-layout'
 import { cn } from '@/lib/utils'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 const PROGRAM_KINDS = Object.keys(PROGRAM_UI) as ScheduleProgramKind[]
 
@@ -340,7 +341,7 @@ export function AdminQuickBookingModal({
             ? `Schedule · ${PROGRAM_UI[kind].key}`
             : 'Schedule clear'
 
-        const res = await fetch('/api/admin/schedule-ledger', {
+        const res = await staffApiFetch('/api/admin/schedule-ledger', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

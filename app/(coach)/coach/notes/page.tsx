@@ -15,6 +15,7 @@ import {
   insertCoachNote,
 } from '@/lib/coach/coach-notes-client'
 import type { CoachNoteRow } from '@/types/coach-note'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 function countByPlayer(rows: Pick<CoachNoteRow, 'player_id'>[]): Map<string, number> {
   const m = new Map<string, number>()
@@ -38,7 +39,7 @@ export default function CoachNotesPage() {
   useEffect(() => {
     let cancelled = false
     setRosterLoading(true)
-    void fetch('/api/facility/players')
+    void staffApiFetch('/api/facility/players')
       .then(r => r.json() as Promise<{ players?: Player[] }>)
       .then(body => {
         if (!cancelled) setRoster(body.players ?? [])

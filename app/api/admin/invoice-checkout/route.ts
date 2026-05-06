@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
 
 export const runtime = 'nodejs'
@@ -38,6 +39,9 @@ function trimMeta(s: string, max: number): string {
  * Admin: create a one-off Stripe Checkout URL for a custom invoice amount (server-validated; never trust client-only).
  */
 export async function POST(req: Request) {
+  const gate = await requireStaffRoles(req, ['admin', 'staff'])
+  if (gate instanceof NextResponse) return gate
+
   const keyCheck = checkStripeServerSecretKey()
   if (!keyCheck.ok) {
     return NextResponse.json({ error: keyCheck.message }, { status: 503 })

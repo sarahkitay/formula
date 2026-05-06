@@ -8,7 +8,7 @@ import { SITE } from '@/lib/site-config'
 const INSTAGRAM_HREF = 'https://www.instagram.com/formulasoccercenter/'
 
 const statTiles: { k: string; v: string; sub?: string }[] = [
-  { k: '6–13', v: 'Ages', sub: 'Grades 1–7' },
+  { k: '6–14', v: 'Ages', sub: 'Grades 1–8' },
   { k: '5:30', v: 'Arrival', sub: 'Check-in' },
   { k: '6:00–7:30', v: 'Games', sub: '90 minutes' },
   { k: `$${FRIDAY_NIGHT_FRIENDLIES_CHECKOUT.pricePerPlayerUsd}`, v: 'Per player', sub: 'Walk-ups OK' },
@@ -25,7 +25,7 @@ export function FridayNightFriendliesLanding() {
           Friday Night Friendlies
         </p>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-formula-frost/88">
-          Coach-run pickup soccer for ages 6–13. Starting <strong className="text-formula-paper">Friday, May 8, 2026</strong>.
+          Coach-run pickup soccer for ages 6–14. Starting <strong className="text-formula-paper">Friday, May 8, 2026</strong>.
         </p>
         <p className="mt-4 max-w-2xl text-center font-mono text-[11px] font-medium uppercase leading-relaxed tracking-[0.12em] text-formula-volt/95 sm:text-left">
           Be there for our very first Friday Night Friendlies.

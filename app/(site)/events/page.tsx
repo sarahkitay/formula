@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 const PATH_CARDS: { title: string; line: string; href: string }[] = [
   { title: 'Summer Camp 2026', line: 'Mon–Fri day camp · themed weeks · register online.', href: MARKETING_HREF.summerCamp2026 },
-  { title: 'Friday Friendlies', line: 'Pickup soccer ages 6–13 · pre-register $20.', href: MARKETING_HREF.fridayNightFriendlies },
+  { title: 'Friday Friendlies', line: 'Pickup soccer ages 6–14 · pre-register $20.', href: MARKETING_HREF.fridayNightFriendlies },
   { title: 'Birthday parties', line: 'Deposits, windows, policies.', href: MARKETING_HREF.parties },
   { title: 'Footbot', line: 'Structured reps + rentals context.', href: MARKETING_HREF.footbot },
   { title: 'Tournaments', line: 'Controlled weekends.', href: MARKETING_HREF.tournaments },

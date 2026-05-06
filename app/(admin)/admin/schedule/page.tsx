@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/button'
 import { FacilityWeekCalendar } from '@/components/schedule/facility-week-calendar'
 import { AdminCalendarFeedModal } from '@/components/schedule/admin-calendar-feed-modal'
 import { AdminQuickBookingModal, type AdminQuickBookDraft } from '@/components/schedule/admin-quick-booking-modal'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 export default function SchedulePage() {
   const facilityConfigRef = React.useRef<FacilitySchedulePublishedConfig | null>(null)
@@ -357,7 +358,7 @@ export default function SchedulePage() {
                   }}
                   onEmptySlotClick={openQuickBookFromCalendar}
                   onRentalBookingTimeCommit={async ({ bookingId, startMinute, endMinute }) => {
-                    const res = await fetch(`/api/admin/rental-slot-bookings/${encodeURIComponent(bookingId)}`, {
+                    const res = await staffApiFetch(`/api/admin/rental-slot-bookings/${encodeURIComponent(bookingId)}`, {
                       method: 'PATCH',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ startMinute, endMinute }),

@@ -15,6 +15,7 @@ import { searchPlayers } from '@/lib/mock-data/players'
 import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
 import { formatDate, getInitials, getAvatarColor, cn } from '@/lib/utils'
 import { Player, AgeGroup } from '@/types'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 const AGE_GROUPS: Array<AgeGroup | 'All'> = ['All', 'U6', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
 
@@ -31,7 +32,7 @@ export default function PlayersPage() {
   const loadRoster = useCallback(async () => {
     setRosterError(null)
     try {
-      const res = await fetch('/api/facility/players')
+      const res = await staffApiFetch('/api/facility/players')
       const body = (await res.json()) as {
         players?: Player[]
         configured?: boolean

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { DataTable, Column } from '@/components/ui/data-table'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import type { Payment } from '@/types'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 const METHOD_LABELS: Record<string, string> = {
   card: 'Card',
@@ -27,7 +28,7 @@ export default function PaymentsPage() {
   const load = useCallback(async () => {
     setLoadError(null)
     try {
-      const res = await fetch('/api/admin/stripe-purchases')
+      const res = await staffApiFetch('/api/admin/stripe-purchases')
       const body = (await res.json()) as { payments?: Payment[]; error?: string }
       if (!res.ok) throw new Error(body.error ?? 'Failed to load payments')
       setPayments(body.payments ?? [])
@@ -48,7 +49,7 @@ export default function PaymentsPage() {
     if (!ok) return
     setDeletingId(p.id)
     try {
-      const res = await fetch('/api/admin/stripe-purchases', {
+      const res = await staffApiFetch('/api/admin/stripe-purchases', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: p.id }),

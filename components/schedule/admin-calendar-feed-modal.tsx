@@ -12,6 +12,7 @@ import { DAY_LABELS } from '@/components/schedule/control-schedule-grid'
 import { humanRentalWindowSummary } from '@/lib/rentals/rental-time-window'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 import { cn } from '@/lib/utils'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 function formatHm(minute: number) {
   const h = Math.floor(minute / 60)
@@ -95,7 +96,7 @@ export function AdminCalendarFeedModal({
       const rawId = block.id.slice('rent-'.length)
       void (async () => {
         try {
-          const res = await fetch(`/api/schedule/rental-booking-detail?id=${encodeURIComponent(rawId)}`)
+          const res = await staffApiFetch(`/api/schedule/rental-booking-detail?id=${encodeURIComponent(rawId)}`)
           const body = (await res.json()) as {
             booking?: RentalBookingDetail
             agreements?: FieldRentalAgreementRow[]
@@ -123,7 +124,7 @@ export function AdminCalendarFeedModal({
       setRentalDetail(null)
       void (async () => {
         try {
-          const res = await fetch(`/api/schedule/waiver-invite-detail?id=${encodeURIComponent(inviteId)}`)
+          const res = await staffApiFetch(`/api/schedule/waiver-invite-detail?id=${encodeURIComponent(inviteId)}`)
           const body = (await res.json()) as {
             invite?: WaiverInviteRow
             agreements?: FieldRentalAgreementRow[]
@@ -163,7 +164,7 @@ export function AdminCalendarFeedModal({
       setCheckinBusyId(agreementId)
       setCheckinError(null)
       try {
-        const res = await fetch('/api/schedule/rental-booking-detail', {
+        const res = await staffApiFetch('/api/schedule/rental-booking-detail', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

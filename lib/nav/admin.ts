@@ -85,7 +85,7 @@ export const adminNav: NavItem[] = [
   label: 'Events',
   href: '/admin/events-layer',
   icon: 'Flame',
-  description: 'Camps · tournaments · parties · Footbot',
+  description: 'Camps · tournaments · Friday Friendlies sign-ups · parties',
   gridStatus: 'neutral',
   },
   {

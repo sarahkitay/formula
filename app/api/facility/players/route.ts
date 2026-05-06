@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { getServiceSupabase } from '@/lib/supabase/service'
 import { mapDbPlayerRowToPlayer } from '@/lib/facility/map-db-player'
 
@@ -7,7 +8,10 @@ export const runtime = 'nodejs'
 /**
  * Facility roster from `players` (service role). Used by admin check-in / players when Supabase is configured.
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const gate = await requireStaffRoles(req, ['admin', 'staff', 'coach'])
+  if (gate instanceof NextResponse) return gate
+
   const sb = getServiceSupabase()
   if (!sb) {
     return NextResponse.json({ players: [], configured: false })
@@ -21,7 +25,7 @@ export async function GET() {
 
   if (error) {
     console.warn('[facility/players]', error.message)
-    return NextResponse.json({ players: [], configured: true, error: error.message })
+    return NextResponse.json({ players: [], configured: true, error: 'Failed to load players' })
   }
 
   const players = (data ?? []).map(row =>

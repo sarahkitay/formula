@@ -11,6 +11,7 @@ import {
   formatFieldRentalWaiverSource,
 } from '@/lib/rentals/field-rental-agreement-admin-display'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 export type RosterInvitePickOption = {
   id: string
@@ -26,7 +27,7 @@ function clip(s: string | null, max: number) {
 }
 
 async function patchLink(agreementId: string, waiverInviteId: string | null): Promise<void> {
-  const res = await fetch('/api/admin/field-rental-agreement-waiver-invite', {
+  const res = await staffApiFetch('/api/admin/field-rental-agreement-waiver-invite', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ agreementId, waiverInviteId }),

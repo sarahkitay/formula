@@ -183,6 +183,8 @@ export const eventsLayerSummary = {
   footbot: { sundayStandalone: false, nextSlot: '-', mode: '-' },
 }
 
+export type EventsLayerSummary = typeof eventsLayerSummary
+
 export const fpiWorkflowQueue: { id: string; athlete: string; type: string; due: string; pillarGap: FpiPillar }[] = []
 
 export const scalabilityLayer = [

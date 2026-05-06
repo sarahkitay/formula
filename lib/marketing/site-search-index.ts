@@ -54,9 +54,9 @@ const EXTRA: SiteSearchItem[] = [
   {
     id: 'friday-night-friendlies',
     label: 'Friday Night Friendlies',
-    description: 'Coach-run pickup ages 6–13 · May 8, 2026 · $20 pre-register',
+    description: 'Coach-run pickup ages 6–14 · May 8, 2026 · $20 pre-register',
     href: MARKETING_HREF.fridayNightFriendlies,
-    keywords: ['friday', 'friendlies', 'pickup', 'kids', 'youth', 'night', 'king of the hill', '6-13', 'may 8'],
+    keywords: ['friday', 'friendlies', 'pickup', 'kids', 'youth', 'night', 'king of the hill', '6-14', 'may 8'],
   },
   {
     id: 'summer-camp-2026',

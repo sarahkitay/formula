@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { recordAdminScheduleLedgerPayment } from '@/lib/stripe/record-purchase'
 
 export const runtime = 'nodejs'
@@ -15,6 +16,9 @@ type Body = {
 
 /** Admin: record cash / in-person payment for schedule ops → `stripe_purchases` (`manual-invoice`). */
 export async function POST(req: Request) {
+  const gate = await requireStaffRoles(req, ['admin', 'staff'])
+  if (gate instanceof NextResponse) return gate
+
   let body: Body
   try {
     body = (await req.json()) as Body

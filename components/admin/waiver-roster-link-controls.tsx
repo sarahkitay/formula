@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 export type WaiverRosterInviteOption = {
   id: string
@@ -35,7 +36,7 @@ export function WaiverRosterLinkControls({
       setSaving(true)
       try {
         const waiverInviteId = next === '' ? null : next
-        const res = await fetch('/api/admin/field-rental-agreement-waiver-invite', {
+        const res = await staffApiFetch('/api/admin/field-rental-agreement-waiver-invite', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ agreementId, waiverInviteId }),

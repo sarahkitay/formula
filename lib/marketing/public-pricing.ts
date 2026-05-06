@@ -135,7 +135,7 @@ export const FRIDAY_NIGHT_FRIENDLIES_CHECKOUT = {
   maxPlayers: 8,
   productName: 'Friday Night Friendlies · player pre-registration',
   summary:
-    'Per player for Friday Night Friendlies (ages 6–13). Pre-register to save your spot; walk-ups still welcome at check-in. 5:30 arrival · games 6:00–7:30 PM · Formula Soccer Center. First night Friday May 8, 2026.',
+    'Per player for Friday Night Friendlies (ages 6–14). Pre-register to save your spot; walk-ups still welcome at check-in. 5:30 arrival · games 6:00–7:30 PM · Formula Soccer Center. First night Friday May 8, 2026.',
 } as const
 
 /** Summer Camp 2026 · Mon–Fri weekly day camp (ages 6–13, 9:00 AM–2:30 PM). */

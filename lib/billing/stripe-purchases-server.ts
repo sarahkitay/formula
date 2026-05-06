@@ -69,6 +69,11 @@ export function checkoutTypeDescription(type: string, metadata: Record<string, u
     }
     case 'manual-invoice':
       return metaString(m, 'invoice_payee') ? `Custom invoice · ${metaString(m, 'invoice_payee')}` : 'Custom invoice'
+    case 'friday-friendlies-player': {
+      const n = parseInt(metaString(m, 'fnf_player_count') ?? '1', 10)
+      const q = Number.isFinite(n) && n > 0 ? n : 1
+      return q === 1 ? 'Friday Night Friendlies · 1 player' : `Friday Night Friendlies · ${q} players`
+    }
     default:
       return type ? type.replace(/-/g, ' ') : 'Checkout'
   }
@@ -91,6 +96,10 @@ function customerDisplayName(row: StripePurchaseRow): string {
     const ref = metaString(m, 'rental_ref')
     if (email) return email
     if (ref) return `Booking ${ref.slice(0, 10)}…`
+  }
+  if (row.type === 'friday-friendlies-player') {
+    const g = metaString(m, 'fnf_guardian_name')
+    if (g) return g
   }
   if (email) return email
   return 'Customer'
@@ -360,6 +369,70 @@ export async function deleteStripePurchaseById(
 
 function isSameFacilityDay(iso: string, ref: Date): boolean {
   return formatYmdInTimeZone(iso, FACILITY_TIMEZONE) === formatYmdInTimeZone(ref, FACILITY_TIMEZONE)
+}
+
+/** One pre-paid Friday Night Friendlies checkout (from `stripe_purchases`). */
+export type FridayFriendliesSignupRow = {
+  id: string
+  createdAt: string
+  email: string | null
+  guardianName: string | null
+  playerNames: string | null
+  playerCount: number
+  amountUsd: number
+  paymentStatus: string | null
+  stripeSessionId: string
+}
+
+/** Paid (or completed) Friday Friendlies pre-registrations, newest first. */
+export async function listFridayFriendliesSignups(limit = 500): Promise<FridayFriendliesSignupRow[]> {
+  const sb = getServiceSupabase()
+  if (!sb) return []
+
+  const cap = Math.min(1000, Math.max(1, limit))
+  const { data, error } = await sb
+    .from('stripe_purchases')
+    .select('id, stripe_session_id, email, amount, payment_status, metadata, created_at')
+    .eq('type', 'friday-friendlies-player')
+    .order('created_at', { ascending: false })
+    .limit(cap)
+
+  if (error) {
+    console.warn('[stripe-purchases] friendlies list:', error.message)
+    return []
+  }
+
+  const rows = (data ?? []) as Array<{
+    id: string
+    stripe_session_id: string
+    email: string | null
+    amount: number
+    payment_status: string | null
+    metadata: Record<string, unknown> | null
+    created_at: string
+  }>
+
+  return rows
+    .filter(r => {
+      const ps = (r.payment_status ?? '').toLowerCase()
+      return ps === 'paid' || ps === 'complete' || ps === 'completed' || ps === 'no_payment_required'
+    })
+    .map(r => {
+      const m = r.metadata ?? {}
+      const countRaw = parseInt(metaString(m, 'fnf_player_count') ?? '1', 10)
+      const playerCount = Number.isFinite(countRaw) && countRaw > 0 ? countRaw : 1
+      return {
+        id: r.id,
+        createdAt: r.created_at,
+        email: r.email?.trim() || null,
+        guardianName: metaString(m, 'fnf_guardian_name') ?? null,
+        playerNames: metaString(m, 'fnf_player_names') ?? null,
+        playerCount,
+        amountUsd: r.amount / 100,
+        paymentStatus: r.payment_status,
+        stripeSessionId: r.stripe_session_id,
+      }
+    })
 }
 
 /** Completed Stripe Checkout rows (service role). Amounts are stored in cents. */

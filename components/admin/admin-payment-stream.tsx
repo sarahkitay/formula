@@ -8,9 +8,10 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { StatusPill } from '@/components/ui/badge'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import type { Payment } from '@/types'
+import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 
 async function requestDeleteStripePurchase(id: string): Promise<void> {
-  const res = await fetch('/api/admin/stripe-purchases', {
+  const res = await staffApiFetch('/api/admin/stripe-purchases', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id }),
