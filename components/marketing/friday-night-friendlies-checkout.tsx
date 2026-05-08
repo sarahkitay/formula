@@ -1,16 +1,29 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
-import { FRIDAY_NIGHT_FRIENDLIES_CHECKOUT } from '@/lib/marketing/public-pricing'
+import { FRIDAY_NIGHT_FRIENDLIES_AGE, FRIDAY_NIGHT_FRIENDLIES_CHECKOUT } from '@/lib/marketing/public-pricing'
 
 const { minPlayers, maxPlayers, pricePerPlayerUsd } = FRIDAY_NIGHT_FRIENDLIES_CHECKOUT
+const { min: AGE_MIN, max: AGE_MAX } = FRIDAY_NIGHT_FRIENDLIES_AGE
+
+const AGE_OPTIONS = Array.from({ length: AGE_MAX - AGE_MIN + 1 }, (_, i) => AGE_MIN + i)
 
 export function FridayNightFriendliesCheckout() {
   const [guardianName, setGuardianName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
   const [playerNames, setPlayerNames] = useState('')
   const [playerCount, setPlayerCount] = useState(1)
+  const [ageYoungest, setAgeYoungest] = useState(8)
+  const [ageOldest, setAgeOldest] = useState(8)
+
+  useEffect(() => {
+    if (playerCount === 1) {
+      setAgeOldest(ageYoungest)
+    } else if (ageOldest < ageYoungest) {
+      setAgeOldest(ageYoungest)
+    }
+  }, [playerCount, ageYoungest, ageOldest])
 
   const totalUsd = useMemo(() => playerCount * pricePerPlayerUsd, [playerCount])
 
@@ -20,15 +33,20 @@ export function FridayNightFriendliesCheckout() {
       fnf_contact_email: contactEmail.trim(),
       fnf_player_names: playerNames.trim(),
       fnf_player_count: String(playerCount),
+      fnf_age_youngest: String(ageYoungest),
+      fnf_age_oldest: String(playerCount === 1 ? ageYoungest : ageOldest),
     }),
-    [guardianName, contactEmail, playerNames, playerCount]
+    [guardianName, contactEmail, playerNames, playerCount, ageYoungest, ageOldest]
   )
+
+  const agesValid = playerCount === 1 ? true : ageOldest >= ageYoungest
 
   const canSubmit =
     guardianName.trim().length >= 2 &&
     playerNames.trim().length >= 3 &&
     playerCount >= minPlayers &&
-    playerCount <= maxPlayers
+    playerCount <= maxPlayers &&
+    agesValid
 
   return (
     <div
@@ -87,6 +105,56 @@ export function FridayNightFriendliesCheckout() {
             ))}
           </select>
         </label>
+
+        {playerCount === 1 ? (
+          <label className="flex flex-col gap-1.5">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-formula-frost/75">
+              Athlete age ({AGE_MIN}–{AGE_MAX})
+            </span>
+            <select
+              value={ageYoungest}
+              onChange={e => setAgeYoungest(parseInt(e.target.value, 10))}
+              className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper sm:min-h-11 sm:py-2 sm:text-[13px]"
+            >
+              {AGE_OPTIONS.map(a => (
+                <option key={a} value={a}>
+                  {a} years old
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-formula-frost/75">Youngest athlete age</span>
+              <select
+                value={ageYoungest}
+                onChange={e => setAgeYoungest(parseInt(e.target.value, 10))}
+                className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper sm:min-h-11 sm:py-2 sm:text-[13px]"
+              >
+                {AGE_OPTIONS.map(a => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-formula-frost/75">Oldest athlete age</span>
+              <select
+                value={ageOldest}
+                onChange={e => setAgeOldest(parseInt(e.target.value, 10))}
+                className="min-h-12 rounded-sm border border-formula-frost/20 bg-formula-paper/[0.06] px-3 py-2.5 font-sans text-base text-formula-paper sm:min-h-11 sm:py-2 sm:text-[13px]"
+              >
+                {AGE_OPTIONS.filter(a => a >= ageYoungest).map(a => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
       </div>
       <div className="mt-6">
         <CheckoutLaunchButton
@@ -98,7 +166,9 @@ export function FridayNightFriendliesCheckout() {
         />
       </div>
       {!canSubmit ? (
-        <p className="mt-3 font-mono text-[10px] text-formula-mist/90">Enter guardian name, athlete name(s), and choose how many players to enable checkout.</p>
+        <p className="mt-3 font-mono text-[10px] text-formula-mist/90">
+          Enter guardian name, athlete name(s), ages ({AGE_MIN}–{AGE_MAX}), and player count to enable checkout.
+        </p>
       ) : null}
     </div>
   )

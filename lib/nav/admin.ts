@@ -110,6 +110,13 @@ export const adminNav: NavItem[] = [
   gridStatus: 'neutral',
   },
   {
+  label: 'Clients',
+  href: '/admin/clients/profile',
+  icon: 'FileText',
+  description: 'Ledger history · analytics by receipt email',
+  gridStatus: 'neutral',
+  },
+  {
   label: 'Payments',
   href: '/admin/payments',
   icon: 'DollarSign',

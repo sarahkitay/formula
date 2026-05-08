@@ -6,8 +6,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, Search, X } from 'lucide-react'
 import { SiteSearchModal, SiteSearchOpenButton } from '@/components/marketing/site-search-modal'
+import { SiteHeaderBookMenu } from '@/components/marketing/site-header-book-menu'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
-import { getSiteHeaderPrimaryNav, MARKETING_HREF } from '@/lib/marketing/nav'
+import { getSiteHeaderPrimaryNav } from '@/lib/marketing/nav'
 import { FACILITY_APPLE_MAPS_URL, SITE } from '@/lib/site-config'
 
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
@@ -136,12 +137,7 @@ export function SiteHeader() {
               open={searchOpen}
               onOpen={() => setSearchOpen(true)}
             />
-            <Link
-              href={MARKETING_HREF.bookAssessmentPortal}
-              className="inline-flex h-9 items-center border border-formula-volt/55 bg-formula-volt/95 px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-base transition-[filter] hover:brightness-105 md:h-10 md:px-4 md:tracking-[0.14em]"
-            >
-              Book
-            </Link>
+            <SiteHeaderBookMenu />
             <Link
               href="/login?role=parent"
               className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt transition-opacity hover:opacity-90"

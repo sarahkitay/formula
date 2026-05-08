@@ -72,7 +72,15 @@ export function checkoutTypeDescription(type: string, metadata: Record<string, u
     case 'friday-friendlies-player': {
       const n = parseInt(metaString(m, 'fnf_player_count') ?? '1', 10)
       const q = Number.isFinite(n) && n > 0 ? n : 1
-      return q === 1 ? 'Friday Night Friendlies · 1 player' : `Friday Night Friendlies · ${q} players`
+      const y = parseInt(metaString(m, 'fnf_age_youngest') ?? '', 10)
+      const o = parseInt(metaString(m, 'fnf_age_oldest') ?? '', 10)
+      const agePart =
+        Number.isInteger(y) && y >= 6 && y <= 14 && Number.isInteger(o) && o >= 6 && o <= 14
+          ? y === o
+            ? ` · age ${y}`
+            : ` · ages ${y}–${o}`
+          : ''
+      return (q === 1 ? 'Friday Night Friendlies · 1 player' : `Friday Night Friendlies · ${q} players`) + agePart
     }
     default:
       return type ? type.replace(/-/g, ' ') : 'Checkout'
@@ -105,7 +113,7 @@ function customerDisplayName(row: StripePurchaseRow): string {
   return 'Customer'
 }
 
-function inferCheckoutTypeFromMetadata(rowType: string, meta: Record<string, unknown>): string {
+export function inferCheckoutTypeFromMetadata(rowType: string, meta: Record<string, unknown>): string {
   const t = rowType.trim()
   if (t && t !== 'unknown') return t
   if (metaString(meta, 'rental_ref') && (metaString(meta, 'rental_field') || metaString(meta, 'rental_window'))) {
@@ -292,6 +300,8 @@ function mapRowToPayment(row: StripePurchaseRow): Payment {
     id: row.id,
     playerId,
     playerName,
+    customerEmail: row.email?.trim() || null,
+    stripeSessionId: row.stripe_session_id,
     amount: dollars,
     currency: 'USD',
     description: checkoutTypeDescription(effectiveType, meta),
@@ -379,6 +389,9 @@ export type FridayFriendliesSignupRow = {
   guardianName: string | null
   playerNames: string | null
   playerCount: number
+  /** Athlete ages captured at checkout (6–14). */
+  ageYoungest: number | null
+  ageOldest: number | null
   amountUsd: number
   paymentStatus: string | null
   stripeSessionId: string
@@ -421,6 +434,10 @@ export async function listFridayFriendliesSignups(limit = 500): Promise<FridayFr
       const m = r.metadata ?? {}
       const countRaw = parseInt(metaString(m, 'fnf_player_count') ?? '1', 10)
       const playerCount = Number.isFinite(countRaw) && countRaw > 0 ? countRaw : 1
+      const y = parseInt(metaString(m, 'fnf_age_youngest') ?? '', 10)
+      const o = parseInt(metaString(m, 'fnf_age_oldest') ?? '', 10)
+      const ageYoungest = Number.isInteger(y) && y >= 6 && y <= 14 ? y : null
+      const ageOldest = Number.isInteger(o) && o >= 6 && o <= 14 ? o : null
       return {
         id: r.id,
         createdAt: r.created_at,
@@ -428,6 +445,8 @@ export async function listFridayFriendliesSignups(limit = 500): Promise<FridayFr
         guardianName: metaString(m, 'fnf_guardian_name') ?? null,
         playerNames: metaString(m, 'fnf_player_names') ?? null,
         playerCount,
+        ageYoungest,
+        ageOldest,
         amountUsd: r.amount / 100,
         paymentStatus: r.payment_status,
         stripeSessionId: r.stripe_session_id,

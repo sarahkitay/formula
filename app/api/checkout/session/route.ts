@@ -5,7 +5,7 @@ import { slotHasRoom } from '@/lib/assessment/slots-server'
 import { encodeRentalDatesCompact, resolveFieldRentalSessionDatesFromMetadata } from '@/lib/rentals/rental-weekly-dates'
 import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWeeklySlotsForDates } from '@/lib/rentals/rental-slots'
 import { isKnownRentalFieldId, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
-import { fieldRentalDepositUsd } from '@/lib/marketing/public-pricing'
+import { FORMULA_SUNDAY_CHILD_PROGRAM_10_WK, fieldRentalDepositUsd, FRIDAY_NIGHT_FRIENDLIES_AGE } from '@/lib/marketing/public-pricing'
 import { isValidFieldRentalWindow, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
 import {
   FORMULA_MINIS_PACK_SESSIONS,
@@ -16,7 +16,6 @@ import {
   isSundayChildProgramCheckoutTrackId,
   SUNDAY_CHILD_PROGRAM_PACK_SESSIONS,
 } from '@/lib/marketing/sunday-child-program-tracks'
-import { FORMULA_SUNDAY_CHILD_PROGRAM_10_WK } from '@/lib/marketing/public-pricing'
 import { isSummerCampMonthBundleId, isSummerCampWeekNumber } from '@/lib/marketing/summer-camp-2026-data'
 import { isCheckoutType } from '@/lib/stripe/checkout-types'
 import { lineItemsForCheckoutType } from '@/lib/stripe/line-items'
@@ -288,6 +287,24 @@ export async function POST(req: Request) {
     }
     if (!Number.isInteger(count) || count < 1 || count > 8) {
       return NextResponse.json({ error: 'fnf_player_count must be an integer from 1 to 8.' }, { status: 400 })
+    }
+    const ageY = parseInt(metadataExtra.fnf_age_youngest ?? '', 10)
+    const ageO = parseInt(metadataExtra.fnf_age_oldest ?? '', 10)
+    if (
+      !Number.isInteger(ageY) ||
+      ageY < FRIDAY_NIGHT_FRIENDLIES_AGE.min ||
+      ageY > FRIDAY_NIGHT_FRIENDLIES_AGE.max ||
+      !Number.isInteger(ageO) ||
+      ageO < FRIDAY_NIGHT_FRIENDLIES_AGE.min ||
+      ageO > FRIDAY_NIGHT_FRIENDLIES_AGE.max ||
+      ageO < ageY
+    ) {
+      return NextResponse.json(
+        {
+          error: `fnf_age_youngest and fnf_age_oldest are required integers (${FRIDAY_NIGHT_FRIENDLIES_AGE.min}–${FRIDAY_NIGHT_FRIENDLIES_AGE.max}), oldest ≥ youngest.`,
+        },
+        { status: 400 }
+      )
     }
     line_items = lineItemsForCheckoutType(type, { fridayFriendliesPlayerCount: count })
   }

@@ -124,10 +124,10 @@ export function MarketingHero() {
               style={readoutDelay(4)}
             >
               <Link
-                href={MARKETING_HREF.bookAssessmentPortal}
+                href={MARKETING_HREF.bookAssessmentDirectory}
                 className="inline-flex h-10 w-fit items-center border border-formula-volt/50 bg-formula-volt px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-base transition-[filter,transform] duration-300 hover:brightness-105 hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 sm:h-11 sm:px-6 sm:text-[11px] sm:tracking-[0.14em]"
               >
-                Book an Assessment
+                Book
               </Link>
               <Link
                 href={MARKETING_HREF.youthMembership}

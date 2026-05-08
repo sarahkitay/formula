@@ -128,6 +128,9 @@ export const PARTIES_PRICING_STATUS =
 
 export const GENERAL_EVENTS_PRICING_STATUS = 'Hosted event pricing TBA. See parties, Footbot, and tournaments for paths.' as const
 
+/** Age range for Friday Night Friendlies athlete checkout (years). */
+export const FRIDAY_NIGHT_FRIENDLIES_AGE = { min: 6, max: 14 } as const
+
 /** Friday Night Friendlies · public pre-registration ($20 per player per night). */
 export const FRIDAY_NIGHT_FRIENDLIES_CHECKOUT = {
   pricePerPlayerUsd: 20,

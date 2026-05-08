@@ -9,6 +9,7 @@ import { StatusPill } from '@/components/ui/badge'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import type { Payment } from '@/types'
 import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
+import { adminClientProfileHref } from '@/lib/admin/client-profile-href'
 
 async function requestDeleteStripePurchase(id: string): Promise<void> {
   const res = await staffApiFetch('/api/admin/stripe-purchases', {
@@ -75,7 +76,7 @@ export function AdminPaymentStream({ configured, initialPayments, maxRows = 10 }
             className="flex items-center gap-2 py-2.5 first:pt-0 last:pb-0 hover:bg-muted/50"
           >
             <Link
-              href="/admin/payments"
+              href={adminClientProfileHref(payment)}
               className="flex min-w-0 flex-1 items-center gap-4 text-inherit no-underline transition-colors duration-150 focus-visible:bg-muted/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005700]"
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-border bg-muted text-text-muted">
@@ -100,6 +101,7 @@ export function AdminPaymentStream({ configured, initialPayments, maxRows = 10 }
               disabled={deletingId === payment.id}
               onClick={e => {
                 e.preventDefault()
+                e.stopPropagation()
                 void remove(payment)
               }}
             >

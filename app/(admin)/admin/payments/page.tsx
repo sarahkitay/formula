@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { DollarSign, Download, Trash2 } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
@@ -12,6 +13,7 @@ import { DataTable, Column } from '@/components/ui/data-table'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import type { Payment } from '@/types'
 import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
+import { adminClientProfileHref } from '@/lib/admin/client-profile-href'
 
 const METHOD_LABELS: Record<string, string> = {
   card: 'Card',
@@ -21,6 +23,7 @@ const METHOD_LABELS: Record<string, string> = {
 }
 
 export default function PaymentsPage() {
+  const router = useRouter()
   const [payments, setPayments] = useState<Payment[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -130,7 +133,10 @@ export default function PaymentsPage() {
           title="Remove from ledger (no Stripe refund)"
           aria-label="Remove from ledger"
           disabled={deletingId === p.id}
-          onClick={() => void removePayment(p)}
+          onClick={e => {
+            e.stopPropagation()
+            void removePayment(p)
+          }}
           className={cn(
             'inline-flex h-8 w-8 items-center justify-center rounded-control text-text-muted transition-colors hover:bg-muted hover:text-destructive disabled:opacity-40'
           )}
@@ -194,6 +200,9 @@ export default function PaymentsPage() {
           columns={columns}
           data={sorted}
           keyField="id"
+          onRowClick={p => {
+            router.push(adminClientProfileHref(p))
+          }}
           emptyTitle="No Stripe purchases yet"
           emptyDescription="When guests complete a paid checkout, entries appear here. If you expect to see data already, try refreshing or contact support."
           emptyIcon={<DollarSign />}

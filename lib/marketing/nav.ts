@@ -1,5 +1,7 @@
 /** Public marketing site navigation - URLs are stable for SEO and deep links. */
 
+import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
+
 /** Element `id` on the booking hub + hash for deep links (`/book-assessment#…`). */
 export const BOOKING_HUB_DIRECTORY_ID = 'booking-hub-directory' as const
 
@@ -37,6 +39,61 @@ export const MARKETING_HREF = {
 } as const
 
 export type MarketingHref = (typeof MARKETING_HREF)[keyof typeof MARKETING_HREF]
+
+/** Header “Book” mega-menu: landing + how the flow runs (slot → waiver/RSVP → pay). */
+export type HeaderBookMenuItem = {
+  id: string
+  label: string
+  href: string
+  steps: string
+}
+
+export function getHeaderBookMenu(): HeaderBookMenuItem[] {
+  return [
+    {
+      id: 'assessment',
+      label: 'Skills check / assessment',
+      href: BOOKING_HUB_PUBLIC.skillsCheck,
+      steps:
+        'Choose a published date and time, add guardian + athlete details, sign acknowledgements in the checkout flow if prompted, then pay to confirm your spot.',
+    },
+    {
+      id: 'field-rental',
+      label: 'Field rental',
+      href: MARKETING_HREF.rentals,
+      steps:
+        'Pick your package and field window, complete the rental agreement (or RSVP if your group already has a waiver on file), then pay the deposit at checkout.',
+    },
+    {
+      id: 'events',
+      label: 'Event booking',
+      href: MARKETING_HREF.events,
+      steps:
+        'Open the event you want, follow that page’s register path (RSVP or waiver if the event requires it), then finish payment when checkout is offered.',
+    },
+    {
+      id: 'parties',
+      label: 'Birthday parties',
+      href: MARKETING_HREF.parties,
+      steps:
+        'Read policies on the parties page, then use the booking hub party deposit when you’re ready: choose window details, sign or confirm waivers as asked, pay the deposit last.',
+    },
+    {
+      id: 'age-slots',
+      label: 'Age group slots',
+      href: BOOKING_HUB_PUBLIC.youthBlocks,
+      steps:
+        'Preview published youth blocks, pick the week and slot that fits your age group, sign any required holds or waivers, then pay if that path opens checkout.',
+    },
+    {
+      id: 'packages',
+      label: 'Package purchasing',
+      href: `${MARKETING_HREF.youthMembership}#programs-catalog`,
+      steps:
+        'Choose a session package or add-on from programs & pricing, walk through acknowledgements, then pay at the end of checkout.',
+    },
+  ]
+}
 
 /** Header: primary row - deep pages with highest intent. */
 export const HEADER_MAIN: { label: string; href: string }[] = [
