@@ -1,8 +1,9 @@
 import React from 'react'
+import Link from 'next/link'
 import { PageContainer } from '@/components/layout/app-shell'
 import { ModuleBlock } from '@/components/dashboard/module-block'
 import { AdminExecutiveOverviewSection } from '@/components/admin/admin-executive-overview-section'
-import { adminDashboardModuleOrder } from '@/lib/nav/admin'
+import { adminDashboardPinnedTiles, adminModuleDestinations } from '@/lib/nav/admin'
 import { facilityAssets, computeRevenueThresholds, revenueByCategory } from '@/lib/mock-data/admin-operating-system'
 import { getTodaysSessions } from '@/lib/mock-data/sessions'
 import { getTodaysCheckIns } from '@/lib/mock-data/checkins'
@@ -81,12 +82,29 @@ export default async function AdminDashboardPage() {
   const youthShareRow = stripeCategoryRows.find(r => r.category.startsWith('Youth'))
   const youthShareLabel = youthShareRow != null ? `${Math.round(youthShareRow.pct)}%` : '-'
 
-  const navTiles = adminDashboardModuleOrder
+  const navTiles = adminDashboardPinnedTiles
 
   const modules = navTiles.map((item, i) => {
     const id = String(i + 1).padStart(3, '0')
     const title = BLOCK_TITLE[item.label] ?? item.label
     const summary = item.description ?? ''
+
+    if (item.href === '/admin/modules') {
+      return (
+        <ModuleBlock
+          key={item.href}
+          id={id}
+          title="Modules directory"
+          summary={summary}
+          href={item.href}
+          dataPoints={[
+            { label: 'Areas', value: String(adminModuleDestinations.length) },
+            { label: 'Access', value: 'Search + hub' },
+            { label: 'Depth', value: 'Full OS' },
+          ]}
+        />
+      )
+    }
 
     if (item.href === '/admin/finance') {
       const breached = computeRevenueThresholds(stripeCategoryRows).filter(t => t.breached).length
@@ -294,6 +312,13 @@ export default async function AdminDashboardPage() {
     <PageContainer>
       <AdminExecutiveOverviewSection />
       <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-formula-mist">Modules</h2>
+      <p className="mb-4 max-w-2xl text-[12px] leading-relaxed text-formula-mist">
+        Four shortcuts here. Memberships, events, rentals, mail, performance, and settings live in{' '}
+        <Link href="/admin/modules" className="text-formula-volt underline-offset-2 hover:underline">
+          Modules
+        </Link>{' '}
+        or the header search.
+      </p>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">{modules}</div>
 
       <div className="mt-12 border border-formula-frost/14 bg-formula-paper/[0.04] p-8 font-mono shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">

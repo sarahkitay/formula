@@ -32,6 +32,10 @@ export interface AppShellProps {
   facilityAddressLine?: string
   /** Link target for the address row (e.g. Apple Maps). */
   facilityAddressHref?: string
+  /** Primary nav: `scroll` = single row + horizontal scroll (dense portals). */
+  navOverflow?: 'wrap' | 'scroll'
+  /** Admin: `select` replaces tab strip with one section dropdown. */
+  primaryNavPresentation?: 'tabs' | 'select'
 }
 
 export function AppShell({
@@ -50,6 +54,8 @@ export function AppShell({
   mainTop,
   facilityAddressLine,
   facilityAddressHref,
+  navOverflow = 'wrap',
+  primaryNavPresentation = 'tabs',
 }: AppShellProps) {
   const technicalNav = navItems.map(item => ({ label: item.label, href: item.href }))
   const isDarkOs = surface === 'admin-os' || surface === 'coach-os' || surface === 'parent-os'
@@ -66,6 +72,8 @@ export function AppShell({
     >
       <TechnicalHeader
         navItems={technicalNav}
+        navOverflow={navOverflow}
+        primaryNavPresentation={primaryNavPresentation}
         homeHref={dashboardHref}
         logoHref={logoHref}
         operatorLine={operatorLine}

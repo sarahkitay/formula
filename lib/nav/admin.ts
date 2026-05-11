@@ -1,6 +1,6 @@
 import type { NavItem } from '@/lib/nav/types'
 
-/** Program + facility modules (top nav uses a single “Modules” link to `/admin/modules`). */
+/** Program + facility modules (top nav: “Modules” → `/admin/modules`). */
 export const adminModuleDestinations: NavItem[] = [
   {
     label: 'Memberships',
@@ -100,36 +100,40 @@ const financeNav: NavItem = {
   gridStatus: 'warning',
 }
 
+const modulesHubNavItem: NavItem = {
+  label: 'Modules',
+  href: '/admin/modules',
+  icon: 'LayoutGrid',
+  description: 'Memberships · programming · rentals · mail · settings',
+  gridStatus: 'neutral',
+}
+
+const dashboardNav: NavItem = {
+  label: 'Dashboard',
+  href: '/admin/dashboard',
+  icon: 'LayoutDashboard',
+  description: 'Executive snapshot + module grid',
+  gridStatus: 'neutral',
+}
+
 /**
- * Formula Admin OS — short primary nav. Deep modules live under `/admin/modules`
- * and remain searchable via {@link getAdminPortalSearchLinks}.
+ * Formula Admin OS — short primary header nav only.
+ * Other destinations: `/admin/modules`, header search, and pinned dashboard tiles.
  */
 export const adminNav: NavItem[] = [
-  {
-    label: 'Dashboard',
-    href: '/admin/dashboard',
-    icon: 'LayoutDashboard',
-    description: 'Executive snapshot + module grid',
-    gridStatus: 'neutral',
-  },
+  dashboardNav,
   scheduleNav,
   checkInNav,
   financeNav,
-  {
-    label: 'Modules',
-    href: '/admin/modules',
-    icon: 'LayoutGrid',
-    description: 'Memberships · programming · rentals · mail · settings',
-    gridStatus: 'neutral',
-  },
+  modulesHubNavItem,
 ]
 
-/** Dashboard “Modules” grid order (excludes Dashboard route). */
-export const adminDashboardModuleOrder: NavItem[] = [
+/** Dashboard home grid: four entry points (everything else via Modules + search). */
+export const adminDashboardPinnedTiles: NavItem[] = [
   scheduleNav,
   checkInNav,
   financeNav,
-  ...adminModuleDestinations,
+  modulesHubNavItem,
 ]
 
 export type AdminPortalSearchLink = { label: string; href: string }

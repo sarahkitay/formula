@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { FormulaLogoMarkLink } from '@/components/shared/formula-logo-mark'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 export interface TechnicalNavItem {
@@ -35,6 +35,10 @@ export interface TechnicalHeaderProps {
   addressLine?: string
   /** When set with `addressLine`, the row becomes a link (e.g. Apple Maps). */
   addressHref?: string
+  /** `scroll` keeps one horizontal row (overflow scroll); `wrap` allows wrapping. */
+  navOverflow?: 'wrap' | 'scroll'
+  /** `select` = one compact dropdown (admin); `tabs` = link row (default). */
+  primaryNavPresentation?: 'tabs' | 'select'
 }
 
 function pathWithoutHash(href: string): string {
@@ -48,6 +52,23 @@ function navItemActive(pathname: string | null, href: string, homeHref: string):
   const home = pathWithoutHash(homeHref)
   if (base === home) return pathname === home
   return pathname === base || pathname.startsWith(`${base}/`)
+}
+
+/** Longest-prefix match among primary nav hrefs (for select value). */
+function primaryNavHrefForPath(pathname: string | null, items: TechnicalNavItem[], homeHref: string): string {
+  if (!pathname) return homeHref
+  let bestHref = ''
+  let bestLen = -1
+  for (const item of items) {
+    const base = pathWithoutHash(item.href)
+    if (pathname === base || pathname.startsWith(`${base}/`)) {
+      if (base.length > bestLen) {
+        bestLen = base.length
+        bestHref = item.href
+      }
+    }
+  }
+  return bestHref
 }
 
 export function TechnicalHeader({
@@ -65,11 +86,19 @@ export function TechnicalHeader({
   endSessionVariant = 'login-link',
   addressLine,
   addressHref,
+  navOverflow = 'wrap',
+  primaryNavPresentation = 'tabs',
 }: TechnicalHeaderProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const logoHref = logoHrefProp ?? homeHref
   const dark = variant === 'dark'
   const showIdentity = Boolean(identityName?.trim() || identityEmail?.trim())
+  const matchedPrimaryHref = primaryNavHrefForPath(pathname, navItems, homeHref)
+  const onDeepAdminPage =
+    primaryNavPresentation === 'select' &&
+    Boolean(pathname?.startsWith('/admin/')) &&
+    matchedPrimaryHref === ''
 
   return (
     <header
@@ -169,32 +198,85 @@ export function TechnicalHeader({
 
         <nav
           className={cn(
-            '-mx-6 flex flex-wrap gap-0 overflow-x-auto border-t px-6',
+            '-mx-6 flex gap-0 border-t px-6',
+            primaryNavPresentation === 'select'
+              ? 'flex-col items-stretch gap-2 py-3 sm:flex-row sm:items-center sm:gap-4 sm:py-2.5'
+              : navOverflow === 'scroll'
+                ? 'flex-nowrap overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+                : 'flex-wrap overflow-x-auto',
             dark ? 'border-formula-frost/10' : 'border-black'
           )}
         >
-          {navItems.map(item => {
-            const active = navItemActive(pathname, item.href, homeHref)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'border-r px-4 py-2.5 text-[11px] font-bold uppercase tracking-tight transition-colors last:border-r-0',
-                  dark ? 'border-formula-frost/10' : 'border-black/5',
-                  active
-                    ? dark
-                      ? 'bg-formula-deep/90 text-formula-paper shadow-[inset_0_-1px_0_0_rgb(220_255_0_/_0.2)]'
-                      : 'bg-[#005700] text-white'
-                    : dark
-                      ? 'text-formula-mist hover:bg-formula-paper/[0.06] hover:text-formula-paper'
-                      : 'text-[#1a1a1a] hover:bg-black hover:text-white'
-                )}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
+          {primaryNavPresentation === 'select' ? (
+            <>
+              <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                <label
+                  htmlFor="portal-primary-nav"
+                  className={cn(
+                    'shrink-0 font-mono text-[10px] font-bold uppercase tracking-[0.18em]',
+                    dark ? 'text-formula-mist' : 'text-zinc-500'
+                  )}
+                >
+                  Section
+                </label>
+                <select
+                  id="portal-primary-nav"
+                  className={cn(
+                    'min-h-10 w-full min-w-0 max-w-xl rounded border px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-tight sm:max-w-md',
+                    dark
+                      ? 'border-formula-frost/22 bg-formula-base/55 text-formula-paper focus:border-formula-volt/45 focus:outline-none'
+                      : 'border-black/15 bg-white text-[#1a1a1a] focus:border-[#005700]/50 focus:outline-none'
+                  )}
+                  aria-label="Jump to admin section"
+                  value={matchedPrimaryHref || '/admin/modules'}
+                  onChange={e => {
+                    const next = e.target.value
+                    if (next) router.push(next)
+                  }}
+                >
+                  {navItems.map(item => (
+                    <option key={item.href} value={item.href}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {onDeepAdminPage ? (
+                <p
+                  className={cn(
+                    'max-w-xl font-mono text-[10px] leading-snug sm:ml-auto sm:max-w-xs sm:text-right',
+                    dark ? 'text-formula-mist' : 'text-zinc-500'
+                  )}
+                >
+                  This screen is not a top-level tab — use header search or Modules for the full directory.
+                </p>
+              ) : null}
+            </>
+          ) : (
+            navItems.map(item => {
+              const active = navItemActive(pathname, item.href, homeHref)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'border-r py-2.5 text-[11px] font-bold uppercase tracking-tight transition-colors last:border-r-0',
+                    navOverflow === 'scroll' ? 'shrink-0 whitespace-nowrap px-3 sm:px-3.5' : 'px-4',
+                    dark ? 'border-formula-frost/10' : 'border-black/5',
+                    active
+                      ? dark
+                        ? 'bg-formula-deep/90 text-formula-paper shadow-[inset_0_-1px_0_0_rgb(220_255_0_/_0.2)]'
+                        : 'bg-[#005700] text-white'
+                      : dark
+                        ? 'text-formula-mist hover:bg-formula-paper/[0.06] hover:text-formula-paper'
+                        : 'text-[#1a1a1a] hover:bg-black hover:text-white'
+                  )}
+                >
+                  {item.label}
+                </Link>
+              )
+            })
+          )}
         </nav>
         {addressLine?.trim() ? (
           <div
