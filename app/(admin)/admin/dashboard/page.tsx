@@ -2,7 +2,7 @@ import React from 'react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { ModuleBlock } from '@/components/dashboard/module-block'
 import { AdminExecutiveOverviewSection } from '@/components/admin/admin-executive-overview-section'
-import { adminNav } from '@/lib/nav/admin'
+import { adminDashboardModuleOrder } from '@/lib/nav/admin'
 import { facilityAssets, computeRevenueThresholds, revenueByCategory } from '@/lib/mock-data/admin-operating-system'
 import { getTodaysSessions } from '@/lib/mock-data/sessions'
 import { getTodaysCheckIns } from '@/lib/mock-data/checkins'
@@ -81,7 +81,7 @@ export default async function AdminDashboardPage() {
   const youthShareRow = stripeCategoryRows.find(r => r.category.startsWith('Youth'))
   const youthShareLabel = youthShareRow != null ? `${Math.round(youthShareRow.pct)}%` : '-'
 
-  const navTiles = adminNav.filter(item => item.href !== '/admin/dashboard')
+  const navTiles = adminDashboardModuleOrder
 
   const modules = navTiles.map((item, i) => {
     const id = String(i + 1).padStart(3, '0')

@@ -208,7 +208,12 @@ export function LoginPageClient() {
             'radial-gradient(ellipse 85% 75% at 50% 42%, rgb(36 54 51 / 0.08) 0%, rgb(26 29 28 / 0.42) 55%, rgb(26 29 28 / 0.72) 100%)',
         }}
       >
-        <div className="pointer-events-auto w-full max-w-md space-y-8">
+        <div
+          className={cn(
+            'pointer-events-auto w-full space-y-8',
+            portal === 'staff' ? 'max-w-xl' : 'max-w-md'
+          )}
+        >
           <div className="space-y-4 text-center">
             <h1 className="m-0 flex justify-center">
               <FormulaLogoMarkLink
@@ -223,7 +228,33 @@ export function LoginPageClient() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-formula-frost/12 bg-formula-deep/45 p-8 shadow-[0_24px_64px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-10">
+          <div
+            className={cn(
+              portal === 'staff' &&
+                'flex flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-5'
+            )}
+          >
+            {portal === 'staff' ? (
+              <div className="flex shrink-0 items-start sm:items-center sm:justify-end sm:pt-10 sm:pr-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPortal('parent')
+                    setFormError(null)
+                  }}
+                  className="text-left font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
+                >
+                  ← Parent portal
+                </button>
+              </div>
+            ) : null}
+
+            <div
+              className={cn(
+                'rounded-xl border border-formula-frost/12 bg-formula-deep/45 p-8 shadow-[0_24px_64px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-10',
+                portal === 'staff' && 'min-w-0 flex-1'
+              )}
+            >
             {portal === 'organizer' ? (
               <>
                 <h2 className="text-xl font-semibold text-formula-paper">Renter / organizer</h2>
@@ -269,7 +300,19 @@ export function LoginPageClient() {
               </>
             ) : (
               <>
-                <h2 className="text-xl font-semibold text-formula-paper">Staff sign-in</h2>
+                <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+                  <h2 className="text-xl font-semibold text-formula-paper">Staff sign-in</h2>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPortal('organizer')
+                      setFormError(null)
+                    }}
+                    className="shrink-0 text-right font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100 sm:pt-0.5"
+                  >
+                    Renter / organizer portal →
+                  </button>
+                </div>
                 <div className="mt-5 space-y-1.5">
                   <p className="text-[11px] font-medium uppercase tracking-wider text-formula-mist">
                     Who is signing in (must match your profile role - we route coaches to Coach OS and admins to Admin OS)
@@ -294,20 +337,6 @@ export function LoginPageClient() {
                     )}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setPortal('parent')}
-                  className="mt-4 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
-                >
-                  ← Parent portal
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPortal('organizer')}
-                  className="mt-2 block w-full text-left font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
-                >
-                  Renter / organizer portal →
-                </button>
               </>
             )}
 
@@ -372,6 +401,7 @@ export function LoginPageClient() {
                 Reset it
               </Link>
             </p>
+            </div>
           </div>
 
           <p className="text-center text-sm text-formula-mist">

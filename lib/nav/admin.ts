@@ -1,40 +1,7 @@
 import type { NavItem } from '@/lib/nav/types'
 
-/**
- * Formula Admin OS — consolidated top nav (Finance groups revenue + payments + FPI).
- * Ops map and player/client registries surface inside Schedule and Check-In pages.
- */
-export const adminNav: NavItem[] = [
-  {
-    label: 'Dashboard',
-    href: '/admin/dashboard',
-    icon: 'LayoutDashboard',
-    description: 'Executive snapshot + module grid',
-    gridStatus: 'neutral',
-  },
-  {
-    label: 'Schedule',
-    href: '/admin/schedule',
-    icon: 'Calendar',
-    description: 'Calendar · grid · publish · ops map below',
-    gridStatus: 'active',
-  },
-  {
-    label: 'Check-In',
-    href: '/admin/check-in',
-    icon: 'UserCheck',
-    badge: 'LIVE',
-    badgeVariant: 'accent',
-    description: 'Attendance · roster + clients',
-    gridStatus: 'active',
-  },
-  {
-    label: 'Finance',
-    href: '/admin/finance',
-    icon: 'BarChart2',
-    description: 'Revenue · payments ledger · FPI',
-    gridStatus: 'warning',
-  },
+/** Program + facility modules (top nav uses a single “Modules” link to `/admin/modules`). */
+export const adminModuleDestinations: NavItem[] = [
   {
     label: 'Memberships',
     href: '/admin/memberships',
@@ -106,3 +73,72 @@ export const adminNav: NavItem[] = [
     gridStatus: 'neutral',
   },
 ]
+
+const scheduleNav: NavItem = {
+  label: 'Schedule',
+  href: '/admin/schedule',
+  icon: 'Calendar',
+  description: 'Calendar · grid · publish · ops map below',
+  gridStatus: 'active',
+}
+
+const checkInNav: NavItem = {
+  label: 'Check-In',
+  href: '/admin/check-in',
+  icon: 'UserCheck',
+  badge: 'LIVE',
+  badgeVariant: 'accent',
+  description: 'Attendance · roster + clients',
+  gridStatus: 'active',
+}
+
+const financeNav: NavItem = {
+  label: 'Finance',
+  href: '/admin/finance',
+  icon: 'BarChart2',
+  description: 'Revenue · payments ledger · FPI',
+  gridStatus: 'warning',
+}
+
+/**
+ * Formula Admin OS — short primary nav. Deep modules live under `/admin/modules`
+ * and remain searchable via {@link getAdminPortalSearchLinks}.
+ */
+export const adminNav: NavItem[] = [
+  {
+    label: 'Dashboard',
+    href: '/admin/dashboard',
+    icon: 'LayoutDashboard',
+    description: 'Executive snapshot + module grid',
+    gridStatus: 'neutral',
+  },
+  scheduleNav,
+  checkInNav,
+  financeNav,
+  {
+    label: 'Modules',
+    href: '/admin/modules',
+    icon: 'LayoutGrid',
+    description: 'Memberships · programming · rentals · mail · settings',
+    gridStatus: 'neutral',
+  },
+]
+
+/** Dashboard “Modules” grid order (excludes Dashboard route). */
+export const adminDashboardModuleOrder: NavItem[] = [
+  scheduleNav,
+  checkInNav,
+  financeNav,
+  ...adminModuleDestinations,
+]
+
+export type AdminPortalSearchLink = { label: string; href: string }
+
+/** All admin destinations for portal search (deduped by href). */
+export function getAdminPortalSearchLinks(): AdminPortalSearchLink[] {
+  const byHref = new Map<string, AdminPortalSearchLink>()
+  for (const item of [...adminNav, ...adminModuleDestinations]) {
+    byHref.set(item.href, { label: item.label, href: item.href })
+  }
+  return [...byHref.values()]
+}
