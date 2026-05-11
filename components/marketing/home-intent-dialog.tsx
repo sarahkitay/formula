@@ -158,13 +158,13 @@ export function HomeIntentDialog() {
                 Field rental booking
                 <span className={secondaryHintClass}>Reserve field time, packages, and deposit checkout.</span>
               </button>
-              <button type="button" className={primaryChoiceClass} onClick={dismiss}>
-                Just exploring
-                <span className={secondaryHintClass}>Close this window and scroll the site.</span>
-              </button>
               <button type="button" className={primaryChoiceClass} onClick={() => setStep(2)}>
                 Programs, passes, and parties
                 <span className={secondaryHintClass}>Friendlies, Minis, day pass, packages, events, parties, assessment, portal, memberships.</span>
+              </button>
+              <button type="button" className={primaryChoiceClass} onClick={dismiss}>
+                Just exploring
+                <span className={secondaryHintClass}>Close this window and scroll the site.</span>
               </button>
             </div>
           </>

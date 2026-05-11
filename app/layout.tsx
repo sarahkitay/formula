@@ -38,10 +38,6 @@ export const metadata: Metadata = {
   creator: SITE.facilityName,
   publisher: SITE.facilityName,
   formatDetection: { telephone: false, email: false, address: false },
-  icons: {
-    icon: [{ url: '/formula-logo.png', type: 'image/png' }],
-    apple: '/formula-logo.png',
-  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

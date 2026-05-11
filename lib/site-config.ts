@@ -57,6 +57,8 @@ export const SITE = {
   /** Public line for marketing (homepage header). `tel:` uses E.164 in `publicPhoneTel`. */
   publicPhoneDisplay: '+1 (747) 688-9668',
   publicPhoneTel: '+17476889668',
+  /** Public inbox for marketing header and general inquiries. */
+  publicContactEmail: 'info@formulasoccer.com',
   /** Street line for headers (booking hub, parent portal). */
   facilityAddressLine: '15001 Calvert Street, Los Angeles, CA 91411',
   /** Short rule for booking UI + waivers (turf footwear). */
