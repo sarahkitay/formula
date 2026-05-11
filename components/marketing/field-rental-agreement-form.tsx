@@ -216,7 +216,7 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
           <summary className={accordionSummaryClass}>Guardian, emergency contact & organization</summary>
           <div className="grid gap-4 border-t border-formula-frost/10 px-5 py-5 md:gap-5 md:px-6">
             <label className="flex flex-col gap-2 md:col-span-2">
-              <span className={labelClass}>Emergency contact — name & phone *</span>
+              <span className={labelClass}>Emergency contact: name & phone *</span>
               <textarea
                 name="emergencyContact"
                 required

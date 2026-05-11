@@ -1,0 +1,50 @@
+# Formula Soccer Center
+
+> Structured youth soccer training, assessments (FPI), field rentals, and events at 15001 Calvert Street, Van Nuys, CA 91411. Public site is the source of truth for program framing and booking entry points.
+
+## Canonical site
+
+Set `NEXT_PUBLIC_SITE_URL` to the production origin in deployment. Sitemap: `/sitemap.xml`. Robots: `/robots.txt`.
+
+## Primary URLs (marketing)
+
+- / Home
+- /what-is-formula Positioning and what Formula offers
+- /youth-membership Memberships, programs catalog, Formula Minis (ages 2-5)
+- /fpi The Formula / FPI (six pillars, assessment framing)
+- /assessment What we measure (assessment overview)
+- /book-assessment Booking hub directory (guardian contact, skills check, youth blocks, day pass, field rental deposit, party deposit, waiver)
+- /book-assessment/skills-check Skills Check / June pre-book checkout
+- /book-assessment/youth-blocks Published youth block preview
+- /book-assessment/day-pass One-day pass ($50) and age band copy
+- /book-assessment/field-rental Field rental deposit flow (not party checkout)
+- /book-assessment/birthday-party Party deposit checkout
+- /book-assessment/contact Guardian contact capture
+- /book-assessment/waiver Rental waiver on file
+- /facility Facility tour and trust content
+- /events Events hub
+- /events/friday-night-friendlies Friday Night Friendlies
+- /events/parties Birthday / hosted parties
+- /events/summer-camp-2026 Summer camp 2026
+- /events/footbot Footbot
+- /events/tournaments Tournaments
+- /rentals Field rentals marketing and booking flow
+- /friday-circuit Friday circuit program page
+- /clinics Clinics
+- /camps Camps
+- /adults Adults programming
+- /careers Careers
+- /privacy Privacy
+- /terms Terms
+
+## Not for public indexing (auth, receipts, tokens)
+
+Parent portal, admin, coach, organizer apps under /parent/, /admin/, /coach/, /organizer/. Login at /login. Checkout receipt pages under /checkout/. Portal signup helper at /portal-signup. Dynamic rental waiver links under /rentals/waiver/[token].
+
+## Voice and constraints
+
+Public copy follows `lib/marketing/site-voice.ts` when present: direct, inclusive, precision and game intelligence, capacity-controlled blocks, and plain punctuation (hyphens or colons, not long dashes) in newer marketing strings.
+
+## Contact
+
+Public phone (display): +1 (747) 688-9668. Use E.164 +17476889668 for tel: links in code (`SITE.publicPhoneTel`).

@@ -22,13 +22,13 @@ export function AdminClientProfileView({ profile }: { profile: ClientLedgerProfi
         <div className="rounded-lg border border-formula-frost/12 p-4">
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-formula-mist">First purchase</p>
           <p className="mt-1 font-mono text-sm text-formula-paper">
-            {analytics.firstPurchaseAt ? formatDate(analytics.firstPurchaseAt, 'datetime') : '—'}
+            {analytics.firstPurchaseAt ? formatDate(analytics.firstPurchaseAt, 'datetime') : '-'}
           </p>
         </div>
         <div className="rounded-lg border border-formula-frost/12 p-4">
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-formula-mist">Last activity</p>
           <p className="mt-1 font-mono text-sm text-formula-paper">
-            {analytics.lastPurchaseAt ? formatDate(analytics.lastPurchaseAt, 'datetime') : '—'}
+            {analytics.lastPurchaseAt ? formatDate(analytics.lastPurchaseAt, 'datetime') : '-'}
           </p>
         </div>
         <div className="rounded-lg border border-formula-frost/12 p-4">

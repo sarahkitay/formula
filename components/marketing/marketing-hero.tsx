@@ -1,27 +1,14 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { Fragment } from 'react'
 import Link from 'next/link'
 import { AmbientGeometry } from '@/components/marketing/ambient-geometry'
 import { FieldAmbient } from '@/components/marketing/field-ambient'
+import { HomeField3DHeroDeferred } from '@/components/marketing/home-field-3d-hero-deferred'
 import { marketingHeroWordmarkClassName } from '@/lib/marketing/display-typography'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SITE_VOICE } from '@/lib/marketing/site-voice'
 import { cn } from '@/lib/utils'
-
-const HomeField3DHero = dynamic(
-  () => import('@/components/marketing/home-field-3d/home-field-3d-hero').then(m => ({ default: m.HomeField3DHero })),
-  {
-    ssr: true,
-        loading: () => (
-      <div
-        className="mx-auto min-h-[min(180px,30vh)] w-full max-w-[min(100%,720px)] rounded-sm bg-formula-deep/20 sm:min-h-[min(200px,34vh)] md:min-h-[min(240px,40vh)]"
-        aria-hidden
-      />
-    ),
-  }
-)
 
 const WORD = 'FORMULA'
 
@@ -67,7 +54,7 @@ export function MarketingHero() {
       <div className="marketing-hud-edge pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-px bg-gradient-to-r from-transparent via-formula-frost/10 to-transparent" />
 
       <div className="relative z-10 mx-auto flex w-full min-w-0 max-w-[min(100%,1360px)] flex-1 flex-col overflow-x-clip px-5 pb-12 pt-44 max-sm:pt-[max(11.5rem,calc(env(safe-area-inset-top,0px)+10rem))] sm:px-6 sm:pt-48 md:pt-48 lg:pb-16 lg:pt-52">
-        {/* Centered wordmark — primary title */}
+        {/* Centered wordmark: primary title */}
         <div className="flex w-full min-w-0 justify-center px-2 py-6 sm:px-2 sm:py-0">
           <h1
             className={cn(marketingHeroWordmarkClassName, 'marketing-hero-wordmark-anim max-w-[min(100%,100vw-1.5rem)]')}
@@ -144,7 +131,7 @@ export function MarketingHero() {
           >
             <div className="relative mx-auto w-full min-w-0 max-w-[min(100%,760px)] translate-x-0 scale-[0.46] max-sm:origin-[18%_86%] max-sm:translate-y-1 sm:scale-[0.82] sm:origin-[50%_88%] md:max-lg:scale-[0.88] lg:mx-0 lg:ml-auto lg:max-w-[min(100%,820px)] lg:translate-x-[min(6%,3.5rem)] lg:translate-y-2 lg:scale-[0.88] lg:origin-[85%_92%] xl:translate-x-[min(8%,4.5rem)] xl:scale-[0.92]">
               <div className="marketing-hero-field-enter will-change-[opacity,transform]">
-                <HomeField3DHero />
+                <HomeField3DHeroDeferred />
               </div>
             </div>
           </div>

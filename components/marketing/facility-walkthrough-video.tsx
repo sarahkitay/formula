@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import { MarketingLazyVideoPosterLayer } from '@/components/marketing/marketing-lazy-video-poster'
 import { FACILITY_WALKTHROUGH_POSTER, FACILITY_WALKTHROUGH_VIDEO } from '@/lib/marketing/home-video-assets'
 import { useLazyAutoplayVideo } from '@/lib/marketing/use-lazy-autoplay-video'
 
@@ -35,7 +36,8 @@ export function FacilityWalkthroughVideo() {
   }
 
   return (
-    <div ref={containerRef} className="relative aspect-video w-full bg-black">
+    <div ref={containerRef} className="relative aspect-video w-full overflow-hidden bg-black">
+      <MarketingLazyVideoPosterLayer src={FACILITY_WALKTHROUGH_POSTER} ready={ready} />
       {ready ? (
         <video
           ref={videoRef}
@@ -52,9 +54,7 @@ export function FacilityWalkthroughVideo() {
         >
           <source src={FACILITY_WALKTHROUGH_VIDEO} type="video/mp4" />
         </video>
-      ) : (
-        <div className="absolute inset-0 bg-formula-deep" aria-hidden />
-      )}
+      ) : null}
     </div>
   )
 }

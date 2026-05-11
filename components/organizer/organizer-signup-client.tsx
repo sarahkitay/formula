@@ -34,7 +34,7 @@ export function OrganizerSignupClient() {
       setMessage('Account created. You can sign in on the next screen.')
       setPassword('')
     } catch {
-      setError('Network error — try again.')
+      setError('Network error. Try again.')
     } finally {
       setSubmitting(false)
     }

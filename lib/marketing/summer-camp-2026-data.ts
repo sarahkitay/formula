@@ -107,7 +107,7 @@ export const SUMMER_CAMP_THEME_EXPLANATIONS: Record<SummerCampThemeTitle, string
   'Play Sharp':
     'This week centers first touch under rhythm, clean passing lanes, and scanning before the ball arrives. Athletes rotate through Footbot for high-rep reception and Speed Brain for decision windows so habits transfer into small-sided play by Friday.',
   'Speed Lab':
-    'Acceleration, deceleration, and change-of-direction get measured reps—not just sprints. Speed Track work emphasizes posture and first three steps; Double Speed Court layers reactive reads so quickness shows up with the ball, not only in straight lines.',
+    'Acceleration, deceleration, and change-of-direction get measured reps, not just sprints. Speed Track work emphasizes posture and first three steps; Double Speed Court layers reactive reads so quickness shows up with the ball, not only in straight lines.',
   'Finish Strong':
     'Striking technique, composure in the box, and rebound finishes are coached in progressions. Performance Center blocks isolate foot choice and body shape, then blend into live sequences so players leave with a repeatable prep touch before they shoot.',
   'Duel & Dominate':

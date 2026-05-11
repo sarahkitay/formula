@@ -76,18 +76,18 @@ export function OrganizerDashboardClient() {
       setCopiedId(id)
       setTimeout(() => setCopiedId(null), 2000)
     } catch {
-      setError('Could not copy link — copy manually from the address bar after opening the link.')
+      setError('Could not copy link. Copy manually from the address bar after opening the link.')
     }
   }
 
   function formatMoney(cents: number | null, currency: string | null) {
-    if (cents == null || !Number.isFinite(cents)) return '—'
+    if (cents == null || !Number.isFinite(cents)) return '-'
     const cur = (currency ?? 'usd').toUpperCase()
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: cur === 'USD' ? 'USD' : cur }).format(cents / 100)
   }
 
   function formatMoneyPurchase(amount: number, currency: string | null) {
-    if (!Number.isFinite(amount)) return '—'
+    if (!Number.isFinite(amount)) return '-'
     const cur = (currency ?? 'usd').toUpperCase()
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: cur === 'USD' ? 'USD' : cur }).format(amount / 100)
   }
@@ -151,7 +151,7 @@ export function OrganizerDashboardClient() {
         {purchases.length === 0 ? (
           <p className="mt-6 text-sm text-formula-mist">
             No field-rental payments are on file for this email yet. After you pay, the same email must be used at Stripe
-            checkout—or ask staff to align your receipt email with this account.
+            checkout, or ask staff to align your receipt email with this account.
           </p>
         ) : (
           <ul className="not-prose mt-6 grid gap-4 lg:grid-cols-2">
@@ -240,7 +240,7 @@ export function OrganizerDashboardClient() {
           <p className="mt-6 text-sm text-formula-mist">
             {invites.length > 0
               ? 'Every roster invite on file is matched to a payment card above.'
-              : 'No roster invites on file for this email yet—they are created when field-rental checkout completes (or when staff adds one).'}
+              : 'No roster invites on file for this email yet; they are created when field-rental checkout completes (or when staff adds one).'}
           </p>
         ) : (
           <ul className="not-prose mt-6 grid gap-4 sm:grid-cols-2">

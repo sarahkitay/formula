@@ -88,7 +88,7 @@ export function YouthMembershipPackageHero() {
           <div>
             <h3 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-mist">Waitlist for monthly</h3>
             <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-formula-frost/85">
-              Weekly blocks, capped groups, reassessments—opens next month.
+              Weekly blocks, capped groups, reassessments: opens next month.
             </p>
           </div>
 
@@ -170,7 +170,7 @@ export function YouthMembershipPackageHero() {
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-formula-mist">Monthly tiers</p>
             <p className="mt-2 font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl">Waitlist</p>
             <p className="mt-2 max-w-[48ch] text-sm leading-relaxed text-formula-frost/80">
-              Weekly blocks, capped groups, reassessments—opens next month. Join the waitlist for first access when published blocks go live.
+              Weekly blocks, capped groups, reassessments: opens next month. Join the waitlist for first access when published blocks go live.
             </p>
           </div>
           <MembershipWaitlistCapture

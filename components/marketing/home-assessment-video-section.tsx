@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { MarketingLazyVideoPosterLayer } from '@/components/marketing/marketing-lazy-video-poster'
 import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { HOME_ASSESSMENT_POSTER, HOME_ASSESSMENT_VIDEO } from '@/lib/marketing/home-video-assets'
@@ -25,6 +26,7 @@ export function HomeAssessmentVideoSection() {
         className="relative flex min-h-[min(72vh,780px)] w-full flex-col md:min-h-[min(86vh,940px)]"
       >
         <div className="absolute inset-0 overflow-hidden">
+          <MarketingLazyVideoPosterLayer src={HOME_ASSESSMENT_POSTER} ready={ready} />
           {ready ? (
             <video
               ref={videoRef}
@@ -39,9 +41,7 @@ export function HomeAssessmentVideoSection() {
             >
               <source src={HOME_ASSESSMENT_VIDEO} type="video/mp4" />
             </video>
-          ) : (
-            <div className="absolute inset-0 bg-formula-deep" aria-hidden />
-          )}
+          ) : null}
 
           <div className={MEDIA_SCRIM_TOP} aria-hidden />
           <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />

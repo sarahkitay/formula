@@ -10,14 +10,7 @@ const stripeHttpsAgent = new https.Agent({
   maxSockets: 50,
 })
 
-/** Base URL for Stripe success/cancel redirects (no trailing slash). */
-export function getSiteOrigin(): string {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-  if (explicit) return explicit.replace(/\/$/, '')
-  const vercel = process.env.VERCEL_URL?.trim()
-  if (vercel) return `https://${vercel.replace(/\/$/, '')}`
-  return 'http://localhost:3000'
-}
+export { getSiteOrigin } from '@/lib/site-origin'
 
 let stripeSingleton: Stripe | null = null
 

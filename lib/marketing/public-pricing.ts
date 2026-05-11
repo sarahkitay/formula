@@ -64,6 +64,20 @@ export const SESSION_PACKAGE_10 = {
   purchaseNote: `${SESSION_PACKAGE_EARLY_BIRD.validityNote} Purchase online, at the desk, or through your assessment. We confirm scheduling and cadence with you directly.`,
 } as const
 
+/** Single-visit day pass (public booking hub + desk). */
+export const DAY_PASS_ONE_DAY = {
+  priceUsd: 50,
+  productName: 'One-day pass',
+  summary:
+    'Single visit for one athlete. $50 at published rate; staff confirm age group and field access at check-in.',
+  ageGroups: [
+    { label: 'Ages 6-8', note: 'Typical U8-U9 club year alignment.' },
+    { label: 'Ages 9-10', note: 'Typical U10-U11 club year alignment.' },
+    { label: 'Ages 11-12', note: 'Typical U12-U13 club year alignment.' },
+    { label: 'Ages 13+', note: 'Teen and older youth blocks when published.' },
+  ] as const,
+} as const
+
 export const FORMULA_SKILLS_CHECK = {
   name: 'Formula Skills Check',
   priceUsd: 200,

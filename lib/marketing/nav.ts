@@ -9,7 +9,7 @@ export const MARKETING_HREF = {
   home: '/',
   whatIsFormula: '/what-is-formula',
   youthMembership: '/youth-membership',
-  /** Formula Minis (ages 2–5) — section on youth membership; `/minis` redirects here. */
+  /** Formula Minis (ages 2-5): section on youth membership; `/minis` redirects here. */
   minis: '/youth-membership#formula-minis',
   fpi: '/fpi',
   fridayCircuit: '/friday-circuit',
@@ -84,6 +84,13 @@ export function getHeaderBookMenu(): HeaderBookMenuItem[] {
       href: BOOKING_HUB_PUBLIC.youthBlocks,
       steps:
         'Preview published youth blocks, pick the week and slot that fits your age group, sign any required holds or waivers, then pay if that path opens checkout.',
+    },
+    {
+      id: 'day-pass',
+      label: 'One-day pass',
+      href: BOOKING_HUB_PUBLIC.dayPass,
+      steps:
+        'Published $50 single visit. Read age bands, preview youth windows if you want, then pay at the desk or follow staff instructions when online checkout is available.',
     },
     {
       id: 'packages',

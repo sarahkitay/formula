@@ -98,7 +98,7 @@ export function PlayerCheckInDetail({
         <div className="text-center">
           <p
             className={cn(
-              'font-mono text-4xl font-black leading-none',
+              'font-mono text-4xl font-bold leading-none',
               sessionsLeft === 0 ? 'text-error' : sessionsLeft <= 2 ? 'text-warning' : 'text-success'
             )}
           >

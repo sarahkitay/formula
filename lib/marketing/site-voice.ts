@@ -74,7 +74,7 @@ export const SITE_VOICE = {
   homeStayUpdatedTitle: 'Stay updated',
   homeStayUpdatedBody: 'Be the first to hear about programs, clinics, and memberships.',
 
-  /** Steve Cherundolo — keep wording exactly as approved. */
+  /** Steve Cherundolo: keep wording exactly as approved. */
   cherundoloPartnershipQuote:
     'I have partnered with Formula because it reflects my own personal philosophy of player development in the modern game. Every soccer action has three critical moments which increase in difficulty when time and space are reduced. By combining elite coaching with cutting-edge technology, Formula will develop players who think faster, make intelligent decisions and execute at the highest of levels.',
 } as const

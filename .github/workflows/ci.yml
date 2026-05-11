@@ -24,7 +24,7 @@ jobs:
 
       - run: npm ci
 
-      # `npm run lint` is not enforced here yet — the repo has pre-existing ESLint errors.
+      # `npm run lint` is not enforced here yet: the repo has pre-existing ESLint errors.
       - run: npm run test:unit
 
       - run: npm run build

@@ -3,7 +3,7 @@ import { SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT, SUMMER_CAMP_2026_WEEK_CHECKOUT 
 import { SUMMER_CAMP_2026 } from '@/lib/marketing/summer-camp-2026-data'
 
 /**
- * Live / next offerings — homepage + What Formula Is.
+ * Live / next offerings: homepage + What Formula Is.
  * Curated to current public paths only; each card is one primary link.
  */
 export const WHAT_WE_OFFER_NOW = [
@@ -29,7 +29,7 @@ export const WHAT_WE_OFFER_NOW = [
   },
   {
     title: 'Assessments',
-    body: 'Skills Check booking, guardian contact, field rental deposits, and waiver—all from the public booking hub.',
+    body: 'Skills Check booking, guardian contact, field rental deposits, and waiver, all from the public booking hub.',
     href: MARKETING_HREF.bookAssessmentPortal,
   },
   {

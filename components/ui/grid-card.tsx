@@ -39,7 +39,7 @@ export function GridCard({ title, metric, description, href, status = 'neutral',
 
       <div>
         {metric && (
-          <div className="mb-2 font-mono text-3xl font-light tracking-tighter text-[#f4fe00] md:text-4xl">
+          <div className="mb-2 font-mono text-3xl font-normal tracking-tighter text-[#f4fe00] md:text-4xl">
             {metric}
           </div>
         )}

@@ -61,11 +61,8 @@ function SecondaryLink({ href, children }: { href: string; children: React.React
 
 function PipeCtaRow() {
   return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em]">
       <PrimaryLink href={MARKETING_HREF.bookAssessmentPortal}>Book assessment</PrimaryLink>
-      <span className="text-zinc-500" aria-hidden>
-        |
-      </span>
       <SecondaryLink href={PARENT_PORTAL_LOGIN}>Portal login</SecondaryLink>
     </div>
   )
@@ -73,11 +70,27 @@ function PipeCtaRow() {
 
 export function TheFormulaFpiPage() {
   return (
-    <div className="not-prose bg-[#1a2820] text-white">
-      {/* SECTION 01 - HERO */}
-      <section className={`${sectionShell} scroll-mt-28 border-b border-white/[0.08] pt-28 pb-20 md:pb-28 lg:pt-32 lg:pb-[120px]`} aria-labelledby="formula-hero-heading">
-        <div className={`${innerMax} grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-14`}>
-          <div className="min-w-0">
+    <div className="not-prose overflow-x-hidden bg-[#1a2820] text-white">
+      {/* SECTION 01 - HERO: full-bleed image, dimmed; copy on backed panel */}
+      <section
+        className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 scroll-mt-28 border-b border-white/[0.08]"
+        aria-labelledby="formula-hero-heading"
+      >
+        <div className="pointer-events-none absolute inset-0">
+          <Image
+            src={FORMULA_HERO_IMAGE}
+            alt=""
+            fill
+            className="object-cover opacity-[0.38]"
+            sizes="100vw"
+            quality={HOME_SPLIT_PHOTO_QUALITY}
+            priority
+            aria-hidden
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f0c]/75 via-[#0f1712]/55 to-[#1a2820]/88" />
+        </div>
+        <div className="relative z-10 mx-auto flex min-h-[min(72vh,640px)] max-w-[1100px] flex-col justify-center px-4 py-24 sm:px-6 sm:py-28 md:py-32 lg:min-h-[min(78vh,700px)] lg:py-36">
+          <div className="max-w-xl rounded-2xl border border-white/14 bg-black/55 px-6 py-7 shadow-[0_28px_70px_rgba(0,0,0,0.5)] backdrop-blur-md sm:px-8 sm:py-8">
             <p className={eyebrowClass}>The Formula</p>
             <h1
               id="formula-hero-heading"
@@ -85,23 +98,12 @@ export function TheFormulaFpiPage() {
             >
               Six pillars scored objectively.
             </h1>
-            <p className="mt-5 max-w-[52ch] text-base leading-[1.65] text-zinc-300 sm:text-[17px] sm:leading-relaxed">
+            <p className="mt-5 max-w-[52ch] text-base leading-[1.65] text-zinc-200 sm:text-[17px] sm:leading-relaxed">
               Reveals your athlete&apos;s limiter + personalized plan. Reassess every 6 months.
             </p>
             <div className="mt-10">
               <PipeCtaRow />
             </div>
-          </div>
-          <div className="relative min-h-[220px] w-full overflow-hidden rounded border border-white/[0.12] sm:min-h-[280px] lg:min-h-[340px]">
-            <Image
-              src={FORMULA_HERO_IMAGE}
-              alt="Youth soccer players on indoor turf at Formula Soccer Center - training and game-style movement with facility netting and lighting visible."
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              quality={HOME_SPLIT_PHOTO_QUALITY}
-              priority
-            />
           </div>
         </div>
       </section>
@@ -114,7 +116,7 @@ export function TheFormulaFpiPage() {
             Weighted scoring architecture
           </h2>
           <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-zinc-400">
-            The Formula is not a slogan—it&apos;s how inputs become signal, then a composite. Follow the flow in the animation on load.
+            The Formula is not a slogan: it&apos;s how inputs become signal, then a composite. Follow the flow in the animation on load.
           </p>
           <p className="sr-only">
             Animated model: six pillars stream into a composite performance score. Perimeter labels read Input, Signal, Weighting, Evaluation, and Composite.
@@ -153,7 +155,7 @@ export function TheFormulaFpiPage() {
             </table>
           </div>
           <p className="mx-auto mt-8 max-w-[56ch] text-center text-sm leading-relaxed text-zinc-500">
-            Age-weighted composite score—not a simple sum.
+            Age-weighted composite score, not a simple sum.
           </p>
         </div>
       </section>
@@ -178,7 +180,7 @@ export function TheFormulaFpiPage() {
                 />
               </div>
               <div className="min-w-0">
-                <span className="font-mono text-5xl font-light leading-none text-formula-volt md:text-6xl" aria-hidden>
+                <span className="font-mono text-5xl font-normal leading-none text-formula-volt md:text-6xl" aria-hidden>
                   &ldquo;
                 </span>
                 <blockquote className="border-l-[3px] border-formula-volt pl-5">
@@ -213,7 +215,7 @@ export function TheFormulaFpiPage() {
                 body: 'Tech captures data across all 6 pillars.',
               },
               {
-                step: '48–72 hrs',
+                step: '48-72 hrs',
                 body: 'Portal note on results + next steps.',
               },
               {
@@ -231,7 +233,7 @@ export function TheFormulaFpiPage() {
           <div className="mt-14 border-l-[3px] border-formula-volt py-1 pl-6 md:pl-8">
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">Why it works</p>
             <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-zinc-300">
-              Finds the one skill ceiling (e.g., slow decisions despite speed) and targets it. No public rankings—private to your family/coach.
+              Finds the one skill ceiling (e.g., slow decisions despite speed) and targets it. No public rankings: private to your family/coach.
             </p>
             <p className="mt-5 max-w-[62ch] text-sm leading-relaxed text-zinc-500">
               Reassessments every six months refresh scores and your athlete&apos;s plan. The Formula is not a public scoreboard: scores are not posted for
@@ -242,7 +244,7 @@ export function TheFormulaFpiPage() {
               <Link href={MARKETING_HREF.fridayCircuit} className="text-formula-volt underline-offset-2 hover:underline">
                 Friday Youth Game Circuit
               </Link>
-              —not youth leaderboards online.
+              , not youth leaderboards online.
             </p>
           </div>
         </div>
@@ -256,7 +258,7 @@ export function TheFormulaFpiPage() {
             Book assessment or open your portal
           </h2>
           <p className="mx-auto mt-6 max-w-[52ch] text-base leading-relaxed text-zinc-300">
-            Every athlete at Formula starts with a Skills Check. One hour. Six pillars. You leave with a clear picture of what to train next—and it stays
+            Every athlete at Formula starts with a Skills Check. One hour. Six pillars. You leave with a clear picture of what to train next, and it stays
             private to your family and coach.
           </p>
           <div className="mt-10 flex justify-center">

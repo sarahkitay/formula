@@ -53,7 +53,7 @@ const PACKAGE_CARDS: {
     id: 'half',
     rentalType: 'general_pickup',
     title: 'Half Field Rental',
-    bestFor: 'Smaller-sided play, scrimmages, and informal blocks—up to 15 on the field.',
+    bestFor: 'Smaller-sided play, scrimmages, and informal blocks, up to 15 on the field.',
     durationNote: 'Pick your window; staff may assign a half-field segment at check-in.',
     depositLine: `Booking deposit is $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}.`,
   },
@@ -423,7 +423,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               <div>
                 <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 2 · Schedule</p>
                 <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
-                  <strong className="text-formula-paper">Field rental checkout only</strong>—not the hosted party deposit. Starts every 30 minutes through the
+                  <strong className="text-formula-paper">Field rental checkout only</strong>, not the hosted party deposit. Starts every 30 minutes through the
                   evening; default hold is <strong className="text-formula-paper">2 hours</strong>. Published rate is{' '}
                   <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> and booking deposit is{' '}
                   <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong>. Overlapping windows are blocked automatically.
@@ -466,7 +466,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-formula-mist">Available start time *</span>
                   {slotStart && fieldId ? (
                     <span className="font-mono text-[11px] text-formula-frost/70">
-                      Window · {humanRentalWindowSummary(rentalWindow) || '—'}
+                      Window · {humanRentalWindowSummary(rentalWindow) || '-'}
                     </span>
                   ) : null}
                 </div>
@@ -486,7 +486,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                         const taken = isWindowUnavailable(fieldId, key)
                         return (
                           <option key={s} value={s} disabled={taken}>
-                            {taken ? `${s} — Booked` : s}
+                            {taken ? `${s} (booked)` : s}
                           </option>
                         )
                       })}
@@ -860,7 +860,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
       <dl className="mt-5 space-y-4 text-sm text-formula-frost/85">
         <div>
           <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Package</dt>
-          <dd className="mt-1 text-[15px] font-medium leading-snug text-formula-paper">{selectedPackageMeta?.title ?? '—'}</dd>
+          <dd className="mt-1 text-[15px] font-medium leading-snug text-formula-paper">{selectedPackageMeta?.title ?? '-'}</dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Schedule</dt>
@@ -868,7 +868,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             {sessionDate && fieldId && slotStart ? (
               <>
                 <span className="block text-formula-paper">{sessionDate}</span>
-                <span className="mt-1 block text-formula-frost/80">{humanRentalWindowSummary(rentalWindow) || '—'}</span>
+                <span className="mt-1 block text-formula-frost/80">{humanRentalWindowSummary(rentalWindow) || '-'}</span>
                 <span className="mt-1 block font-mono text-[11px] text-formula-mist">{FIELDS.find(f => f.value === fieldId)?.label ?? fieldId}</span>
               </>
             ) : (
@@ -882,15 +882,15 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             <span className="text-formula-paper">{sessionCount} planned session{sessionCount === 1 ? '' : 's'}</span>
             <span className="mt-1 block text-[15px] font-semibold text-formula-paper">${bookingDepositUsd.toFixed(0)} due at checkout</span>
             <span className="mt-2 block text-[13px] leading-relaxed text-formula-mist">
-              Remaining balance, if any, is settled per your rental agreement after the deposit—staff may reconcile for packages or special blocks.
+              Remaining balance, if any, is settled per your rental agreement after the deposit. Staff may reconcile for packages or special blocks.
             </span>
           </dd>
         </div>
         {step >= 5 ? (
           <div>
             <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Primary renter</dt>
-            <dd className="mt-1 text-formula-paper">{renterName.trim() || '—'}</dd>
-            <dd className="mt-0.5 font-mono text-[11px] text-formula-mist">{renterEmail.trim() || '—'}</dd>
+            <dd className="mt-1 text-formula-paper">{renterName.trim() || '-'}</dd>
+            <dd className="mt-0.5 font-mono text-[11px] text-formula-mist">{renterEmail.trim() || '-'}</dd>
           </div>
         ) : null}
       </dl>

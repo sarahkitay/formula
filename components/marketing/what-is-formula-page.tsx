@@ -43,7 +43,7 @@ export function WhatIsFormulaPageContent() {
                 Formula Soccer: Data-driven individual soccer training that complements your club team.
               </h1>
               <p className="mt-8 max-w-3xl text-[clamp(1.05rem,1.8vw,1.45rem)] leading-9 text-white/72">
-                We deliver measurable skill gains—tracked via assessments and tech—without travel or team commitments.
+                We deliver measurable skill gains, tracked via assessments and tech, without travel or team commitments.
               </p>
             </div>
 

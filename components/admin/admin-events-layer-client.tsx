@@ -27,10 +27,10 @@ export function AdminEventsLayerClient({
   )
 
   function ageLabel(r: FridayFriendliesSignupRow): string {
-    if (r.ageYoungest == null && r.ageOldest == null) return '—'
+    if (r.ageYoungest == null && r.ageOldest == null) return '-'
     if (r.ageYoungest != null && r.ageOldest != null && r.ageYoungest === r.ageOldest) return String(r.ageYoungest)
     if (r.ageYoungest != null && r.ageOldest != null) return `${r.ageYoungest}–${r.ageOldest}`
-    return String(r.ageYoungest ?? r.ageOldest ?? '—')
+    return String(r.ageYoungest ?? r.ageOldest ?? '-')
   }
 
   return (
@@ -172,15 +172,15 @@ export function AdminEventsLayerClient({
                           </td>
                           <td className="py-2 pr-3 align-top">
                             <Link href={href} className="text-formula-paper underline-offset-2 hover:underline">
-                              {r.guardianName ?? '—'}
+                              {r.guardianName ?? '-'}
                             </Link>
                           </td>
                           <td className="py-2 pr-3 align-top">
                             <Link href={href} className="break-all underline-offset-2 hover:underline">
-                              {r.email ?? '—'}
+                              {r.email ?? '-'}
                             </Link>
                           </td>
-                          <td className="max-w-[10rem] py-2 pr-3 align-top break-words">{r.playerNames ?? '—'}</td>
+                          <td className="max-w-[10rem] py-2 pr-3 align-top break-words">{r.playerNames ?? '-'}</td>
                           <td className="py-2 pr-3 align-top tabular-nums">{r.playerCount}</td>
                           <td className="py-2 pr-3 align-top">{ageLabel(r)}</td>
                           <td className="py-2 pr-3 align-top">{formatCurrency(r.amountUsd)}</td>

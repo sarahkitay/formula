@@ -10,7 +10,7 @@ import { MARKETING_HREF } from '@/lib/marketing/nav'
 export const metadata: Metadata = {
   title: 'Formula memberships',
   description:
-    'Assessment-first memberships, early bird session packages, Formula Minis (ages 2–5) weekday and Sunday packs, and monthly tier waitlist. Turf: no cleats—turf or tennis shoes only.',
+    'Assessment-first memberships, early bird session packages, Formula Minis (ages 2-5) weekday and Sunday packs, and monthly tier waitlist. Turf: no cleats; turf or tennis shoes only.',
 }
 
 export default function YouthMembershipPage() {

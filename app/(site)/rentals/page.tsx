@@ -33,7 +33,7 @@ export default function RentalsPage() {
           <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-formula-volt/90">Field rentals</p>
           <h1 className={cn(marketingDisplayH1ClassName, 'mt-4 max-w-[22ch] text-balance')}>Book field time without back-and-forth</h1>
           <p className="mt-6 max-w-[52ch] text-[16px] leading-relaxed text-formula-frost/88 sm:text-[17px]">
-            Pick a package, lock a published window, pay the booking deposit, then complete the participant waiver. One flow—calendar conflicts are blocked
+            Pick a package, lock a published window, pay the booking deposit, then complete the participant waiver. One flow: calendar conflicts are blocked
             automatically; Stripe confirms your hold.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
@@ -77,14 +77,14 @@ export default function RentalsPage() {
           </summary>
           <div className="space-y-4 border-t border-formula-frost/10 px-5 py-5 text-[14px] leading-relaxed text-formula-frost/82 md:px-6">
             <p>
-              <strong className="text-formula-paper">Check-in:</strong> low friction — staff step in for headcount, misclassified use, or safety issues.
+              <strong className="text-formula-paper">Check-in:</strong> low friction. Staff step in for headcount, misclassified use, or safety issues.
             </p>
             <p>
-              <strong className="text-formula-paper">Blocks:</strong> programmed start/stop and buffers — built for recurring clubs and trainers, not loudest
+              <strong className="text-formula-paper">Blocks:</strong> programmed start/stop and buffers, built for recurring clubs and trainers, not loudest
               bidder.
             </p>
             <p>
-              <strong className="text-formula-paper">Packages:</strong> window + surface + expectations — 12-week alignment where recurring; youth blocks stay
+              <strong className="text-formula-paper">Packages:</strong> window + surface + expectations. 12-week alignment where recurring; youth blocks stay
               protected.
             </p>
             <p>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { MarketingLazyVideoPosterLayer } from '@/components/marketing/marketing-lazy-video-poster'
 import { MediaOverlayTextPanel } from '@/components/marketing/media-overlay-text-panel'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { HOME_SPEED_TRACK_POSTER, HOME_SPEED_TRACK_VIDEO } from '@/lib/marketing/home-video-assets'
@@ -18,23 +19,24 @@ export function HomeSpeedTrackSection() {
     <section aria-labelledby="home-speed-track-title">
       <div className="relative w-full overflow-hidden border-b border-formula-frost/10">
         <div ref={containerRef} className="relative min-h-[min(78vh,820px)] w-full md:min-h-[min(90vh,960px)]">
-          {ready ? (
-            <video
-              ref={videoRef}
-              className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
-              poster={HOME_SPEED_TRACK_POSTER}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="none"
-              aria-label="Athletes on the Speed Track"
-            >
-              <source src={HOME_SPEED_TRACK_VIDEO} type="video/mp4" />
-            </video>
-          ) : (
-            <div className="absolute inset-0 bg-formula-deep" aria-hidden />
-          )}
+          <div className="absolute inset-0 overflow-hidden">
+            <MarketingLazyVideoPosterLayer src={HOME_SPEED_TRACK_POSTER} ready={ready} />
+            {ready ? (
+              <video
+                ref={videoRef}
+                className="absolute inset-0 h-full w-full scale-[1.01] object-cover"
+                poster={HOME_SPEED_TRACK_POSTER}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="none"
+                aria-label="Athletes on the Speed Track"
+              >
+                <source src={HOME_SPEED_TRACK_VIDEO} type="video/mp4" />
+              </video>
+            ) : null}
+          </div>
           <div className={MEDIA_SCRIM_TOP} aria-hidden />
           <div className={MEDIA_SCRIM_BOTTOM} aria-hidden />
           <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 md:pt-32">

@@ -8,7 +8,7 @@ const tableWrap = 'not-prose overflow-x-auto rounded-lg border border-formula-fr
 const tableClass = 'w-full min-w-[360px] border-collapse font-mono text-[11px] text-formula-frost/90'
 
 /**
- * Formula Minis + Sunday weekend — lives on youth membership (no standalone /minis page).
+ * Formula Minis + Sunday weekend: lives on youth membership (no standalone /minis page).
  */
 export function FormulaMinisMembershipSection() {
   const w = FORMULA_MINIS_SIX_WEEK
@@ -21,7 +21,7 @@ export function FormulaMinisMembershipSection() {
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-formula-volt">Ages 2–5</p>
           <h2 className={cn(marketingInnerH1CompactClassName, 'max-w-4xl')}>Formula Minis</h2>
           <p className="max-w-[62ch] text-[15px] leading-relaxed text-formula-frost/88">
-            Fun intro soccer for ages 2–5. Fixed packs, no drop-ins—pick your slot and commit.
+            Fun intro soccer for ages 2-5. Fixed packs, no drop-ins. Pick your slot and commit.
           </p>
           <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-formula-mist">
             <a href="#weekday-package" className="text-formula-volt hover:underline">

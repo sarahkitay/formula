@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { BOOKING_HUB_PARENT, BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
 import { BOOKING_HUB_DIRECTORY_ID, MARKETING_HREF } from '@/lib/marketing/nav'
+import { DAY_PASS_ONE_DAY } from '@/lib/marketing/public-pricing'
 import { SITE } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +20,7 @@ export function BookAssessmentHub({ variant }: { variant: HubVariant }) {
           { href: p.contact, label: 'Your account', description: 'Signed-in guardian · receipts' },
           { href: p.skillsCheck, label: 'June pre-book', description: 'Skills Check calendar & pay' },
           { href: p.youthBlocks, label: 'Youth training blocks', description: 'Preview published weeks' },
+          { href: p.dayPass, label: 'One-day pass', description: `$${DAY_PASS_ONE_DAY.priceUsd} visit · age groups at check-in` },
           { href: p.fieldRental, label: 'Field rental', description: 'Deposit · default 2 hr blocks (not party checkout)' },
           { href: p.birthdayParty, label: 'Birthday party', description: 'Party deposit checkout' },
           { href: p.waiver, label: 'Rental waiver', description: 'Sign agreement on file' },
@@ -27,6 +29,7 @@ export function BookAssessmentHub({ variant }: { variant: HubVariant }) {
           { href: p.contact, label: 'Guardian contact', description: 'Name & email for receipts' },
           { href: p.skillsCheck, label: 'June pre-book', description: 'Skills Check calendar & pay' },
           { href: p.youthBlocks, label: 'Youth training blocks', description: 'Preview published weeks' },
+          { href: p.dayPass, label: 'One-day pass', description: `$${DAY_PASS_ONE_DAY.priceUsd} visit · age groups at check-in` },
           { href: p.fieldRental, label: 'Field rental', description: 'Deposit · default 2 hr blocks (not party checkout)' },
           { href: p.birthdayParty, label: 'Birthday party', description: 'Party deposit checkout' },
           { href: p.waiver, label: 'Rental waiver', description: 'Sign agreement on file' },
