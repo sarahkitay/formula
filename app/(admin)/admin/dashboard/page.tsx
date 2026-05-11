@@ -1,5 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
+
+/** Always fresh shell + nav; do not serve a cached dashboard layout from an older build. */
+export const dynamic = 'force-dynamic'
 import { PageContainer } from '@/components/layout/app-shell'
 import { ModuleBlock } from '@/components/dashboard/module-block'
 import { AdminExecutiveOverviewSection } from '@/components/admin/admin-executive-overview-section'

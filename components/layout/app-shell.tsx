@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { TechnicalHeader } from '@/components/shared/technical-header'
+import { FORMULA_ADMIN_SHELL_MARKER } from '@/lib/admin-shell-version'
 import { cn } from '@/lib/utils'
 import type { NavItem } from '@/lib/nav/types'
 
@@ -69,6 +70,7 @@ export function AppShell({
         isDarkOs && cn(osClass, 'portal-brand-surface text-formula-paper'),
         !isDarkOs && 'bg-background text-[#1a1a1a]'
       )}
+      data-formula-admin-shell={surface === 'admin-os' ? FORMULA_ADMIN_SHELL_MARKER : undefined}
     >
       <TechnicalHeader
         navItems={technicalNav}
