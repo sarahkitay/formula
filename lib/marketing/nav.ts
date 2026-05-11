@@ -62,21 +62,21 @@ export function getHeaderBookMenu(): HeaderBookMenuItem[] {
       label: 'Field rental',
       href: MARKETING_HREF.rentals,
       steps:
-        'Pick your package and field window, complete the rental agreement (or RSVP if your group already has a waiver on file), then pay the deposit at checkout.',
+        'Pick your package and field window, complete the rental agreement (or RSVP if your group already has a waiver on file), then pay at checkout at the published hourly rate.',
     },
     {
       id: 'events',
       label: 'Event booking',
       href: MARKETING_HREF.events,
       steps:
-        'Open the event you want, follow that page’s register path (RSVP or waiver if the event requires it), then finish payment when checkout is offered.',
+        'Hosted events and private blocks often start at $1,000 and can increase with scope. Open the listing you want, follow RSVP or waiver if required, then finish payment when checkout is offered.',
     },
     {
       id: 'parties',
       label: 'Birthday parties',
       href: MARKETING_HREF.parties,
       steps:
-        'Read policies on the parties page, then use the booking hub party deposit when you’re ready: choose window details, sign or confirm waivers as asked, pay the deposit last.',
+        'Read policies on the parties page, then use the booking hub when you are ready: choose window details, sign or confirm waivers as asked, pay the $1,000 party payment last.',
     },
     {
       id: 'age-slots',

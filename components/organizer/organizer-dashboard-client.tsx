@@ -133,7 +133,7 @@ export function OrganizerDashboardClient() {
 
       <section className="mt-10 rounded-lg border border-formula-frost/14 bg-formula-paper/[0.04] p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/90">Book</p>
-        <p className="mt-2 text-sm text-formula-frost/80">Reserve a field window and complete deposit checkout.</p>
+        <p className="mt-2 text-sm text-formula-frost/80">Reserve a field window and complete rental checkout payment.</p>
         <Link
           href="/rentals"
           className="mt-4 inline-flex min-h-10 items-center justify-center border border-formula-volt/45 bg-formula-volt/15 px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-formula-volt no-underline transition-colors hover:bg-formula-volt/25"

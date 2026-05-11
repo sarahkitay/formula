@@ -94,7 +94,7 @@ const HIGHLIGHTS: {
   {
     label: 'Events',
     line: 'Corporate, tournaments, large blocks.',
-    more: 'Staff inquiry - separate from field rental deposit checkout.',
+    more: 'Staff inquiry - separate from field rental hourly checkout.',
     href: MARKETING_HREF.events,
     tier: 'quiet',
     band: 'tier2',

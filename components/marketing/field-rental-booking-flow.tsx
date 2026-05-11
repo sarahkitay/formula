@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
-import { FIELD_RENTAL_BOOKING_CHECKOUT, FIELD_RENTAL_PUBLISHED_RATES } from '@/lib/marketing/public-pricing'
+import { FIELD_RENTAL_BOOKING_CHECKOUT, FIELD_RENTAL_PUBLISHED_RATES, fieldRentalSessionPaymentUsd } from '@/lib/marketing/public-pricing'
 import {
   type Classification,
   type RentalType,
@@ -39,7 +39,7 @@ const PACKAGE_CARDS: {
   title: string
   bestFor: string
   durationNote: string
-  depositLine: string
+  paymentLine: string
 }[] = [
   {
     id: 'full',
@@ -47,7 +47,7 @@ const PACKAGE_CARDS: {
     title: 'Full Field Rental',
     bestFor: 'Clubs and teams that need a full field for structured training or match prep.',
     durationNote: 'Hold length is set in the next step (30 min–4 hr).',
-    depositLine: `Booking deposit is $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}.`,
+    paymentLine: `Payment is at $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr in 30-minute steps; your total is window length times every session date you confirm.`,
   },
   {
     id: 'half',
@@ -55,7 +55,7 @@ const PACKAGE_CARDS: {
     title: 'Half Field Rental',
     bestFor: 'Smaller-sided play, scrimmages, and informal blocks, up to 15 on the field.',
     durationNote: 'Pick your window; staff may assign a half-field segment at check-in.',
-    depositLine: `Booking deposit is $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}.`,
+    paymentLine: `Same published $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr rate; checkout collects payment for the time and sessions you book.`,
   },
   {
     id: 'cage',
@@ -63,7 +63,7 @@ const PACKAGE_CARDS: {
     title: 'Cage Rental',
     bestFor: 'Technical work, finishing, and small-group reps where a compact space fits best.',
     durationNote: 'Choose field and start time below; cage-style use maps to private / small-group rules.',
-    depositLine: `Tier 1 (1–4) or group clinic tier (5+) with a $${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd} booking deposit.`,
+    paymentLine: `Tier 1 (1-4) or group clinic tier (5+). Checkout uses $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr for the minutes you reserve across each session.`,
   },
   {
     id: 'team_private',
@@ -71,14 +71,14 @@ const PACKAGE_CARDS: {
     title: 'Team / Private Event',
     bestFor: 'Private training, semi-private sessions, or larger clinic-style groups on one field (up to 20).',
     durationNote: 'Headcount in a later step sets Tier 1 vs group / clinic classification.',
-    depositLine: `Certificate of insurance may be required for some classifications; deposit holds the calendar.`,
+    paymentLine: `Certificate of insurance may be required for some classifications. Calendar holds clear once payment completes.`,
   },
 ]
 
 const PROCESS_STRIP_STEPS = [
   { phase: 1 as const, title: 'Pick your package', copy: 'How you use the field sets capacity rules.' },
   { phase: 2 as const, title: 'Choose your slot', copy: 'Date, field, window, and recurring weeks.' },
-  { phase: 3 as const, title: 'Sign + submit', copy: 'Classification, rules, deposit, then participant waiver.' },
+  { phase: 3 as const, title: 'Sign + submit', copy: 'Classification, rules, payment, then participant waiver.' },
 ] as const
 
 function classificationSummary(c: Classification): string {
@@ -121,7 +121,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   const [packageId, setPackageId] = useState<PackagePresentationId | ''>('')
   const [sessionDate, setSessionDate] = useState('')
   const [slotStart, setSlotStart] = useState('')
-  /** Default field rental block: 2 hr - separate product from hosted party deposits. */
+  /** Default field rental block: 2 hr - separate checkout from hosted parties ($1k) and events. */
   const [durationMinutes, setDurationMinutes] = useState(FIELD_RENTAL_DEFAULT_DURATION_MINUTES)
   const [fieldId, setFieldId] = useState('')
   const [participantCount, setParticipantCount] = useState<string>('')
@@ -298,7 +298,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
     sessionCount >= 1 &&
     sessionCount <= 52
 
-  const bookingDepositUsd = FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd
+  const bookingPaymentUsd = fieldRentalSessionPaymentUsd(durationMinutes) * sessionCount
 
   const goToPaymentStep = () => {
     const ref = `FR-${Date.now().toString(36).toUpperCase()}`
@@ -375,7 +375,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               <div>
                 <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 1 · Package</p>
                 <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
-                  Choose the option that best matches your use. Capacity and deposit logic follow the published field-rental rate (
+                  Choose the option that best matches your use. Capacity and payment follow the published field-rental rate (
                   <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> in 30-minute steps).
                 </p>
               </div>
@@ -400,7 +400,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                       <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper">{card.title}</span>
                       <span className="mt-3 block text-[13px] leading-relaxed text-formula-frost/82">{card.bestFor}</span>
                       <span className="mt-3 block font-mono text-[10px] uppercase tracking-[0.12em] text-formula-mist">{card.durationNote}</span>
-                      <span className="mt-2 block text-[12px] leading-snug text-formula-mist/90">{card.depositLine}</span>
+                      <span className="mt-2 block text-[12px] leading-snug text-formula-mist/90">{card.paymentLine}</span>
                     </button>
                   )
                 })}
@@ -423,10 +423,10 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               <div>
                 <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 2 · Schedule</p>
                 <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
-                  <strong className="text-formula-paper">Field rental checkout only</strong>, not the hosted party deposit. Starts every 30 minutes through the
+                  <strong className="text-formula-paper">Field rental checkout only</strong>, not the hosted party or event payment. Starts every 30 minutes through the
                   evening; default hold is <strong className="text-formula-paper">2 hours</strong>. Published rate is{' '}
-                  <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> and booking deposit is{' '}
-                  <strong className="text-formula-paper">${FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd}</strong>. Overlapping windows are blocked automatically.
+                  <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> in 30-minute steps; your total is that rate times
+                  window length times each session you select. Overlapping windows are blocked automatically.
                 </p>
               </div>
 
@@ -583,10 +583,10 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                     </ul>
                   </fieldset>
                 ) : sessionDate && /^\d{4}-\d{2}-\d{2}$/.test(sessionDate) ? (
-                  <p className="text-[13px] text-formula-mist">Enter weeks (1–52), or set your anchor date first.</p>
+                  <p className="text-[13px] text-formula-mist">Enter weeks (1-52), or set your anchor date first.</p>
                 ) : null}
                 <p className="text-[13px] text-formula-mist">
-                  Booking deposit due at checkout: <strong className="text-formula-paper">${bookingDepositUsd.toFixed(0)}</strong> (Stripe).
+                  Payment due at checkout: <strong className="text-formula-paper">${bookingPaymentUsd.toFixed(0)}</strong> (Stripe).
                 </p>
               </div>
               {recurringChecking ? (
@@ -678,20 +678,20 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
           {step === 4 && classification && rentalType ? (
             <div className="space-y-6">
               <div>
-                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 4 · Classification & deposit</p>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 4 · Classification & payment</p>
               </div>
               <div className="rounded-none border border-formula-frost/14 bg-formula-paper/[0.03] p-6">
                 <p className="text-[15px] font-medium leading-snug text-formula-paper">{classificationSummary(classification)}</p>
                 {classification.status === 'private_tier1' ? (
                   <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
                     Tier 1 rate applies for published windows. You&apos;ll place a{' '}
-                    <strong className="text-formula-paper">${bookingDepositUsd.toFixed(0)}</strong> booking deposit at checkout if the slot is still available.
+                    <strong className="text-formula-paper">${bookingPaymentUsd.toFixed(0)}</strong> payment at checkout if the slot is still available.
                   </p>
                 ) : null}
                 {classification.status === 'group_training_ok' ? (
                   <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
-                    Group / clinic use on one field (up to {classification.maxParticipants} participants). COI may still be required. Deposit{' '}
-                    <strong className="text-formula-paper">${bookingDepositUsd.toFixed(0)}</strong> locks the calendar slot at checkout.
+                    Group / clinic use on one field (up to {classification.maxParticipants} participants). COI may still be required. Payment of{' '}
+                    <strong className="text-formula-paper">${bookingPaymentUsd.toFixed(0)}</strong> locks the calendar slot at checkout.
                   </p>
                 ) : null}
                 {needsInsurance ? (
@@ -702,8 +702,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                 ) : null}
                 {(classification.status === 'club_ok' || classification.status === 'general_ok') && (
                   <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
-                    After rules and agreement, you&apos;ll pay a{' '}
-                    <strong className="text-formula-paper">${bookingDepositUsd.toFixed(0)}</strong> booking deposit via Stripe. The calendar prevents overlapping
+                    After rules and agreement, you&apos;ll pay{' '}
+                    <strong className="text-formula-paper">${bookingPaymentUsd.toFixed(0)}</strong> via Stripe. The calendar prevents overlapping
                     bookings on the same field.
                   </p>
                 )}
@@ -793,7 +793,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                   onClick={goToPaymentStep}
                   className="inline-flex min-h-12 items-center border border-black/25 bg-formula-volt px-7 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {`Continue to payment · $${bookingDepositUsd.toFixed(0)} deposit`}
+                  {`Continue to payment · $${bookingPaymentUsd.toFixed(0)}`}
                 </button>
               </div>
             </div>
@@ -802,7 +802,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
           {step === PAYMENT_STEP && confirmedRef && classification && rentalType ? (
             <div className="space-y-6">
               <div>
-                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 6 · Pay deposit</p>
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Step 6 · Pay</p>
                 <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-mist">
                   Paying creates a short hold on this field and window while Stripe opens. If the slot was taken in the last moment, checkout will ask you to pick
                   a new time.
@@ -828,14 +828,14 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                   </ul>
                 </div>
                 <p className="mt-5 text-formula-paper">
-                  Total due now: <strong className="text-[16px]">${bookingDepositUsd.toFixed(0)}</strong> booking deposit
+                  Total due now: <strong className="text-[16px]">${bookingPaymentUsd.toFixed(0)}</strong> field rental payment
                 </p>
                 <p className="mt-3 text-[13px] leading-relaxed text-formula-mist">{FIELD_RENTAL_BOOKING_CHECKOUT.summary}</p>
               </div>
               {checkoutMetadata ? (
                 <CheckoutLaunchButton
                   checkoutType="field-rental-booking"
-                  label={`Pay $${bookingDepositUsd.toFixed(0)} with Stripe`}
+                  label={`Pay $${bookingPaymentUsd.toFixed(0)} with Stripe`}
                   successNext="field-rental"
                   metadata={checkoutMetadata}
                 />
@@ -877,12 +877,12 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
           </dd>
         </div>
         <div>
-          <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Sessions · deposit</dt>
+          <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Sessions · payment</dt>
           <dd className="mt-1 leading-relaxed">
             <span className="text-formula-paper">{sessionCount} planned session{sessionCount === 1 ? '' : 's'}</span>
-            <span className="mt-1 block text-[15px] font-semibold text-formula-paper">${bookingDepositUsd.toFixed(0)} due at checkout</span>
+            <span className="mt-1 block text-[15px] font-semibold text-formula-paper">${bookingPaymentUsd.toFixed(0)} due at checkout</span>
             <span className="mt-2 block text-[13px] leading-relaxed text-formula-mist">
-              Remaining balance, if any, is settled per your rental agreement after the deposit. Staff may reconcile for packages or special blocks.
+              Remaining balance, if any, is settled per your rental agreement after this payment. Staff may reconcile for packages or special blocks.
             </span>
           </dd>
         </div>

@@ -48,7 +48,7 @@ export default async function RevenueStrategyPage() {
           {rows.length === 0 ? (
             <p className="font-mono text-[11px] text-formula-mist">
               No completed Stripe purchases yet. After the webhook writes to <code className="text-formula-frost/80">stripe_purchases</code>, amounts roll up
-              here (including <strong className="text-formula-paper">field-rental-booking</strong> deposits).
+              here (including <strong className="text-formula-paper">field-rental-booking</strong> payments).
             </p>
           ) : (
             <AdminMonoTable

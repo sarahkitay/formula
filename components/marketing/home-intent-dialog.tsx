@@ -156,7 +156,7 @@ export function HomeIntentDialog() {
             <div className="mt-8 flex flex-col gap-3">
               <button type="button" className={primaryChoiceClass} onClick={goRentals}>
                 Field rental booking
-                <span className={secondaryHintClass}>Reserve field time, packages, and deposit checkout.</span>
+                <span className={secondaryHintClass}>Reserve field time and packages; pay at the published hourly rate in checkout.</span>
               </button>
               <button type="button" className={primaryChoiceClass} onClick={() => setStep(2)}>
                 Programs, passes, and parties

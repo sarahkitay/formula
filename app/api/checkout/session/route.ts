@@ -5,7 +5,13 @@ import { slotHasRoom } from '@/lib/assessment/slots-server'
 import { encodeRentalDatesCompact, resolveFieldRentalSessionDatesFromMetadata } from '@/lib/rentals/rental-weekly-dates'
 import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWeeklySlotsForDates } from '@/lib/rentals/rental-slots'
 import { isKnownRentalFieldId, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
-import { FIELD_RENTAL_BOOKING_CHECKOUT, FORMULA_SUNDAY_CHILD_PROGRAM_10_WK, FRIDAY_NIGHT_FRIENDLIES_AGE } from '@/lib/marketing/public-pricing'
+import {
+  FIELD_RENTAL_BOOKING_CHECKOUT,
+  FIELD_RENTAL_PUBLISHED_RATES,
+  FORMULA_SUNDAY_CHILD_PROGRAM_10_WK,
+  FRIDAY_NIGHT_FRIENDLIES_AGE,
+  fieldRentalSessionPaymentUsd,
+} from '@/lib/marketing/public-pricing'
 import { isValidFieldRentalWindow, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
 import {
   FORMULA_MINIS_PACK_SESSIONS,
@@ -188,11 +194,6 @@ export async function POST(req: Request) {
     if (!parsedWindow) {
       return NextResponse.json({ error: 'Could not parse rental_window.' }, { status: 400 })
     }
-    const depositUsd = FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd
-    const unitCents = Math.round(depositUsd * 100)
-    if (unitCents < 50) {
-      return NextResponse.json({ error: 'Computed deposit is too small; check duration and pricing.' }, { status: 400 })
-    }
     const resolvedDates = resolveFieldRentalSessionDatesFromMetadata(metadataExtra, rentalSlot.date)
     if (!resolvedDates.ok) {
       return NextResponse.json({ error: resolvedDates.message }, { status: 400 })
@@ -200,6 +201,13 @@ export async function POST(req: Request) {
     const sessionDatesYmd = resolvedDates.dates
     if (sessionDatesYmd.length === 0) {
       return NextResponse.json({ error: 'Select at least one rental session date.' }, { status: 400 })
+    }
+    const perSessionUsd = fieldRentalSessionPaymentUsd(parsedWindow.durationMinutes, FIELD_RENTAL_PUBLISHED_RATES.perHourUsd)
+    const sessionCountForPayment = sessionDatesYmd.length
+    const totalUsd = perSessionUsd * sessionCountForPayment
+    const unitCents = Math.round(totalUsd * 100)
+    if (!Number.isFinite(totalUsd) || totalUsd <= 0 || unitCents < 50) {
+      return NextResponse.json({ error: 'Computed field rental payment is invalid; check duration and session count.' }, { status: 400 })
     }
     fieldRentalSessionDatesYmd = sessionDatesYmd
     fieldRentalWeeks = sessionDatesYmd.length
@@ -214,7 +222,9 @@ export async function POST(req: Request) {
     }
     fieldRentalStripeMeta = {
       rental_duration_minutes: String(parsedWindow.durationMinutes),
-      rental_deposit_per_session_usd: depositUsd.toFixed(2),
+      rental_payment_per_session_usd: perSessionUsd.toFixed(2),
+      rental_session_count: String(sessionCountForPayment),
+      rental_payment_total_usd: totalUsd.toFixed(2),
     }
     const claimed = await tryClaimRecurringWeeklySlotsForDates({
       fieldId: rentalSlot.field,

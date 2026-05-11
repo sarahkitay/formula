@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 export const metadata: Metadata = {
   title: 'Field rentals',
   description:
-    'Structured field rentals: published hourly rate, packaged windows, deposit checkout via the booking hub.',
+    'Structured field rentals: published $180/hr rate in 30-minute steps, packaged windows, Stripe payment via the booking hub.',
 }
 
 const ctaPrimaryClass =
@@ -33,8 +33,8 @@ export default function RentalsPage() {
           <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-formula-volt/90">Field rentals</p>
           <h1 className={cn(marketingDisplayH1ClassName, 'mt-4 max-w-[22ch] text-balance')}>Book field time without back-and-forth</h1>
           <p className="mt-6 max-w-[52ch] text-[16px] leading-relaxed text-formula-frost/88 sm:text-[17px]">
-            Pick a package, lock a published window, pay the booking deposit, then complete the participant waiver. One flow: calendar conflicts are blocked
-            automatically; Stripe confirms your hold.
+            Pick a package, lock a published window, pay at checkout (published hourly rate times your window and sessions), then complete the participant waiver.
+            One flow: calendar conflicts are blocked automatically; Stripe confirms your payment.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <a href="#rental-booking" className={ctaPrimaryClass}>
@@ -64,10 +64,11 @@ export default function RentalsPage() {
         <FieldRentalBookingFlow />
 
         <div className="mt-16 border-t border-formula-frost/10 pt-12 md:mt-20 md:pt-16">
-          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Rate & deposit</h2>
+          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Rate & payment</h2>
           <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-formula-frost/85">
-            <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> published field rate. Booking deposit is{' '}
-            <strong className="text-formula-paper">$1,000</strong> to hold your calendar window. {FIELD_RENTAL_PUBLISHED_RATES.packages}
+            <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> published field rate, billed in{' '}
+            {FIELD_RENTAL_PUBLISHED_RATES.incrementMinutes}-minute steps. Checkout total is that rate times your reserved length times each session date you
+            confirm. {FIELD_RENTAL_PUBLISHED_RATES.packages}
           </p>
         </div>
 
@@ -98,10 +99,10 @@ export default function RentalsPage() {
 
         <section className="border-t border-formula-frost/12 pt-12 md:pt-16">
           <div className="max-w-[62ch]">
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Step 3 · After deposit</p>
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Step 3 · After payment</p>
             <h2 className="mt-3 font-mono text-lg font-semibold tracking-tight text-formula-paper md:text-xl">Participant waiver</h2>
             <p className="mt-3 text-[15px] leading-relaxed text-formula-frost/82">
-              One signed agreement per participant before field access. Complete this section once your rental deposit is placed (or anytime you need a
+              One signed agreement per participant before field access. Complete this section once your rental payment is placed (or anytime you need a
               standalone waiver on file).
             </p>
           </div>

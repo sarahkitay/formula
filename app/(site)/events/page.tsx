@@ -29,7 +29,7 @@ export default function EventsHubPage() {
     <MarketingInnerPage
       eyebrow="Events"
       title="Host at Formula"
-      intro="Use the form below for corporate blocks, tournaments, camps, and similar hosted uses - staff replies by email. This page is not field-rental checkout: structured field time (published hourly rate, default 2 hr holds) and birthday parties (party deposit) are booked on Rentals, Parties, or the booking hub."
+      intro="Use the form below for corporate blocks, tournaments, camps, and similar hosted uses - staff replies by email. Hosted events often start at $1,000 and can go up with scope. This page is not field-rental checkout: field time is billed at the published hourly rate on Rentals / the booking hub; birthday parties use the $1,000 party payment on Parties or the booking hub."
       wide
     >
       <section id="upcoming" aria-labelledby="upcoming-heading" className="not-prose min-w-0 scroll-mt-24 sm:scroll-mt-28">

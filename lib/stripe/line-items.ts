@@ -1,6 +1,7 @@
 import type Stripe from 'stripe'
 import {
   FIELD_RENTAL_BOOKING_CHECKOUT,
+  fieldRentalSessionPaymentUsd,
   FORMULA_SKILLS_CHECK,
   FORMULA_MINIS_SIX_WEEK,
   FORMULA_SUNDAY_CHILD_PROGRAM_10_WK,
@@ -11,6 +12,7 @@ import {
   SESSION_PACKAGE_5,
   SESSION_PACKAGE_10,
 } from '@/lib/marketing/public-pricing'
+import { FIELD_RENTAL_DEFAULT_DURATION_MINUTES } from '@/lib/rentals/field-rental-picker-constants'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
 
 export type LineItemsOptions = {
@@ -20,7 +22,7 @@ export type LineItemsOptions = {
   fridayFriendliesPlayerCount?: number
   /** Field rental: number of weekly sessions (quantity). */
   fieldRentalSessionWeeks?: number
-  /** Field rental: Stripe unit_amount (cents) for one session deposit (duration-priced on server). */
+  /** Field rental: Stripe unit_amount (cents) for the full checkout (server: hourly × duration × sessions). */
   fieldRentalUnitAmountCents?: number
 }
 
@@ -197,9 +199,8 @@ export function lineItemsForCheckoutType(
 
   if (type === 'field-rental-booking') {
     const weeks = Math.min(52, Math.max(1, Math.floor(options?.fieldRentalSessionWeeks ?? 1)))
-    const unitCents = Math.round(
-      Math.max(1, options?.fieldRentalUnitAmountCents ?? FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * 100)
-    )
+    const fallbackCents = Math.round(fieldRentalSessionPaymentUsd(FIELD_RENTAL_DEFAULT_DURATION_MINUTES) * 100)
+    const unitCents = Math.round(Math.max(1, options?.fieldRentalUnitAmountCents ?? fallbackCents))
     return [
       {
         quantity: 1,

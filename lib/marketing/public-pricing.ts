@@ -103,15 +103,6 @@ export const YOUTH_MEMBERSHIP_PRICING = {
   ] as const,
 } as const
 
-/** Field rental checkout uses a fixed booking deposit; hourly published rate remains for staff reconciliation. */
-export const FIELD_RENTAL_BOOKING_CHECKOUT = {
-  /** Flat booking deposit charged at checkout. */
-  priceUsd: 1000,
-  productName: 'Field rental booking deposit',
-  summary:
-    'Non-refundable booking deposit for a classified field rental window. Deposit is $1,000 to lock the booking; staff may reconcile any remaining balance vs package agreements.',
-} as const
-
 /** Published field rental hourly rate (same for all windows until ops publishes a change). */
 export const FIELD_RENTAL_PUBLISHED_RATES = {
   perHourUsd: 180,
@@ -120,8 +111,8 @@ export const FIELD_RENTAL_PUBLISHED_RATES = {
   packages: 'Package pricing is available with a 3-month minimum commitment.',
 } as const
 
-/** Deposit USD for one rental session of `durationMinutes` (must be a multiple of 30). */
-export function fieldRentalDepositUsd(
+/** Payment due for one field rental session of `durationMinutes` at the published hourly rate (30-minute steps). */
+export function fieldRentalSessionPaymentUsd(
   durationMinutes: number,
   perHourUsd: number = FIELD_RENTAL_PUBLISHED_RATES.perHourUsd
 ): number {
@@ -129,18 +120,26 @@ export function fieldRentalDepositUsd(
   return (durationMinutes / 60) * perHourUsd
 }
 
-/** Stripe Checkout: hosted party deposit (public parties page). */
+/** Stripe line item labels and descriptions for field rental checkout (amount = per-session payment × session count). */
+export const FIELD_RENTAL_BOOKING_CHECKOUT = {
+  productName: 'Field rental · session payment',
+  summary:
+    'Checkout collects payment at the published hourly rate in 30-minute steps for each session you book. Hosted parties and large events use separate checkouts.',
+} as const
+
+/** Stripe Checkout: hosted birthday party (public parties page). */
 export const PARTY_BOOKING_1K_CHECKOUT = {
   priceUsd: 1000,
-  productName: 'Hosted birthday party · deposit',
+  productName: 'Hosted birthday party · payment',
   summary:
-    '$1,000 party deposit. Staff confirms date, headcount, and field window after payment; final balance or adjustments per your package agreement.',
+    '$1,000 initial payment. Staff confirms date, headcount, and field window after payment; final balance or adjustments per your package agreement.',
 } as const
 
 export const PARTIES_PRICING_STATUS =
-  'Party deposit $1,000 online (Stripe). Book below - include field rental window so ops can schedule.' as const
+  'Birthday parties: $1,000 payment online (Stripe). Book below and include your field window so ops can schedule.' as const
 
-export const GENERAL_EVENTS_PRICING_STATUS = 'Hosted event pricing TBA. See parties, Footbot, and tournaments for paths.' as const
+export const GENERAL_EVENTS_PRICING_STATUS =
+  'Hosted events and private bookings typically start at $1,000; scope and headcount can increase the total. See the Events hub or contact us for a quote.' as const
 
 /** Age range for Friday Night Friendlies athlete checkout (years). */
 export const FRIDAY_NIGHT_FRIENDLIES_AGE = { min: 6, max: 14 } as const

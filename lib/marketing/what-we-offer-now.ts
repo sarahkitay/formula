@@ -19,7 +19,7 @@ export const WHAT_WE_OFFER_NOW = [
   },
   {
     title: 'Birthday parties & hosted events',
-    body: 'Party deposit path with clear windows. Summer camp, friendlies, and other hosted paths: see the Events hub.',
+    body: 'Birthday parties: $1,000 payment. Other hosted events often start at $1,000 and can be more with scope. Summer camp, friendlies, and more: Events hub.',
     href: MARKETING_HREF.parties,
   },
   {
@@ -29,12 +29,12 @@ export const WHAT_WE_OFFER_NOW = [
   },
   {
     title: 'Assessments',
-    body: 'Skills Check booking, guardian contact, field rental deposits, and waiver, all from the public booking hub.',
+    body: 'Skills Check booking, guardian contact, field rental payment, and waiver, all from the public booking hub.',
     href: MARKETING_HREF.bookAssessmentPortal,
   },
   {
     title: 'Friday Friendlies',
-    body: 'Coach-run pickup for ages 6–14. Pre-register online; walk-ups OK. Schedule and checkout on the event page.',
+    body: 'Coach-run pickup for ages 6-14. Pre-register online; walk-ups OK. Schedule and checkout on the event page.',
     href: MARKETING_HREF.fridayNightFriendlies,
   },
 ] as const

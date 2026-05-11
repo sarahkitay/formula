@@ -204,7 +204,7 @@ export default async function AdminOverviewPage() {
           <div className="panel-technical p-5">
             <SectionHeader
               title="Revenue snapshot (Stripe)"
-              description="Paid Checkout sessions from your webhook - includes field rental deposits, parties, assessments, packages, and custom invoices."
+              description="Paid Checkout sessions from your webhook - includes field rental payments, parties, assessments, packages, and custom invoices."
               action={
                 <Link href="/admin/revenue-strategy">
                   <Button variant="ghost" size="sm" rightIcon={<ChevronRight className="h-3 w-3" strokeWidth={2} />}>

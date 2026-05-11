@@ -9,7 +9,7 @@ import { FORMULA_SKILLS_CHECK } from '@/lib/marketing/public-pricing'
 export const metadata: Metadata = {
   title: 'Reserve your spot',
   description:
-    'Booking hub: Formula Skills Check (June pre-book), youth block preview, field rental holds, birthday party deposit, and rental waiver - pay securely; optional parent portal after checkout.',
+    'Booking hub: Formula Skills Check (June pre-book), youth block preview, field rental payment, birthday party payment ($1,000), and rental waiver - pay securely; optional parent portal after checkout.',
 }
 
 export default function BookAssessmentHubPage() {
