@@ -22,9 +22,9 @@ export default function AdminFacilityMapPage() {
       <div className="space-y-6">
         <PageHeader
           title="Operations map"
-          subtitle={`${SITE.facilityName} · asset grid · inventory-protected scheduling`}
+          subtitle={`${SITE.facilityName} · asset grid · also embedded at the bottom of Schedule (primary entry).`}
           breadcrumb={[
-            { label: 'Dashboard', href: '/admin/dashboard' },
+            { label: 'Schedule', href: '/admin/schedule' },
             { label: 'Ops map' },
           ]}
           actions={

@@ -182,7 +182,7 @@ export function LoginPageClient() {
       destination = next
     }
     if (roleNorm === 'admin' && destination === '/staff-portal') {
-      destination = '/admin/dashboard'
+      destination = '/admin/schedule'
     }
     if (roleNorm === 'coach' && (destination.startsWith('/admin') || destination === '/staff-portal')) {
       destination = next

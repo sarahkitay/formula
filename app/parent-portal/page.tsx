@@ -42,7 +42,7 @@ export default function ParentPortalRedirectPage() {
 
       const hub = getPortalRoute(p.role)
 
-      if (hub === '/staff-portal' || hub === '/admin/dashboard' || hub === '/coach/today') {
+      if (hub === '/staff-portal' || hub === '/admin/schedule' || hub === '/coach/today') {
         router.replace(hub)
         return
       }

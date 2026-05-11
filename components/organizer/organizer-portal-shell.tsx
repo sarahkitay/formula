@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { AppShell } from '@/components/layout/app-shell'
+import { PortalHubToolbar } from '@/components/portal/portal-hub-toolbar'
 import { loadProfileForUser } from '@/lib/auth/load-profile'
 import { getPortalRoute } from '@/lib/getPortalRoute'
 import { supabase } from '@/lib/supabase'
@@ -77,6 +78,8 @@ export function OrganizerPortalShell({ children }: { children: React.ReactNode }
     )
   }
 
+  const navLinks = organizerNav.map(n => ({ label: n.label, href: n.href }))
+
   return (
     <AppShell
       role="parent"
@@ -90,6 +93,14 @@ export function OrganizerPortalShell({ children }: { children: React.ReactNode }
       identityEmail={email}
       endSessionVariant="logout-button"
       logoutRedirectTo="/login?role=organizer"
+      mainTop={
+        <PortalHubToolbar
+          variant="admin"
+          navLinks={navLinks}
+          facilityAddress={SITE.facilityAddressLine}
+          mapsUrl={FACILITY_APPLE_MAPS_URL}
+        />
+      }
       facilityAddressLine={SITE.facilityAddressLine}
       facilityAddressHref={FACILITY_APPLE_MAPS_URL}
     >

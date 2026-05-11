@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { UserCheck } from 'lucide-react'
 import { ScannerPanel } from '@/components/check-in/scanner-panel'
 import { FacilityLoadPanel } from '@/components/check-in/facility-load-panel'
@@ -133,7 +134,7 @@ export default function CheckInPage() {
                 : `${stamp} · ${rosterPlayers.length} athletes loaded · roster from Supabase`
             }
             breadcrumb={[
-              { label: 'Dashboard', href: '/admin/dashboard' },
+              { label: 'Schedule', href: '/admin/schedule' },
               { label: 'Check-in' },
             ]}
           />
@@ -186,6 +187,26 @@ export default function CheckInPage() {
           )}
         </div>
       </div>
+
+      <details className="mt-10 rounded-lg border border-formula-frost/14 bg-formula-paper/[0.03] p-4 open:border-formula-frost/22">
+        <summary className="cursor-pointer list-none font-mono text-[11px] font-bold uppercase tracking-wide text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
+          <span className="text-formula-volt">▸</span> View all players &amp; clients
+        </summary>
+        <div className="mt-4 flex flex-wrap gap-3 border-t border-formula-frost/10 pt-4 font-mono text-[11px]">
+          <Link
+            href="/admin/players"
+            className="inline-flex items-center rounded border border-formula-frost/18 bg-formula-base/40 px-3 py-2 text-formula-volt underline-offset-2 hover:border-formula-volt/40 hover:underline"
+          >
+            Player registry →
+          </Link>
+          <Link
+            href="/admin/clients/profile"
+            className="inline-flex items-center rounded border border-formula-frost/18 bg-formula-base/40 px-3 py-2 text-formula-volt underline-offset-2 hover:border-formula-volt/40 hover:underline"
+          >
+            Client profiles &amp; ledger →
+          </Link>
+        </div>
+      </details>
     </PageContainer>
   )
 }

@@ -29,6 +29,10 @@ import { FacilityWeekCalendar } from '@/components/schedule/facility-week-calend
 import { AdminCalendarFeedModal } from '@/components/schedule/admin-calendar-feed-modal'
 import { AdminQuickBookingModal, type AdminQuickBookDraft } from '@/components/schedule/admin-quick-booking-modal'
 import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
+import { AdminFacilityMap, AdminFacilityMapLegend } from '@/components/admin/admin-facility-map'
+import { facilityAssets } from '@/lib/mock-data/admin-operating-system'
+import { defaultIdleFacilityAssets } from '@/lib/facility/default-facility-assets'
+import { SITE } from '@/lib/site-config'
 
 export default function SchedulePage() {
   const facilityConfigRef = React.useRef<FacilitySchedulePublishedConfig | null>(null)
@@ -41,6 +45,9 @@ export default function SchedulePage() {
   const [detailRelatedSlots, setDetailRelatedSlots] = useState<ScheduleSlot[]>([])
   const [bookedOnly, setBookedOnly] = useState(true)
   const [quickBookDraft, setQuickBookDraft] = useState<AdminQuickBookDraft | null>(null)
+
+  const mapAssets = facilityAssets.length > 0 ? facilityAssets : defaultIdleFacilityAssets()
+  const [mapSelectedId, setMapSelectedId] = useState<string | null>(() => mapAssets[0]?.id ?? null)
 
   const [facilityConfig, setFacilityConfig] = useState<FacilitySchedulePublishedConfig | null>(null)
 
@@ -513,6 +520,23 @@ export default function SchedulePage() {
           </>
         )}
       </div>
+
+      <section
+        id="ops-map"
+        className="mt-14 scroll-mt-24 space-y-4 border-t border-formula-frost/14 pt-10"
+      >
+        <div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-formula-mist">Facility</p>
+          <h2 className="mt-1 text-lg font-semibold text-formula-paper">Operations map</h2>
+          <p className="mt-1 max-w-3xl font-mono text-[11px] text-formula-mist">
+            {SITE.facilityName} · live asset grid (same surface as the former Ops map page). Use with schedule context above.
+          </p>
+        </div>
+        <AdminFacilityMapLegend />
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
+          <AdminFacilityMap assets={mapAssets} selectedId={mapSelectedId} onSelect={id => setMapSelectedId(id)} />
+        </div>
+      </section>
     </PageContainer>
   )
 }

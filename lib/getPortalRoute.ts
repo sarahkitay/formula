@@ -2,7 +2,7 @@
  * Single source for post-login and gate redirects.
  * Returns `/login` when the role cannot use a known portal hub.
  *
- * - `admin` → full Admin OS (`/admin/dashboard`), not the lighter staff roster hub.
+ * - `admin` → full Admin OS (`/admin/schedule` landing — calendar-first).
  * - `staff` → `/staff-portal` (desk / shared tools).
  * - `coach` → Coach execution shell (`/coach/today`).
  */
@@ -10,7 +10,7 @@ export type PortalRoute =
   | '/parent/dashboard'
   | '/organizer/dashboard'
   | '/staff-portal'
-  | '/admin/dashboard'
+  | '/admin/schedule'
   | '/coach/today'
   | '/login'
 
@@ -19,7 +19,7 @@ export function getPortalRoute(role: string | null | undefined): PortalRoute {
   if (r === 'parent') return '/parent/dashboard'
   if (r === 'organizer') return '/organizer/dashboard'
   if (r === 'coach') return '/coach/today'
-  if (r === 'admin') return '/admin/dashboard'
+  if (r === 'admin') return '/admin/schedule'
   if (r === 'staff') return '/staff-portal'
   return '/login'
 }

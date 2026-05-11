@@ -185,7 +185,7 @@ export default async function AdminOverviewPage() {
             <SectionHeader
               title="Utilization by asset"
               action={
-                <Link href="/admin/facility-map">
+                <Link href="/admin/schedule#ops-map">
                   <Button variant="ghost" size="sm" rightIcon={<ChevronRight className="h-3 w-3" strokeWidth={2} />}>
                     Ops map
                   </Button>

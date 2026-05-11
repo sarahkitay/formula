@@ -1,6 +1,7 @@
 import React from 'react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { ModuleBlock } from '@/components/dashboard/module-block'
+import { AdminExecutiveOverviewSection } from '@/components/admin/admin-executive-overview-section'
 import { adminNav } from '@/lib/nav/admin'
 import { facilityAssets, computeRevenueThresholds, revenueByCategory } from '@/lib/mock-data/admin-operating-system'
 import { getTodaysSessions } from '@/lib/mock-data/sessions'
@@ -87,18 +88,19 @@ export default async function AdminDashboardPage() {
     const title = BLOCK_TITLE[item.label] ?? item.label
     const summary = item.description ?? ''
 
-    if (item.href === '/admin/overview') {
+    if (item.href === '/admin/finance') {
+      const breached = computeRevenueThresholds(stripeCategoryRows).filter(t => t.breached).length
       return (
         <ModuleBlock
           key={item.href}
           id={id}
-          title="Ops Command"
+          title="Finance hub"
           summary={summary}
           href={item.href}
           dataPoints={[
-            { label: 'Check-ins today', value: recentCheckIns.length, highlight: 'green' },
-            { label: 'Blocks today', value: todaysSessions.length },
             { label: 'MTD revenue', value: formatCurrency(stripeSummary.totalRevenue) },
+            { label: 'Youth share', value: youthShareLabel, highlight: youthShareRow ? 'green' : undefined },
+            { label: 'Threshold flags', value: breached, highlight: breached ? 'volt' : undefined },
           ]}
         />
       )
@@ -177,24 +179,7 @@ export default async function AdminDashboardPage() {
       )
     }
 
-    if (item.href === '/admin/payments') {
-      return (
-        <ModuleBlock
-          key={item.href}
-          id={id}
-          title="Revenue Ledger"
-          summary={summary}
-          href={item.href}
-          dataPoints={[
-            { label: 'MTD revenue', value: formatCurrency(stripeSummary.totalRevenue) },
-            { label: 'Unpaid fees', value: pendingFees, highlight: pendingFees ? 'volt' : undefined },
-            { label: 'Ledger rows', value: stripeSummary.rowCount },
-          ]}
-        />
-      )
-    }
-
-    if (item.href === '/admin/field-rentals') {
+    if (item.href === '/admin/rentals') {
       return (
         <ModuleBlock
           key={item.href}
@@ -247,60 +232,7 @@ export default async function AdminDashboardPage() {
           dataPoints={[
             { label: 'Facility', value: 'Formula SC' },
             { label: 'Roles', value: 'RBAC' },
-            { label: 'Integrations', value: 'Stripe (TBD)' },
-          ]}
-        />
-      )
-    }
-
-    if (item.href === '/admin/facility-map') {
-      const hot = mapAssets.filter(a => a.utilizationPct > 80).length
-      return (
-        <ModuleBlock
-          key={item.href}
-          id={id}
-          title="Ops map"
-          summary={summary}
-          href={item.href}
-          dataPoints={[
-            { label: 'Assets live', value: mapAssets.length },
-            { label: 'Hot zones', value: hot, highlight: hot ? 'volt' : undefined },
-            { label: 'Telemetry', value: facilityAssets.length > 0 ? 'live' : 'layout' },
-          ]}
-        />
-      )
-    }
-
-    if (item.href === '/admin/fpi') {
-      return (
-        <ModuleBlock
-          key={item.href}
-          id={id}
-          title="FPI"
-          summary={summary}
-          href={item.href}
-          dataPoints={[
-            { label: 'Pillars', value: '5' },
-            { label: 'QC queue', value: '0' },
-            { label: 'Public boards', value: 'OFF' },
-          ]}
-        />
-      )
-    }
-
-    if (item.href === '/admin/revenue-strategy') {
-      const breached = computeRevenueThresholds(stripeCategoryRows).filter(t => t.breached).length
-      return (
-        <ModuleBlock
-          key={item.href}
-          id={id}
-          title="Revenue"
-          summary={summary}
-          href={item.href}
-          dataPoints={[
-            { label: 'Youth share', value: youthShareLabel, highlight: youthShareRow ? 'green' : undefined },
-            { label: 'Threshold flags', value: breached, highlight: breached ? 'volt' : undefined },
-            { label: 'Phase', value: 'P1' },
+            { label: 'Integrations', value: stripeSummary.configured ? 'Stripe OK' : 'Stripe (env)' },
           ]}
         />
       )
@@ -360,6 +292,8 @@ export default async function AdminDashboardPage() {
 
   return (
     <PageContainer>
+      <AdminExecutiveOverviewSection />
+      <h2 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-formula-mist">Modules</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">{modules}</div>
 
       <div className="mt-12 border border-formula-frost/14 bg-formula-paper/[0.04] p-8 font-mono shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
