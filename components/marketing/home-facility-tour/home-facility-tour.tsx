@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { FACILITY_TOUR_LAYOUT } from '@/lib/marketing/facility-tour-layout'
 import { FACILITY_ZONES, type PublicFacilityZoneId } from '@/lib/marketing/facility-zones'
+import { parseTourPercent, zoneFocusOriginPercents } from '@/lib/marketing/facility-tour-map-geometry'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { SITE } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
@@ -112,6 +113,32 @@ function TourHotspot({
   )
 }
 
+function ZoneDetailBody({
+  active,
+  detailSubline,
+}: {
+  active: TourStop
+  detailSubline: string | undefined
+}) {
+  return (
+    <>
+      <p className="text-[10px] uppercase tracking-[0.24em] text-white/45 md:text-[11px] md:tracking-[0.28em]">What this zone is</p>
+      <h3 className="mt-1 text-base font-semibold leading-tight tracking-[-0.03em] text-white md:text-lg">{active.name}</h3>
+      {detailSubline ? (
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-formula-volt/80 md:tracking-[0.22em]">{detailSubline}</p>
+      ) : null}
+      <p className="mt-1.5 text-[13px] leading-snug text-white/72 md:mt-2 md:text-sm md:leading-relaxed">{active.description}</p>
+      <Link
+        href={MARKETING_HREF.fpi}
+        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/16 bg-white/8 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/14 md:mt-4 md:gap-2 md:px-3.5 md:py-1.5 md:text-sm"
+      >
+        The Formula
+        <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
+      </Link>
+    </>
+  )
+}
+
 function TourDot({
   stop,
   active,
@@ -152,7 +179,17 @@ export function HomeFacilityTour() {
   const hotspotsOrdered = useMemo(() => sortStopsForHitOrder(tourStops), [tourStops])
   const [activeId, setActiveId] = useState<PublicFacilityZoneId>('field-1')
   const [autoPlay, setAutoPlay] = useState(true)
-  const zoneDetailRef = useRef<HTMLDivElement>(null)
+  const [isMdUp, setIsMdUp] = useState(false)
+  const mobileDetailRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(min-width: 768px)')
+    const sync = () => setIsMdUp(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
 
   useEffect(() => {
     if (!autoPlay) return
@@ -168,13 +205,29 @@ export function HomeFacilityTour() {
   useEffect(() => {
     if (autoPlay) return
     if (typeof window === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    if (window.innerWidth >= 1024) return
-    zoneDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [activeId, autoPlay])
+    if (isMdUp) return
+    mobileDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [activeId, autoPlay, isMdUp])
 
   const active = useMemo(() => tourStops.find(s => s.id === activeId) ?? tourStops[0]!, [activeId, tourStops])
   const activeZone = useMemo(() => FACILITY_ZONES.find(z => z.id === active.id), [active.id])
   const detailSubline = activeZone?.sub ?? active.eyebrow
+
+  const desktopPopoverStyle = useMemo(() => {
+    if (!activeZone) return undefined
+    const tour = activeZone.tour
+    const { ox } = zoneFocusOriginPercents(tour)
+    const topPct = parseTourPercent(tour.top)
+    const hPct = parseTourPercent(tour.height)
+    /** Zones hugging the top of the plate: open the card downward so it stays in view. */
+    const openDown = topPct < 12
+    return {
+      left: `${ox}%`,
+      top: openDown ? `${topPct + hPct}%` : `${topPct}%`,
+      transform: openDown ? 'translate(-50%, 10px)' : 'translate(-50%, calc(-100% - 10px))',
+      width: 'min(300px, min(34vw, 100% - 1rem))',
+    } as const
+  }, [activeZone])
 
   const selectZone = (id: PublicFacilityZoneId) => {
     setAutoPlay(false)
@@ -183,19 +236,19 @@ export function HomeFacilityTour() {
 
   return (
     <section
-      className="relative overflow-hidden bg-[linear-gradient(180deg,var(--color-formula-deep)_0%,var(--color-formula-base)_38%,#1a1d1c_100%)] text-formula-paper"
+      className="relative overflow-x-clip overflow-y-visible bg-[linear-gradient(180deg,var(--color-formula-deep)_0%,var(--color-formula-base)_38%,#1a1d1c_100%)] text-formula-paper"
       aria-label="Interactive facility tour"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--color-formula-frost)_14%,transparent),transparent_32%),radial-gradient(circle_at_78%_12%,color-mix(in_srgb,var(--color-formula-volt)_8%,transparent),transparent_26%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-formula-frost)_10%)_1px,transparent_1px)] bg-[length:44px_44px] opacity-[0.22]" />
       <div className="absolute inset-x-0 bottom-0 h-[14vh] bg-gradient-to-t from-formula-deep/40 to-transparent md:h-[16vh]" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-1.5 px-4 pb-2 pt-2 md:gap-2 md:px-8 md:pb-3 md:pt-3 lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1680px] flex-col gap-1.5 px-4 pb-2 pt-0 md:gap-2 md:px-8 md:pb-3 md:pt-1 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
-          className="relative isolate mx-auto w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-lg border border-formula-frost/12 bg-formula-deep/65 shadow-[0_12px_32px_rgba(0,0,0,0.28)] md:rounded-xl"
+          className="relative isolate mx-auto -mt-3 w-full max-w-[1600px] overflow-x-auto overflow-y-visible rounded-lg border border-formula-frost/12 bg-formula-deep/65 shadow-[0_12px_32px_rgba(0,0,0,0.28)] md:-mt-6 md:rounded-xl"
         >
           <ScrollFadeIn>
             <div className="border-b border-white/[0.06] px-3 pb-2 pt-2 md:px-4 md:pb-2.5 md:pt-2.5">
@@ -241,20 +294,57 @@ export function HomeFacilityTour() {
               Click or tap a zone on the tour map or choose a stop in the list below. The selected area is highlighted.
             </p>
           </div>
-          <FacilityTourStaticFloor
-            activeZoneId={activeId}
-            autoPlay={autoPlay}
-            hotspots={
-              <>
-                {hotspotsOrdered.map(stop => (
-                  <TourHotspot key={stop.id} stop={stop} active={stop.id === activeId} onClick={selectZone} />
-                ))}
-              </>
-            }
-          />
+
+          <div className="relative">
+            <div ref={mobileDetailRef} className="md:hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  id="facility-tour-zone-detail"
+                  key={active.id}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -3 }}
+                  transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                  className="mx-auto mb-2 max-h-[min(42vh,320px)] overflow-y-auto rounded-lg border border-white/14 bg-black/70 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-md"
+                >
+                  <ZoneDetailBody
+                    active={active}
+                    detailSubline={detailSubline}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <FacilityTourStaticFloor
+              activeZoneId={activeId}
+              autoPlay={autoPlay}
+              hotspots={
+                <>
+                  {hotspotsOrdered.map(stop => (
+                    <TourHotspot key={stop.id} stop={stop} active={stop.id === activeId} onClick={selectZone} />
+                  ))}
+                </>
+              }
+              mapOverlay={
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={active.id}
+                    initial={{ opacity: 0, y: 3, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -2, scale: 0.98 }}
+                    transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="pointer-events-auto hidden max-h-[min(42vh,320px)] overflow-y-auto rounded-lg border border-white/18 bg-black/85 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-md md:block md:p-3.5"
+                    style={desktopPopoverStyle}
+                  >
+                    <ZoneDetailBody active={active} detailSubline={detailSubline} />
+                  </motion.div>
+                </AnimatePresence>
+              }
+            />
+          </div>
         </motion.div>
 
-        <div className="relative z-10 grid gap-2 pb-0 md:gap-2.5 md:pb-0 lg:grid-cols-[minmax(0,1fr)_minmax(240px,340px)] lg:items-start lg:gap-4">
+        <div className="relative z-10 pb-0 md:pb-0">
           <div className="rounded-lg border border-white/12 bg-black/38 px-2.5 py-2 backdrop-blur-md md:rounded-xl md:px-3 md:py-2.5">
             <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-white/40">Zones</p>
             <div className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 sm:grid-cols-3 md:grid-cols-4">
@@ -268,37 +358,6 @@ export function HomeFacilityTour() {
               ))}
             </div>
           </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              ref={zoneDetailRef}
-              id="facility-tour-zone-detail"
-              key={active.id}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -3 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-              className="rounded-lg border border-white/12 bg-black/48 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.22)] backdrop-blur-md md:rounded-xl md:p-4"
-            >
-              <p className="text-[10px] uppercase tracking-[0.24em] text-white/45 md:text-[11px] md:tracking-[0.28em]">What this zone is</p>
-              <h3 className="mt-1 text-base font-semibold leading-tight tracking-[-0.03em] text-white md:text-lg">
-                {active.name}
-              </h3>
-              {detailSubline ? (
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-formula-volt/80 md:tracking-[0.22em]">
-                  {detailSubline}
-                </p>
-              ) : null}
-              <p className="mt-1.5 text-[13px] leading-snug text-white/72 md:mt-2 md:text-sm md:leading-relaxed">{active.description}</p>
-              <Link
-                href={MARKETING_HREF.fpi}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/16 bg-white/8 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/14 md:mt-4 md:gap-2 md:px-3.5 md:py-1.5 md:text-sm"
-              >
-                The Formula
-                <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </Link>
-            </motion.div>
-          </AnimatePresence>
         </div>
       </div>
     </section>

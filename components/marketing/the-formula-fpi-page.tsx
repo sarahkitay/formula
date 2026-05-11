@@ -1,8 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { FormulaLiveChamber } from '@/components/marketing/formula-live-chamber'
+import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { HOME_SPLIT_PHOTO_QUALITY } from '@/lib/marketing/home-marketing-images'
+import { cn } from '@/lib/utils'
 
 /** Facility photo for The Formula hero - youth training on indoor turf (not reused on homepage hero). */
 const FORMULA_HERO_IMAGE = '/8E3A3813.jpg'
@@ -79,7 +81,7 @@ export function TheFormulaFpiPage() {
             <p className={eyebrowClass}>The Formula</p>
             <h1
               id="formula-hero-heading"
-              className="mt-4 text-[clamp(1.65rem,4.2vw,2.75rem)] font-semibold leading-[1.15] tracking-wide text-white"
+              className={cn(marketingDisplayH1ClassName, 'mt-4 tracking-wide text-white')}
             >
               Six pillars scored objectively.
             </h1>
@@ -250,7 +252,7 @@ export function TheFormulaFpiPage() {
       <section className={`${sectionShell} border-t border-white/[0.08] bg-[#1e2d24] py-20 md:py-28 lg:py-[120px]`} aria-labelledby="formula-close-heading">
         <div className={`${innerMax} text-center`}>
           <p className={eyebrowClass}>Start here</p>
-          <h2 id="formula-close-heading" className="mx-auto mt-4 max-w-[22ch] text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-tight tracking-wide text-white">
+          <h2 id="formula-close-heading" className="mx-auto mt-4 max-w-[22ch] text-[clamp(1.45rem,3.2vw,2.1rem)] font-semibold leading-tight tracking-wide text-white">
             Book assessment or open your portal
           </h2>
           <p className="mx-auto mt-6 max-w-[52ch] text-base leading-relaxed text-zinc-300">

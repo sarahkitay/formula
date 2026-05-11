@@ -40,11 +40,14 @@ export function FacilityTourStaticFloor({
   hotspots,
   activeZoneId,
   autoPlay,
+  mapOverlay,
 }: {
   hotspots: ReactNode
   activeZoneId: PublicFacilityZoneId
   /** When true, inner zoom stays 1 so the map does not pulse while the tour auto-advances. */
   autoPlay: boolean
+  /** Optional layer above hotspots (same % space as the 1240×930 plate; scales with focus zoom). */
+  mapOverlay?: ReactNode
 }) {
   const [reduceMotion, setReduceMotion] = useState(false)
 
@@ -68,9 +71,9 @@ export function FacilityTourStaticFloor({
 
   return (
     <div className="relative mx-auto w-full px-2 pb-2.5 pt-1 md:px-3 md:pb-3.5 md:pt-1.5">
-      <div className="relative w-full overflow-hidden max-md:h-[min(44vh,352px)] sm:max-md:h-[min(48vh,388px)] md:h-[min(48vh,424px)] lg:h-[min(52vh,488px)] xl:h-[min(54vh,520px)]">
-        <div className="relative flex h-full min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-hidden">
-          <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_18%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.205)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.262)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.445)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.545)]">
+      <div className="relative w-full overflow-x-auto overflow-y-visible max-md:h-[min(58vh,440px)] sm:max-md:h-[min(60vh,480px)] md:h-[min(58vh,500px)] lg:h-[min(62vh,560px)] xl:h-[min(64vh,600px)]">
+        <div className="relative flex h-full min-h-0 w-full items-start justify-center overflow-x-auto overflow-y-visible">
+          <div className="relative h-[930px] w-[1240px] max-w-none shrink-0 origin-[50%_14%] will-change-transform motion-reduce:transform-none max-sm:[transform:perspective(1500px)_rotateX(54deg)_rotateZ(-24deg)_scale(0.268)] sm:max-md:[transform:perspective(1650px)_rotateX(56deg)_rotateZ(-26deg)_scale(0.33)] md:max-lg:[transform:perspective(1750px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.54)] lg:[transform:perspective(1800px)_rotateX(58deg)_rotateZ(-28deg)_scale(0.66)]">
             <div
               className="absolute inset-0 z-10 will-change-transform"
               style={{
@@ -150,6 +153,7 @@ export function FacilityTourStaticFloor({
             </div>
 
             <div className="absolute inset-0 z-20">{hotspots}</div>
+            {mapOverlay ? <div className="pointer-events-none absolute inset-0 z-[50]">{mapOverlay}</div> : null}
             </div>
           </div>
         </div>

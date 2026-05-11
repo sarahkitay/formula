@@ -15,7 +15,7 @@ export function zoneFocusOriginPercents(tour: FacilityZoneTour): { ox: number; o
 
 /** Inner-layer scale when a zone is focused (outer 3D plate stays fixed). Slightly higher for small zones. */
 export function zoneFocusScaleMultiplier(zoneId: string): number {
-  if (zoneId === 'entrance' || zoneId === 'support-cluster' || zoneId === 'footbot') return 1.22
-  if (zoneId === 'field-3') return 1.2
-  return 1.12
+  if (zoneId === 'entrance' || zoneId === 'support-cluster' || zoneId === 'footbot') return 1.38
+  if (zoneId === 'field-3') return 1.34
+  return 1.28
 }

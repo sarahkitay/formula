@@ -65,7 +65,7 @@ export function WhatIsFormulaPageContent() {
           <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
             <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr]">
               <div>
-                <h2 className="font-sans text-[clamp(2rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.04em] text-[#eef2ed]">Who it&apos;s for</h2>
+                <h2 className="font-sans text-[clamp(1.35rem,2.8vw,2rem)] leading-[1.08] tracking-[-0.03em] text-[#eef2ed]">Who it&apos;s for</h2>
               </div>
 
               <div className="border border-white/10 bg-white/[0.025] p-8 md:p-10">
@@ -93,7 +93,7 @@ export function WhatIsFormulaPageContent() {
             <ScrollFadeIn>
               <h2
                 id="what-formula-offer-now-heading"
-                className="max-w-xl font-sans text-[clamp(2rem,3.8vw,3.35rem)] leading-[1.04] tracking-[-0.04em] text-[#eef2ed]"
+                className="max-w-xl font-sans text-[clamp(1.35rem,2.6vw,2rem)] leading-[1.08] tracking-[-0.03em] text-[#eef2ed]"
               >
                 What&apos;s live now
               </h2>
