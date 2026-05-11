@@ -45,6 +45,7 @@ export async function GET(req: Request) {
     expected_waiver_count: inv.expected_waiver_count,
     completed_count: inv.completed_count,
     remaining_count: inv.remaining_count,
+    overage_count: inv.overage_count,
     purchaser_name: inv.purchaser_name ?? null,
     purchaser_email: inv.purchaser_email ?? null,
     checkout_amount_total_cents: inv.checkout_amount_total_cents ?? null,

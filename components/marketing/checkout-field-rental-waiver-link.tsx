@@ -100,7 +100,8 @@ export function CheckoutFieldRentalWaiverLink({ sessionId }: { sessionId: string
       <p className="mt-2 text-sm leading-relaxed text-formula-frost/88">
         Send this one link to everyone. On the page they choose <strong className="text-formula-paper">Sign the waiver</strong> (first time) or{' '}
         <strong className="text-formula-paper">RSVP only</strong> if they already have a signed Formula waiver on file with the same email. Admin tracks progress
-        until <strong className="text-formula-paper">{payload.expected_waiver_count}</strong> spots are filled.
+        against <strong className="text-formula-paper">{payload.expected_waiver_count}</strong> expected signers; extras can still sign until staff raises the
+        headcount if the group grows.
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <code className="max-w-full break-all rounded border border-formula-frost/12 bg-black/25 px-2 py-1.5 font-mono text-[11px] text-formula-frost/90">

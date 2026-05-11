@@ -12,6 +12,7 @@ type InviteRow = {
   expected_waiver_count: number
   completed_count: number
   remaining_count: number
+  overage_count: number
   purchaser_name: string | null
   checkout_amount_total_cents: number | null
   checkout_currency: string | null
@@ -192,6 +193,11 @@ export function OrganizerDashboardClient() {
                           Signed <strong className="text-formula-paper">{inv.completed_count}</strong> / {inv.expected_waiver_count}
                           {inv.remaining_count > 0 ? (
                             <span className="text-formula-mist"> · {inv.remaining_count} remaining</span>
+                          ) : (inv.overage_count ?? 0) > 0 ? (
+                            <span className="text-amber-200/90">
+                              {' '}
+                              · complete · +{inv.overage_count} extra (ask staff to update headcount)
+                            </span>
                           ) : (
                             <span className="text-formula-volt"> · complete</span>
                           )}
@@ -254,6 +260,11 @@ export function OrganizerDashboardClient() {
                   Waivers signed <strong className="text-formula-paper">{inv.completed_count}</strong> / {inv.expected_waiver_count}
                   {inv.remaining_count > 0 ? (
                     <span className="text-formula-mist"> · {inv.remaining_count} remaining</span>
+                  ) : (inv.overage_count ?? 0) > 0 ? (
+                    <span className="text-amber-200/90">
+                      {' '}
+                      · complete · +{inv.overage_count} extra (ask staff to update headcount)
+                    </span>
                   ) : (
                     <span className="text-formula-volt"> · complete</span>
                   )}

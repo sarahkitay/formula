@@ -243,7 +243,7 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
     <div className="mt-3 rounded border border-formula-frost/12 bg-formula-paper/[0.04] p-3">
       <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Edit payment &amp; session (saved on invite)</p>
       <p className="mt-1 font-mono text-[10px] text-formula-mist/85">
-        Fixes missing Stripe metadata, wrong deposit, or unclear times. Each new waiver signed after this still copies the invite snapshot into the agreement row.
+        Fixes missing Stripe metadata, wrong amount, or unclear times. Each new waiver signed after this still copies the invite snapshot into the agreement row.
       </p>
       <div className="mt-2 grid gap-2 sm:grid-cols-2">
         <label className="block font-mono text-[10px] text-formula-mist">
@@ -417,6 +417,71 @@ function InviteOrganizerEditor({ invite }: { invite: WaiverInviteWithProgress })
   )
 }
 
+function rosterWaiverProgressNote(inv: WaiverInviteWithProgress): React.ReactNode {
+  if (inv.remaining_count > 0) {
+    return <span className="text-formula-mist">({inv.remaining_count} remaining)</span>
+  }
+  if (inv.overage_count > 0) {
+    return (
+      <span className="text-amber-200/90">
+        (complete · +{inv.overage_count} extra — raise expected headcount below)
+      </span>
+    )
+  }
+  return <span className="text-emerald-400/90">(complete)</span>
+}
+
+function InviteHeadcountOveragePanel({ invite }: { invite: WaiverInviteWithProgress }) {
+  const router = useRouter()
+  const [busy, setBusy] = React.useState(false)
+  const [err, setErr] = React.useState<string | null>(null)
+  const over = invite.overage_count
+  if (over <= 0) return null
+
+  async function alignToSigned() {
+    const next = invite.completed_count
+    if (
+      !confirm(
+        `Set expected headcount on this invite to ${next}? It is currently ${invite.expected_waiver_count} with ${over} extra waiver(s) already on file.`
+      )
+    ) {
+      return
+    }
+    setBusy(true)
+    setErr(null)
+    try {
+      const res = await staffApiFetch('/api/admin/waiver-invite-expected-count', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: invite.id, expectedWaiverCount: next }),
+      })
+      const body = (await res.json()) as { error?: string }
+      if (!res.ok) throw new Error(body.error ?? 'Update failed')
+      router.refresh()
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Update failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="mt-3 rounded border border-amber-500/35 bg-amber-950/30 p-3">
+      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-100/95">Headcount vs signers</p>
+      <p className="mt-2 font-mono text-[11px] leading-relaxed text-amber-50/95">
+        {invite.completed_count} waivers are on file but expected headcount is still <strong>{invite.expected_waiver_count}</strong>. Raise it so progress and
+        emails match the group size, or leave as-is if you are intentionally tracking extras.
+      </p>
+      {err ? <p className="mt-2 font-mono text-[10px] text-red-200/90">{err}</p> : null}
+      <div className="mt-2">
+        <Button type="button" variant="secondary" size="sm" disabled={busy} onClick={() => void alignToSigned()}>
+          {busy ? 'Updating…' : `Set expected to ${invite.completed_count}`}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 function InviteRosterExpandedBody({
   invite: inv,
   siteOrigin,
@@ -475,6 +540,7 @@ function InviteRosterExpandedBody({
       </div>
       <InviteOrganizerEditor invite={inv} />
       <InviteSnapshotEditor invite={inv} />
+      <InviteHeadcountOveragePanel invite={inv} />
       <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Share link</p>
       <code className="mt-1 block max-w-full break-all rounded border border-formula-frost/12 bg-black/20 px-2 py-1.5 font-mono text-[10px] text-formula-frost/88">
         {waiverUrl}
@@ -522,8 +588,8 @@ function InviteRosterExpandedBody({
         </ul>
       )}
       <p className="mt-3 text-[10px] leading-relaxed text-formula-mist/75">
-        The roster link offers full sign or RSVP (prior waiver on file). Organizer ({organizerFoot}) paid the deposit (online or in person). Rows without this
-        invite appear only in Signed waivers below.
+        The roster link offers full sign or RSVP (prior waiver on file). Organizer ({organizerFoot}) completed payment for this rental (online or in person). Rows
+        without this invite appear only in Signed waivers below.
       </p>
     </>
   )
@@ -556,6 +622,19 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
   const [dragOverInviteId, setDragOverInviteId] = React.useState<string | null>(null)
   const [dropBusy, setDropBusy] = React.useState(false)
   const [dropError, setDropError] = React.useState<string | null>(null)
+  const [quickToolkitInviteId, setQuickToolkitInviteId] = React.useState(() => invites[0]?.id ?? '')
+
+  React.useEffect(() => {
+    if (invites.length === 0) return
+    if (!quickToolkitInviteId || !invites.some(i => i.id === quickToolkitInviteId)) {
+      setQuickToolkitInviteId(invites[0]!.id)
+    }
+  }, [invites, quickToolkitInviteId])
+
+  const quickToolkitInvite = React.useMemo(
+    () => invites.find(i => i.id === quickToolkitInviteId) ?? null,
+    [invites, quickToolkitInviteId]
+  )
 
   const onDropAgreement = React.useCallback(
     async (inviteId: string, agreementId: string) => {
@@ -607,6 +686,46 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
       </div>
       {dropError ? <p className="font-mono text-[11px] text-amber-200/90">{dropError}</p> : null}
       {dropBusy ? <p className="font-mono text-[10px] text-formula-mist/80">Linking waiver…</p> : null}
+      {invites.length > 0 ? (
+        <details className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.03] p-3">
+          <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
+            <span className="text-formula-volt">▸</span> Add full info — organizer, payment &amp; session, share link (pick invite)
+          </summary>
+          <div className="mt-3 space-y-3 border-t border-formula-frost/10 pt-3">
+            <label className="block font-mono text-[10px] text-formula-mist">
+              Invite
+              <select
+                className="mt-1 w-full max-w-xl border border-formula-frost/14 bg-formula-base/50 px-2 py-2 text-[12px] text-formula-paper"
+                value={quickToolkitInviteId}
+                onChange={e => setQuickToolkitInviteId(e.target.value)}
+              >
+                {invites.map(inv => {
+                  const h = inviteSummaryHeader(inv)
+                  return (
+                    <option key={inv.id} value={inv.id}>
+                      {h.organizer} · {inv.completed_count}/{inv.expected_waiver_count} · {inv.token.slice(0, 8)}…
+                    </option>
+                  )
+                })}
+              </select>
+            </label>
+            {quickToolkitInvite ? (
+              <div className="space-y-0 rounded-md border border-formula-frost/10 bg-formula-base/25 p-2">
+                <InviteOrganizerEditor invite={quickToolkitInvite} />
+                <InviteSnapshotEditor invite={quickToolkitInvite} />
+                <InviteHeadcountOveragePanel invite={quickToolkitInvite} />
+                <p className="mt-2 px-3 font-mono text-[9px] uppercase tracking-[0.14em] text-formula-mist">Share link</p>
+                <code className="mx-3 mb-3 block max-w-full break-all rounded border border-formula-frost/12 bg-black/20 px-2 py-1.5 font-mono text-[10px] text-formula-frost/88">
+                  {`${siteOrigin}/rentals/waiver/${quickToolkitInvite.token}`}
+                </code>
+              </div>
+            ) : null}
+            <p className="font-mono text-[10px] text-formula-mist/85">
+              Same fields as inside an expanded invite below — use either place. Drag signed waivers onto a card, or link rows from Signed waivers.
+            </p>
+          </div>
+        </details>
+      ) : null}
       {organizerGroups.map(([groupKey, list]) => {
         if (list.length === 1) {
           const inv = list[0]!
@@ -632,13 +751,8 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
                     Paid {paid} · {paidWhen}
                   </span>
                   <span className="block text-formula-frost/88">Session (on invite): {sessionLine}</span>
-                  <span className="inline-flex items-center gap-2 text-formula-volt">
-                    Waivers signed {inv.completed_count} / {inv.expected_waiver_count}
-                    {inv.remaining_count > 0 ? (
-                      <span className="text-formula-mist">({inv.remaining_count} remaining)</span>
-                    ) : (
-                      <span className="text-emerald-400/90">(complete)</span>
-                    )}
+                  <span className="inline-flex flex-wrap items-center gap-2 text-formula-volt">
+                    Waivers signed {inv.completed_count} / {inv.expected_waiver_count} {rosterWaiverProgressNote(inv)}
                   </span>
                 </span>
                 <ChevronDown
@@ -669,6 +783,7 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
         const totalExpected = list.reduce((s, i) => s + i.expected_waiver_count, 0)
         const totalSigned = list.reduce((s, i) => s + i.completed_count, 0)
         const totalRemaining = Math.max(0, totalExpected - totalSigned)
+        const totalOver = list.reduce((s, i) => s + i.overage_count, 0)
 
         return (
           <details
@@ -697,6 +812,11 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
                   </span>
                   {totalRemaining > 0 ? (
                     <span className="text-formula-mist"> ({totalRemaining} remaining)</span>
+                  ) : totalOver > 0 ? (
+                    <span className="text-amber-200/90">
+                      {' '}
+                      (includes {totalOver} extra signer{totalOver === 1 ? '' : 's'} — open a session to raise expected headcount)
+                    </span>
                   ) : (
                     <span className="text-emerald-400/90"> (all invites complete)</span>
                   )}
@@ -721,13 +841,8 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
                           Paid {paid} · {paidWhen}
                         </span>
                         <span className="block text-formula-paper/95">Session: {sessionLine}</span>
-                        <span className="inline-flex items-center gap-2 text-formula-volt">
-                          Waivers {inv.completed_count} / {inv.expected_waiver_count}
-                          {inv.remaining_count > 0 ? (
-                            <span className="text-formula-mist">({inv.remaining_count} left)</span>
-                          ) : (
-                            <span className="text-emerald-400/90">(complete)</span>
-                          )}
+                        <span className="inline-flex flex-wrap items-center gap-2 text-formula-volt">
+                          Waivers {inv.completed_count} / {inv.expected_waiver_count} {rosterWaiverProgressNote(inv)}
                         </span>
                       </span>
                       <ChevronDown

@@ -31,6 +31,8 @@ export type WaiverInviteRow = {
   booking_rental_date?: string | null
   booking_rental_dates_compact?: string | null
   booking_session_weeks?: number | null
+  /** Set by roster pre-session cron after emailing ops about missing waivers. */
+  roster_incomplete_premeeting_reminder_sent_at?: string | null
 }
 
 export type SignedWaiverOnInvite = {
@@ -47,6 +49,8 @@ export type SignedWaiverOnInvite = {
 export type WaiverInviteWithProgress = WaiverInviteRow & {
   completed_count: number
   remaining_count: number
+  /** Signed waivers past `expected_waiver_count` (extras still allowed on the link). */
+  overage_count: number
   signed_waivers: SignedWaiverOnInvite[]
 }
 
@@ -110,6 +114,7 @@ export async function getWaiverInviteByStripeSessionId(sessionId: string): Promi
 export type PurchaserWaiverInviteSummary = WaiverInviteRow & {
   completed_count: number
   remaining_count: number
+  overage_count: number
 }
 
 /** Roster invites where the paid checkout email matches (organizer self-serve portal). */
@@ -134,6 +139,7 @@ export async function listWaiverInvitesForPurchaserEmail(email: string): Promise
       ...row,
       completed_count: completed,
       remaining_count: Math.max(0, row.expected_waiver_count - completed),
+      overage_count: Math.max(0, completed - row.expected_waiver_count),
     })
   }
   out.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
@@ -277,6 +283,51 @@ export async function updateWaiverInviteSessionAndPayment(params: {
   if (error) {
     console.error('[waiver-invites] update snapshot:', error.message)
     return { ok: false, message: 'Could not save payment and session details.' }
+  }
+
+  const { data: syncedInvite, error: readErr } = await supabase
+    .from('field_rental_waiver_invites')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+  if (!readErr && syncedInvite) {
+    await syncFieldRentalInviteToStripePurchasesLedger(syncedInvite as unknown as FieldRentalInviteLedgerPayload)
+  }
+
+  return { ok: true }
+}
+
+/** Admin: raise (or lower) expected waiver count; cannot go below current signed rows. */
+export async function updateWaiverInviteExpectedWaiverCount(
+  inviteId: string,
+  expectedWaiverCount: number
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const id = inviteId.trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    return { ok: false, message: 'Invalid invite id.' }
+  }
+  const n = Math.round(expectedWaiverCount)
+  if (!Number.isFinite(n) || n < 1 || n > 500) {
+    return { ok: false, message: 'Expected waiver count must be between 1 and 500.' }
+  }
+
+  const signed = await countWaiversForInviteId(id)
+  if (n < signed) {
+    return {
+      ok: false,
+      message: `Cannot set expected count below current waivers on file (${signed}). Unlink rows first or set at least ${signed}.`,
+    }
+  }
+
+  const supabase = getServiceSupabase()
+  if (!supabase) {
+    return { ok: false, message: 'Database not configured.' }
+  }
+
+  const { error } = await supabase.from('field_rental_waiver_invites').update({ expected_waiver_count: n }).eq('id', id)
+  if (error) {
+    console.error('[waiver-invites] update expected count:', error.message)
+    return { ok: false, message: 'Could not update expected waiver count.' }
   }
 
   const { data: syncedInvite, error: readErr } = await supabase
@@ -628,8 +679,44 @@ export async function listWaiverInvitesWithProgress(limit = 50): Promise<WaiverI
       ...row,
       completed_count: completed,
       remaining_count: Math.max(0, row.expected_waiver_count - completed),
+      overage_count: Math.max(0, completed - row.expected_waiver_count),
       signed_waivers: byInvite.get(row.id) ?? [],
     })
   }
   return out
+}
+
+/** Cron: invites that might still need a “~1h before session” incomplete roster email. */
+export async function listWaiverInvitesEligibleForPremeetingReminder(): Promise<WaiverInviteRow[]> {
+  const supabase = getServiceSupabase()
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('field_rental_waiver_invites')
+    .select('*')
+    .is('roster_incomplete_premeeting_reminder_sent_at', null)
+    .not('booking_rental_date', 'is', null)
+    .not('booking_rental_window', 'is', null)
+    .limit(300)
+
+  if (error || !data) {
+    console.warn('[waiver-invites] list premeeting candidates:', error?.message)
+    return []
+  }
+  return data as WaiverInviteRow[]
+}
+
+export async function markRosterPremeetingIncompleteReminderSent(inviteId: string): Promise<boolean> {
+  const id = inviteId.trim()
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return false
+  const supabase = getServiceSupabase()
+  if (!supabase) return false
+  const { error } = await supabase
+    .from('field_rental_waiver_invites')
+    .update({ roster_incomplete_premeeting_reminder_sent_at: new Date().toISOString() })
+    .eq('id', id)
+  if (error) {
+    console.warn('[waiver-invites] mark premeeting reminder:', error.message)
+    return false
+  }
+  return true
 }

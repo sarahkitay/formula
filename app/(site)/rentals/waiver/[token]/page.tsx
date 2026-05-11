@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { FieldRentalRosterInvite } from '@/components/marketing/field-rental-agreement-form'
 import { RosterWaiverInviteFlow } from '@/components/marketing/roster-waiver-invite-flow'
 import { MarketingInnerPage } from '@/components/marketing/marketing-inner'
-import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { formatRentalTypeForDisplay } from '@/lib/rentals/field-rental-waiver-labels'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
 import { getSiteOrigin } from '@/lib/stripe/server'
@@ -31,7 +29,7 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
 
   const completed = await countWaiversForInviteId(invite.id)
   const remaining = Math.max(0, invite.expected_waiver_count - completed)
-  const rosterFull = completed >= invite.expected_waiver_count
+  const over = Math.max(0, completed - invite.expected_waiver_count)
 
   const rosterInvite: FieldRentalRosterInvite = {
     token: invite.token,
@@ -52,12 +50,17 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
       <div className="not-prose mb-10 rounded-sm border border-formula-frost/14 bg-formula-paper/[0.03] p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Progress</p>
         <p className="mt-3 text-lg font-mono text-formula-paper">
-          <strong>{completed}</strong> of <strong>{invite.expected_waiver_count}</strong> signed
+          <strong>{completed}</strong> / <strong>{invite.expected_waiver_count}</strong> signed
           {remaining > 0 ? (
             <>
               {' '}
               · <span className="text-formula-volt">{remaining}</span> remaining
             </>
+          ) : over > 0 ? (
+            <span className="text-amber-200/95">
+              {' '}
+              · complete · <strong>+{over}</strong> extra (ask staff to raise headcount if the group grew)
+            </span>
           ) : (
             <span className="text-formula-volt"> · complete</span>
           )}
@@ -82,22 +85,7 @@ export default async function FieldRentalWaiverInvitePage({ params }: Props) {
         </p>
       </div>
 
-      {rosterFull ? (
-        <div className="not-prose rounded-sm border border-formula-frost/14 bg-formula-base/80 p-6">
-          <p className="text-sm text-formula-paper">All expected waivers for this link are already on file.</p>
-          <p className="mt-3 text-sm text-formula-mist">
-            If someone still needs to sign, ask the organizer to confirm the participant count or send an updated link from checkout.
-          </p>
-          <Link
-            href={MARKETING_HREF.rentals}
-            className="mt-6 inline-flex text-sm text-formula-volt underline-offset-2 hover:underline"
-          >
-            Field rentals
-          </Link>
-        </div>
-      ) : (
-        <RosterWaiverInviteFlow inviteToken={invite.token} rosterInvite={rosterInvite} />
-      )}
+      <RosterWaiverInviteFlow inviteToken={invite.token} rosterInvite={rosterInvite} />
     </MarketingInnerPage>
   )
 }

@@ -12,7 +12,10 @@ import {
   type FieldRentalAgreementSource,
 } from '@/lib/rentals/field-rental-agreements-server'
 import { PARTICIPANT_SELF_WAIVER_RENTAL_TYPE } from '@/lib/rentals/field-rental-waiver-labels'
+import { sendRosterInviteFullyCompleteAdminEmail } from '@/lib/email/roster-invite-admin-notify'
+import { listAgreementsForWaiverInvite } from '@/lib/rentals/field-rental-agreements-server'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
+import { getSiteOrigin } from '@/lib/stripe/server'
 
 export type RentalAgreementState = {
   ok: boolean
@@ -55,13 +58,6 @@ export async function submitFieldRentalAgreement(
     }
     waiverInviteId = rosterInvite.id
     rosterExpected = rosterInvite.expected_waiver_count
-    const done = await countWaiversForInviteId(rosterInvite.id)
-    if (done >= rosterInvite.expected_waiver_count) {
-      return {
-        ok: false,
-        message: 'All roster spots for this link are already filled. If you still need to sign, contact the organizer.',
-      }
-    }
   }
 
   let rentalType: string
@@ -190,19 +186,23 @@ export async function submitFieldRentalAgreement(
     revalidatePath(`/rentals/waiver/${rosterTokenForRevalidate}`)
   }
 
-  const rosterLine =
-    waiverInviteId && rosterExpected != null
-      ? `<li><strong>Roster link</strong>: invite in use · expected ${rosterExpected} waivers (counts in admin Rentals)</li>`
-      : ''
-
-  // Roster invite: email ops for each new signer until the roster is full (then skip - checkout/payment emails still fire from Stripe).
-  let notifyRosterWaiverToAdmin = true
-  if (waiverInviteId && rosterExpected != null) {
+  // Roster link: do not email ops on each signer. One digest the first time signed count reaches expected; extras allowed without blocking.
+  if (waiverInviteId && rosterExpected != null && rosterInvite) {
     const signed = await countWaiversForInviteId(waiverInviteId)
-    if (signed >= rosterExpected) notifyRosterWaiverToAdmin = false
-  }
-
-  if (notifyRosterWaiverToAdmin) {
+    if (signed === rosterExpected) {
+      const agreements = await listAgreementsForWaiverInvite(waiverInviteId)
+      await sendRosterInviteFullyCompleteAdminEmail({
+        invite: rosterInvite,
+        agreements: agreements.map(a => ({
+          id: a.id,
+          participant_name: a.participant_name,
+          participant_email: a.participant_email,
+          source: a.source ?? null,
+        })),
+        rosterWaiverUrl: `${getSiteOrigin()}/rentals/waiver/${rosterInvite.token}`,
+      })
+    }
+  } else {
     await sendAdminNotification({
       subject: `[Formula] Field rental agreement · ${participantName}`,
       html: `
@@ -219,7 +219,6 @@ export async function submitFieldRentalAgreement(
         <li><strong>DOB</strong>: ${escapeHtml(participantDob)}</li>
         <li><strong>Printed signer</strong>: ${escapeHtml(signatureName)}</li>
         <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '-'}</li>
-        ${rosterLine}
       </ul>
       <p>Signature image is stored securely with this waiver for staff review.</p>
     `,
@@ -227,10 +226,17 @@ export async function submitFieldRentalAgreement(
     })
   }
 
+  let rosterSuccessMsg =
+    'Waiver saved. The roster count updates on this page - share the same link with anyone who has not signed yet.'
+  if (waiverInviteId && rosterInvite) {
+    const signedFinal = await countWaiversForInviteId(waiverInviteId)
+    if (signedFinal > rosterInvite.expected_waiver_count) {
+      rosterSuccessMsg = `Waiver saved. Roster is now ${signedFinal}/${rosterInvite.expected_waiver_count} (extras on file). Staff can raise the expected headcount in Admin → Rentals if the group is larger than originally booked.`
+    }
+  }
+
   return {
     ok: true,
-    message: waiverInviteId
-      ? 'Waiver saved. The roster count updates on this page - share the same link with anyone who has not signed yet.'
-      : 'Agreement saved.',
+    message: waiverInviteId ? rosterSuccessMsg : 'Agreement saved.',
   }
 }

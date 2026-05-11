@@ -1,8 +1,12 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
-import { insertFieldRentalAgreement, type FieldRentalAgreementSource } from '@/lib/rentals/field-rental-agreements-server'
+import { sendRosterInviteFullyCompleteAdminEmail } from '@/lib/email/roster-invite-admin-notify'
+import {
+  insertFieldRentalAgreement,
+  listAgreementsForWaiverInvite,
+  type FieldRentalAgreementSource,
+} from '@/lib/rentals/field-rental-agreements-server'
 import {
   loadFieldRentalCheckoutSnapshot,
   mergeWaiverInviteIntoCheckoutSnapshot,
@@ -15,6 +19,7 @@ import {
   rosterRsvpNamesMatch,
 } from '@/lib/rentals/waiver-roster-rsvp-server'
 import { countWaiversForInviteId, getWaiverInviteByToken } from '@/lib/rentals/waiver-invites-server'
+import { getSiteOrigin } from '@/lib/stripe/server'
 
 const COACH_BOOKING_RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
 
@@ -47,11 +52,6 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
   const invite = await getWaiverInviteByToken(token)
   if (!invite) {
     return { ok: false, message: 'This roster link is invalid or expired.' }
-  }
-
-  const done = await countWaiversForInviteId(invite.id)
-  if (done >= invite.expected_waiver_count) {
-    return { ok: false, message: 'This roster is already full.' }
   }
 
   if (await rosterInviteHasEmail(invite.id, participantEmail)) {
@@ -131,25 +131,27 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
   revalidatePath(`/rentals/waiver/${token}`)
 
   const signedAfter = await countWaiversForInviteId(invite.id)
-  if (signedAfter < invite.expected_waiver_count) {
-    await sendAdminNotification({
-      subject: `[Formula] Roster RSVP (prior waiver) · ${participantName}`,
-      html: `
-      <p><strong>Roster RSVP</strong> - prior digital waiver matched</p>
-      <ul>
-        <li><strong>New row id</strong>: ${escapeHtml(saved.id)}</li>
-        <li><strong>Prior waiver id</strong>: ${escapeHtml(prior.id)}</li>
-        <li><strong>Participant</strong>: ${escapeHtml(participantName)}</li>
-        <li><strong>Email</strong>: ${escapeHtml(participantEmail)}</li>
-        <li><strong>Roster token</strong>: ${escapeHtml(token.slice(0, 12))}…</li>
-      </ul>
-    `,
-      text: `Roster RSVP\n${participantName} <${participantEmail}>\nPrior: ${prior.id}`,
+  if (signedAfter === invite.expected_waiver_count) {
+    const agreements = await listAgreementsForWaiverInvite(invite.id)
+    await sendRosterInviteFullyCompleteAdminEmail({
+      invite,
+      agreements: agreements.map(a => ({
+        id: a.id,
+        participant_name: a.participant_name,
+        participant_email: a.participant_email,
+        source: a.source ?? null,
+      })),
+      rosterWaiverUrl: `${getSiteOrigin()}/rentals/waiver/${token}`,
     })
+  }
+
+  let rsvpMsg = 'You are on the roster. This page will refresh - the count above includes your RSVP.'
+  if (signedAfter > invite.expected_waiver_count) {
+    rsvpMsg = `You are on the roster (${signedAfter}/${invite.expected_waiver_count} — extras on file). Staff can raise the expected headcount in admin if needed.`
   }
 
   return {
     ok: true,
-    message: 'You are on the roster. This page will refresh - the count above includes your RSVP.',
+    message: rsvpMsg,
   }
 }
