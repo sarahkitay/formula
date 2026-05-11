@@ -49,9 +49,6 @@ export function MarketingHome() {
       <MarketingHero />
 
       <SectionDivider />
-      <HomeWhatWeOfferNow />
-
-      <SectionDivider />
       <HomeFacilitySection />
 
       <SectionDivider />
@@ -80,6 +77,9 @@ export function MarketingHome() {
 
       <SectionDivider />
       <HomeStartHereSection />
+
+      <SectionDivider />
+      <HomeWhatWeOfferNow />
     </>
   )
 }

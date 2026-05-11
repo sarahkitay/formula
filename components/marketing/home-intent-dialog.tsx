@@ -9,6 +9,7 @@ import { DAY_PASS_ONE_DAY } from '@/lib/marketing/public-pricing'
 import { cn } from '@/lib/utils'
 
 const STORAGE_KEY = 'formula_home_intent_gate_v1'
+const OPEN_DELAY_MS = 3000
 
 const panelClass =
   'rounded-2xl border border-formula-frost/18 bg-formula-deep/95 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-8'
@@ -49,7 +50,8 @@ export function HomeIntentDialog() {
     } catch {
       /* ignore */
     }
-    setOpen(true)
+    const t = window.setTimeout(() => setOpen(true), OPEN_DELAY_MS)
+    return () => window.clearTimeout(t)
   }, [])
 
   useEffect(() => {
