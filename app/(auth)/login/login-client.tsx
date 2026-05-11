@@ -24,6 +24,9 @@ const staffRoleConfig: Record<StaffRole, { label: string }> = {
 const rolePillActive =
   'border-formula-volt/55 bg-formula-volt/[0.14] text-formula-volt shadow-[inset_0_0_0_1px_rgb(220_255_0_/_0.2)]'
 
+const portalAltLinkClass =
+  'font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-mist/80 underline-offset-4 transition-colors hover:text-formula-frost hover:underline'
+
 function staffRoleFromQuery(value: string | null): StaffRole | null {
   if (value === 'admin' || value === 'coach') return value
   return null
@@ -208,12 +211,7 @@ export function LoginPageClient() {
             'radial-gradient(ellipse 85% 75% at 50% 42%, rgb(36 54 51 / 0.08) 0%, rgb(26 29 28 / 0.42) 55%, rgb(26 29 28 / 0.72) 100%)',
         }}
       >
-        <div
-          className={cn(
-            'pointer-events-auto w-full space-y-8',
-            portal === 'staff' ? 'max-w-xl' : 'max-w-md'
-          )}
-        >
+        <div className="pointer-events-auto w-full max-w-md space-y-8">
           <div className="space-y-4 text-center">
             <h1 className="m-0 flex justify-center">
               <FormulaLogoMarkLink
@@ -228,33 +226,7 @@ export function LoginPageClient() {
             </div>
           </div>
 
-          <div
-            className={cn(
-              portal === 'staff' &&
-                'flex flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-5'
-            )}
-          >
-            {portal === 'staff' ? (
-              <div className="flex shrink-0 items-start sm:items-center sm:justify-end sm:pt-10 sm:pr-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPortal('parent')
-                    setFormError(null)
-                  }}
-                  className="text-left font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
-                >
-                  ← Parent portal
-                </button>
-              </div>
-            ) : null}
-
-            <div
-              className={cn(
-                'rounded-xl border border-formula-frost/12 bg-formula-deep/45 p-8 shadow-[0_24px_64px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-10',
-                portal === 'staff' && 'min-w-0 flex-1'
-              )}
-            >
+          <div className="rounded-xl border border-formula-frost/12 bg-formula-deep/45 p-8 shadow-[0_24px_64px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-10">
             {portal === 'organizer' ? (
               <>
                 <h2 className="text-xl font-semibold text-formula-paper">Renter / organizer</h2>
@@ -270,26 +242,6 @@ export function LoginPageClient() {
                   </Link>{' '}
                   using your checkout session id (starts with <span className="font-mono text-formula-frost/90">cs_</span>).
                 </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPortal('staff')
-                    setFormError(null)
-                  }}
-                  className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
-                >
-                  ← Staff sign-in
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPortal('parent')
-                    setFormError(null)
-                  }}
-                  className="mt-2 block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100"
-                >
-                  ← Parent portal
-                </button>
               </>
             ) : portal === 'parent' ? (
               <>
@@ -300,19 +252,7 @@ export function LoginPageClient() {
               </>
             ) : (
               <>
-                <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-                  <h2 className="text-xl font-semibold text-formula-paper">Staff sign-in</h2>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPortal('organizer')
-                      setFormError(null)
-                    }}
-                    className="shrink-0 text-right font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt/75 transition-opacity hover:opacity-100 sm:pt-0.5"
-                  >
-                    Renter / organizer portal →
-                  </button>
-                </div>
+                <h2 className="text-xl font-semibold text-formula-paper">Staff sign-in</h2>
                 <div className="mt-5 space-y-1.5">
                   <p className="text-[11px] font-medium uppercase tracking-wider text-formula-mist">
                     Who is signing in (must match your profile role - we route coaches to Coach OS and admins to Admin OS)
@@ -401,8 +341,82 @@ export function LoginPageClient() {
                 Reset it
               </Link>
             </p>
-            </div>
           </div>
+
+          {portal === 'parent' ? (
+            <div className="relative z-10 flex flex-col items-center gap-2 pb-2 pt-1 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setPortal('staff')
+                  setFormError(null)
+                }}
+                className={portalAltLinkClass}
+              >
+                Staff sign-in
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPortal('organizer')
+                  setFormError(null)
+                }}
+                className={portalAltLinkClass}
+              >
+                Renter / organizer portal
+              </button>
+            </div>
+          ) : null}
+
+          {portal === 'staff' ? (
+            <div className="relative z-10 flex flex-col items-center gap-2 pb-2 pt-1 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setPortal('parent')
+                  setFormError(null)
+                }}
+                className={portalAltLinkClass}
+              >
+                ← Parent portal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPortal('organizer')
+                  setFormError(null)
+                }}
+                className={portalAltLinkClass}
+              >
+                Renter / organizer portal →
+              </button>
+            </div>
+          ) : null}
+
+          {portal === 'organizer' ? (
+            <div className="relative z-10 flex flex-col items-center gap-2 pb-2 pt-1 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setPortal('staff')
+                  setFormError(null)
+                }}
+                className={portalAltLinkClass}
+              >
+                ← Staff sign-in
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPortal('parent')
+                  setFormError(null)
+                }}
+                className={portalAltLinkClass}
+              >
+                ← Parent portal
+              </button>
+            </div>
+          ) : null}
 
           <p className="text-center text-sm text-formula-mist">
             <Link
@@ -414,25 +428,6 @@ export function LoginPageClient() {
           </p>
         </div>
       </div>
-
-      {portal === 'parent' ? (
-        <div className="relative z-10 flex flex-col items-center gap-2 pb-5 pt-2 text-center">
-          <button
-            type="button"
-            onClick={() => setPortal('staff')}
-            className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-mist/80 underline-offset-4 transition-colors hover:text-formula-frost hover:underline"
-          >
-            Staff sign-in
-          </button>
-          <button
-            type="button"
-            onClick={() => setPortal('organizer')}
-            className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-formula-mist/80 underline-offset-4 transition-colors hover:text-formula-frost hover:underline"
-          >
-            Renter / organizer portal
-          </button>
-        </div>
-      ) : null}
 
       <div className="pointer-events-none fixed bottom-5 right-5 z-20 rounded-lg border border-formula-frost/15 bg-formula-deep/80 px-3 py-2 text-xs text-formula-mist backdrop-blur-sm">
         Press <span className="font-mono text-formula-volt">Enter</span> to toggle wireframe
