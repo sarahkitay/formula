@@ -89,13 +89,13 @@ export const YOUTH_MEMBERSHIP_PRICING = {
   ] as const,
 } as const
 
-/** Field rental checkout uses published hourly rate × (duration in hours); increments are 30 minutes ($90 per half hour at $180/hr). */
+/** Field rental checkout uses a fixed booking deposit; hourly published rate remains for staff reconciliation. */
 export const FIELD_RENTAL_BOOKING_CHECKOUT = {
-  /** Kept for backward-compat labels; deposit is derived from duration via `fieldRentalDepositUsd`. */
-  priceUsd: 180,
+  /** Flat booking deposit charged at checkout. */
+  priceUsd: 1000,
   productName: 'Field rental booking deposit',
   summary:
-    'Non-refundable booking deposit for a classified field rental window. Charged in 30-minute increments at the published hourly rate (e.g. 1 hr = $180, 90 min = $270, 2 hr = $360). Staff may reconcile any balance vs package agreements.',
+    'Non-refundable booking deposit for a classified field rental window. Deposit is $1,000 to lock the booking; staff may reconcile any remaining balance vs package agreements.',
 } as const
 
 /** Published field rental hourly rate (same for all windows until ops publishes a change). */

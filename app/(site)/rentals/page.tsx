@@ -66,8 +66,8 @@ export default function RentalsPage() {
         <div className="mt-16 border-t border-formula-frost/10 pt-12 md:mt-20 md:pt-16">
           <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Rate & deposit</h2>
           <p className="mt-4 max-w-[60ch] text-[15px] leading-relaxed text-formula-frost/85">
-            <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> — book in 30-minute steps; deposit scales with length
-            (e.g. 90 min ≈ ${(FIELD_RENTAL_PUBLISHED_RATES.perHourUsd * 1.5).toFixed(0)}). {FIELD_RENTAL_PUBLISHED_RATES.packages}
+            <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> published field rate. Booking deposit is{' '}
+            <strong className="text-formula-paper">$1,000</strong> to hold your calendar window. {FIELD_RENTAL_PUBLISHED_RATES.packages}
           </p>
         </div>
 

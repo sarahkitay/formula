@@ -34,14 +34,14 @@ const EXTRA: SiteSearchItem[] = [
     id: 'minis-pricing',
     label: 'Formula Minis · weekday pack',
     description: 'Ages 2–3 · six-week weekday sessions · $300',
-    href: `${MARKETING_HREF.minis}#weekday-package`,
+    href: `${MARKETING_HREF.youthMembership}#weekday-package`,
     keywords: ['minis', 'littles', 'toddler', 'preschool', '2-3', 'weekday', '300', 'six week', 'package'],
   },
   {
     id: 'sunday-weekend',
     label: 'Sunday weekend program',
     description: 'Ages 2–5 · scheduled Sundays · $500',
-    href: `${MARKETING_HREF.minis}#sunday-weekend`,
+    href: `${MARKETING_HREF.youthMembership}#sunday-weekend`,
     keywords: ['sunday', 'weekend', '500', 'juniors', 'ages 2-5'],
   },
   {
@@ -94,7 +94,7 @@ export const SITE_SEARCH_INDEX: SiteSearchItem[] = (() => {
   return [...byId.values()]
 })()
 
-const DEFAULT_IDS = ['book-hub', 'nav-/minis', 'nav-/youth-membership', 'field-rental-waiver', 'nav-/events', 'nav-/facility']
+const DEFAULT_IDS = ['book-hub', 'minis-pricing', 'nav-/youth-membership', 'field-rental-waiver', 'nav-/events', 'nav-/facility']
 
 export function defaultSiteSearchResults(): SiteSearchItem[] {
   const list: SiteSearchItem[] = []

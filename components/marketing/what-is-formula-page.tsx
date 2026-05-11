@@ -3,16 +3,31 @@ import { FormulaPositioningBackground } from '@/components/marketing/formula-pos
 import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { WHAT_WE_OFFER_NOW } from '@/lib/marketing/what-we-offer-now'
+import { SUMMER_CAMP_2026_WEEK_CHECKOUT } from '@/lib/marketing/public-pricing'
 import { cn } from '@/lib/utils'
 
-const CLUB_VS_FORMULA: [string, string][] = [
-  ['Team identity and culture', 'Individual performance data'],
-  ['Minutes and match experience', 'Isolated skill development'],
-  ['Group coaching', 'Personalized training plans'],
-  ['Game application', 'Measured technical reps'],
-  ['Season structure', 'Year-round development arc'],
-]
+const WHAT_FORMULA_LIVE_NOW = [
+  {
+    title: 'Assessments + personalized plans',
+    body: '$150/5 sessions',
+    href: MARKETING_HREF.bookAssessmentPortal,
+  },
+  {
+    title: 'Field rentals',
+    body: 'Book structured field time for your group.',
+    href: MARKETING_HREF.rentals,
+  },
+  {
+    title: 'Summer camps',
+    body: `$${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}/wk`,
+    href: MARKETING_HREF.summerCamp2026,
+  },
+  {
+    title: 'Friday friendlies + parties',
+    body: 'Pre-register for friendlies and hosted party windows from the events hub.',
+    href: MARKETING_HREF.events,
+  },
+] as const
 
 export function WhatIsFormulaPageContent() {
   return (
@@ -23,73 +38,26 @@ export function WhatIsFormulaPageContent() {
         <section className="relative border-b border-white/10">
           <div className="mx-auto grid max-w-7xl gap-16 px-6 pb-20 pt-24 md:pb-24 md:pt-28 lg:grid-cols-[1.15fr_0.85fr] lg:px-10 lg:pb-32 lg:pt-32">
             <div className="max-w-4xl">
-              <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Positioning</div>
+              <div className="mb-8 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">What Formula is</div>
               <h1 className={cn(marketingDisplayH1ClassName, 'max-w-5xl')}>
-                Built to work alongside your club.
-                <br />
-                Not replace it.
+                Formula Soccer: Data-driven individual soccer training that complements your club team.
               </h1>
               <p className="mt-8 max-w-3xl text-[clamp(1.05rem,1.8vw,1.45rem)] leading-9 text-white/72">
-                We aren&apos;t a club team: no travel schedule or team identity. That&apos;s your club&apos;s job. We fill the gap:{' '}
-                <span className="text-white/88">individual training, measured with real data.</span>
-              </p>
-              <p className="mt-5 max-w-3xl font-mono text-[15px] leading-relaxed text-white/78">
-                Most training is based on feel. <span className="font-semibold text-formula-volt/95">Formula is based on data.</span>
+                We deliver measurable skill gains—tracked via assessments and tech—without travel or team commitments.
               </p>
             </div>
 
             <div className="flex items-end justify-start lg:justify-end">
               <div className="w-full max-w-md border border-white/10 bg-white/[0.03] p-8">
-                <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">The idea</div>
+                <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Core value</div>
                 <div className="space-y-4 text-[1.05rem] leading-8 text-white/78">
-                  <p>Your club builds chemistry and minutes. We build measurable individual habits and reps that show up in club play.</p>
-                  <p className="font-mono text-[13px] uppercase tracking-[0.12em] text-white/55">captured · logged · tracked over time</p>
+                  <p>
+                    Clubs build team chemistry and game minutes. Formula builds personal speed, agility, technical reps, and
+                    long-term athleticism with objective data parents can see.
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className="border-b border-white/10" aria-labelledby="what-formula-adds-heading">
-          <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
-            <ScrollFadeIn>
-              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-white/45">Complement, don&apos;t compete</p>
-              <h2
-                id="what-formula-adds-heading"
-                className="mt-4 font-mono text-2xl font-semibold tracking-tight text-[#eef2ed] md:text-[1.65rem]"
-              >
-                What Formula adds
-              </h2>
-              <p className="mt-6 max-w-[62ch] text-[15px] leading-relaxed text-white/72">
-                Side by side with what you already get from club soccer.
-              </p>
-
-              <div className="not-prose mt-10 overflow-x-auto border border-white/10 bg-white/[0.025]">
-                <table className="w-full min-w-[480px] border-collapse text-left font-sans text-sm">
-                  <thead>
-                    <tr className="border-b border-white/[0.08] bg-white/[0.03] font-mono text-[10px] uppercase tracking-[0.16em] text-white/45">
-                      <th className="px-4 py-3 font-medium text-white/70">What your club provides</th>
-                      <th className="px-4 py-3 font-medium text-formula-volt/95">What Formula adds</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-white/65">
-                    {CLUB_VS_FORMULA.map(([club, formula]) => (
-                      <tr key={club} className="border-b border-white/[0.06] last:border-b-0">
-                        <td className="px-4 py-3 leading-relaxed">{club}</td>
-                        <td className="px-4 py-3 leading-relaxed text-white/85">{formula}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <Link
-                href={MARKETING_HREF.fpi}
-                className="mt-8 inline-flex font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt transition-opacity hover:opacity-90"
-              >
-                See how The Formula works →
-              </Link>
-            </ScrollFadeIn>
           </div>
         </section>
 
@@ -97,26 +65,22 @@ export function WhatIsFormulaPageContent() {
           <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 lg:px-10 lg:py-28">
             <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr]">
               <div>
-                <h2 className="font-sans text-[clamp(2rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.04em] text-[#eef2ed]">Who Formula is for</h2>
-                <p className="mt-6 max-w-xl text-lg leading-8 text-white/68">
-                  Athletes and families who want structure, measurement, and a facility that runs like a performance brand.
-                </p>
+                <h2 className="font-sans text-[clamp(2rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.04em] text-[#eef2ed]">Who it&apos;s for</h2>
               </div>
 
               <div className="border border-white/10 bg-white/[0.025] p-8 md:p-10">
                 <ul className="list-none space-y-4 p-0 text-[15px] leading-relaxed text-white/72">
                   <li>
-                    <strong className="text-white/92">Club athletes</strong> who want to show up to practice sharper, and track it.
+                    <strong className="text-white/92">Club players</strong> seeking sharper edges
                   </li>
                   <li>
-                    <strong className="text-white/92">Recreational players</strong> who want structured development without the commitment of a travel team.
+                    <strong className="text-white/92">Rec players</strong> wanting structure
                   </li>
                   <li>
-                    <strong className="text-white/92">Competitive athletes</strong> heading toward high school, college, or elite club who need every edge
-                    measured and optimized.
+                    <strong className="text-white/92">Competitive athletes</strong> chasing college/pro paths
                   </li>
                   <li>
-                    <strong className="text-white/92">Parents</strong> who want to see real data on what their athlete is working on, and why.
+                    <strong className="text-white/92">Data-focused parents</strong>
                   </li>
                 </ul>
               </div>
@@ -131,10 +95,10 @@ export function WhatIsFormulaPageContent() {
                 id="what-formula-offer-now-heading"
                 className="max-w-xl font-sans text-[clamp(2rem,3.8vw,3.35rem)] leading-[1.04] tracking-[-0.04em] text-[#eef2ed]"
               >
-                What we offer right now
+                What&apos;s live now
               </h2>
               <div className="mt-10 grid gap-5 md:grid-cols-2">
-                {WHAT_WE_OFFER_NOW.map(item => (
+                {WHAT_FORMULA_LIVE_NOW.map(item => (
                   <Link
                     key={item.title}
                     href={item.href}
@@ -161,9 +125,16 @@ export function WhatIsFormulaPageContent() {
           <div className="flex flex-col items-start justify-between gap-10 border border-white/10 bg-white/[0.025] p-8 md:flex-row md:items-end md:p-12">
             <div className="max-w-2xl">
               <div className="mb-5 font-mono text-[11px] uppercase tracking-[0.28em] text-white/45">Start here</div>
-              <h2 className="font-mono text-[clamp(1.5rem,3vw,2rem)] leading-[1.1] tracking-[-0.02em] text-[#edf1ec]">
-                Book an assessment. Join the membership waitlist when you&apos;re ready for recurring blocks.
-              </h2>
+              <p className="text-[clamp(1.05rem,2.2vw,1.25rem)] leading-relaxed text-white/78">
+                Book an assessment at{' '}
+                <Link
+                  href={MARKETING_HREF.bookAssessmentPortal}
+                  className="text-formula-volt underline decoration-formula-volt/35 underline-offset-4 transition hover:decoration-formula-volt/70"
+                >
+                  formulasoccer.com/book-assessment
+                </Link>{' '}
+                to start tracking real progress.
+              </p>
             </div>
             <div className="flex flex-wrap gap-4">
               <Link

@@ -32,6 +32,7 @@ export function MarketingInnerPage({
   prepend,
   eyebrow,
   title,
+  titleAs = 'h1',
   titleClassName,
   intro,
   children,
@@ -42,6 +43,8 @@ export function MarketingInnerPage({
   prepend?: ReactNode
   eyebrow: string
   title: string | ReactNode
+  /** Use `h2` when the page already has a leading `<h1>` (e.g. product hero + article). */
+  titleAs?: 'h1' | 'h2'
   /** Overrides default display H1 scale (e.g. `marketingInnerH1CompactClassName` for long titles). */
   titleClassName?: string
   intro?: string
@@ -50,6 +53,8 @@ export function MarketingInnerPage({
   /** Merged onto the article (e.g. tighter top when content above already clears the header). */
   articleClassName?: string
 }) {
+  const TitleTag = titleAs === 'h2' ? 'h2' : 'h1'
+
   return (
     <article
       className={cn(
@@ -61,9 +66,9 @@ export function MarketingInnerPage({
       {prepend}
       <ScrollFadeIn className="min-w-0 w-full">
         <SectionLabel>{eyebrow}</SectionLabel>
-        <h1 className={cn(marketingDisplayH1ClassName, 'mt-3 sm:mt-4', titleClassName)}>
+        <TitleTag className={cn(marketingDisplayH1ClassName, 'mt-3 sm:mt-4', titleClassName)}>
           {marketingTitleContent(title)}
-        </h1>
+        </TitleTag>
         {intro ? (
           <p className="mt-4 max-w-[62ch] break-words text-sm leading-relaxed text-formula-frost/85 sm:mt-6 sm:text-[15px]">
             {intro}

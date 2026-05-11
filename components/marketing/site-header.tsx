@@ -72,7 +72,7 @@ function SiteHeaderMobileNav({ onOpenSiteSearch }: { onOpenSiteSearch: () => voi
           />
           <nav
             id="site-header-mobile-nav"
-            className="absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col gap-0.5 border-l border-formula-frost/15 bg-formula-deep/98 px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(4.25rem,env(safe-area-inset-top,0px)+3.25rem)] shadow-2xl sm:px-4"
+            className="absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col gap-0.5 border-l border-formula-frost/15 bg-[var(--color-formula-deep)] px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(4.25rem,env(safe-area-inset-top,0px)+3.25rem)] shadow-2xl sm:px-4"
             aria-label="Primary"
           >
             <button

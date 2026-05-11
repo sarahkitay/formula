@@ -1,17 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
+import { FormulaMinisMembershipSection } from '@/components/marketing/formula-minis-membership-section'
 import { HomeProgramsAndPathways } from '@/components/marketing/home-programs-and-pathways'
 import { MarketingInnerPage, CtaRow } from '@/components/marketing/marketing-inner'
 import { YouthMembershipPackageHero } from '@/components/marketing/youth-membership-package-hero'
-import { YouthPackageAckStrip } from '@/components/marketing/youth-package-ack-strip'
+import { marketingInnerH1CompactClassName } from '@/lib/marketing/display-typography'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { FORMULA_SKILLS_CHECK, SESSION_PACKAGE_10, SESSION_PACKAGE_5, SESSION_PACKAGE_EARLY_BIRD } from '@/lib/marketing/public-pricing'
 
 export const metadata: Metadata = {
-  title: 'Programs and pricing',
+  title: 'Formula memberships',
   description:
-    'Formula Skills Check, early bird session packages, and youth memberships. Formula Minis (weekday + Sunday weekend) lives on its own page with schedules and checkout.',
+    'Assessment-first memberships, early bird session packages, Formula Minis (ages 2–5) weekday and Sunday packs, and monthly tier waitlist. Turf: no cleats—turf or tennis shoes only.',
 }
 
 export default function YouthMembershipPage() {
@@ -22,153 +21,90 @@ export default function YouthMembershipPage() {
       </div>
 
       <div className="marketing-section-divider" aria-hidden />
+      <div className="mx-auto max-w-[1100px] px-6">
+        <FormulaMinisMembershipSection />
+      </div>
+      <div className="marketing-section-divider" aria-hidden />
       <HomeProgramsAndPathways id="programs-catalog" />
 
       <MarketingInnerPage
         wide
+        titleAs="h2"
         articleClassName="!pt-12 md:!pt-16"
-        eyebrow="Programs and pricing"
-        title="Start with an assessment. <br> Everything else follows."
-        intro={`Every athlete at Formula starts with a Formula Skills Check: a one-hour assessment that scores your player across six performance pillars and determines which program and training focus is right for them. ${SESSION_PACKAGE_EARLY_BIRD.headline}: ${SESSION_PACKAGE_5.sessions} sessions for $${SESSION_PACKAGE_5.priceUsd} or ${SESSION_PACKAGE_10.sessions} sessions for $${SESSION_PACKAGE_10.priceUsd} (${SESSION_PACKAGE_EARLY_BIRD.validThrough}). Youth membership tiers are opening within the next month; join the waitlist on this page for first access.`}
+        eyebrow="Program guide"
+        title="Age brackets & other options"
+        titleClassName={marketingInnerH1CompactClassName}
+        intro="Formula Minis (2–3) and Formula Juniors (4–5) use fixed packs in the Formula Minis section on this page. U8–U19 covers standard sessions and memberships."
       >
-        <h2>Assessment</h2>
-        <p>
-          <strong>{FORMULA_SKILLS_CHECK.name}</strong> · ${FORMULA_SKILLS_CHECK.priceUsd}
-        </p>
-        <p>
-          One hour. Six pillars. Objective scores across speed, agility, decision-making, technical execution, game application, and consistency. You leave with
-          a full performance report in your parent portal and a personalized training recommendation.
-        </p>
-        <p>{FORMULA_SKILLS_CHECK.waiverSummary}</p>
-        <p className="not-prose">
-          <Link
-            href={MARKETING_HREF.bookAssessmentPortal}
-            className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black no-underline transition-[filter] hover:brightness-105 hover:!text-black"
-          >
-            Book your assessment
-          </Link>
-        </p>
-
-        <h2 className="!mt-14">Current offering</h2>
-        <p>
-          <strong>{SESSION_PACKAGE_EARLY_BIRD.headline}</strong> ({SESSION_PACKAGE_EARLY_BIRD.validThrough}) - choose a session block:
-        </p>
-        <ul>
-          <li>
-            <strong>{SESSION_PACKAGE_5.sessions}-session package</strong> · ${SESSION_PACKAGE_5.priceUsd}
-          </li>
-          <li>
-            <strong>{SESSION_PACKAGE_10.sessions}-session package</strong> · ${SESSION_PACKAGE_10.priceUsd}
-          </li>
-        </ul>
-        <p>{SESSION_PACKAGE_10.purchaseNote}</p>
-        <div className="not-prose flex flex-wrap gap-3">
-          <CheckoutLaunchButton checkoutType="package-5" label={`Buy ${SESSION_PACKAGE_5.sessions}-session package ($${SESSION_PACKAGE_5.priceUsd})`} />
-          <CheckoutLaunchButton checkoutType="package-10" label={`Buy ${SESSION_PACKAGE_10.sessions}-session package ($${SESSION_PACKAGE_10.priceUsd})`} />
-        </div>
-        <YouthPackageAckStrip />
-        <p className="text-sm text-formula-frost/70">Session expiration window: confirm with the desk before launch.</p>
-
-        <h2 className="!mt-14">Formula Minis &amp; youngest ages</h2>
-        <p>
-          <strong>Formula Minis</strong> (weekday ages 2–3) and the <strong>Sunday Weekend Program</strong> (ages 2–5) use their own published packs and Stripe
-          checkout - not the 5- or 10-session early-bird blocks above. Schedules, calendar tables, capacity, policies, and both checkouts live on the dedicated page.
-        </p>
-        <div className="not-prose mt-4 flex flex-wrap gap-3">
-          <Link
-            href={`${MARKETING_HREF.minis}#weekday-package`}
-            className="inline-flex h-11 items-center border border-formula-volt/45 bg-formula-volt/[0.14] px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-volt hover:bg-formula-volt/[0.22]"
-          >
-            Weekday Minis · schedules &amp; pay
-          </Link>
-          <Link
-            href={`${MARKETING_HREF.minis}#sunday-weekend`}
-            className="inline-flex h-11 items-center border border-formula-frost/22 bg-formula-paper/[0.05] px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper hover:border-formula-frost/35"
-          >
-            Sunday weekend · schedules &amp; pay
-          </Link>
-          <Link
-            href={MARKETING_HREF.minis}
-            className="inline-flex h-11 items-center border border-formula-frost/14 px-5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-mist hover:text-formula-paper"
-          >
-            Full Minis overview
-          </Link>
+        <div className="not-prose mb-10 rounded-sm border border-formula-volt/28 bg-formula-volt/[0.06] p-4 md:p-5">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Footwear (turf)</p>
+          <p className="mt-2 text-sm leading-relaxed text-formula-frost/90">
+            <strong className="text-formula-paper">No cleats</strong> on the turf. Wear <strong className="text-formula-paper">turf shoes or tennis shoes only</strong>.
+          </p>
         </div>
 
-        <h2 className="!mt-14">Children&apos;s programming brackets</h2>
-        <p className="text-sm text-formula-frost/80">
-          Standard membership U-brackets (U8–U14, U19) are separate from preschool-style Minis / Juniors packages. See the Minis page for the v4 age split on Sundays.
-        </p>
+        <h2>Age brackets</h2>
         <div className="not-prose overflow-x-auto">
-          <table className="w-full min-w-[520px] border-collapse font-mono text-[11px] text-formula-frost/90">
-            <caption className="sr-only">Youth age group structure</caption>
+          <table className="w-full min-w-[480px] border-collapse font-mono text-[11px] text-formula-frost/90">
+            <caption className="sr-only">Program age brackets</caption>
             <thead>
               <tr className="border-b border-formula-frost/15 text-left text-formula-mist uppercase tracking-wide">
-                <th className="pb-2 pr-3 font-medium">Program / bracket</th>
+                <th className="pb-2 pr-3 font-medium">Program</th>
                 <th className="pb-2 pr-3 font-medium">Ages</th>
                 <th className="pb-2 font-medium">Notes</th>
               </tr>
             </thead>
             <tbody>
               {[
-                ['Formula Minis', '2–3', 'Weekday + Sunday weekend - link above'],
-                ['Formula Juniors', '4–5', 'Sunday weekend on Minis page; weekday TBA'],
-                ['U8', '6–7', 'Standard membership'],
-                ['U10', '8–9', 'Standard membership'],
-                ['U12', '10–11', 'Standard membership'],
-                ['U14', '12–13', 'Standard membership'],
-                ['U19', '14–18', 'Standard membership (no U16 bracket)'],
-              ].map(([program, ages, notes]) => (
-                <tr key={program} className="border-b border-formula-frost/[0.07]">
-                  <td className="py-2 pr-3 align-top text-formula-paper/95">{program}</td>
-                  <td className="py-2 pr-3 align-top">{ages}</td>
-                  <td className="py-2 align-top text-formula-frost/85">{notes}</td>
+                {
+                  program: 'Formula Minis',
+                  ages: '2–3',
+                  notes: (
+                    <>
+                      Weekday/Sunday packs on the{' '}
+                      <Link
+                        href="#formula-minis"
+                        className="text-formula-volt underline decoration-formula-volt/35 underline-offset-2 hover:decoration-formula-volt/70"
+                      >
+                        View packs
+                      </Link>
+                    </>
+                  ),
+                },
+                {
+                  program: 'Formula Juniors',
+                  ages: '4–5',
+                  notes: 'Sunday (weekday TBA)',
+                },
+                {
+                  program: 'U8–U19',
+                  ages: '6–18',
+                  notes: 'Standard sessions/memberships',
+                },
+              ].map(row => (
+                <tr key={row.program} className="border-b border-formula-frost/[0.07] last:border-b-0">
+                  <td className="py-2 pr-3 align-top text-formula-paper/95">{row.program}</td>
+                  <td className="py-2 pr-3 align-top">{row.ages}</td>
+                  <td className="py-2 align-top text-formula-frost/85">{row.notes}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <h2 className="!mt-14">Memberships</h2>
-        <p>
-          <strong>Youth memberships</strong> · coming soon
-        </p>
-        <p>
-          Recurring monthly membership tiers are launching within the next month. Memberships include structured weekly programming, published session blocks,
-          capped enrollment, and ongoing Formula tracking.
-        </p>
-        <p>Join the waitlist and you&apos;ll be notified first when spots open.</p>
-        <p>What memberships will include:</p>
-        <ul>
-          <li>Published weekly training blocks: no surprise open play</li>
-          <li>Capped enrollment: protected coaching quality</li>
-          <li>Ongoing Formula tracking and 6-month reassessments</li>
-          <li>Priority access to clinics and Friday circuit</li>
-          <li>Assessment fee waiver for qualifying tiers</li>
-        </ul>
-
-        <h2 className="!mt-14">Other programs</h2>
+        <h2 className="!mt-14">Other options (live now)</h2>
         <ul>
           <li>
-            <Link href={MARKETING_HREF.fridayCircuit}>Friday Youth Game Circuit</Link> · structured competitive play. Balanced teams. Live now.
+            <strong>Clinics</strong> (members first):{' '}
+            <Link href={MARKETING_HREF.clinics}>Explore</Link>
           </li>
           <li>
-            <Link href={MARKETING_HREF.clinics}>Clinics</Link> · small group, high-rep, coach-led. Members get priority.
+            <strong>Friday circuit</strong>:{' '}
+            <Link href={MARKETING_HREF.fridayCircuit}>Join</Link>
           </li>
           <li>
-            <Link href={MARKETING_HREF.camps}>Camps</Link> · full-facility. Structured days. Summer and school breaks.
-          </li>
-          <li>
-            <Link href={MARKETING_HREF.adults}>Adult programming</Link> · pickup and leagues. Professional floor standards. Live now.
-          </li>
-          <li>
-            <Link href={MARKETING_HREF.rentals}>Field rentals</Link> · structured field time (default 2 hr blocks). Different checkout than parties.
-          </li>
-          <li>
-            <Link href={MARKETING_HREF.parties}>Birthday parties</Link> · hosted party deposit path - not field rental checkout.
-          </li>
-          <li>
-            <Link href={MARKETING_HREF.events}>Events</Link> · corporate, tournaments, large blocks - staff inquiry form.
+            <strong>Camps, rentals, events, adults</strong>:{' '}
+            <Link href="#programs-catalog">See all</Link>
           </li>
         </ul>
 

@@ -59,7 +59,7 @@ export function SiteHeaderBookMenu() {
 
   return (
     <>
-      {/* md+: hover / keyboard focus opens panel */}
+      {/* md+: hover / focus-within – pt-2 is an invisible “bridge” under the button so the cursor can reach the panel without leaving the group (no mt gap). */}
       <div className="group relative hidden md:block">
         <button type="button" className={cn(triggerClass)} aria-haspopup="true" aria-expanded={false}>
           Book
@@ -67,17 +67,24 @@ export function SiteHeaderBookMenu() {
         </button>
         <div
           className={cn(
-            'invisible absolute right-0 top-full z-[90] mt-2 w-[min(22.5rem,calc(100vw-2.5rem))] translate-y-1 rounded-lg border border-formula-frost/18 bg-formula-deep/98 py-1 shadow-[0_16px_48px_rgba(0,0,0,0.45)] opacity-0 backdrop-blur-xl transition-[opacity,visibility,transform] duration-150',
-            'pointer-events-none group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100',
-            'group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100'
+            'invisible absolute right-0 top-full z-[90] w-[min(22.5rem,calc(100vw-2.5rem))] pt-2 opacity-0 transition-[opacity,visibility] duration-150',
+            'pointer-events-none group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100',
+            'group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:opacity-100'
           )}
-          role="menu"
-          aria-label="Book a service"
         >
-          <p className="border-b border-formula-frost/10 px-3 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-formula-mist">
-            Choose a path · waiver or RSVP when asked · pay at checkout
-          </p>
-          <BookMenuEntries />
+          <div
+            className={cn(
+              'translate-y-0.5 rounded-lg border border-formula-frost/18 bg-formula-deep/98 py-1 shadow-[0_16px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-transform duration-150',
+              'group-hover:translate-y-0 group-focus-within:translate-y-0'
+            )}
+            role="menu"
+            aria-label="Book a service"
+          >
+            <p className="border-b border-formula-frost/10 px-3 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-formula-mist">
+              Choose a path · waiver or RSVP when asked · pay at checkout
+            </p>
+            <BookMenuEntries />
+          </div>
         </div>
       </div>
 

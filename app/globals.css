@@ -913,6 +913,18 @@
   background: color-mix(in srgb, var(--color-formula-volt) 42%, transparent);
 }
 
+/* Opt out of list dash + stacked-li spacing for card grids, forms, etc. */
+.prose-marketing .not-prose ul li {
+  padding-left: 0;
+}
+.prose-marketing .not-prose ul li::before {
+  content: none;
+  display: none;
+}
+.prose-marketing .not-prose ul li + li {
+  margin-top: 0;
+}
+
 .prose-marketing strong {
   font-weight: 600;
   color: color-mix(in srgb, var(--color-formula-paper) 88%, var(--color-formula-frost));

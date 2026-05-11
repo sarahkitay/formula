@@ -5,7 +5,7 @@ import { slotHasRoom } from '@/lib/assessment/slots-server'
 import { encodeRentalDatesCompact, resolveFieldRentalSessionDatesFromMetadata } from '@/lib/rentals/rental-weekly-dates'
 import { attachStripeSessionToSlot, releasePendingSlotByRef, tryClaimRecurringWeeklySlotsForDates } from '@/lib/rentals/rental-slots'
 import { isKnownRentalFieldId, RENTAL_TIME_SLOTS } from '@/lib/rentals/field-rental-picker-constants'
-import { FORMULA_SUNDAY_CHILD_PROGRAM_10_WK, fieldRentalDepositUsd, FRIDAY_NIGHT_FRIENDLIES_AGE } from '@/lib/marketing/public-pricing'
+import { FIELD_RENTAL_BOOKING_CHECKOUT, FORMULA_SUNDAY_CHILD_PROGRAM_10_WK, FRIDAY_NIGHT_FRIENDLIES_AGE } from '@/lib/marketing/public-pricing'
 import { isValidFieldRentalWindow, parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
 import {
   FORMULA_MINIS_PACK_SESSIONS,
@@ -188,7 +188,7 @@ export async function POST(req: Request) {
     if (!parsedWindow) {
       return NextResponse.json({ error: 'Could not parse rental_window.' }, { status: 400 })
     }
-    const depositUsd = fieldRentalDepositUsd(parsedWindow.durationMinutes)
+    const depositUsd = FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd
     const unitCents = Math.round(depositUsd * 100)
     if (unitCents < 50) {
       return NextResponse.json({ error: 'Computed deposit is too small; check duration and pricing.' }, { status: 400 })

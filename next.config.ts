@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/minis',
+        destination: '/youth-membership#formula-minis',
+        permanent: true,
+      },
+      {
+        source: '/minis/:path*',
+        destination: '/youth-membership#formula-minis',
+        permanent: true,
+      },
+    ]
+  },
   turbopack: {
     root: __dirname,
   },

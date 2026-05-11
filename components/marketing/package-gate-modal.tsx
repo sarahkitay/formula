@@ -92,7 +92,7 @@ export function PackageGateModal({ open, onClose, bandLabel, rosterAgeHint, sche
         {showMinisPricing ? (
           <>
             <Link
-              href={isPreschoolBand ? `${MARKETING_HREF.minis}#sunday-weekend` : `${MARKETING_HREF.minis}#weekday-package`}
+              href={isPreschoolBand ? `${MARKETING_HREF.youthMembership}#sunday-weekend` : `${MARKETING_HREF.youthMembership}#weekday-package`}
               className={minisCtaClass}
               onClick={onClose}
             >

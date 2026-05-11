@@ -7,38 +7,32 @@ export const FPI_PILLARS: readonly FormulaPillar[] = [
   {
     kicker: 'SPEED AND EXPLOSIVENESS',
     title: 'Speed & Explosiveness',
-    description:
-      'Timed sprints on the Speed Track. First step, separation, and repeat sprint capacity - all captured, not estimated.',
+    description: 'Timed sprints on Speed Track.',
   },
   {
     kicker: 'AGILITY AND CHANGE OF DIRECTION',
     title: 'Agility & Change of Direction',
-    description:
-      'Reactive movement under time pressure on the Double Speed Court. Deceleration, sharp cuts, and lateral quickness - logged every rep.',
+    description: 'Reactive cuts on Double Speed Court.',
   },
   {
     kicker: 'DECISION-MAKING AND COGNITIVE SPEED',
     title: 'Decision-Making & Cognitive Speed',
-    description:
-      'Structured scenarios that force choices under pressure. We measure when the right decision is made, not just whether it was.',
+    description: 'Pressure scenarios + choice timing.',
   },
   {
     kicker: 'TECHNICAL EXECUTION',
     title: 'Technical Execution',
-    description:
-      'High-volume reps on the Footbot. Ball-control load and precision distribution - counted, not assumed.',
+    description: 'High-rep Footbot precision.',
   },
   {
     kicker: 'GAME APPLICATION',
     title: 'Game Application',
-    description:
-      'How the athlete translates isolated skills into live play contexts. Observed across structured game-format segments.',
+    description: 'Skills in live play contexts.',
   },
   {
     kicker: 'CONSISTENCY AND COACHABILITY',
     title: 'Consistency & Coachability',
-    description:
-      'Performance across the full session - early reps vs. late reps, response to instruction, behavior under fatigue.',
+    description: 'Full-session performance under fatigue.',
   },
 ] as const
 

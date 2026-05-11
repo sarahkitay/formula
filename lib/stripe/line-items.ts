@@ -200,22 +200,18 @@ export function lineItemsForCheckoutType(
     const unitCents = Math.round(
       Math.max(1, options?.fieldRentalUnitAmountCents ?? FIELD_RENTAL_BOOKING_CHECKOUT.priceUsd * 100)
     )
-    const perSessionUsd = unitCents / 100
     return [
       {
-        quantity: weeks,
+        quantity: 1,
         price_data: {
           currency: 'usd',
           tax_behavior: 'exclusive',
           product_data: {
-            name:
-              weeks === 1
-                ? FIELD_RENTAL_BOOKING_CHECKOUT.productName
-                : `Field rental · ${weeks} weekly sessions`,
+            name: weeks === 1 ? FIELD_RENTAL_BOOKING_CHECKOUT.productName : `Field rental · ${weeks} planned sessions`,
             description:
               weeks === 1
                 ? FIELD_RENTAL_BOOKING_CHECKOUT.summary
-                : `${weeks} weekly session(s), same field & window · $${perSessionUsd.toFixed(0)} deposit per session (30 min increments at published hourly rate). Non-refundable booking hold; staff may reconcile any balance vs published rates.`,
+                : `${weeks} planned session(s), same field & window · ${FIELD_RENTAL_BOOKING_CHECKOUT.summary}`,
           },
           unit_amount: unitCents,
         },
