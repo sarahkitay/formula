@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/ui/page-header'
 import { Button } from '@/components/ui/button'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
 import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
+import { RentalRosterPaymentLinkForm } from '@/components/admin/rental-roster-payment-link-form'
 import { RosterLinkCreationPicker } from '@/components/admin/roster-link-creation-picker'
 import { RosterWaiverInvitesAdmin } from '@/components/admin/roster-waiver-invites-admin'
 import { SignedRentalWaiversLinkTable, type RosterInvitePickOption } from '@/components/admin/signed-rental-waivers-link-table'
@@ -126,13 +127,22 @@ export default async function RentalsPage() {
                 After online checkout, the purchaser gets a roster link. Below: who paid, session summary, waiver progress, and each signer. Use{' '}
                 <strong className="text-formula-paper/90">Quick roster link</strong> for internal or comp lists (no payment row). Use{' '}
                 <strong className="text-formula-paper/90">Paid in person</strong> when the deposit was collected offline so you get the same waiver URL plus a
-                Payments / revenue entry.
+                Payments / revenue entry. Use <strong className="text-formula-paper/90">Generate payment link</strong> to email or text a Stripe Checkout URL tied
+                to a roster invite (same engine as Invoices).
               </p>
               <details className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
                 <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
                   <span className="text-formula-volt">▸</span> Add roster link
                 </summary>
                 <RosterLinkCreationPicker />
+              </details>
+              <details className="rounded-md border border-formula-volt/20 bg-formula-volt/[0.04] p-3 mt-3">
+                <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
+                  <span className="text-formula-volt">▸</span> Generate payment link (Stripe · pick roster invite)
+                </summary>
+                <div className="mt-3 border-t border-formula-frost/10 pt-3">
+                  <RentalRosterPaymentLinkForm invites={waiverInvites} siteOrigin={siteOrigin} />
+                </div>
               </details>
               {waiverInvites.length === 0 ? (
                 <p className="mt-6 font-mono text-[11px] text-formula-mist">No roster links yet.</p>

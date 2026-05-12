@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
 import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
+import { getServiceSupabase } from '@/lib/supabase/service'
 
 export const runtime = 'nodejs'
 
@@ -62,6 +63,27 @@ export async function POST(req: Request) {
   const payeeName = typeof b.payeeName === 'string' ? b.payeeName.trim() : ''
   const memo = typeof b.memo === 'string' ? b.memo.trim() : ''
   const customerEmail = typeof b.customerEmail === 'string' ? b.customerEmail.trim().toLowerCase() : ''
+  const waiverInviteIdRaw = typeof b.waiverInviteId === 'string' ? b.waiverInviteId.trim() : ''
+  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  let waiverInviteId = ''
+  if (waiverInviteIdRaw) {
+    if (!uuidRe.test(waiverInviteIdRaw)) {
+      return NextResponse.json({ error: 'Invalid roster invite id.' }, { status: 400 })
+    }
+    const sb = getServiceSupabase()
+    if (!sb) {
+      return NextResponse.json({ error: 'Server cannot verify roster invite (database unavailable).' }, { status: 503 })
+    }
+    const { data: invRow, error: invErr } = await sb
+      .from('field_rental_waiver_invites')
+      .select('id')
+      .eq('id', waiverInviteIdRaw)
+      .maybeSingle()
+    if (invErr || !invRow) {
+      return NextResponse.json({ error: 'Roster invite not found.' }, { status: 404 })
+    }
+    waiverInviteId = waiverInviteIdRaw
+  }
 
   if (payeeName.length < 2) {
     return NextResponse.json({ error: 'Bill-to name must be at least 2 characters.' }, { status: 400 })
@@ -73,7 +95,10 @@ export async function POST(req: Request) {
   }
 
   const origin = getSiteOrigin()
-  const productName = trimMeta(`Formula invoice · ${payeeName}`, 120)
+  const productName = trimMeta(
+    waiverInviteId ? `Field rental payment · ${payeeName}` : `Formula invoice · ${payeeName}`,
+    120
+  )
   const description = memo ? trimMeta(memo, 450) : 'Custom invoice - Formula Soccer Center'
 
   try {
@@ -99,6 +124,7 @@ export async function POST(req: Request) {
         type: 'manual-invoice',
         invoice_payee: trimMeta(payeeName, 200),
         invoice_memo: trimMeta(memo, 450),
+        ...(waiverInviteId ? { waiver_invite_id: waiverInviteId } : {}),
       },
       ...(customerEmail.includes('@') && customerEmail.includes('.')
         ? { customer_email: customerEmail, customer_creation: 'always' as const }
