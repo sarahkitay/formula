@@ -47,9 +47,11 @@ type FormProps = {
    * `coach`: staff booking waiver - rental type + participant count required (see `/coach/field-rental-waiver`).
    */
   variant?: 'public' | 'coach'
+  /** When set, tags the agreement for Friday Friendlies pre-reg (source + intro copy). */
+  programContext?: 'default' | 'friday_friendlies'
 }
 
-export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: FormProps) {
+export function FieldRentalAgreementForm({ rosterInvite, variant = 'public', programContext = 'default' }: FormProps) {
   const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
@@ -64,6 +66,8 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
   }, [state.ok, router])
 
   const showCoachBookingFields = variant === 'coach' && !rosterInvite
+  const isFridayFriendlies = programContext === 'friday_friendlies' && !rosterInvite
+  const legalIntro: 'standard' | 'roster' | 'friendlies' = rosterInvite ? 'roster' : isFridayFriendlies ? 'friendlies' : 'standard'
 
   const drawPoint = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
@@ -122,7 +126,9 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
       id="participant-waiver"
       className="not-prose scroll-mt-28 rounded-none border border-formula-frost/12 bg-formula-base/[0.38] px-4 py-8 sm:px-6 md:px-8 md:py-10"
     >
-      <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Field rental agreement</p>
+      <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">
+        {isFridayFriendlies ? 'Friday Friendlies · waiver' : 'Field rental agreement'}
+      </p>
       <p className="mt-2 max-w-[60ch] text-[15px] leading-relaxed text-formula-frost/82">
         Expand each section, complete the fields, then submit. Required items are marked with an asterisk.
       </p>
@@ -130,12 +136,13 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
       <details className={cn(accordionClass, 'mt-8')} open>
         <summary className={accordionSummaryClass}>Facility agreement & waiver language</summary>
         <div className="border-t border-formula-frost/10 px-5 py-6 md:px-6">
-          <FieldRentalWaiverLegalDocument introVariant={rosterInvite ? 'roster' : 'standard'} />
+          <FieldRentalWaiverLegalDocument introVariant={legalIntro} />
         </div>
       </details>
 
       <form action={action} className="mt-6 grid gap-4 md:grid-cols-2 md:gap-6">
         <input type="hidden" name="signatureDataUrl" value={signatureDataUrl} />
+        {isFridayFriendlies ? <input type="hidden" name="agreementContext" value="friday_friendlies" /> : null}
         {rosterInvite ? <input type="hidden" name="waiverInviteToken" value={rosterInvite.token} /> : null}
         {showCoachBookingFields ? <input type="hidden" name="waiverFormRole" value="coach" /> : null}
 
@@ -302,7 +309,7 @@ export function FieldRentalAgreementForm({ rosterInvite, variant = 'public' }: F
                 disabled={pending || !signatureDataUrl}
                 className="inline-flex min-h-12 items-center border border-black/25 bg-formula-volt px-8 font-mono text-[12px] font-semibold uppercase tracking-[0.14em] text-black transition-[filter] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {pending ? 'Submitting…' : 'Submit Field Rental Request'}
+                {pending ? 'Submitting…' : isFridayFriendlies ? 'Submit waiver for Friday Friendlies' : 'Submit Field Rental Request'}
               </button>
               {state.message ? (
                 <p className={`mt-4 text-[14px] ${state.ok ? 'text-formula-volt' : 'text-red-300'}`} role="status">

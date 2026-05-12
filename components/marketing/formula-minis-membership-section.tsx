@@ -63,7 +63,7 @@ export function FormulaMinisMembershipSection() {
                     ${w.priceUsd} (${w.perSessionUsd}/sess)
                   </td>
                   <td className="p-3 align-top text-formula-frost/85">
-                    Mon/Wed/Fri · A: 10–10:30 AM or B: 10:45–11:15 AM · May 11–Jun 19 (Mon skips Memorial Day) · Min 6, max 24
+                    Mon/Wed/Fri · A: 9:10–9:40 PM or B: 9:45–10:15 PM · May 11–Jun 19 (Mon skips Memorial Day) · Min 6, max 24
                   </td>
                 </tr>
               </tbody>
@@ -92,10 +92,10 @@ export function FormulaMinisMembershipSection() {
               </thead>
               <tbody>
                 {[
-                  ['Minis (2)', '9–9:30 AM', '30 min', `$${sun.priceUsd}/10 Sundays`],
-                  ['Minis (3)', '9:45–10:15 AM', '30 min', `$${sun.priceUsd}/10 Sundays`],
-                  ['Juniors (4)', '10:30–11:15 AM', '45 min', `$${sun.priceUsd}/10 Sundays`],
-                  ['Juniors (5)', '11:30 AM–12:15 PM', '45 min', `$${sun.priceUsd}/10 Sundays`],
+                  ['Minis (2)', '3:30–4:00 PM', '30 min', `$${sun.priceUsd}/10 Sundays`],
+                  ['Minis (3)', '4:15–4:45 PM', '30 min', `$${sun.priceUsd}/10 Sundays`],
+                  ['Juniors (4)', '5:00–5:45 PM', '45 min', `$${sun.priceUsd}/10 Sundays`],
+                  ['Juniors (5)', '6:00–6:45 PM', '45 min', `$${sun.priceUsd}/10 Sundays`],
                 ].map(([program, time, len, price]) => (
                   <tr key={program} className="border-b border-formula-frost/[0.06] last:border-b-0">
                     <td className="p-3 pr-3 align-top text-formula-paper/95">{program}</td>

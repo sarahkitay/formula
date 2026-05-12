@@ -18,7 +18,7 @@ export const PROGRAM_UI: Record<
     text: '#ffffff',
   },
   littles: {
-    key: 'Formula Minis (2–3 · M/W/F AM)',
+    key: 'Formula Minis (2–3 · M/W/F PM)',
     bg: 'rgb(13 148 136 / 0.9)',
     border: 'rgb(15 118 110)',
     text: '#ffffff',

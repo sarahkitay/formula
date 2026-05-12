@@ -15,6 +15,8 @@ export const FIELD_RENTAL_WAIVER_INTRO = {
     'Complete every field below. Your name, date of birth, address, phone, emergency contact, and team or organization are part of this agreement. Minors: a parent or legal guardian completes and signs. Expand each section to read the full text before you acknowledge and sign. Submitting saves the waiver for staff review and notifies our team.',
   roster:
     'You are signing for one participant on this roster link. Each person should submit their own waiver using the same link until the booking is complete. Complete address, phone, emergency contact, and team or organization. Minors: a parent or legal guardian completes the waiver. Expand each section to read the full agreement.',
+  friendlies:
+    'You are completing the Formula field rental agreement for Friday Friendlies pickup play (ages 6–14). One submission per athlete who needs a new waiver on file. If this athlete already has a signed waiver with us, use RSVP instead of signing again. Minors: a parent or legal guardian completes the waiver.',
 } as const
 
 /** Checkbox labels on the signing form (must match `field-rental-agreement-form` name bindings). */

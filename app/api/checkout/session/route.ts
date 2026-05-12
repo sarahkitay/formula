@@ -316,6 +316,15 @@ export async function POST(req: Request) {
         { status: 400 }
       )
     }
+    if (metadataExtra.fnf_waiver_attested !== 'confirmed') {
+      return NextResponse.json(
+        {
+          error:
+            'Friday Friendlies checkout requires waiver confirmation. Use Sign the waiver or RSVP above for each athlete, then check the confirmation box before paying.',
+        },
+        { status: 400 }
+      )
+    }
     line_items = lineItemsForCheckoutType(type, { fridayFriendliesPlayerCount: count })
   }
 

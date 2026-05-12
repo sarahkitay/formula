@@ -26,7 +26,7 @@ export const SESSION_PACKAGE_5 = {
 export const FORMULA_MINIS_SESSIONS_IN_PACK = 6
 const FORMULA_MINIS_PACK_PRICE = 300
 
-/** Formula Minis weekday (ages 2–3): Mon / Wed / Fri; Session A 10:00–10:30 AM or Session B 10:45–11:15 AM; 6-week season per v4. */
+/** Formula Minis weekday (ages 2–3): Mon / Wed / Fri; Session A 9:10–9:40 PM or Session B 9:45–10:15 PM; 6-week season per v4. */
 export const FORMULA_MINIS_SIX_WEEK = {
   priceUsd: FORMULA_MINIS_PACK_PRICE,
   sessionsInPack: FORMULA_MINIS_SESSIONS_IN_PACK,
@@ -35,7 +35,7 @@ export const FORMULA_MINIS_SIX_WEEK = {
   label: 'Formula Minis · 6-week weekday package',
   /** Condensed from Children's Programming Summary v4 (April 2026). */
   summary:
-    'Formula Minis (ages 2–3), weekdays: pick one recurring slot on Monday, Wednesday, or Friday - Session A (10:00–10:30 AM) or Session B (10:45–11:15 AM). That slot meets once per week for six weeks (six sessions total) for $300 per participant. Program dates May 11–June 19, 2026; Monday enrollments span seven calendar weeks through June 22 so Memorial Day (May 25) is a built-in skip - still six Monday sessions. Minimum 6 participants per session (below that, sessions may be cancelled or consolidated); maximum 24 per session. Enrollment is by 6-week package only; no drop-ins. Refunds: none after enrollment is confirmed; no formal make-ups - staff may try to place your child in another session the same week if capacity allows (not guaranteed).',
+    'Formula Minis (ages 2–3), weekdays: pick one recurring slot on Monday, Wednesday, or Friday - Session A (9:10–9:40 PM) or Session B (9:45–10:15 PM). That slot meets once per week for six weeks (six sessions total) for $300 per participant. Program dates May 11–June 19, 2026; Monday enrollments span seven calendar weeks through June 22 so Memorial Day (May 25) is a built-in skip - still six Monday sessions. Minimum 6 participants per session (below that, sessions may be cancelled or consolidated); maximum 24 per session. Enrollment is by 6-week package only; no drop-ins. Refunds: none after enrollment is confirmed; no formal make-ups - staff may try to place your child in another session the same week if capacity allows (not guaranteed).',
 } as const
 
 /** Sunday Weekend Program (ages 2–5): four age-specific sessions; 10 weeks; v4 April 2026. */

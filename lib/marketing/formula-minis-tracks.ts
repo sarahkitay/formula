@@ -30,27 +30,27 @@ export const FORMULA_MINIS_CHECKOUT_TRACK_OPTIONS: { id: FormulaMinisCheckoutTra
   {
     id: 'littles-mon-600',
     label:
-      'Monday · Session A 10:00–10:30 AM · 6 sessions (1/week) · seven calendar weeks (Memorial Day skip) · $300 · Formula Minis (2–3)',
+      'Monday · Session A 9:10–9:40 PM · 6 sessions (1/week) · seven calendar weeks (Memorial Day skip) · $300 · Formula Minis (2–3)',
   },
   {
     id: 'littles-mon-645',
     label:
-      'Monday · Session B 10:45–11:15 AM · 6 sessions (1/week) · seven calendar weeks (Memorial Day skip) · $300 · Formula Minis (2–3)',
+      'Monday · Session B 9:45–10:15 PM · 6 sessions (1/week) · seven calendar weeks (Memorial Day skip) · $300 · Formula Minis (2–3)',
   },
   {
     id: 'littles-wed-600',
-    label: 'Wednesday · Session A 10:00–10:30 AM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
+    label: 'Wednesday · Session A 9:10–9:40 PM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
   },
   {
     id: 'littles-wed-645',
-    label: 'Wednesday · Session B 10:45–11:15 AM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
+    label: 'Wednesday · Session B 9:45–10:15 PM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
   },
   {
     id: 'littles-fri-600',
-    label: 'Friday · Session A 10:00–10:30 AM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
+    label: 'Friday · Session A 9:10–9:40 PM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
   },
   {
     id: 'littles-fri-645',
-    label: 'Friday · Session B 10:45–11:15 AM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
+    label: 'Friday · Session B 9:45–10:15 PM · 6 sessions (1/week) · six consecutive weeks · $300 · Formula Minis (2–3)',
   },
 ]

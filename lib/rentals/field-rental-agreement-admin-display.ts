@@ -18,6 +18,8 @@ export function formatFieldRentalWaiverSource(raw: string | null | undefined): s
   if (s === 'coach_booking') return 'Coach booking'
   if (s === 'roster_link') return 'Roster link'
   if (s === 'roster_rsvp') return 'Roster RSVP (prior waiver)'
+  if (s === 'friday_friendlies_sign') return 'Friday Friendlies (signed)'
+  if (s === 'friday_friendlies_rsvp') return 'Friday Friendlies RSVP'
   if (s === 'public_site') return 'Public / desk'
   return s || '-'
 }

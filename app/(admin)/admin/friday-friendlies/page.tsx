@@ -41,7 +41,11 @@ export default async function AdminFridayFriendliesPage() {
       const waiverCell = (
         <div className="max-w-xs space-y-1.5 text-left normal-case tracking-normal">
           <p className="text-formula-mist">
-            Friendlies checkout does not capture a signed facility waiver. Confirm on file at check-in, or send the guardian to the public waiver flow.
+            Pre-reg now requires waiver completion on the public page (full sign or RSVP). Rows appear in{' '}
+            <Link href="/admin/rentals" className="text-formula-volt underline-offset-2 hover:underline">
+              Admin → Rentals
+            </Link>{' '}
+            with source <span className="font-mono text-formula-frost/90">Friday Friendlies</span>. Cross-check athlete name / email there if needed.
           </p>
           <Link
             href={BOOKING_HUB_PUBLIC.waiver}
@@ -49,7 +53,7 @@ export default async function AdminFridayFriendliesPage() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Open waiver (public booking hub)
+            Open public waiver hub
           </Link>
         </div>
       )
@@ -78,7 +82,7 @@ export default async function AdminFridayFriendliesPage() {
       <div className="space-y-6">
         <PageHeader
           title="Friday Night Friendlies"
-          subtitle="Paid pre-registrations from the public Friendlies checkout (Stripe → stripe_purchases). One row per athlete name parsed from checkout; waiver is tracked separately."
+          subtitle="Paid pre-registrations from the public Friendlies checkout (Stripe → stripe_purchases). Waivers and RSVPs are stored as field rental agreements (source Friday Friendlies) from the same landing page."
           breadcrumb={[
             { label: 'Schedule', href: '/admin/schedule' },
             { label: 'Friday Friendlies' },

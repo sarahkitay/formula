@@ -34,6 +34,13 @@ function getRequiredString(formData: FormData, key: string): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
+function getOptionalString(formData: FormData, key: string): string | null {
+  const value = formData.get(key)
+  if (typeof value !== 'string') return null
+  const trimmed = value.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+
 /** Coach / renter booking waiver - must match form values. */
 const COACH_BOOKING_RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])
 
@@ -44,6 +51,8 @@ export async function submitFieldRentalAgreement(
   const waiverInviteToken = getRequiredString(formData, 'waiverInviteToken')
   const waiverFormRole = getRequiredString(formData, 'waiverFormRole')
   const isCoachBookingWaiver = waiverFormRole === 'coach'
+  const agreementContext = getOptionalString(formData, 'agreementContext')
+  const isFnf = agreementContext === 'friday_friendlies' && !waiverInviteToken && !isCoachBookingWaiver
 
   let waiverInviteId: string | null = null
   let rosterExpected: number | null = null
@@ -150,7 +159,15 @@ export async function submitFieldRentalAgreement(
     ? 'roster_link'
     : isCoachBookingWaiver
       ? 'coach_booking'
-      : 'public_site'
+      : isFnf
+        ? 'friday_friendlies_sign'
+        : 'public_site'
+
+  const notesField = getRequiredString(formData, 'notes') ?? null
+  const notesMerged =
+    isFnf && !waiverInviteId
+      ? [notesField, 'Friday Friendlies: pre-registration waiver.'].filter(Boolean).join('\n\n')
+      : notesField
 
   const saved = await insertFieldRentalAgreement({
     rental_type: rentalType,
@@ -165,7 +182,7 @@ export async function submitFieldRentalAgreement(
     emergency_contact: emergencyContact,
     signature_name: signatureName,
     signature_data_url: signatureDataUrl,
-    notes: getRequiredString(formData, 'notes') ?? null,
+    notes: notesMerged,
     agreement_accepted: agreementAccepted,
     risk_accepted: riskAccepted,
     rules_accepted: rulesAccepted,
@@ -179,6 +196,9 @@ export async function submitFieldRentalAgreement(
   }
 
   revalidatePath('/admin/rentals')
+  if (isFnf) {
+    revalidatePath('/events/friday-night-friendlies')
+  }
   if (isCoachBookingWaiver) {
     revalidatePath('/coach/field-rental-waiver')
   }
@@ -204,9 +224,11 @@ export async function submitFieldRentalAgreement(
     }
   } else {
     await sendAdminNotification({
-      subject: `[Formula] Field rental agreement · ${participantName}`,
+      subject: isFnf
+        ? `[Formula] Friday Friendlies waiver · ${participantName}`
+        : `[Formula] Field rental agreement · ${participantName}`,
       html: `
-      <p><strong>Field rental waiver submitted</strong></p>
+      <p><strong>${isFnf ? 'Friday Friendlies waiver submitted' : 'Field rental waiver submitted'}</strong></p>
       <ul>
         <li><strong>Agreement id</strong>: ${escapeHtml(saved.id)}</li>
         <li><strong>Rental type</strong>: ${escapeHtml(rentalType)}</li>
@@ -222,7 +244,9 @@ export async function submitFieldRentalAgreement(
       </ul>
       <p>Signature image is stored securely with this waiver for staff review.</p>
     `,
-      text: `Field rental agreement saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`,
+      text: isFnf
+        ? `Friday Friendlies waiver saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`
+        : `Field rental agreement saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`,
     })
   }
 
@@ -237,6 +261,10 @@ export async function submitFieldRentalAgreement(
 
   return {
     ok: true,
-    message: waiverInviteId ? rosterSuccessMsg : 'Agreement saved.',
+    message: waiverInviteId
+      ? rosterSuccessMsg
+      : isFnf
+        ? 'Waiver saved for Friday Friendlies. Use RSVP or sign again for each athlete who still needs coverage, then continue to checkout below.'
+        : 'Agreement saved.',
   }
 }

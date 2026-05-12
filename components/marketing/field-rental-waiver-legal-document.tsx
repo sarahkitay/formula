@@ -32,7 +32,7 @@ export function FieldRentalWaiverLegalDocument({
   introVariant,
   className,
 }: {
-  introVariant: 'standard' | 'roster'
+  introVariant: 'standard' | 'roster' | 'friendlies'
   className?: string
 }) {
   return (
@@ -46,7 +46,11 @@ export function FieldRentalWaiverLegalDocument({
       </div>
 
       <p className="mt-4 max-w-3xl text-sm leading-relaxed text-formula-mist">
-        {introVariant === 'roster' ? FIELD_RENTAL_WAIVER_INTRO.roster : FIELD_RENTAL_WAIVER_INTRO.standard}
+        {introVariant === 'roster'
+          ? FIELD_RENTAL_WAIVER_INTRO.roster
+          : introVariant === 'friendlies'
+            ? FIELD_RENTAL_WAIVER_INTRO.friendlies
+            : FIELD_RENTAL_WAIVER_INTRO.standard}
       </p>
 
       <p className="mt-4 max-w-3xl border border-formula-frost/12 bg-formula-paper/[0.02] p-3 text-sm leading-relaxed text-formula-paper md:p-4">

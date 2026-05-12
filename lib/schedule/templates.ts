@@ -38,19 +38,19 @@ const THURSDAY: YouthBlockTemplate[] = [
   { ageBand: '15-19', startMinute: M(20, 10), endMinute: M(21, 5) },
 ]
 
-/** Sat: 15-19 sits out; first block 9:00; 70-min pitch */
+/** Sat: 15-19 sits out; same 3:30p+ ladder as weekdays (no morning youth blocks) */
 const SATURDAY: YouthBlockTemplate[] = [
-  { ageBand: '4-5', startMinute: M(9, 0), endMinute: M(9, 55) },
-  { ageBand: '6-8', startMinute: M(10, 10), endMinute: M(11, 5) },
-  { ageBand: '9-11', startMinute: M(11, 20), endMinute: M(12, 15) },
-  { ageBand: '12-14', startMinute: M(12, 30), endMinute: M(13, 25) },
+  { ageBand: '4-5', startMinute: M(15, 30), endMinute: M(16, 25) },
+  { ageBand: '6-8', startMinute: M(16, 40), endMinute: M(17, 35) },
+  { ageBand: '9-11', startMinute: M(17, 50), endMinute: M(18, 45) },
+  { ageBand: '12-14', startMinute: M(19, 0), endMinute: M(19, 55) },
 ]
 
-/** Sun: only 9-11, 12-14, 15-19 */
+/** Sun: 9-11, 12-14, 15-19 · evening ladder from 3:30p */
 const SUNDAY: YouthBlockTemplate[] = [
-  { ageBand: '9-11', startMinute: M(9, 0), endMinute: M(9, 55) },
-  { ageBand: '12-14', startMinute: M(10, 10), endMinute: M(11, 5) },
-  { ageBand: '15-19', startMinute: M(11, 20), endMinute: M(12, 15) },
+  { ageBand: '9-11', startMinute: M(15, 30), endMinute: M(16, 25) },
+  { ageBand: '12-14', startMinute: M(16, 40), endMinute: M(17, 35) },
+  { ageBand: '15-19', startMinute: M(17, 50), endMinute: M(18, 45) },
 ]
 
 export function getYouthBlocksForDay(dayIndex: DayIndex): YouthBlockTemplate[] {

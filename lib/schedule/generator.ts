@@ -75,27 +75,27 @@ function pushPreschool(slots: ScheduleSlot[], day: DayIndex) {
   })
 }
 
-/** Formula Minis (ages 2–3): Mon / Wed / Fri, 10:00–10:30 and 10:45–11:15 on Performance Center */
+/** Formula Minis (ages 2–3): Mon / Wed / Fri, after weekday youth ladder (last block ends 21:05) */
 function pushFormulaMinis(slots: ScheduleSlot[], day: DayIndex) {
   if (day !== 1 && day !== 3 && day !== 5) return
   const dayTag = day === 1 ? 'mon' : day === 3 ? 'wed' : 'fri'
   add(slots, {
     assetId: 'performance-center',
     dayIndex: day,
-    startMinute: 10 * 60,
-    endMinute: 10 * 60 + 30,
+    startMinute: 21 * 60 + 10,
+    endMinute: 21 * 60 + 40,
     kind: 'littles',
-    label: 'Formula Minis // Session A · 10:00–10:30 AM · ages 2–3',
+    label: 'Formula Minis // Session A · 9:10–9:40 PM · ages 2–3',
     ageBand: '2-3',
     youthBlockId: `littles-${dayTag}-600`,
   })
   add(slots, {
     assetId: 'performance-center',
     dayIndex: day,
-    startMinute: 10 * 60 + 45,
-    endMinute: 11 * 60 + 15,
+    startMinute: 21 * 60 + 45,
+    endMinute: 22 * 60 + 15,
     kind: 'littles',
-    label: 'Formula Minis // Session B · 10:45–11:15 AM · ages 2–3',
+    label: 'Formula Minis // Session B · 9:45–10:15 PM · ages 2–3',
     ageBand: '2-3',
     youthBlockId: `littles-${dayTag}-645`,
   })
