@@ -9,7 +9,7 @@ export default function AdminModulesHubPage() {
       <div className="space-y-8">
         <PageHeader
           title="Modules"
-          subtitle="Same directory as the Dashboard grid — programming, commercial, and facility tools."
+          subtitle="Same directory as the Dashboard grid: programming, commercial, and facility tools."
           breadcrumb={[
             { label: 'Dashboard', href: '/admin/dashboard' },
             { label: 'Modules' },

@@ -424,7 +424,7 @@ function rosterWaiverProgressNote(inv: WaiverInviteWithProgress): React.ReactNod
   if (inv.overage_count > 0) {
     return (
       <span className="text-amber-200/90">
-        (complete · +{inv.overage_count} extra — raise expected headcount below)
+        (complete · +{inv.overage_count} extra; raise expected headcount below)
       </span>
     )
   }
@@ -689,7 +689,7 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
       {invites.length > 0 ? (
         <details className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.03] p-3">
           <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-            <span className="text-formula-volt">▸</span> Add full info — organizer, payment &amp; session, share link (pick invite)
+            <span className="text-formula-volt">▸</span> Add full info: organizer, payment &amp; session, share link (pick invite)
           </summary>
           <div className="mt-3 space-y-3 border-t border-formula-frost/10 pt-3">
             <label className="block font-mono text-[10px] text-formula-mist">
@@ -721,7 +721,7 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
               </div>
             ) : null}
             <p className="font-mono text-[10px] text-formula-mist/85">
-              Same fields as inside an expanded invite below — use either place. Drag signed waivers onto a card, or link rows from Signed waivers.
+              Same fields as inside an expanded invite below. Use either place. Drag signed waivers onto a card, or link rows from Signed waivers.
             </p>
           </div>
         </details>
@@ -815,7 +815,7 @@ export function RosterWaiverInvitesAdmin({ invites, siteOrigin }: Props) {
                   ) : totalOver > 0 ? (
                     <span className="text-amber-200/90">
                       {' '}
-                      (includes {totalOver} extra signer{totalOver === 1 ? '' : 's'} — open a session to raise expected headcount)
+                      (includes {totalOver} extra signer{totalOver === 1 ? '' : 's'}; open a session to raise expected headcount)
                     </span>
                   ) : (
                     <span className="text-emerald-400/90"> (all invites complete)</span>

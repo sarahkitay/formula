@@ -46,7 +46,7 @@ export async function submitFridayFriendliesWaiverRsvp(
     }
   }
 
-  const rsvpNote = `RSVP - prior signed waiver on file (agreement ${prior.id}${prior.submitted_at ? `, submitted ${prior.submitted_at}` : ''}). Friday Friendlies pre-registration — no new signature.`
+  const rsvpNote = `RSVP - prior signed waiver on file (agreement ${prior.id}${prior.submitted_at ? `, submitted ${prior.submitted_at}` : ''}). Friday Friendlies pre-registration. No new signature.`
 
   const saved = await insertFieldRentalAgreement({
     rental_type: PARTICIPANT_SELF_WAIVER_RENTAL_TYPE,

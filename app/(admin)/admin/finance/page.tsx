@@ -15,7 +15,7 @@ export default async function AdminFinanceHubPage() {
       <div className="space-y-8">
         <PageHeader
           title="Finance"
-          subtitle="Revenue discipline, Stripe ledger, and internal performance index — one hub with deep links."
+          subtitle="Revenue discipline, Stripe ledger, and internal performance index: one hub with deep links."
           breadcrumb={[
             { label: 'Schedule', href: '/admin/schedule' },
             { label: 'Finance' },
@@ -31,7 +31,7 @@ export default async function AdminFinanceHubPage() {
                 Paid total (window): <span className="text-formula-volt">{formatCurrency(stripe.totalRevenue)}</span>
               </p>
             ) : (
-              <p className="mt-3 font-mono text-[11px] text-formula-mist">Stripe ledger not configured — set keys to see live rollups.</p>
+              <p className="mt-3 font-mono text-[11px] text-formula-mist">Stripe ledger not configured. Set keys to see live rollups.</p>
             )}
             <Link href="/admin/revenue-strategy" className="mt-4 inline-block">
               <Button variant="secondary" size="sm">

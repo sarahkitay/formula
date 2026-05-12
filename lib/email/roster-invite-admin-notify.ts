@@ -41,7 +41,7 @@ export async function sendRosterInviteFullyCompleteAdminEmail(params: {
   await sendAdminNotification({
     subject: `[Formula] Roster complete · ${n}/${invite.expected_waiver_count} · ${invite.purchaser_name?.trim() || invite.purchaser_email?.trim() || invite.token.slice(0, 8)}`,
     html: `
-      <p><strong>Field rental roster link — all waivers in</strong></p>
+      <p><strong>Field rental roster link: all waivers in</strong></p>
       <ul>
         <li><strong>Organizer</strong>: ${escapeHtml(org)}</li>
         <li><strong>Progress</strong>: ${n} / ${invite.expected_waiver_count} (complete)</li>
@@ -69,7 +69,7 @@ export async function sendRosterInviteIncompletePremeetingAdminEmail(params: {
   await sendAdminNotification({
     subject: `[Formula] Roster missing waivers (${missingCount}) · ~1h to session · ${invite.purchaser_name?.trim() || invite.purchaser_email?.trim() || invite.token.slice(0, 8)}`,
     html: `
-      <p><strong>Field rental roster — waivers still missing before first session</strong></p>
+      <p><strong>Field rental roster: waivers still missing before first session</strong></p>
       <ul>
         <li><strong>Organizer</strong>: ${escapeHtml(org)}</li>
         <li><strong>Signed</strong>: ${signedCount} / ${invite.expected_waiver_count}</li>

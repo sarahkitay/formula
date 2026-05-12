@@ -17,6 +17,12 @@ export default function CheckoutCancelPage() {
       </p>
       <div className="not-prose mt-10 flex flex-wrap gap-3">
         <Link
+          href="/"
+          className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black hover:brightness-105"
+        >
+          Home
+        </Link>
+        <Link
           href={MARKETING_HREF.youthMembership}
           className="inline-flex h-11 items-center border border-black/20 bg-formula-volt px-6 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] !text-black hover:brightness-105"
         >

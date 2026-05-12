@@ -5,8 +5,6 @@ import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { FRIDAY_NIGHT_FRIENDLIES_CHECKOUT } from '@/lib/marketing/public-pricing'
 import { SITE } from '@/lib/site-config'
 
-const INSTAGRAM_HREF = 'https://www.instagram.com/formulasoccercenter/'
-
 const statTiles: { k: string; v: string; sub?: string }[] = [
   { k: '6–14', v: 'Ages', sub: 'Grades 1–8' },
   { k: '5:30', v: 'Arrival', sub: 'Check-in' },
@@ -166,12 +164,21 @@ export function FridayNightFriendliesLanding() {
           </Link>
           <span className="hidden text-formula-frost/40 sm:inline">·</span>
           <a
-            href={INSTAGRAM_HREF}
+            href={SITE.publicInstagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center text-formula-volt underline-offset-2 hover:underline sm:min-h-0"
           >
-            Follow us on Instagram
+            Instagram
+          </a>
+          <span className="hidden text-formula-frost/40 sm:inline">·</span>
+          <a
+            href={SITE.publicFacebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center text-formula-volt underline-offset-2 hover:underline sm:min-h-0"
+          >
+            Facebook
           </a>
         </p>
       </div>

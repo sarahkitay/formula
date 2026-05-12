@@ -59,6 +59,9 @@ export const SITE = {
   publicPhoneTel: '+17476889668',
   /** Public inbox for marketing header and general inquiries. */
   publicContactEmail: 'info@formulasoccer.com',
+  /** Official social profiles (site header contact, booking hub, event pages). */
+  publicInstagramUrl: 'https://www.instagram.com/formulasoccercenter/',
+  publicFacebookUrl: 'https://www.facebook.com/formulasoccer',
   /** Street line for headers (booking hub, parent portal). */
   facilityAddressLine: '15001 Calvert Street, Los Angeles, CA 91411',
   /** Short rule for booking UI + waivers (turf footwear). */

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import type { BookAssessmentVariant } from '@/components/marketing/book-assessment-types'
 import { BOOKING_HUB_PARENT, BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
+import { FACILITY_APPLE_MAPS_URL, SITE } from '@/lib/site-config'
 
 /** Shared with skills-check page for public users (same tab / session). */
 export const GUARDIAN_SESSION_STORAGE_KEY = 'formula-book-assessment-guardian-v1' as const
@@ -66,6 +67,25 @@ export function BookAssessmentGuardianContactClient({
         <p className="mt-4 text-[12px] leading-relaxed text-formula-frost/65">
           Receipts and Skills Check confirmations use this email. Update it in the portal if it needs to change.
         </p>
+        <p className="mt-5 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Follow Formula</p>
+        <p className="mt-2 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[11px] uppercase tracking-[0.12em]">
+          <a
+            href={SITE.publicInstagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-formula-volt underline-offset-2 hover:underline"
+          >
+            Instagram
+          </a>
+          <a
+            href={SITE.publicFacebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-formula-volt underline-offset-2 hover:underline"
+          >
+            Facebook
+          </a>
+        </p>
         <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-formula-frost/55">
           <a href={hub} className="text-formula-volt underline-offset-2 hover:underline">
             ← Booking hub
@@ -83,6 +103,52 @@ export function BookAssessmentGuardianContactClient({
       <p className="max-w-2xl text-[13px] leading-relaxed text-formula-frost/70">
         Save your details, then continue to June Skills Check booking. We keep this in your browser for this session only (not on our servers until you pay).
       </p>
+      <div className="rounded-sm border border-formula-frost/12 bg-formula-paper/[0.03] p-4 md:p-5">
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Reach Formula</p>
+        <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-formula-frost/85">
+          <li>
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">Call </span>
+            <a href={`tel:${SITE.publicPhoneTel}`} className="text-formula-volt underline-offset-2 hover:underline">
+              {SITE.publicPhoneDisplay}
+            </a>
+          </li>
+          <li>
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">Email </span>
+            <a href={`mailto:${SITE.publicContactEmail}`} className="text-formula-volt underline-offset-2 hover:underline">
+              {SITE.publicContactEmail}
+            </a>
+          </li>
+          <li>
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-formula-frost/55">Address </span>
+            <a
+              href={FACILITY_APPLE_MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-formula-volt underline-offset-2 hover:underline"
+            >
+              {SITE.facilityAddressLine}
+            </a>
+          </li>
+          <li className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
+            <a
+              href={SITE.publicInstagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[11px] uppercase tracking-[0.12em] text-formula-volt underline-offset-2 hover:underline"
+            >
+              Instagram
+            </a>
+            <a
+              href={SITE.publicFacebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[11px] uppercase tracking-[0.12em] text-formula-volt underline-offset-2 hover:underline"
+            >
+              Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
       <div className="grid max-w-xl min-w-0 gap-5 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label htmlFor="ba-parent-name" className="block font-mono text-[10px] uppercase tracking-[0.14em] text-formula-frost/60">

@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(new URL('/icon.png', request.url))
   }
 
-  // Staff OS: never cache HTML/RSC at the edge or in the browser — avoids stale admin chrome after deploys.
+  // Staff OS: never cache HTML/RSC at the edge or in the browser (avoids stale admin chrome after deploys).
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     const res = NextResponse.next()
     res.headers.set('Cache-Control', 'private, no-cache, no-store, max-age=0, must-revalidate')

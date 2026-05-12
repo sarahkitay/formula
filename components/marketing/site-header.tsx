@@ -221,6 +221,27 @@ export function SiteHeader() {
                     {SITE.facilityAddressLine}
                   </a>
                 </div>
+                <div>
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Social</p>
+                  <div className="mt-1.5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-6">
+                    <a
+                      href={SITE.publicInstagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[15px] font-medium leading-snug text-formula-paper underline-offset-2 transition-colors hover:text-formula-volt hover:underline md:text-base"
+                    >
+                      Instagram
+                    </a>
+                    <a
+                      href={SITE.publicFacebookUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[15px] font-medium leading-snug text-formula-paper underline-offset-2 transition-colors hover:text-formula-volt hover:underline md:text-base"
+                    >
+                      Facebook
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           ) : null}

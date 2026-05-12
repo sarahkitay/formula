@@ -318,7 +318,7 @@ export function SettingsPageClient({ stripePaymentsConnected }: { stripePayments
                 primaryLabel="Configure keys"
                 onPrimaryAction={() =>
                   setIntegrationNote(
-                    'Set STRIPE_SECRET_KEY (sk_live_ or sk_test_) on the server. Publishable keys (pk_…) belong in NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY for Checkout — never as the server secret.'
+                    'Set STRIPE_SECRET_KEY (sk_live_ or sk_test_) on the server. Publishable keys (pk_…) belong in NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY for Checkout, never as the server secret.'
                   )
                 }
               />

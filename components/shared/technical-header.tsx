@@ -269,7 +269,7 @@ export function TechnicalHeader({
                     dark ? 'text-formula-mist' : 'text-zinc-500'
                   )}
                 >
-                  This screen is not a top-level tab — use header search or Modules for the full directory.
+                  This screen is not a top-level tab. Use header search or Modules for the full directory.
                 </p>
               ) : null}
             </>

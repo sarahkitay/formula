@@ -20,11 +20,11 @@ function splitAthleteNames(raw: string | null): string[] {
 
 function ageBandLabel(row: FridayFriendliesSignupRow): string {
   const { ageYoungest, ageOldest } = row
-  if (ageYoungest == null && ageOldest == null) return '—'
+  if (ageYoungest == null && ageOldest == null) return '-'
   if (ageYoungest != null && ageOldest != null && ageYoungest !== ageOldest) {
     return `${ageYoungest}–${ageOldest} yr`
   }
-  return ageYoungest != null ? `${ageYoungest} yr` : ageOldest != null ? `${ageOldest} yr` : '—'
+  return ageYoungest != null ? `${ageYoungest} yr` : ageOldest != null ? `${ageOldest} yr` : '-'
 }
 
 export default async function AdminFridayFriendliesPage() {
@@ -34,7 +34,7 @@ export default async function AdminFridayFriendliesPage() {
 
   for (const row of signups) {
     const names = splitAthleteNames(row.playerNames)
-    const displayNames = names.length > 0 ? names : row.playerCount > 0 ? [`(${row.playerCount} player(s) — see roster text)`] : ['—']
+    const displayNames = names.length > 0 ? names : row.playerCount > 0 ? [`(${row.playerCount} player(s); see roster text)`] : ['-']
 
     for (let i = 0; i < displayNames.length; i++) {
       const athlete = displayNames[i]!
@@ -59,18 +59,18 @@ export default async function AdminFridayFriendliesPage() {
       )
 
       tableRows.push([
-        i === 0 ? formatFacilityDateTimeShort(row.createdAt) : '—',
-        i === 0 ? row.guardianName?.trim() || '—' : '—',
-        i === 0 ? row.email?.trim() || '—' : '—',
+        i === 0 ? formatFacilityDateTimeShort(row.createdAt) : '-',
+        i === 0 ? row.guardianName?.trim() || '-' : '-',
+        i === 0 ? row.email?.trim() || '-' : '-',
         athlete,
         ageBandLabel(row),
-        i === 0 ? `$${row.amountUsd.toFixed(0)}` : '—',
+        i === 0 ? `$${row.amountUsd.toFixed(0)}` : '-',
         i === 0 ? (
           <span className="font-mono text-[10px] text-formula-mist" title={row.stripeSessionId}>
             {row.stripeSessionId.slice(0, 14)}…
           </span>
         ) : (
-          '—'
+          '-'
         ),
         i === 0 ? waiverCell : <span className="text-formula-mist/65 text-[10px]">Same checkout</span>,
       ])

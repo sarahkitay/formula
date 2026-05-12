@@ -2,7 +2,7 @@
  * Single source for post-login and gate redirects.
  * Returns `/login` when the role cannot use a known portal hub.
  *
- * - `admin` → full Admin OS (`/admin/schedule` landing — calendar-first).
+ * - `admin` → full Admin OS (`/admin/schedule` landing, calendar-first).
  * - `staff` → `/staff-portal` (desk / shared tools).
  * - `coach` → Coach execution shell (`/coach/today`).
  */

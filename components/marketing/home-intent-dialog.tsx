@@ -82,7 +82,7 @@ export function HomeIntentDialog() {
   const bookingTiles = [
     {
       label: 'Summer camp 2026',
-      hint: 'Now booking — themed weeks, bundles, and Stripe checkout.',
+      hint: 'Now booking: themed weeks, bundles, and Stripe checkout.',
       href: MARKETING_HREF.summerCamp2026,
     },
     {
@@ -170,7 +170,7 @@ export function HomeIntentDialog() {
               </button>
               <button type="button" className={primaryChoiceClass} onClick={goSummerCamp}>
                 Summer camps
-                <span className={secondaryHintClass}>Now booking 2026 — pick your weeks and pay in checkout on the camp page.</span>
+                <span className={secondaryHintClass}>Now booking 2026. Pick your weeks and pay in checkout on the camp page.</span>
               </button>
               <button type="button" className={primaryChoiceClass} onClick={() => setStep(2)}>
                 Programs, passes, and parties

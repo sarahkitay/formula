@@ -396,7 +396,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
           One page: your package &amp; time, who&apos;s coming, waiver &amp; signature, then pay
         </h2>
         <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-formula-frost/85">
-          <strong className="text-formula-paper">Field rental only</strong> — not the hosted party or custom event payment. Scroll through once: pick your slot,
+          <strong className="text-formula-paper">Field rental only</strong>, not the hosted party or custom event payment. Scroll through once: pick your slot,
           enter the primary renter and headcount, review rules and the agreement text, sign, then open Stripe. A short calendar hold is placed while checkout loads.
         </p>
       </header>

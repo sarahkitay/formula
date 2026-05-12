@@ -147,7 +147,7 @@ export async function submitWaiverInviteRsvp(_prev: WaiverRsvpState | undefined,
 
   let rsvpMsg = 'You are on the roster. This page will refresh - the count above includes your RSVP.'
   if (signedAfter > invite.expected_waiver_count) {
-    rsvpMsg = `You are on the roster (${signedAfter}/${invite.expected_waiver_count} — extras on file). Staff can raise the expected headcount in admin if needed.`
+    rsvpMsg = `You are on the roster (${signedAfter}/${invite.expected_waiver_count}; extras on file). Staff can raise the expected headcount in admin if needed.`
   }
 
   return {

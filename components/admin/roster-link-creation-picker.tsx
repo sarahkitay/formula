@@ -13,7 +13,7 @@ const selectShell =
   'h-11 w-full max-w-xl rounded-md border border-formula-frost/22 bg-formula-base/55 px-3 font-mono text-[12px] text-formula-paper outline-none transition-colors focus:border-formula-volt/45 focus:ring-1 focus:ring-formula-volt/25'
 
 /**
- * Field rental: choose Quick roster (comp) vs Paid in person — one dropdown instead of nested disclosure blocks.
+ * Field rental: choose Quick roster (comp) vs Paid in person in one dropdown instead of nested disclosure blocks.
  */
 export function RosterLinkCreationPicker() {
   const [mode, setMode] = useState<CreateMode>('')
@@ -21,9 +21,9 @@ export function RosterLinkCreationPicker() {
   return (
     <div className="mt-3 space-y-3 border-t border-formula-frost/10 pt-3 font-mono text-[10px] leading-relaxed text-formula-mist/90">
       <p>
-        <strong className="text-formula-paper/90">Complimentary / internal</strong> — use Quick roster (no card charge, no Payments row).{' '}
-        <strong className="text-formula-paper/90">Paid in person</strong> — desk collects payment; same waiver URL plus a Payments / revenue entry.{' '}
-        <strong className="text-formula-paper/90">Pay online</strong> — send the organizer through{' '}
+        <strong className="text-formula-paper/90">Complimentary / internal</strong>: use Quick roster (no card charge, no Payments row).{' '}
+        <strong className="text-formula-paper/90">Paid in person</strong>: desk collects payment; same waiver URL plus a Payments / revenue entry.{' '}
+        <strong className="text-formula-paper/90">Pay online</strong>: send the organizer through{' '}
         <Link className="text-formula-volt underline-offset-2 hover:underline" href={BOOKING_HUB_PUBLIC.fieldRental}>
           field rental checkout
         </Link>{' '}
@@ -36,7 +36,7 @@ export function RosterLinkCreationPicker() {
 
       <div className="space-y-2">
         <label htmlFor="roster-link-create-mode" className="block text-[10px] font-bold uppercase tracking-[0.14em] text-formula-mist">
-          Add roster link — choose path
+          Add roster link: choose path
         </label>
         <select
           id="roster-link-create-mode"
@@ -46,8 +46,8 @@ export function RosterLinkCreationPicker() {
           aria-label="Choose how to create a roster waiver link"
         >
           <option value="">Select an option…</option>
-          <option value="quick">Quick roster link — comp / internal (no payment row)</option>
-          <option value="paid_in_person">Paid in person — desk payment + waiver URL + Payments entry</option>
+          <option value="quick">Quick roster link (comp / internal, no payment row)</option>
+          <option value="paid_in_person">Paid in person (desk payment + waiver URL + Payments entry)</option>
         </select>
       </div>
 

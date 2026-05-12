@@ -260,7 +260,7 @@ export default function SchedulePage() {
         >
           <span className="font-bold uppercase tracking-[0.14em] text-formula-volt">Friday Night Friendlies</span>
           <span className="text-[11px] font-normal normal-case tracking-normal text-formula-frost/85">
-            Paid pre-reg list — athlete names, guardian email, and waiver follow-up (not captured in checkout)
+            Paid pre-reg list: athlete names, guardian email, and waiver follow-up (not captured in checkout)
           </span>
         </Link>
 

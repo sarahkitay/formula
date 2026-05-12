@@ -88,7 +88,7 @@ export function FridayNightFriendliesCheckout() {
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt">Option 1</span>
               <span className="text-base font-semibold text-formula-paper">Sign the waiver now</span>
               <span className="text-sm leading-relaxed text-formula-frost/85">
-                First time with us for this athlete, or no Formula waiver on file yet for them. Full digital form with signature — submit once per athlete who
+                First time with us for this athlete, or no Formula waiver on file yet for them. Full digital form with signature. Submit once per athlete who
                 needs it.
               </span>
             </button>
@@ -98,9 +98,9 @@ export function FridayNightFriendliesCheckout() {
               className="flex flex-col gap-2 rounded-lg border border-formula-frost/18 bg-formula-paper/[0.03] p-5 text-left transition-colors hover:border-formula-frost/32 hover:bg-formula-paper/[0.06]"
             >
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-mist">Option 2</span>
-              <span className="text-base font-semibold text-formula-paper">RSVP — waiver already signed</span>
+              <span className="text-base font-semibold text-formula-paper">RSVP (waiver already signed)</span>
               <span className="text-sm leading-relaxed text-formula-frost/85">
-                This athlete already completed our digital waiver with Formula. Enter the same participant name and email as on file — no new signature.
+                This athlete already completed our digital waiver with Formula. Enter the same participant name and email as on file. No new signature.
               </span>
             </button>
           </div>

@@ -156,7 +156,7 @@ const dashboardNav: NavItem = {
 }
 
 /**
- * Formula Admin OS — four header sections: Finance, Schedule, Rentals, Dashboard.
+ * Formula Admin OS: four header sections (Finance, Schedule, Rentals, Dashboard).
  * Dashboard owns `/admin/modules`, deep module routes, and ops pages (see `navSectionPaths`).
  */
 export const adminNav: NavItem[] = [financeNav, scheduleNav, rentalsNav, dashboardNav]
