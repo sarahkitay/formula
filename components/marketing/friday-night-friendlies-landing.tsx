@@ -23,10 +23,12 @@ export function FridayNightFriendliesLanding() {
           Friday Night Friendlies
         </p>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-formula-frost/88">
-          Coach-run pickup soccer for ages 6–14. Starting <strong className="text-formula-paper">Friday, May 8, 2026</strong>.
+          Coach-run pickup soccer for ages 6–14. <strong className="text-formula-paper">Every Friday</strong> the facility is open: arrive{' '}
+          <strong className="text-formula-paper">5:30 PM</strong>, games <strong className="text-formula-paper">6:00–7:30 PM</strong>. Same energy week after week
+          — our inaugural season opened <strong className="text-formula-paper">Friday, May 8, 2026</strong>.
         </p>
         <p className="mt-4 max-w-2xl text-center font-mono text-[11px] font-medium uppercase leading-relaxed tracking-[0.12em] text-formula-volt/95 sm:text-left">
-          Be there for our very first Friday Night Friendlies.
+          Pre-register online or walk up at the door.
         </p>
       </div>
 
@@ -139,12 +141,11 @@ export function FridayNightFriendliesLanding() {
         className="rounded-xl border border-formula-volt/25 bg-formula-volt/[0.06] px-4 py-5 sm:px-7 sm:py-6"
       >
         <p id="fnf-opening-heading" className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-formula-volt">
-          Opening night
+          Friday nights at Formula
         </p>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-formula-frost/90">
-          This is our very first Friday Night Friendlies. Bring your soccer-loving kid out for the launch and be part of something new from day one. Group photo,
-          special recognition for our inaugural players, and a Friday night they won&apos;t forget. Tell your friends - the more kids on the fields, the better the
-          games.
+          We launched this run on <strong className="text-formula-paper">May 8, 2026</strong> — and Friendlies keeps going on open Fridays after that. Bring friends:
+          balanced teams, small-sided games, and coach-led pickup without league pressure.
         </p>
       </section>
 

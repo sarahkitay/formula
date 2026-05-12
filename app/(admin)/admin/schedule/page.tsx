@@ -254,16 +254,6 @@ export default function SchedulePage() {
           }
         />
 
-        <Link
-          href="/admin/friday-friendlies"
-          className="flex flex-col gap-1 rounded-lg border border-formula-volt/25 bg-formula-volt/[0.06] px-4 py-3 font-mono text-[11px] text-formula-paper shadow-[inset_0_0_0_1px_rgba(220,255,0,0.08)] transition-colors hover:border-formula-volt/45 hover:bg-formula-volt/[0.1] sm:flex-row sm:items-center sm:justify-between"
-        >
-          <span className="font-bold uppercase tracking-[0.14em] text-formula-volt">Friday Night Friendlies</span>
-          <span className="text-[11px] font-normal normal-case tracking-normal text-formula-frost/85">
-            Paid pre-reg list: athlete names, guardian email, and waiver follow-up (not captured in checkout)
-          </span>
-        </Link>
-
         {configLoadError && (
           <p className="border border-amber-500/30 bg-amber-950/30 px-3 py-2 font-mono text-xs text-amber-100">
             {configLoadError}
@@ -286,21 +276,6 @@ export default function SchedulePage() {
           <p className="font-mono text-sm text-formula-mist">Loading facility schedule…</p>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-3 border border-formula-frost/12 bg-formula-paper/[0.04] p-4 font-mono text-[11px] text-formula-frost/90 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] lg:grid-cols-[1fr_2fr]">
-              <div>
-                <p className="text-[9px] uppercase tracking-[0.2em] text-formula-mist">12-week cycle (published)</p>
-                <p className="mt-1 text-formula-paper">
-                  {facilityConfig.currentCycleLabel} · week {facilityConfig.weekInCycle}/{facilityConfig.totalWeeksInCycle}
-                </p>
-                <p className="mt-1 text-formula-mist">Next cycle: {facilityConfig.nextCycleStartDisplay}</p>
-              </div>
-              <ul className="list-inside list-disc space-y-1 text-formula-mist">
-                {scheduleRulesSummary.slice(0, 4).map((line, i) => (
-                  <li key={i}>{line}</li>
-                ))}
-              </ul>
-            </div>
-
             <div className="border-b border-formula-frost/12">
               <TabSwitcher
                 variant="underline"
@@ -349,12 +324,14 @@ export default function SchedulePage() {
                     </button>
                   </div>
                   <span className="max-w-md font-mono text-[10px] text-formula-frost/70">
-                    Default shows paid party holds, field rentals, assessments with bookings, and youth blocks with parent
-                    enrollments. Full schedule adds open templates.
+                    Default shows paid party holds, field rentals, the Friday Night Friendlies staff block (every open Friday),
+                    assessments with bookings, and youth blocks with parent enrollments. Full schedule adds open templates.
                   </span>
                 </div>
                 <p className="font-mono text-[10px] text-formula-mist/85">
-                  Click any block for quick client / payment / override. Field rentals: use <strong className="text-formula-paper">Rental waivers &amp; check-in</strong> in that modal for waiver roster.
+                  Click any block for quick client / payment / override. Field rentals: use{' '}
+                  <strong className="text-formula-paper">Rental waivers &amp; check-in</strong> in that modal for waiver roster. Volt
+                  Friday block opens Friendlies admin context (not quick-book).
                 </p>
                 <FacilityWeekCalendar
                   weekStart={week.weekStart}
@@ -370,6 +347,10 @@ export default function SchedulePage() {
                   onFeedBlockClick={b => {
                     setDetailSlot(null)
                     setDetailRelatedSlots([])
+                    if (b.category === 'friday_friendlies') {
+                      setFeedDetailBlock(b)
+                      return
+                    }
                     setFeedDetailBlock(null)
                     openQuickBookFromFeedBlock(b)
                   }}
@@ -385,6 +366,29 @@ export default function SchedulePage() {
                     await loadCalendarFeed()
                   }}
                 />
+                <div className="grid grid-cols-1 gap-3 border border-formula-frost/12 bg-formula-paper/[0.04] p-4 font-mono text-[11px] text-formula-frost/90 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)] lg:grid-cols-[1fr_2fr]">
+                  <div>
+                    <p className="text-[9px] uppercase tracking-[0.2em] text-formula-mist">12-week cycle (published)</p>
+                    <p className="mt-1 text-formula-paper">
+                      {facilityConfig.currentCycleLabel} · week {facilityConfig.weekInCycle}/{facilityConfig.totalWeeksInCycle}
+                    </p>
+                    <p className="mt-1 text-formula-mist">Next cycle: {facilityConfig.nextCycleStartDisplay}</p>
+                  </div>
+                  <ul className="list-inside list-disc space-y-1 text-formula-mist">
+                    {scheduleRulesSummary.slice(0, 4).map((line, i) => (
+                      <li key={i}>{line}</li>
+                    ))}
+                  </ul>
+                </div>
+                <Link
+                  href="/admin/friday-friendlies"
+                  className="flex flex-col gap-1 rounded-lg border border-formula-volt/25 bg-formula-volt/[0.06] px-4 py-3 font-mono text-[11px] text-formula-paper shadow-[inset_0_0_0_1px_rgba(220,255,0,0.08)] transition-colors hover:border-formula-volt/45 hover:bg-formula-volt/[0.1] sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="font-bold uppercase tracking-[0.14em] text-formula-volt">Friday Night Friendlies</span>
+                  <span className="text-[11px] font-normal normal-case tracking-normal text-formula-frost/85">
+                    Paid pre-reg list: athlete names, guardian email, and waiver follow-up (not captured in checkout)
+                  </span>
+                </Link>
               </div>
             )}
 

@@ -39,6 +39,8 @@ function categoryStyle(cat: CalendarFeedCategory): string {
       return 'border-amber-500/40 bg-amber-950/45 text-amber-100'
     case 'field_rental':
       return 'border-blue-400/30 bg-blue-950/40 text-blue-100'
+    case 'friday_friendlies':
+      return 'border-formula-volt/45 bg-formula-volt/[0.14] text-formula-base'
     default:
       return 'border-formula-frost/20 bg-formula-paper/[0.08] text-formula-frost/90'
   }
@@ -274,9 +276,10 @@ export function FacilityWeekCalendar({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="font-mono text-[10px] text-formula-mist">
           <p>
-            Week of {weekStart} · Los Angeles wall time · program + assessments + rentals + parties · overlapping blocks
-            are split horizontally; click a block for details, or an <strong className="text-formula-paper">hour row</strong>{' '}
-            to quick-book that hour (adjust length in the popup).
+            Week of {weekStart} · Los Angeles wall time · program + assessments + rentals + parties ·{' '}
+            <strong className="text-formula-paper">Volt blocks</strong> = recurring Friday Night Friendlies staff window (5:30–7:30 PM). Overlapping blocks are
+            split horizontally; click a block for details, or an <strong className="text-formula-paper">hour row</strong> to quick-book that hour (adjust length in
+            the popup).
           </p>
           {hasHolidayThisWeek ? (
             <p className="mt-1 flex items-center gap-2 text-rose-200/95">

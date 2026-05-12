@@ -1,5 +1,6 @@
 import type { DayIndex, GeneratedWeek, ScheduleSlot } from '@/types/schedule'
 import { isoDateForWeekDay } from '@/lib/schedule/generator'
+import type { FacilitySchedulePublishedConfig } from '@/lib/schedule/facility-schedule-config'
 import { fetchFacilityScheduleConfig } from '@/lib/schedule/facility-schedule-config-server'
 import { buildPublishedWeek } from '@/lib/schedule/published-week'
 import { getServiceSupabase } from '@/lib/supabase/service'
@@ -16,6 +17,7 @@ export type CalendarFeedCategory =
   | 'party'
   | 'assessment'
   | 'rental_booking'
+  | 'friday_friendlies'
   | 'other_program'
 
 export type CalendarFeedBlock = {
@@ -186,10 +188,36 @@ export function waiverInviteSessionDatesInWeek(
 
 export function calendarBlockVisibleInBookingsOnlyView(b: CalendarFeedBlock): boolean {
   if (b.category === 'rental_booking') return true
+  if (b.category === 'friday_friendlies') return true
   if (b.category === 'assessment') return (b.assessmentBookingCount ?? 0) > 0
   if (b.category === 'youth_program') return (b.parentEnrollmentCount ?? 0) > 0
   if (b.category === 'party') return !!(b.partyBookingId && b.templateSurface === false)
   return false
+}
+
+/** Los Angeles wall time: arrival + games block for staff calendar (matches public landing). */
+const FNF_DAY_INDEX: DayIndex = 5
+const FNF_START_MINUTE = 17 * 60 + 30
+const FNF_END_MINUTE = 19 * 60 + 30
+
+function appendFridayNightFriendliesStaffBlocks(
+  week: GeneratedWeek,
+  config: FacilitySchedulePublishedConfig,
+  blocks: CalendarFeedBlock[]
+): void {
+  const ymd = isoDateForWeekDay(week.weekStart, FNF_DAY_INDEX)
+  if (config.blockedDates.includes(ymd)) return
+  const cycleNote = `${config.currentCycleLabel} · week ${config.weekInCycle}/${config.totalWeeksInCycle}`
+  blocks.push({
+    id: `fnf-${ymd}`,
+    category: 'friday_friendlies',
+    label: 'Friday Night Friendlies',
+    sublabel: `Staff block · ages 6–14 pickup · ${cycleNote} · next cycle ${config.nextCycleStartDisplay}`,
+    dayIndex: FNF_DAY_INDEX,
+    startMinute: FNF_START_MINUTE,
+    endMinute: FNF_END_MINUTE,
+    templateSurface: false,
+  })
 }
 
 export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
@@ -430,6 +458,8 @@ export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
       }
     }
   }
+
+  appendFridayNightFriendliesStaffBlocks(week, config, blocks)
 
   blocks.sort((a, b) => a.dayIndex - b.dayIndex || a.startMinute - b.startMinute || a.id.localeCompare(b.id))
 

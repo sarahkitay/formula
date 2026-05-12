@@ -47,7 +47,7 @@ export const UPCOMING_PUBLIC_EVENTS: PublicUpcomingEvent[] = [
     id: 'friday-night-friendlies-may-2026',
     title: 'Friday Friendlies',
     summary:
-      'Coach-run pickup for ages 6–14. First night Friday May 8, 2026 - 5:30 arrival, games 6:00–7:30 PM. $20 per player; walk-ups OK. Pre-register online.',
+      'Coach-run pickup for ages 6–14. Every Friday the facility is open: 5:30 arrival, games 6:00–7:30 PM. $20 per player; walk-ups OK. Pre-register online (first season kicked off May 8, 2026).',
     href: MARKETING_HREF.fridayNightFriendlies,
     ctaLabel: 'See details & save your spot',
     subLinks: [

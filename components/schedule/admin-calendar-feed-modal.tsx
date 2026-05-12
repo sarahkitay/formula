@@ -6,6 +6,7 @@ import type { FieldRentalAgreementRow } from '@/lib/rentals/field-rental-agreeme
 import type { RentalWaiverCheckinRow } from '@/lib/rentals/rental-waiver-checkins-server'
 import type { WaiverInviteRow } from '@/lib/rentals/waiver-invites-server'
 import type { CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
+import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { Modal, ModalBody, ModalFooter } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { DAY_LABELS } from '@/components/schedule/control-schedule-grid'
@@ -73,6 +74,14 @@ export function AdminCalendarFeedModal({
       setRentalDetail(null)
       setInviteDetail(null)
       setLoadError(null)
+      return
+    }
+
+    if (block.category === 'friday_friendlies') {
+      setRentalDetail(null)
+      setInviteDetail(null)
+      setLoadError(null)
+      setLoading(false)
       return
     }
 
@@ -191,9 +200,10 @@ export function AdminCalendarFeedModal({
   if (!block) return null
 
   const day = DAY_LABELS[block.dayIndex]
+  const isFnf = block.category === 'friday_friendlies'
   const isRentalSlot = block.id.startsWith('rent-')
   const isWaiverInviteBlock = Boolean(waiverInviteIdFromBlock(block))
-  const modalTitle = isRentalSlot ? 'Field rental hold' : isWaiverInviteBlock ? 'Roster rental' : 'Calendar entry'
+  const modalTitle = isRentalSlot ? 'Field rental hold' : isWaiverInviteBlock ? 'Roster rental' : isFnf ? 'Friday Night Friendlies' : 'Calendar entry'
   const checkedInCount = rentalDetail ? rentalDetail.checkins.length : 0
   const waiverCount = rentalDetail?.agreements.length ?? 0
 
@@ -216,7 +226,34 @@ export function AdminCalendarFeedModal({
           ) : null}
         </div>
 
-        {isRentalSlot ? (
+        {isFnf ? (
+          <div className="space-y-3 rounded border border-formula-volt/25 bg-formula-volt/[0.08] px-3 py-3 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+            <p>
+              Recurring <strong className="text-text-primary">staff calendar block</strong> every Friday this facility is open: coach-run pickup (ages 6–14),
+              5:30 PM arrival through 7:30 PM games (Los Angeles time). Shows in &quot;Bookings &amp; holds&quot; so it sits with rentals and parties, not as a
+              separate overlay.
+            </p>
+            <p>
+              <strong className="text-text-primary">Paid pre-reg</strong> (Stripe checkout) lists athlete names and guardian email in admin; waiver follow-up
+              and RSVP are captured on the public landing, not in checkout metadata.
+            </p>
+            <p className="font-mono text-[10px] text-text-muted">{block.sublabel}</p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Link
+                href="/admin/friday-friendlies"
+                className="inline-flex h-8 items-center rounded-control border border-border bg-muted px-3 text-[12px] font-medium text-text-primary no-underline hover:border-border-bright hover:bg-elevated"
+              >
+                Paid pre-reg list
+              </Link>
+              <Link
+                href={MARKETING_HREF.fridayNightFriendlies}
+                className="inline-flex h-8 items-center rounded-control border border-border bg-muted px-3 text-[12px] font-medium text-text-primary no-underline hover:border-border-bright hover:bg-elevated"
+              >
+                Public landing
+              </Link>
+            </div>
+          </div>
+        ) : isRentalSlot ? (
           <div className="space-y-2 rounded border border-formula-frost/12 bg-formula-paper/[0.05] px-3 py-2 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
             {loading ? <p className="font-mono text-[10px] text-text-muted">Loading roster waivers…</p> : null}
             {loadError ? <p className="text-amber-200/90">{loadError}</p> : null}
