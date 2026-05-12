@@ -255,7 +255,7 @@ export function AdminCalendarFeedModal({
                               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                                 <Link
                                   href={`/admin/rentals/waivers/${a.id}`}
-                                  className="text-[11px] font-semibold text-formula-volt underline-offset-2 hover:underline"
+                                  className="text-[11px] font-semibold text-text-primary underline-offset-2 decoration-text-primary/30 hover:underline"
                                 >
                                   {a.participant_name}
                                 </Link>
@@ -265,7 +265,7 @@ export function AdminCalendarFeedModal({
                               </div>
                               <p className="truncate font-mono text-[10px] text-text-muted">{a.participant_email}</p>
                               {cin ? (
-                                <p className="mt-0.5 font-mono text-[9px] text-formula-volt/90">
+                                <p className="mt-0.5 font-mono text-[9px] text-text-secondary">
                                   Present · {formatFacilityDateTimeShort(cin.checked_in_at)}
                                 </p>
                               ) : (
@@ -324,7 +324,7 @@ export function AdminCalendarFeedModal({
                       <li key={a.id} className="px-2 py-2">
                         <Link
                           href={`/admin/rentals/waivers/${a.id}`}
-                          className="text-[11px] font-semibold text-formula-volt underline-offset-2 hover:underline"
+                          className="text-[11px] font-semibold text-text-primary underline-offset-2 decoration-text-primary/30 hover:underline"
                         >
                           {a.participant_name}
                         </Link>

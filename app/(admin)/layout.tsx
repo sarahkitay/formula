@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       role="admin"
       identityName="Front Desk"
       identityEmail="info@formulasoccer.com"
-      dashboardHref="/admin/schedule"
+      dashboardHref="/admin/dashboard"
       primaryNavPresentation="select"
       navItems={adminNav}
       operatorLine="FACILITY_OS // ADMIN"

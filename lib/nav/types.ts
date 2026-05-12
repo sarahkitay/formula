@@ -9,6 +9,11 @@ export interface NavItem {
   /** Optional monospace metric on grid card */
   metric?: string
   gridStatus?: 'active' | 'warning' | 'neutral'
+  /**
+   * Extra path prefixes for this primary nav section (admin header select).
+   * Longest-prefix wins; `href` is always a candidate.
+   */
+  navSectionPaths?: readonly string[]
 }
 
 export interface NavSection {

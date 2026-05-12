@@ -58,7 +58,11 @@ export function AppShell({
   navOverflow = 'wrap',
   primaryNavPresentation = 'tabs',
 }: AppShellProps) {
-  const technicalNav = navItems.map(item => ({ label: item.label, href: item.href }))
+  const technicalNav = navItems.map(item => ({
+    label: item.label,
+    href: item.href,
+    sectionPaths: item.navSectionPaths,
+  }))
   const isDarkOs = surface === 'admin-os' || surface === 'coach-os' || surface === 'parent-os'
   const osClass =
     surface === 'coach-os' ? 'coach-os' : surface === 'parent-os' ? 'parent-os' : surface === 'admin-os' ? 'admin-os' : ''

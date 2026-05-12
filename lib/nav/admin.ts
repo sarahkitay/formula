@@ -1,6 +1,23 @@
 import type { NavItem } from '@/lib/nav/types'
 
-/** Program + facility modules (top nav: “Modules” → `/admin/modules`). */
+/** Paths counted as Finance in the admin header section select. */
+export const adminFinanceSectionPaths = [
+  '/admin/finance',
+  '/admin/payments',
+  '/admin/revenue-strategy',
+  '/admin/invoices',
+] as const
+
+export const adminScheduleSectionPaths = [
+  '/admin/schedule',
+  '/admin/check-in',
+  '/admin/facility-map',
+  '/admin/friday-friendlies',
+] as const
+
+export const adminRentalsSectionPaths = ['/admin/rentals', '/admin/field-rentals'] as const
+
+/** Program + facility modules (full grid on Dashboard + `/admin/modules`). */
 export const adminModuleDestinations: NavItem[] = [
   {
     label: 'Memberships',
@@ -14,6 +31,13 @@ export const adminModuleDestinations: NavItem[] = [
     href: '/admin/friday-circuit',
     icon: 'Trophy',
     description: 'Pre-reg · rosters · observation · no pickup culture',
+    gridStatus: 'neutral',
+  },
+  {
+    label: 'Friday Friendlies',
+    href: '/admin/friday-friendlies',
+    icon: 'Users',
+    description: 'Paid pre-reg from the public link · names · waiver follow-up',
     gridStatus: 'neutral',
   },
   {
@@ -74,23 +98,26 @@ export const adminModuleDestinations: NavItem[] = [
   },
 ]
 
-const scheduleNav: NavItem = {
-  label: 'Schedule',
-  href: '/admin/schedule',
-  icon: 'Calendar',
-  description: 'Calendar · grid · publish · ops map below',
-  gridStatus: 'active',
+const financeHrefSet = new Set<string>(adminFinanceSectionPaths)
+
+function isRentalsPath(p: string): boolean {
+  return p === '/admin/rentals' || p.startsWith('/admin/rentals/') || p === '/admin/field-rentals'
 }
 
-const checkInNav: NavItem = {
-  label: 'Check-In',
-  href: '/admin/check-in',
-  icon: 'UserCheck',
-  badge: 'LIVE',
-  badgeVariant: 'accent',
-  description: 'Attendance · roster + clients',
-  gridStatus: 'active',
-}
+const dashboardSectionExtras = [
+  '/admin/modules',
+  '/admin/dashboard',
+  '/admin/overview',
+  '/admin/scalability',
+  '/admin/players',
+  '/admin/clients',
+  '/admin/fpi',
+] as const
+
+const dashboardNavSectionPaths: readonly string[] = [
+  ...dashboardSectionExtras,
+  ...adminModuleDestinations.map(d => d.href).filter(h => !financeHrefSet.has(h) && !isRentalsPath(h)),
+]
 
 const financeNav: NavItem = {
   label: 'Finance',
@@ -98,43 +125,41 @@ const financeNav: NavItem = {
   icon: 'BarChart2',
   description: 'Revenue · payments ledger · FPI',
   gridStatus: 'warning',
+  navSectionPaths: adminFinanceSectionPaths,
 }
 
-const modulesHubNavItem: NavItem = {
-  label: 'Modules',
-  href: '/admin/modules',
-  icon: 'LayoutGrid',
-  description: 'Memberships · programming · rentals · mail · settings',
+const scheduleNav: NavItem = {
+  label: 'Schedule',
+  href: '/admin/schedule',
+  icon: 'Calendar',
+  description: 'Calendar · grid · publish · check-in · facility map',
+  gridStatus: 'active',
+  navSectionPaths: adminScheduleSectionPaths,
+}
+
+const rentalsNav: NavItem = {
+  label: 'Rentals',
+  href: '/admin/rentals',
+  icon: 'Building2',
+  description: 'Field rental waivers · packages · field ops',
   gridStatus: 'neutral',
+  navSectionPaths: adminRentalsSectionPaths,
 }
 
 const dashboardNav: NavItem = {
   label: 'Dashboard',
   href: '/admin/dashboard',
   icon: 'LayoutDashboard',
-  description: 'Executive snapshot + module grid',
+  description: 'Executive snapshot · all modules · live feed',
   gridStatus: 'neutral',
+  navSectionPaths: dashboardNavSectionPaths,
 }
 
 /**
- * Formula Admin OS — short primary header nav only.
- * Other destinations: `/admin/modules`, header search, and pinned dashboard tiles.
+ * Formula Admin OS — four header sections: Finance, Schedule, Rentals, Dashboard.
+ * Dashboard owns `/admin/modules`, deep module routes, and ops pages (see `navSectionPaths`).
  */
-export const adminNav: NavItem[] = [
-  dashboardNav,
-  scheduleNav,
-  checkInNav,
-  financeNav,
-  modulesHubNavItem,
-]
-
-/** Dashboard home grid: four entry points (everything else via Modules + search). */
-export const adminDashboardPinnedTiles: NavItem[] = [
-  scheduleNav,
-  checkInNav,
-  financeNav,
-  modulesHubNavItem,
-]
+export const adminNav: NavItem[] = [financeNav, scheduleNav, rentalsNav, dashboardNav]
 
 export type AdminPortalSearchLink = { label: string; href: string }
 
@@ -143,6 +168,20 @@ export function getAdminPortalSearchLinks(): AdminPortalSearchLink[] {
   const byHref = new Map<string, AdminPortalSearchLink>()
   for (const item of [...adminNav, ...adminModuleDestinations]) {
     byHref.set(item.href, { label: item.label, href: item.href })
+  }
+  const extras: AdminPortalSearchLink[] = [
+    { label: 'Payments', href: '/admin/payments' },
+    { label: 'Facility map', href: '/admin/facility-map' },
+    { label: 'Revenue strategy', href: '/admin/revenue-strategy' },
+    { label: 'FPI admin', href: '/admin/fpi' },
+    { label: 'Overview', href: '/admin/overview' },
+    { label: 'Scalability', href: '/admin/scalability' },
+    { label: 'Players', href: '/admin/players' },
+    { label: 'Client profile', href: '/admin/clients/profile' },
+    { label: 'Field rentals (alt)', href: '/admin/field-rentals' },
+  ]
+  for (const e of extras) {
+    if (!byHref.has(e.href)) byHref.set(e.href, e)
   }
   return [...byHref.values()]
 }

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-/** Default admin landing: operating calendar first (not the module dashboard). */
+/** Default admin landing: dashboard (exec overview + modules + feed). */
 export default function AdminIndexPage() {
-  redirect('/admin/schedule')
+  redirect('/admin/dashboard')
 }

@@ -254,6 +254,16 @@ export default function SchedulePage() {
           }
         />
 
+        <Link
+          href="/admin/friday-friendlies"
+          className="flex flex-col gap-1 rounded-lg border border-formula-volt/25 bg-formula-volt/[0.06] px-4 py-3 font-mono text-[11px] text-formula-paper shadow-[inset_0_0_0_1px_rgba(220,255,0,0.08)] transition-colors hover:border-formula-volt/45 hover:bg-formula-volt/[0.1] sm:flex-row sm:items-center sm:justify-between"
+        >
+          <span className="font-bold uppercase tracking-[0.14em] text-formula-volt">Friday Night Friendlies</span>
+          <span className="text-[11px] font-normal normal-case tracking-normal text-formula-frost/85">
+            Paid pre-reg list — athlete names, guardian email, and waiver follow-up (not captured in checkout)
+          </span>
+        </Link>
+
         {configLoadError && (
           <p className="border border-amber-500/30 bg-amber-950/30 px-3 py-2 font-mono text-xs text-amber-100">
             {configLoadError}

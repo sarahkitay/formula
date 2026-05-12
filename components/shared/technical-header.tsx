@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 export interface TechnicalNavItem {
   label: string
   href: string
+  /** Path prefixes that belong to this nav section (admin select); longest prefix wins. */
+  sectionPaths?: readonly string[]
 }
 
 export interface TechnicalHeaderProps {
@@ -54,21 +56,40 @@ function navItemActive(pathname: string | null, href: string, homeHref: string):
   return pathname === base || pathname.startsWith(`${base}/`)
 }
 
-/** Longest-prefix match among primary nav hrefs (for select value). */
-function primaryNavHrefForPath(pathname: string | null, items: TechnicalNavItem[], homeHref: string): string {
-  if (!pathname) return homeHref
-  let bestHref = ''
+function candidateBases(item: TechnicalNavItem): string[] {
+  const out: string[] = [pathWithoutHash(item.href)]
+  for (const p of item.sectionPaths ?? []) {
+    out.push(pathWithoutHash(p))
+  }
+  return out
+}
+
+/** Longest-prefix match among primary nav items; returns whether any section matched. */
+function primaryNavSelectState(
+  pathname: string | null,
+  items: TechnicalNavItem[],
+  homeHref: string
+): { valueHref: string; showDeepHint: boolean } {
+  if (!pathname || !pathname.startsWith('/admin')) {
+    return { valueHref: homeHref, showDeepHint: false }
+  }
   let bestLen = -1
+  let bestItemHref = ''
   for (const item of items) {
-    const base = pathWithoutHash(item.href)
-    if (pathname === base || pathname.startsWith(`${base}/`)) {
-      if (base.length > bestLen) {
-        bestLen = base.length
-        bestHref = item.href
+    for (const base of candidateBases(item)) {
+      if (!base) continue
+      if (pathname === base || pathname.startsWith(`${base}/`)) {
+        if (base.length > bestLen) {
+          bestLen = base.length
+          bestItemHref = item.href
+        }
       }
     }
   }
-  return bestHref
+  if (bestLen >= 0) {
+    return { valueHref: bestItemHref, showDeepHint: false }
+  }
+  return { valueHref: homeHref, showDeepHint: true }
 }
 
 export function TechnicalHeader({
@@ -94,11 +115,11 @@ export function TechnicalHeader({
   const logoHref = logoHrefProp ?? homeHref
   const dark = variant === 'dark'
   const showIdentity = Boolean(identityName?.trim() || identityEmail?.trim())
-  const matchedPrimaryHref = primaryNavHrefForPath(pathname, navItems, homeHref)
+  const matchedPrimary = primaryNavSelectState(pathname, navItems, homeHref)
   const onDeepAdminPage =
     primaryNavPresentation === 'select' &&
     Boolean(pathname?.startsWith('/admin/')) &&
-    matchedPrimaryHref === ''
+    matchedPrimary.showDeepHint
 
   return (
     <header
@@ -228,7 +249,7 @@ export function TechnicalHeader({
                       : 'border-black/15 bg-white text-[#1a1a1a] focus:border-[#005700]/50 focus:outline-none'
                   )}
                   aria-label="Jump to admin section"
-                  value={matchedPrimaryHref || '/admin/modules'}
+                  value={matchedPrimary.valueHref}
                   onChange={e => {
                     const next = e.target.value
                     if (next) router.push(next)
