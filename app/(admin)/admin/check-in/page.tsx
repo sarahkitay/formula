@@ -17,6 +17,7 @@ import { Card } from '@/components/ui/card'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 
 export default function CheckInPage() {
   const [query, setQuery] = useState('')
@@ -59,6 +60,7 @@ export default function CheckInPage() {
               hour: 'numeric',
               minute: '2-digit',
               hour12: true,
+              timeZone: FACILITY_TIMEZONE,
             })
           : s.title,
         count: getBookingsBySession(s.id).length,
@@ -100,6 +102,7 @@ export default function CheckInPage() {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true,
+        timeZone: FACILITY_TIMEZONE,
       })
     : 'N/A'
 
@@ -120,6 +123,7 @@ export default function CheckInPage() {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
+    timeZone: FACILITY_TIMEZONE,
   })
 
   return (

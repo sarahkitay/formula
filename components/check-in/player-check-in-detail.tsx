@@ -13,6 +13,7 @@ import { Card } from '@/components/ui/card'
 import { StatusPill, SessionTypeBadge } from '@/components/ui/badge'
 import { getMembershipByPlayer } from '@/lib/mock-data/memberships'
 import { formatDate, cn, getInitials, getAvatarColor } from '@/lib/utils'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 import type { Player, Session, Booking } from '@/types'
 
 export function PlayerCheckInDetail({
@@ -150,12 +151,14 @@ export function PlayerCheckInDetail({
                     hour: 'numeric',
                     minute: '2-digit',
                     hour12: true,
+                    timeZone: FACILITY_TIMEZONE,
                   })}{' '}
                   //
                   {new Date(session.endTime).toLocaleTimeString('en-US', {
                     hour: 'numeric',
                     minute: '2-digit',
                     hour12: true,
+                    timeZone: FACILITY_TIMEZONE,
                   })}
                 </span>
                 <span>{session.fieldName}</span>
@@ -183,6 +186,7 @@ export function PlayerCheckInDetail({
                   hour: 'numeric',
                   minute: '2-digit',
                   hour12: true,
+                  timeZone: FACILITY_TIMEZONE,
                 })}{' '}
                 // manual
               </p>

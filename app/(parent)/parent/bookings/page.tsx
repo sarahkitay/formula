@@ -26,6 +26,7 @@ import {
   type ParentBlockBookingRow,
 } from '@/lib/parent/parent-block-bookings'
 import { notifyParentBlockBookingCreated } from '@/lib/parent/notify-block-booking-client'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 
 const AGE_GROUPS: AgeGroup[] = ['U6', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18', 'Adult']
 
@@ -269,8 +270,18 @@ export default function ParentBookingsPage() {
 
   const toBookPrompt = (slot: ScheduleSlot) => {
     const when = formatBandSlotWhen(slot.dayIndex, slot.startMinute)
-    const day = when.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
-    const at = when.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+    const day = when.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      timeZone: FACILITY_TIMEZONE,
+    })
+    const at = when.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: FACILITY_TIMEZONE,
+    })
     return `Book ${day} at ${at}?`
   }
 
@@ -643,8 +654,18 @@ export default function ParentBookingsPage() {
                               <span className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 {DAY_LABELS[slot.dayIndex]}{' '}
-                                {when.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} ·{' '}
-                                {when.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                                {when.toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  timeZone: FACILITY_TIMEZONE,
+                                })}{' '}
+                                ·{' '}
+                                {when.toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true,
+                                  timeZone: FACILITY_TIMEZONE,
+                                })}
                                 {' · '}
                                 {formatEndMinute(slot.endMinute)}
                               </span>
@@ -717,12 +738,14 @@ export default function ParentBookingsPage() {
                           weekday: 'short',
                           month: 'short',
                           day: 'numeric',
+                          timeZone: FACILITY_TIMEZONE,
                         })}
                         {' at '}
                         {new Date(booking.starts_at).toLocaleTimeString('en-US', {
                           hour: 'numeric',
                           minute: '2-digit',
                           hour12: true,
+                          timeZone: FACILITY_TIMEZONE,
                         })}
                       </p>
                       <StatusPill status={booking.status as 'confirmed' | 'cancelled'} />

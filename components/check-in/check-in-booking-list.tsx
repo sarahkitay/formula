@@ -5,6 +5,7 @@ import { TabSwitcher } from '@/components/ui/tab-switcher'
 import { EmptyState } from '@/components/ui/empty-state'
 import { getSessionById } from '@/lib/mock-data/sessions'
 import { cn, getInitials, getAvatarColor } from '@/lib/utils'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 import type { Booking, Player, Session } from '@/types'
 import type { Tab } from '@/components/ui/tab-switcher'
 
@@ -57,6 +58,7 @@ function BookingRow({
               hour: 'numeric',
               minute: '2-digit',
               hour12: true,
+              timeZone: FACILITY_TIMEZONE,
             })}{' '}
             // {session.title}
           </p>

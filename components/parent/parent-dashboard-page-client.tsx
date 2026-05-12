@@ -24,6 +24,7 @@ import { useParentLinkedPlayers } from '@/components/parent/parent-linked-player
 import { fetchParentBlockBookings } from '@/lib/parent/parent-block-bookings'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { supabase } from '@/lib/supabase'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 
 type HomeNote = { playerId: string; firstName: string; date: string; summary: string }
 
@@ -132,6 +133,7 @@ export function ParentDashboardPageClient() {
                 day: 'numeric',
                 hour: 'numeric',
                 minute: '2-digit',
+                timeZone: FACILITY_TIMEZONE,
               }),
               detail: pl ? `Saved hold · ${pl.firstName}` : 'Youth block hold',
               href: '/parent/bookings#upcoming-bookings',
@@ -168,6 +170,7 @@ export function ParentDashboardPageClient() {
                 day: 'numeric',
                 hour: 'numeric',
                 minute: '2-digit',
+                timeZone: FACILITY_TIMEZONE,
               }),
               detail: `${raw.num_kids} athlete(s) · paid booking`,
               href: MARKETING_HREF.parentBookAssessmentDirectory,
@@ -488,7 +491,11 @@ export function ParentDashboardPageClient() {
                 <div key={`${u.playerId}-${u.date}`} className="border-b border-formula-frost/10 pb-4 last:border-0 last:pb-0">
                   <p className="text-xs font-medium text-formula-mist">
                     {u.firstName} ·{' '}
-                    {new Date(u.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    {new Date(u.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      timeZone: FACILITY_TIMEZONE,
+                    })}
                   </p>
                   <p className="mt-1 text-sm text-formula-frost/80">{u.summary}</p>
                 </div>

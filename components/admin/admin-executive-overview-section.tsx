@@ -10,6 +10,7 @@ import { getStripeRevenueSummary } from '@/lib/billing/stripe-purchases-server'
 import { getTodaysSessions } from '@/lib/mock-data/sessions'
 import { getTodaysCheckIns } from '@/lib/mock-data/checkins'
 import { adminAlerts } from '@/lib/mock-data/admin-operating-system'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 
 /** Compact executive strip for the top of Admin Dashboard (full report remains on /admin/overview). */
 export async function AdminExecutiveOverviewSection() {
@@ -25,6 +26,7 @@ export async function AdminExecutiveOverviewSection() {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
+    timeZone: FACILITY_TIMEZONE,
   })
 
   return (

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 
 type InviteRow = {
   id: string
@@ -95,7 +96,11 @@ export function OrganizerDashboardClient() {
 
   function formatDate(iso: string) {
     try {
-      return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
+      return new Intl.DateTimeFormat('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone: FACILITY_TIMEZONE,
+      }).format(new Date(iso))
     } catch {
       return iso
     }

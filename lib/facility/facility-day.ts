@@ -1,9 +1,10 @@
 /**
  * Calendar-day boundaries for facility-facing rollups (attendance, “today” lists).
- * Override with NEXT_PUBLIC_FACILITY_TIMEZONE (IANA), e.g. America/New_York.
+ * Formula Soccer Center is in Los Angeles; default is Pacific. Override with
+ * `NEXT_PUBLIC_FACILITY_TIMEZONE` (IANA) if the facility moves.
  */
 export const FACILITY_TIMEZONE =
-  process.env.NEXT_PUBLIC_FACILITY_TIMEZONE?.trim() || 'America/New_York'
+  process.env.NEXT_PUBLIC_FACILITY_TIMEZONE?.trim() || 'America/Los_Angeles'
 
 export function formatYmdInTimeZone(isoOrDate: string | Date, timeZone: string): string {
   const d = typeof isoOrDate === 'string' ? new Date(isoOrDate) : isoOrDate

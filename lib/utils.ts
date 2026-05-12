@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -16,16 +18,17 @@ export function formatCurrency(amount: number): string {
 
 export function formatDate(dateString: string, format: 'short' | 'long' | 'time' | 'datetime' = 'short'): string {
   const date = new Date(dateString)
+  const tz = { timeZone: FACILITY_TIMEZONE }
   switch (format) {
     case 'short':
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', ...tz })
     case 'long':
-      return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+      return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', ...tz })
     case 'time':
-      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, ...tz })
     case 'datetime':
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' at ' +
-        date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', ...tz }) + ' at ' +
+        date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, ...tz })
     default:
       return dateString
   }

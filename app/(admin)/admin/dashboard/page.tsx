@@ -1,8 +1,5 @@
 import React from 'react'
 import Link from 'next/link'
-
-/** Always fresh shell + nav; do not serve a cached dashboard layout from an older build. */
-export const dynamic = 'force-dynamic'
 import { PageContainer } from '@/components/layout/app-shell'
 import { ModuleBlock } from '@/components/dashboard/module-block'
 import { AdminExecutiveOverviewSection } from '@/components/admin/admin-executive-overview-section'
@@ -16,6 +13,10 @@ import { formatCurrency } from '@/lib/utils'
 import type { Player, Session } from '@/types'
 import { getRosterStats } from '@/lib/facility/roster-stats-server'
 import { defaultIdleFacilityAssets } from '@/lib/facility/default-facility-assets'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
+
+/** Always fresh shell + nav; do not serve a cached dashboard layout from an older build. */
+export const dynamic = 'force-dynamic'
 
 function blockStaffAndTime(sessions: Session[]) {
   const now = Date.now()
@@ -30,6 +31,7 @@ function blockStaffAndTime(sessions: Session[]) {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true,
+        timeZone: FACILITY_TIMEZONE,
       }),
       staff: coach ? coach.split(/\s+/).pop() ?? coach : 'N/A',
     }
@@ -42,6 +44,7 @@ function blockStaffAndTime(sessions: Session[]) {
           hour: 'numeric',
           minute: '2-digit',
           hour12: true,
+          timeZone: FACILITY_TIMEZONE,
         })
       : 'N/A',
     staff: upcomingCoach ? upcomingCoach.split(/\s+/).pop() ?? upcomingCoach : 'N/A',
@@ -331,20 +334,35 @@ export default async function AdminDashboardPage() {
         <div className="space-y-1 text-[11px] text-formula-mist">
           {lastCheck && (
             <p>
-              [{new Date(lastCheck.checkedInAt).toLocaleTimeString('en-GB')}] - CHECK_IN SUCCESS:{' '}
+              [{new Date(lastCheck.checkedInAt).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: FACILITY_TIMEZONE,
+              })}] - CHECK_IN SUCCESS:{' '}
               {lastCheck.playerName.toUpperCase().replace(/\s+/g, ' ')}
             </p>
           )}
           {lastPay && (
             <p>
-              [{new Date(lastPay.createdAt).toLocaleTimeString('en-GB')}] - PAYMENT VERIFIED:{' '}
+              [{new Date(lastPay.createdAt).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: FACILITY_TIMEZONE,
+              })}] - PAYMENT VERIFIED:{' '}
               {lastPay.playerName.toUpperCase().replace(/\s+/g, ' ')} (
               {lastPay.description.slice(0, 24).toUpperCase().replace(/\s/g, '_')}
               )
             </p>
           )}
           <p className="font-bold text-formula-frost/95">
-            [{new Date().toLocaleTimeString('en-GB')}] - SYSTEM_READY: WAITING FOR WRISTBAND_BUFFER...
+            [{new Date().toLocaleTimeString('en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+              timeZone: FACILITY_TIMEZONE,
+            })}] - SYSTEM_READY: WAITING FOR WRISTBAND_BUFFER...
           </p>
         </div>
       </div>

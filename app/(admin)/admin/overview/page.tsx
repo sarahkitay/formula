@@ -25,6 +25,7 @@ import {
 } from '@/lib/mock-data/admin-operating-system'
 import { getRosterStats } from '@/lib/facility/roster-stats-server'
 import { AdminPaymentStream } from '@/components/admin/admin-payment-stream'
+import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 
 export default async function AdminOverviewPage() {
   const rosterStats = await getRosterStats()
@@ -46,7 +47,7 @@ export default async function AdminOverviewPage() {
       <div className="space-y-8">
         <PageHeader
           title="Executive overview"
-          subtitle={`${SITE.facilityName} · ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })} · operational snapshot`}
+          subtitle={`${SITE.facilityName} · ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: FACILITY_TIMEZONE })} · operational snapshot`}
           breadcrumb={[
             { label: 'Dashboard', href: '/admin/dashboard' },
             { label: 'Overview' },
@@ -279,6 +280,7 @@ export default async function AdminOverviewPage() {
                         hour: 'numeric',
                         minute: '2-digit',
                         hour12: true,
+                        timeZone: FACILITY_TIMEZONE,
                       })}
                     </p>
                   </div>
@@ -341,6 +343,7 @@ export default async function AdminOverviewPage() {
                           hour: 'numeric',
                           minute: '2-digit',
                           hour12: true,
+                          timeZone: FACILITY_TIMEZONE,
                         })}
                       </p>
                     </div>
