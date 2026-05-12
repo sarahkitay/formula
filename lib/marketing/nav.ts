@@ -62,7 +62,7 @@ export function getHeaderBookMenu(): HeaderBookMenuItem[] {
       label: 'Field rental',
       href: MARKETING_HREF.rentals,
       steps:
-        'Pick your package and field window, complete the rental agreement (or RSVP if your group already has a waiver on file), then pay at checkout at the published hourly rate.',
+        'Pick your field window, complete the rental agreement, then pay at checkout at the published hourly rate.',
     },
     {
       id: 'events',

@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
+import { dispatchBookMenuIntentSuppress } from '@/lib/marketing/home-intent-suppression'
 import { getHeaderBookMenu } from '@/lib/marketing/nav'
 import { cn } from '@/lib/utils'
 
@@ -34,9 +35,31 @@ function BookMenuEntries({ onNavigate }: { onNavigate?: () => void }) {
 export function SiteHeaderBookMenu() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const desktopBookRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    dispatchBookMenuIntentSuppress(mobileOpen)
+  }, [mobileOpen])
+
+  useEffect(() => {
+    const el = desktopBookRef.current
+    if (!el) return
+    const onFocusIn = () => dispatchBookMenuIntentSuppress(true)
+    const onFocusOut = (e: FocusEvent) => {
+      const next = e.relatedTarget as Node | null
+      if (!next || !el.contains(next)) dispatchBookMenuIntentSuppress(false)
+    }
+    el.addEventListener('focusin', onFocusIn)
+    el.addEventListener('focusout', onFocusOut)
+    return () => {
+      el.removeEventListener('focusin', onFocusIn)
+      el.removeEventListener('focusout', onFocusOut)
+    }
+  }, [])
 
   useEffect(() => {
     setMobileOpen(false)
+    dispatchBookMenuIntentSuppress(false)
   }, [pathname])
 
   useEffect(() => {
@@ -60,7 +83,12 @@ export function SiteHeaderBookMenu() {
   return (
     <>
       {/* md+: hover / focus-within – pt-2 is an invisible “bridge” under the button so the cursor can reach the panel without leaving the group (no mt gap). */}
-      <div className="group relative hidden md:block">
+      <div
+        ref={desktopBookRef}
+        className="group relative hidden md:block"
+        onMouseEnter={() => dispatchBookMenuIntentSuppress(true)}
+        onMouseLeave={() => dispatchBookMenuIntentSuppress(false)}
+      >
         <button type="button" className={cn(triggerClass)} aria-haspopup="true" aria-expanded={false}>
           Book
           <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-85" strokeWidth={2} aria-hidden />

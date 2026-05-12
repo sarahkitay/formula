@@ -31,50 +31,8 @@ import { cn } from '@/lib/utils'
 
 const FIELDS = [...RENTAL_FIELD_OPTIONS]
 
-type PackagePresentationId = 'full' | 'half' | 'cage' | 'team_private'
-
-const PACKAGE_CARDS: {
-  id: PackagePresentationId
-  rentalType: RentalType
-  title: string
-  bestFor: string
-  durationNote: string
-  paymentLine: string
-}[] = [
-  {
-    id: 'full',
-    rentalType: 'club_team_practice',
-    title: 'Full Field Rental',
-    bestFor: 'Clubs and teams that need a full field for structured training or match prep.',
-    durationNote: 'Hold length is set below (30 min–4 hr).',
-    paymentLine: `Payment is at $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr in 30-minute steps; your total is window length times every session date you confirm.`,
-  },
-  {
-    id: 'half',
-    rentalType: 'general_pickup',
-    title: 'Half Field Rental',
-    bestFor: 'Smaller-sided play, scrimmages, and informal blocks, up to 15 on the field.',
-    durationNote: 'Pick your window; staff may assign a half-field segment at check-in.',
-    paymentLine: `Same published $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr rate; checkout collects payment for the time and sessions you book.`,
-  },
-  {
-    id: 'cage',
-    rentalType: 'private_semi_private',
-    title: 'Cage Rental',
-    bestFor: 'Technical work, finishing, and small-group reps where a compact space fits best.',
-    durationNote: 'Choose field and start time below; cage-style use maps to private / small-group rules.',
-    paymentLine: `Tier 1 (1-4) or group clinic tier (5+). Checkout uses $${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr for the minutes you reserve across each session.`,
-  },
-  {
-    id: 'team_private',
-    rentalType: 'private_semi_private',
-    title: 'Team / Private Event',
-    bestFor: 'Private training, semi-private sessions, or larger clinic-style groups on one field (up to 20).',
-    durationNote: 'Headcount below sets Tier 1 vs group / clinic classification.',
-    paymentLine: `Certificate of insurance may be required for some classifications. Calendar holds clear once payment completes.`,
-  },
-]
-
+/** Public checkout is full-field club / team practice only. */
+const RENTAL_TYPE: RentalType = 'club_team_practice'
 function namesMatchForSignature(legalName: string, typed: string): boolean {
   const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ')
   const a = norm(legalName)
@@ -117,8 +75,6 @@ async function releasePendingHold(rentalRef: string) {
 }
 
 export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRentalBookingFlowProps) {
-  const [rentalType, setRentalType] = useState<RentalType | ''>('')
-  const [packageId, setPackageId] = useState<PackagePresentationId | ''>('')
   const [sessionDate, setSessionDate] = useState('')
   const [slotStart, setSlotStart] = useState('')
   /** Default field rental block: 2 hr - separate checkout from hosted parties ($1k) and events. */
@@ -145,20 +101,20 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   }, [participantCount])
 
   const classification = useMemo(() => {
-    if (!rentalType || !Number.isFinite(countNum)) {
+    if (!Number.isFinite(countNum)) {
       return null
     }
-    return classifyRentalBooking(rentalType, countNum)
-  }, [rentalType, countNum])
+    return classifyRentalBooking(RENTAL_TYPE, countNum)
+  }, [countNum])
 
   const needsInsurance = useMemo(() => {
-    if (!rentalType || !classification) return false
-    return insuranceMayBeRequired(rentalType, classification)
-  }, [rentalType, classification])
+    if (!classification) return false
+    return insuranceMayBeRequired(RENTAL_TYPE, classification)
+  }, [classification])
 
   const canProceedBooking = classification ? bookingCanProceed(classification) : false
   const step3Valid =
-    rentalType !== '' && Number.isFinite(countNum) && countNum >= 1 && canProceedBooking && classification !== null
+    Number.isFinite(countNum) && countNum >= 1 && canProceedBooking && classification !== null
 
   const rentalWindow = useMemo(() => {
     if (!slotStart) return ''
@@ -304,8 +260,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
 
   const bookingLockKey = useMemo(
     () =>
-      [sessionDate, rentalWindow, fieldId, [...selectedSessionDates].sort().join(','), rentalType, String(countNum)].join('|'),
-    [sessionDate, rentalWindow, fieldId, selectedSessionDates, rentalType, countNum]
+      [sessionDate, rentalWindow, fieldId, [...selectedSessionDates].sort().join(','), RENTAL_TYPE, String(countNum)].join('|'),
+    [sessionDate, rentalWindow, fieldId, selectedSessionDates, countNum]
   )
 
   const mintedHoldForKeyRef = useRef<string | null>(null)
@@ -350,10 +306,10 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   }, [paymentReady, bookingLockKey])
 
   const checkoutMetadata = useMemo((): Record<string, string> | null => {
-    if (!confirmedRef || !classification || rentalType === '' || !sessionDate || !rentalWindow || !fieldId) return null
+    if (!confirmedRef || !classification || !sessionDate || !rentalWindow || !fieldId) return null
     return {
       rental_ref: confirmedRef,
-      rental_type: rentalType,
+      rental_type: RENTAL_TYPE,
       rental_date: sessionDate.slice(0, 40),
       rental_window: rentalWindow.slice(0, 120),
       rental_field: fieldId.slice(0, 40),
@@ -367,7 +323,6 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
   }, [
     confirmedRef,
     classification,
-    rentalType,
     sessionDate,
     rentalWindow,
     fieldId,
@@ -379,63 +334,39 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
     typedSignature,
   ])
 
-  const selectedPackageMeta = useMemo(
-    () => (packageId ? PACKAGE_CARDS.find(p => p.id === packageId) : undefined),
-    [packageId]
-  )
-
   return (
     <section
       id={sectionId}
       className="not-prose my-12 scroll-mt-28 border border-formula-frost/12 bg-formula-base/[0.38] px-4 py-10 sm:px-6 md:my-16 md:px-8 md:py-12"
     >
-      <div id="field-rental-packages" className="scroll-mt-28" aria-hidden />
       <header className="border-b border-formula-frost/12 pb-8">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Field rental checkout</p>
         <h2 className="mt-3 text-xl font-semibold leading-tight text-formula-paper md:text-2xl">
-          One page: your package &amp; time, who&apos;s coming, waiver &amp; signature, then pay
+          Full field rental: time, who&apos;s coming, waiver and signature, then pay
         </h2>
         <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-formula-frost/85">
-          <strong className="text-formula-paper">Field rental only</strong>, not the hosted party or custom event payment. Scroll through once: pick your slot,
+          <strong className="text-formula-paper">Field rental only</strong>, not the hosted party or custom event payment. Work top to bottom: pick your window,
           enter the primary renter and headcount, review rules and the agreement text, sign, then open Stripe. A short calendar hold is placed while checkout loads.
         </p>
       </header>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-14 lg:space-y-16">
-          <div className="space-y-6">
+          <div id="field-rental-packages" className="scroll-mt-28 space-y-6">
             <div>
-              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Package</p>
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Full field rental</p>
               <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
-                Choose the option that best matches your use. Capacity and payment follow the published field-rental rate (
-                <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> in 30-minute steps).
+                Club and team use on a full field (up to 20 participants). Payment follows the published rate (
+                <strong className="text-formula-paper">${FIELD_RENTAL_PUBLISHED_RATES.perHourUsd}/hr</strong> in 30-minute steps): your total is that rate times
+                window length times each session date you confirm below.
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {PACKAGE_CARDS.map(card => {
-                const selected = packageId === card.id
-                return (
-                  <button
-                    key={card.id}
-                    type="button"
-                    onClick={() => {
-                      setPackageId(card.id)
-                      setRentalType(card.rentalType)
-                    }}
-                    className={cn(
-                      'rounded-none border p-5 text-left shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] transition-[border-color,background-color] duration-150',
-                      selected
-                        ? 'border-formula-volt/55 bg-formula-volt/[0.09]'
-                        : 'border-formula-frost/16 bg-formula-paper/[0.02] hover:border-formula-frost/26'
-                    )}
-                  >
-                    <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper">{card.title}</span>
-                    <span className="mt-3 block text-[13px] leading-relaxed text-formula-frost/82">{card.bestFor}</span>
-                    <span className="mt-3 block font-mono text-[10px] uppercase tracking-[0.12em] text-formula-mist">{card.durationNote}</span>
-                    <span className="mt-2 block text-[12px] leading-snug text-formula-mist/90">{card.paymentLine}</span>
-                  </button>
-                )
-              })}
+            <div className="rounded-none border border-formula-frost/16 bg-formula-paper/[0.02] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]">
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-formula-paper">What you are booking</p>
+              <p className="mt-3 text-[13px] leading-relaxed text-formula-frost/82">
+                Hold length is set in Time &amp; field (30 min–4 hr). Certificate of insurance may be required for club or team practice; upload timing is
+                coordinated after payment when applicable.
+              </p>
             </div>
           </div>
 
@@ -622,7 +553,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             <div>
               <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-mist">Primary renter &amp; group size</p>
               <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-formula-frost/85">
-                Who pays and how many people are on the field. Headcount must fit the package you chose.
+                Who pays and how many people are on the field. Club and team practice allows up to 20 on the field at once.
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
@@ -657,9 +588,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               />
             </label>
             <ul className="list-inside list-disc space-y-2 text-[14px] leading-relaxed text-formula-mist">
-              <li>Private: 1–4 → Tier 1. 5+ → group / clinic tier (up to 20).</li>
-              <li>Club / Team: max 20 per field (booking blocked above).</li>
-              <li>General / Pick-Up: max 15 (booking blocked above).</li>
+              <li>Full field club / team practice: up to 20 participants. Bookings above that headcount are blocked until you lower the count or add another field.</li>
             </ul>
             {classification ? (
               <div
@@ -672,27 +601,15 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                 role="status"
               >
                 <p className="text-[15px] font-medium leading-snug">{classificationSummary(classification)}</p>
-                {classification.status === 'private_tier1' ? (
-                  <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
-                    Tier 1 rate applies for published windows. Checkout collects{' '}
-                    <strong className="text-formula-paper">${bookingPaymentUsd.toFixed(0)}</strong> if the slot is still available.
-                  </p>
-                ) : null}
-                {classification.status === 'group_training_ok' ? (
-                  <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
-                    Group / clinic use on one field (up to {classification.maxParticipants} participants). COI may still be required. Payment of{' '}
-                    <strong className="text-formula-paper">${bookingPaymentUsd.toFixed(0)}</strong> locks the calendar at checkout.
-                  </p>
-                ) : null}
-                {(classification.status === 'club_ok' || classification.status === 'general_ok') && (
+                {classification.status === 'club_ok' ? (
                   <p className="mt-4 text-[14px] leading-relaxed text-formula-mist">
                     You&apos;ll pay <strong className="text-formula-paper">${bookingPaymentUsd.toFixed(0)}</strong> via Stripe below. The calendar prevents overlapping
                     bookings on the same field.
                   </p>
-                )}
+                ) : null}
               </div>
             ) : (
-              <p className="text-[14px] text-formula-mist">Choose a package and enter headcount to validate your session.</p>
+              <p className="text-[14px] text-formula-mist">Enter headcount to validate your session.</p>
             )}
             {needsInsurance && classification && classification.status !== 'blocked' ? (
               <p className="border-l-2 border-formula-volt/50 pl-4 text-[14px] leading-relaxed text-formula-mist">
@@ -782,11 +699,11 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
                 support.
               </p>
             </div>
-            {confirmedRef && classification && rentalType && checkoutMetadata ? (
+            {confirmedRef && classification && checkoutMetadata ? (
               <div className="rounded-none border border-formula-frost/14 bg-formula-paper/[0.03] p-6 text-[14px] leading-relaxed text-formula-mist">
                 <p className="font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-formula-paper">Reference {confirmedRef}</p>
                 <ul className="mt-4 list-inside list-disc space-y-1.5 text-formula-frost/88">
-                  <li>Type: {rentalType.replace(/_/g, ' ')}</li>
+                  <li>Type: {RENTAL_TYPE.replace(/_/g, ' ')}</li>
                   <li>Anchor date (series): {sessionDate}</li>
                   <li>Sessions booked: {sessionCount}</li>
                   <li>Window: {humanRentalWindowSummary(rentalWindow)}</li>
@@ -809,7 +726,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
               </div>
             ) : (
               <p className="text-[14px] text-formula-mist">
-                Complete package, schedule, renter details, rules, and signature to unlock payment.
+                Complete schedule, renter details, rules, and signature to unlock payment.
               </p>
             )}
             {checkoutMetadata ? (
@@ -828,8 +745,8 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
       <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Booking summary</p>
       <dl className="mt-5 space-y-4 text-sm text-formula-frost/85">
         <div>
-          <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Package</dt>
-          <dd className="mt-1 text-[15px] font-medium leading-snug text-formula-paper">{selectedPackageMeta?.title ?? '-'}</dd>
+          <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Rental</dt>
+          <dd className="mt-1 text-[15px] font-medium leading-snug text-formula-paper">Full field rental</dd>
         </div>
         <div>
           <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-formula-mist">Schedule</dt>
@@ -851,7 +768,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
             <span className="text-formula-paper">{sessionCount} planned session{sessionCount === 1 ? '' : 's'}</span>
             <span className="mt-1 block text-[15px] font-semibold text-formula-paper">${bookingPaymentUsd.toFixed(0)} due at checkout</span>
             <span className="mt-2 block text-[13px] leading-relaxed text-formula-mist">
-              Remaining balance, if any, is settled per your rental agreement after this payment. Staff may reconcile for packages or special blocks.
+              Remaining balance, if any, is settled per your rental agreement after this payment. Staff may reconcile special blocks separately.
             </span>
           </dd>
         </div>
@@ -866,7 +783,7 @@ export function FieldRentalBookingFlow({ sectionId = 'rental-booking' }: FieldRe
 
       <div className="mt-8 border-t border-formula-frost/12 pt-6">
         <p className="text-[13px] leading-relaxed text-formula-mist">
-          This panel updates as you fill out the form. Payment unlocks when package, schedule, renter, rules, and signature are complete.
+          This panel updates as you fill out the form. Payment unlocks when schedule, renter, rules, and signature are complete.
         </p>
       </div>
         </aside>

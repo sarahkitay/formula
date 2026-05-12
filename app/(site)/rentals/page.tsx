@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 export const metadata: Metadata = {
   title: 'Field rentals',
   description:
-    'Structured field rentals: published $180/hr rate in 30-minute steps, packaged windows, Stripe payment via the booking hub.',
+    'Full field rentals: published hourly rate in 30-minute steps, Stripe payment via the booking hub.',
 }
 
 const ctaPrimaryClass =
@@ -33,15 +33,15 @@ export default function RentalsPage() {
           <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-formula-volt/90">Field rentals</p>
           <h1 className={cn(marketingDisplayH1ClassName, 'mt-4 max-w-[22ch] text-balance')}>Book field time without back-and-forth</h1>
           <p className="mt-6 max-w-[52ch] text-[16px] leading-relaxed text-formula-frost/88 sm:text-[17px]">
-            Pick a package, lock a published window, pay at checkout (published hourly rate times your window and sessions), then complete the participant waiver.
-            One flow: calendar conflicts are blocked automatically; Stripe confirms your payment.
+            Lock a published window, pay at checkout (published hourly rate times your window and sessions), then complete the participant waiver. One flow: calendar
+            conflicts are blocked automatically; Stripe confirms your payment.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <a href="#rental-booking" className={ctaPrimaryClass}>
               Reserve a field
             </a>
             <a href="#field-rental-packages" className={ctaSecondaryClass}>
-              View packages
+              How it works
             </a>
           </div>
           <p className="mt-8 max-w-[60ch] text-[14px] leading-relaxed text-formula-mist">

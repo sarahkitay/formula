@@ -1,9 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, startTransition } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
+import {
+  BOOK_MENU_INTENT_SUPPRESS_EVENT,
+  type BookMenuIntentSuppressDetail,
+} from '@/lib/marketing/home-intent-suppression'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import { DAY_PASS_ONE_DAY } from '@/lib/marketing/public-pricing'
 import { cn } from '@/lib/utils'
@@ -23,10 +27,12 @@ type Step = 1 | 2
 
 export function HomeIntentDialog() {
   const router = useRouter()
+  const pathname = usePathname()
   const titleId = useId()
   const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<Step>(1)
+  const bookMenuEngagedRef = useRef(false)
 
   const dismiss = useCallback(() => {
     try {
@@ -50,14 +56,41 @@ export function HomeIntentDialog() {
 
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    const onBookMenu = (e: Event) => {
+      const detail = (e as CustomEvent<BookMenuIntentSuppressDetail>).detail
+      bookMenuEngagedRef.current = Boolean(detail?.engaged)
+      if (detail?.engaged) setOpen(false)
+    }
+    window.addEventListener(BOOK_MENU_INTENT_SUPPRESS_EVENT, onBookMenu)
+    return () => window.removeEventListener(BOOK_MENU_INTENT_SUPPRESS_EVENT, onBookMenu)
+  }, [])
+
+  useEffect(() => {
+    if (pathname !== '/') {
+      startTransition(() => {
+        setOpen(false)
+      })
+      return
+    }
     try {
       if (sessionStorage.getItem(STORAGE_KEY)) return
     } catch {
       /* ignore */
     }
-    const t = window.setTimeout(() => setOpen(true), OPEN_DELAY_MS)
+    const t = window.setTimeout(() => {
+      try {
+        if (sessionStorage.getItem(STORAGE_KEY)) return
+      } catch {
+        /* ignore */
+      }
+      if (bookMenuEngagedRef.current) return
+      setOpen(true)
+    }, OPEN_DELAY_MS)
     return () => window.clearTimeout(t)
-  }, [])
+  }, [pathname])
 
   useEffect(() => {
     if (!open) return

@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic'
 import { HomeFacilitySection } from '@/components/marketing/home-facility-section'
-import { HomeIntentDialog } from '@/components/marketing/home-intent-dialog'
 import { HomeWhatWeOfferNow } from '@/components/marketing/home-what-we-offer-now'
 import { MarketingHero } from '@/components/marketing/marketing-hero'
 
@@ -45,7 +44,6 @@ function SectionDivider() {
 export function MarketingHome() {
   return (
     <>
-      <HomeIntentDialog />
       <MarketingHero />
 
       <SectionDivider />
