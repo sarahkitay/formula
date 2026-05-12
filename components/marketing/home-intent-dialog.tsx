@@ -43,6 +43,11 @@ export function HomeIntentDialog() {
     router.push(MARKETING_HREF.rentals)
   }, [dismiss, router])
 
+  const goSummerCamp = useCallback(() => {
+    dismiss()
+    router.push(MARKETING_HREF.summerCamp2026)
+  }, [dismiss, router])
+
   useEffect(() => {
     setMounted(true)
     try {
@@ -75,6 +80,11 @@ export function HomeIntentDialog() {
   if (!mounted || !open) return null
 
   const bookingTiles = [
+    {
+      label: 'Summer camp 2026',
+      hint: 'Now booking — themed weeks, bundles, and Stripe checkout.',
+      href: MARKETING_HREF.summerCamp2026,
+    },
     {
       label: 'Friday Night Friendlies',
       hint: 'Pre-register players (ages 6-14).',
@@ -158,9 +168,15 @@ export function HomeIntentDialog() {
                 Field rental booking
                 <span className={secondaryHintClass}>Reserve field time and packages; pay at the published hourly rate in checkout.</span>
               </button>
+              <button type="button" className={primaryChoiceClass} onClick={goSummerCamp}>
+                Summer camps
+                <span className={secondaryHintClass}>Now booking 2026 — pick your weeks and pay in checkout on the camp page.</span>
+              </button>
               <button type="button" className={primaryChoiceClass} onClick={() => setStep(2)}>
                 Programs, passes, and parties
-                <span className={secondaryHintClass}>Friendlies, Minis, day pass, packages, events, parties, assessment, portal, memberships.</span>
+                <span className={secondaryHintClass}>
+                  Friendlies, Minis, day pass, summer camps, packages, events, parties, assessment, portal, memberships.
+                </span>
               </button>
               <button type="button" className={primaryChoiceClass} onClick={dismiss}>
                 Just exploring

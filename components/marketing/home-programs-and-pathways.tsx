@@ -64,11 +64,11 @@ const HIGHLIGHTS: {
   {
     label: 'Camps',
     line: 'Structured days. Full facility.',
-    more: 'Summer + holidays, not daycare soccer.',
-    href: MARKETING_HREF.camps,
+    more: 'Summer 2026 is open for booking — weekly themes, not daycare soccer.',
+    href: MARKETING_HREF.summerCamp2026,
     tier: 'default',
     band: 'mid',
-    cta: 'Explore →',
+    cta: 'Book summer camp →',
     layoutClass: 'lg:col-span-2',
   },
   {
@@ -131,10 +131,16 @@ const SECONDARY_PATHS: { label: string; line: string; href: string; tier: 'defau
     tier: 'default',
   },
   {
-    label: 'Register for camp',
-    line: 'Full facility. Structured days - summer + holidays.',
-    href: MARKETING_HREF.camps,
+    label: 'Summer camps — now booking',
+    line: '2026 weekly blocks and bundles · Mon–Fri · checkout on the camp page.',
+    href: MARKETING_HREF.summerCamp2026,
     tier: 'default',
+  },
+  {
+    label: 'Camp programs overview',
+    line: 'Summer immersion + holiday intensives — how days are structured.',
+    href: MARKETING_HREF.camps,
+    tier: 'quiet',
   },
   {
     label: 'Field rental booking',

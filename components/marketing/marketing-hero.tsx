@@ -106,6 +106,13 @@ export function MarketingHero() {
                 View programs
               </span>
             </Link>
+            <Link
+              href={MARKETING_HREF.summerCamp2026}
+              className="marketing-hero-readout -mx-1 mt-3 block w-fit rounded-md border border-formula-volt/40 bg-formula-volt/[0.1] px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-formula-volt shadow-[inset_0_0_0_1px_rgba(220,255,0,0.12)] outline-none transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-formula-volt/60 hover:bg-formula-volt/[0.16] focus-visible:ring-2 focus-visible:ring-formula-volt/45 focus-visible:ring-offset-2 focus-visible:ring-offset-formula-deep motion-reduce:hover:translate-y-0"
+              style={readoutDelay(3)}
+            >
+              Now booking · Summer camps 2026
+            </Link>
             <div
               className="marketing-hero-readout mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
               style={readoutDelay(4)}

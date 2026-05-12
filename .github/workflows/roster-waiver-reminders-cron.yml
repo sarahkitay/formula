@@ -1,0 +1,34 @@
+# Vercel Hobby only allows crons that run at most once per day. The roster pre-meeting
+# reminder needs hourly checks, so it is triggered from GitHub Actions instead of vercel.json.
+#
+# Repo secrets (Settings → Secrets and variables → Actions):
+#   PRODUCTION_SITE_URL  e.g. https://formulasoccer.com  (no trailing slash)
+#   CRON_SECRET          same bearer value as Vercel CRON_SECRET
+#
+# If you re-add this path to vercel.json crons (e.g. on Vercel Pro), disable or delete this workflow
+# so the route is not hit twice per hour.
+#
+name: Roster waiver reminders (hourly)
+
+on:
+  schedule:
+    # Same cadence as former vercel.json entry: minute 5 of every hour (UTC).
+    - cron: '5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call production cron route
+        env:
+          BASE: ${{ secrets.PRODUCTION_SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "${BASE:-}" ] || [ -z "${CRON_SECRET:-}" ]; then
+            echo "::notice::Skipping: add PRODUCTION_SITE_URL and CRON_SECRET to GitHub Actions secrets for hourly roster reminders."
+            exit 0
+          fi
+          b="${BASE%/}"
+          curl -fsS -m 120 -H "Authorization: Bearer ${CRON_SECRET}" "${b}/api/cron/roster-waiver-reminders"

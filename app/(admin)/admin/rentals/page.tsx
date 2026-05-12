@@ -4,8 +4,7 @@ import { PageHeader } from '@/components/ui/page-header'
 import { Button } from '@/components/ui/button'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
 import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
-import { ManualWaiverInviteForm } from '@/components/admin/manual-waiver-invite-form'
-import { PaidInPersonFieldRentalInviteForm } from '@/components/admin/paid-in-person-field-rental-invite-form'
+import { RosterLinkCreationPicker } from '@/components/admin/roster-link-creation-picker'
 import { RosterWaiverInvitesAdmin } from '@/components/admin/roster-waiver-invites-admin'
 import { SignedRentalWaiversLinkTable, type RosterInvitePickOption } from '@/components/admin/signed-rental-waivers-link-table'
 import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
@@ -124,46 +123,16 @@ export default async function RentalsPage() {
           ) : (
             <>
               <p className="mb-4 font-mono text-[11px] text-formula-mist">
-                After online checkout, the purchaser gets a roster link. Expand a rental below for organizer name/email (when Stripe skipped the payer), payment &
-                session snapshot, share URL, signers, and links to each waiver. Ops email: one message when every waiver is in, or (if the first session time is on
-                the invite) about an hour before start when some are still missing.
+                After online checkout, the purchaser gets a roster link. Below: who paid, session summary, waiver progress, and each signer. Use{' '}
+                <strong className="text-formula-paper/90">Quick roster link</strong> for internal or comp lists (no payment row). Use{' '}
+                <strong className="text-formula-paper/90">Paid in person</strong> when the deposit was collected offline so you get the same waiver URL plus a
+                Payments / revenue entry.
               </p>
               <details className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
                 <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-                  <span className="text-formula-volt">▸</span> Add roster link — choose payment path
+                  <span className="text-formula-volt">▸</span> Add roster link
                 </summary>
-                <div className="mt-3 space-y-3 border-t border-formula-frost/10 pt-3 font-mono text-[10px] leading-relaxed text-formula-mist/90">
-                  <p>
-                    <strong className="text-formula-paper/90">Complimentary / internal</strong> — use Quick roster (no card charge, no Payments row).{' '}
-                    <strong className="text-formula-paper/90">Paid in person</strong> — desk collects payment; same waiver URL plus a Payments / revenue entry.{' '}
-                    <strong className="text-formula-paper/90">Pay online</strong> — send the organizer through{' '}
-                    <Link className="text-formula-volt underline-offset-2 hover:underline" href={BOOKING_HUB_PUBLIC.fieldRental}>
-                      field rental checkout
-                    </Link>{' '}
-                    or <Link className="text-formula-volt underline-offset-2 hover:underline" href="/rentals">Rentals</Link>; Stripe creates the roster link after
-                    payment.
-                  </p>
-                  <p className="text-formula-mist/80">
-                    The roster URL offers full sign or RSVP (prior waiver on file). Organizer (this link’s payer) completed payment online or in person. Rows
-                    without this invite stay in Signed waivers only.
-                  </p>
-                  <details open className="rounded-md border border-formula-frost/12 bg-formula-base/30 p-3">
-                    <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-                      <span className="text-formula-volt">▸</span> Quick roster link — comp / internal (no payment row)
-                    </summary>
-                    <div className="mt-3 border-t border-formula-frost/10 pt-3">
-                      <ManualWaiverInviteForm />
-                    </div>
-                  </details>
-                  <details className="rounded-md border border-formula-frost/12 bg-formula-base/30 p-3">
-                    <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-                      <span className="text-formula-volt">▸</span> Paid in person — desk payment + waiver URL + Payments entry
-                    </summary>
-                    <div className="mt-3 border-t border-formula-frost/10 pt-3">
-                      <PaidInPersonFieldRentalInviteForm />
-                    </div>
-                  </details>
-                </div>
+                <RosterLinkCreationPicker />
               </details>
               {waiverInvites.length === 0 ? (
                 <p className="mt-6 font-mono text-[11px] text-formula-mist">No roster links yet.</p>
