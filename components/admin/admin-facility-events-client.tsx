@@ -14,8 +14,8 @@ import { cn } from '@/lib/utils'
 import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
 import type { FacilityEventFieldScope, FacilityEventRow, FacilityEventStatus } from '@/lib/events/facility-events-server'
+import { BOOK_INITIAL } from '@/app/(admin)/admin/events/book-state'
 import {
-  BOOK_INITIAL,
   createFacilityEventBookAction,
   createFacilityEventWaiverLinkAction,
   setFacilityEventStatusAction,

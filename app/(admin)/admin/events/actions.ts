@@ -12,6 +12,7 @@ import {
 } from '@/lib/events/facility-events-server'
 import { parseUsdToCents } from '@/lib/stripe/parse-usd-to-cents'
 import { getSiteOrigin } from '@/lib/site-origin'
+import type { FacilityEventBookState } from '@/app/(admin)/admin/events/book-state'
 
 function getStr(formData: FormData, key: string): string {
   const v = formData.get(key)
@@ -44,19 +45,6 @@ function parseTimeToStartMinute(raw: string): number | null {
   }
   return h * 60 + min
 }
-
-export type FacilityEventBookState = {
-  ok: boolean
-  message: string
-  /** Set after a successful save so the UI can scroll to the new row. */
-  createdEventId?: string
-  /** Populated when "Create waiver on save" succeeds in the same submit. */
-  waiverUrl?: string
-  /** Populated when "Create payment link on save" succeeds in the same submit. */
-  paymentUrl?: string
-}
-
-const BOOK_INITIAL: FacilityEventBookState = { ok: false, message: '' }
 
 export async function createFacilityEventBookAction(
   _prev: FacilityEventBookState,
@@ -210,8 +198,6 @@ export async function createFacilityEventBookAction(
     return { ok: false, message: 'Something went wrong while saving. Try again or check server logs.' }
   }
 }
-
-export { BOOK_INITIAL }
 
 export async function createFacilityEventWaiverLinkAction(
   formData: FormData
