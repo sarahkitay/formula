@@ -1,33 +1,9 @@
 import { getServiceSupabase } from '@/lib/supabase/service'
-import { getSiteOrigin, getStripe, checkStripeServerSecretKey } from '@/lib/stripe/server'
-
-const MIN_USD = 0.5
-const MAX_USD = 100_000
+import { getSiteOrigin } from '@/lib/site-origin'
+import { getStripe, checkStripeServerSecretKey } from '@/lib/stripe/server'
+import { parseUsdToCents } from '@/lib/stripe/parse-usd-to-cents'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-export function parseUsdToCents(raw: unknown): { ok: true; cents: number } | { ok: false; message: string } {
-  if (raw == null) return { ok: false, message: 'amount is required' }
-  let n: number
-  if (typeof raw === 'number') {
-    if (!Number.isFinite(raw)) return { ok: false, message: 'amount must be a number' }
-    n = raw
-  } else if (typeof raw === 'string') {
-    const cleaned = raw.replace(/[$,\s]/g, '').trim()
-    if (!cleaned) return { ok: false, message: 'amount is required' }
-    n = parseFloat(cleaned)
-    if (!Number.isFinite(n)) return { ok: false, message: 'amount must be a valid number' }
-  } else {
-    return { ok: false, message: 'amount must be a string or number' }
-  }
-
-  if (n < MIN_USD) return { ok: false, message: `Minimum charge is $${MIN_USD} USD` }
-  if (n > MAX_USD) return { ok: false, message: `Maximum charge is $${MAX_USD.toLocaleString()} USD` }
-
-  const cents = Math.round(n * 100)
-  if (cents < Math.round(MIN_USD * 100)) return { ok: false, message: `Minimum charge is $${MIN_USD} USD` }
-  return { ok: true, cents }
-}
 
 function trimMeta(s: string, max: number): string {
   const t = s.trim()
@@ -52,9 +28,17 @@ export async function createManualInvoiceCheckoutUrl(
   if (!keyCheck.ok) {
     return { ok: false, message: keyCheck.message }
   }
-  const stripe = getStripe()
-  if (!stripe) {
-    return { ok: false, message: 'Stripe is not configured.' }
+  let stripe: NonNullable<ReturnType<typeof getStripe>>
+  try {
+    const s = getStripe()
+    if (!s) {
+      return { ok: false, message: 'Stripe is not configured.' }
+    }
+    stripe = s
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Stripe init error'
+    console.error('[manual-invoice-checkout] getStripe:', e)
+    return { ok: false, message: msg }
   }
 
   const payeeName = params.payeeName.trim()

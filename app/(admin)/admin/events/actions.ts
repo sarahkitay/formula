@@ -10,8 +10,8 @@ import {
   type FacilityEventFieldScope,
   type FacilityEventStatus,
 } from '@/lib/events/facility-events-server'
-import { createManualInvoiceCheckoutUrl, parseUsdToCents } from '@/lib/stripe/manual-invoice-checkout'
-import { getSiteOrigin } from '@/lib/stripe/server'
+import { parseUsdToCents } from '@/lib/stripe/parse-usd-to-cents'
+import { getSiteOrigin } from '@/lib/site-origin'
 
 function getStr(formData: FormData, key: string): string {
   const v = formData.get(key)
@@ -158,6 +158,7 @@ export async function createFacilityEventBookAction(
     }
 
     if (wantPaymentOnSave && evFresh) {
+      const { createManualInvoiceCheckoutUrl } = await import('@/lib/stripe/manual-invoice-checkout')
       const payee = (organizerName || title).trim()
       const defaultMemo = [
         `Event: ${title}`,
@@ -180,8 +181,12 @@ export async function createFacilityEventBookAction(
       }
     }
 
-    revalidatePath('/admin/events')
-    revalidatePath('/admin/rentals')
+    try {
+      revalidatePath('/admin/events')
+      revalidatePath('/admin/rentals')
+    } catch (revalidateErr) {
+      console.warn('[admin/events] revalidatePath:', revalidateErr)
+    }
 
     let message = 'Event saved. Add the block on Admin → Schedule when ready.'
     if (extras.length) {
@@ -239,8 +244,12 @@ export async function createFacilityEventWaiverLinkAction(
     return { ok: false, message: attached.message }
   }
 
-  revalidatePath('/admin/events')
-  revalidatePath('/admin/rentals')
+  try {
+    revalidatePath('/admin/events')
+    revalidatePath('/admin/rentals')
+  } catch (revalidateErr) {
+    console.warn('[admin/events] revalidatePath:', revalidateErr)
+  }
   const origin = getSiteOrigin()
   return { ok: true, waiver_url: `${origin}/rentals/waiver/${created.token}` }
 }
@@ -257,6 +266,10 @@ export async function setFacilityEventStatusAction(
   if (!r.ok) {
     return { ok: false, message: r.message }
   }
-  revalidatePath('/admin/events')
+  try {
+    revalidatePath('/admin/events')
+  } catch (revalidateErr) {
+    console.warn('[admin/events] revalidatePath:', revalidateErr)
+  }
   return { ok: true }
 }

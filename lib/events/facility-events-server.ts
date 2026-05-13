@@ -25,6 +25,60 @@ const YMD = /^\d{4}-\d{2}-\d{2}$/
 const FIELD_SCOPES = new Set<FacilityEventFieldScope>(['field_1', 'field_2', 'field_3', 'full_facility'])
 const STATUSES = new Set<FacilityEventStatus>(['draft', 'requested', 'confirmed', 'cancelled'])
 
+function toInt(v: unknown, fallback: number): number {
+  if (typeof v === 'number' && Number.isFinite(v)) return Math.floor(v)
+  if (typeof v === 'string' && v.trim()) {
+    const n = parseInt(v, 10)
+    if (Number.isFinite(n)) return n
+  }
+  return fallback
+}
+
+function toStr(v: unknown): string {
+  return typeof v === 'string' ? v : v != null ? String(v) : ''
+}
+
+/** Coerce Supabase rows to JSON-safe primitives for RSC (avoids bigint / odd types breaking Flight). */
+function normalizeFacilityEventRow(raw: Record<string, unknown>): FacilityEventRow | null {
+  const id = toStr(raw.id).trim()
+  if (!UUID.test(id)) return null
+
+  const fieldRaw = toStr(raw.field_scope).trim()
+  const field_scope = (FIELD_SCOPES.has(fieldRaw as FacilityEventFieldScope)
+    ? fieldRaw
+    : 'field_1') as FacilityEventFieldScope
+
+  const statusRaw = toStr(raw.status).trim()
+  const status = (STATUSES.has(statusRaw as FacilityEventStatus) ? statusRaw : 'draft') as FacilityEventStatus
+
+  const sm = toInt(raw.start_minute, 0)
+  const dur = toInt(raw.duration_minutes, 120)
+  const smClamped = sm >= 0 && sm < 1440 ? sm : 0
+  const durClamped = dur >= 15 && dur <= 960 ? dur : 120
+
+  const waiverRaw = raw.waiver_invite_id
+  let waiver_invite_id: string | null = null
+  if (typeof waiverRaw === 'string' && UUID.test(waiverRaw.trim())) {
+    waiver_invite_id = waiverRaw.trim()
+  }
+
+  return {
+    id,
+    created_at: toStr(raw.created_at),
+    updated_at: toStr(raw.updated_at),
+    title: toStr(raw.title),
+    event_date: toStr(raw.event_date).slice(0, 10),
+    start_minute: smClamped,
+    duration_minutes: durClamped,
+    field_scope,
+    status,
+    organizer_name: raw.organizer_name == null || raw.organizer_name === '' ? null : toStr(raw.organizer_name),
+    organizer_email: raw.organizer_email == null || raw.organizer_email === '' ? null : toStr(raw.organizer_email),
+    notes: raw.notes == null || raw.notes === '' ? null : toStr(raw.notes),
+    waiver_invite_id,
+  }
+}
+
 export async function listFacilityEvents(limit = 200): Promise<FacilityEventRow[]> {
   const sb = getServiceSupabase()
   if (!sb) return []
@@ -35,7 +89,57 @@ export async function listFacilityEvents(limit = 200): Promise<FacilityEventRow[
     }
     return []
   }
-  return data as FacilityEventRow[]
+  const out: FacilityEventRow[] = []
+  for (const item of data) {
+    if (!item || typeof item !== 'object') continue
+    const row = normalizeFacilityEventRow(item as Record<string, unknown>)
+    if (row) out.push(row)
+  }
+  return out
+}
+
+/** Batch-load public waiver URLs for events that reference `field_rental_waiver_invites` (keeps admin page off the heavy waiver-invites module). */
+export async function buildWaiverUrlsByEventId(
+  events: FacilityEventRow[],
+  siteOrigin: string
+): Promise<Record<string, string>> {
+  const origin = siteOrigin.replace(/\/$/, '')
+  const pairs: { eventId: string; inviteId: string }[] = []
+  for (const ev of events) {
+    const wid = ev.waiver_invite_id?.trim()
+    if (!wid || !UUID.test(wid)) continue
+    pairs.push({ eventId: ev.id, inviteId: wid })
+  }
+  if (pairs.length === 0) return {}
+
+  const sb = getServiceSupabase()
+  if (!sb) return {}
+
+  const inviteIds = [...new Set(pairs.map(p => p.inviteId))]
+  const tokenByInviteId = new Map<string, string>()
+  const chunkSize = 100
+  for (let i = 0; i < inviteIds.length; i += chunkSize) {
+    const chunk = inviteIds.slice(i, i + chunkSize)
+    const { data, error } = await sb.from('field_rental_waiver_invites').select('id, token').in('id', chunk)
+    if (error) {
+      console.warn('[facility-events] waiver token batch:', error.message)
+      continue
+    }
+    for (const row of data ?? []) {
+      if (!row || typeof row !== 'object') continue
+      const rec = row as Record<string, unknown>
+      const id = toStr(rec.id).trim()
+      const token = toStr(rec.token).trim()
+      if (UUID.test(id) && token) tokenByInviteId.set(id, token)
+    }
+  }
+
+  const out: Record<string, string> = {}
+  for (const { eventId, inviteId } of pairs) {
+    const token = tokenByInviteId.get(inviteId)
+    if (token) out[eventId] = `${origin}/rentals/waiver/${token}`
+  }
+  return out
 }
 
 export async function getFacilityEventById(id: string): Promise<FacilityEventRow | null> {
@@ -44,8 +148,8 @@ export async function getFacilityEventById(id: string): Promise<FacilityEventRow
   const sb = getServiceSupabase()
   if (!sb) return null
   const { data, error } = await sb.from('facility_events').select('*').eq('id', tid).maybeSingle()
-  if (error || !data) return null
-  return data as FacilityEventRow
+  if (error || !data || typeof data !== 'object') return null
+  return normalizeFacilityEventRow(data as Record<string, unknown>)
 }
 
 export async function insertFacilityEvent(params: {
@@ -114,7 +218,7 @@ export async function insertFacilityEvent(params: {
     return { ok: false, message: 'Could not create event.' }
   }
 
-  return { ok: true, id: data.id as string }
+  return { ok: true, id: String(data.id) }
 }
 
 export async function updateFacilityEventWaiverInvite(

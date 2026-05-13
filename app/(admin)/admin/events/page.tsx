@@ -1,7 +1,6 @@
 import { AdminFacilityEventsClient } from '@/components/admin/admin-facility-events-client'
-import { listFacilityEvents } from '@/lib/events/facility-events-server'
-import { getWaiverInviteById } from '@/lib/rentals/waiver-invites-server'
-import { getSiteOrigin } from '@/lib/stripe/server'
+import { buildWaiverUrlsByEventId, listFacilityEvents } from '@/lib/events/facility-events-server'
+import { getSiteOrigin } from '@/lib/site-origin'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,19 +8,7 @@ export default async function AdminEventsPage() {
   try {
     const events = await listFacilityEvents(400)
     const siteOrigin = getSiteOrigin()
-    const waiverUrlByEventId: Record<string, string> = {}
-    const withInvites = events.filter(ev => ev.waiver_invite_id)
-    const inviteRows = await Promise.all(
-      withInvites.map(async ev => {
-        const inv = ev.waiver_invite_id ? await getWaiverInviteById(ev.waiver_invite_id) : null
-        return { eventId: ev.id, inv }
-      })
-    )
-    for (const { eventId, inv } of inviteRows) {
-      if (inv?.token) {
-        waiverUrlByEventId[eventId] = `${siteOrigin}/rentals/waiver/${inv.token}`
-      }
-    }
+    const waiverUrlByEventId = await buildWaiverUrlsByEventId(events, siteOrigin)
     const dbConfigured = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim())
 
     return (
