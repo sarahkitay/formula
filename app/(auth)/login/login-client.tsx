@@ -109,7 +109,7 @@ export function LoginPageClient() {
 
       if (profileErr || !profile) {
         setFormError(
-          'No profile is set up for this sign-in yet. Use “Create organizer log-in” on your field rental checkout success page (needs your Stripe session id), or contact the front desk.'
+          'No profile is set up for this sign-in yet. Open “Create organizer log-in” on /organizer/signup (checkout session id or booking email for invoice payments), or contact the front desk.'
         )
         await supabase.auth.signOut()
         setLoading(false)
@@ -240,7 +240,8 @@ export function LoginPageClient() {
                   <Link href="/organizer/signup" className="font-medium text-formula-volt underline-offset-2 hover:underline">
                     Create your password
                   </Link>{' '}
-                  using your checkout session id (starts with <span className="font-mono text-formula-frost/90">cs_</span>).
+                  with your field-rental checkout id (<span className="font-mono text-formula-frost/90">cs_</span>) or, if you paid by invoice, the booking email
+                  on your roster invite.
                 </p>
               </>
             ) : portal === 'parent' ? (

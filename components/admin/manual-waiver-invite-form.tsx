@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useId } from 'react'
 import { createManualWaiverInviteAction } from '@/app/(admin)/admin/rentals/waiver-invite-actions'
 import { FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
 
@@ -23,25 +23,32 @@ async function runAction(_prev: State, formData: FormData): Promise<State> {
 
 export function ManualWaiverInviteForm() {
   const [state, action, pending] = useActionState(runAction, INITIAL)
+  const rosterHeadcountPresetsId = useId()
 
   return (
     <div className="space-y-4">
+      <datalist id={rosterHeadcountPresetsId}>
+        {FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS.map(n => (
+          <option key={n} value={String(n)} />
+        ))}
+      </datalist>
       <form action={action} className="grid gap-4 font-mono text-[11px] md:grid-cols-2">
         <label className="flex flex-col gap-1.5 md:col-span-2">
           <span className="text-formula-mist">Expected waivers (roster size) *</span>
-          <select
+          <input
+            type="number"
             name="expectedWaiverCount"
             required
+            min={1}
+            max={500}
+            step={1}
             defaultValue={12}
-            className={selectField}
-            aria-label="Expected number of waivers on this roster"
-          >
-            {FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS.map(n => (
-              <option key={n} value={n}>
-                {n} {n === 1 ? 'signer' : 'signers'}
-              </option>
-            ))}
-          </select>
+            list={rosterHeadcountPresetsId}
+            inputMode="numeric"
+            className={fieldBase}
+            aria-label="Expected number of waivers on this roster (1–500)"
+          />
+          <span className="text-[10px] text-formula-mist/80">Type any whole number from 1 to 500. Suggestions appear when supported by your browser.</span>
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Rental type (optional lock)</span>

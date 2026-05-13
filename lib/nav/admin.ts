@@ -63,9 +63,16 @@ export const adminModuleDestinations: NavItem[] = [
   },
   {
     label: 'Events',
-    href: '/admin/events-layer',
+    href: '/admin/events',
     icon: 'Flame',
-    description: 'Camps · tournaments · Friday Friendlies sign-ups · parties',
+    description: 'Book events · attendee waivers · payment links · field scope',
+    gridStatus: 'neutral',
+  },
+  {
+    label: 'Program layers',
+    href: '/admin/program-layers',
+    icon: 'Layers',
+    description: 'Camps · tournaments · parties · Footbot · Friday Friendlies sign-ups',
     gridStatus: 'neutral',
   },
   {
@@ -178,7 +185,8 @@ export function getAdminPortalSearchLinks(): AdminPortalSearchLink[] {
     { label: 'Scalability', href: '/admin/scalability' },
     { label: 'Players', href: '/admin/players' },
     { label: 'Client profile', href: '/admin/clients/profile' },
-    { label: 'Field rentals (alt)', href: '/admin/field-rentals' },
+    { label: 'Events (booked)', href: '/admin/events' },
+    { label: 'Program layers', href: '/admin/program-layers' },
   ]
   for (const e of extras) {
     if (!byHref.has(e.href)) byHref.set(e.href, e)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useId } from 'react'
 import Link from 'next/link'
 import { createPaidInPersonFieldRentalInviteAction } from '@/app/(admin)/admin/rentals/waiver-invite-actions'
 import {
@@ -33,6 +33,7 @@ async function runAction(_prev: State, formData: FormData): Promise<State> {
 
 export function PaidInPersonFieldRentalInviteForm() {
   const [state, action, pending] = useActionState(runAction, INITIAL)
+  const rosterHeadcountPresetsId = useId()
 
   return (
     <div className="space-y-4 pt-1">
@@ -51,6 +52,11 @@ export function PaidInPersonFieldRentalInviteForm() {
       <datalist id="field-rental-deposit-presets">
         {FIELD_RENTAL_COMMON_DEPOSIT_USD.map(amt => (
           <option key={amt} value={amt.toFixed(2)} />
+        ))}
+      </datalist>
+      <datalist id={rosterHeadcountPresetsId}>
+        {FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS.map(n => (
+          <option key={n} value={String(n)} />
         ))}
       </datalist>
 
@@ -72,13 +78,20 @@ export function PaidInPersonFieldRentalInviteForm() {
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="text-formula-mist">Expected waivers (roster size) *</span>
-          <select name="expectedWaiverCount" required defaultValue={12} className={selectField}>
-            {FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS.map(n => (
-              <option key={n} value={n}>
-                {n} {n === 1 ? 'signer' : 'signers'}
-              </option>
-            ))}
-          </select>
+          <input
+            type="number"
+            name="expectedWaiverCount"
+            required
+            min={1}
+            max={500}
+            step={1}
+            defaultValue={12}
+            list={rosterHeadcountPresetsId}
+            inputMode="numeric"
+            className={fieldBase}
+            aria-label="Expected number of waivers on this roster (1–500)"
+          />
+          <span className="text-[10px] text-formula-mist/80">Type any whole number from 1 to 500 (e.g. 100). Suggestions when your browser supports them.</span>
         </label>
 
         <label className="flex flex-col gap-1.5">

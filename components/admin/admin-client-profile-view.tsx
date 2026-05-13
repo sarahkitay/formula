@@ -109,7 +109,7 @@ export function AdminClientProfileView({ profile }: { profile: ClientLedgerProfi
           ← Back to payments
         </Link>
         {' · '}
-        <Link href="/admin/events-layer" className="text-formula-volt underline-offset-2 hover:underline">
+        <Link href="/admin/program-layers" className="text-formula-volt underline-offset-2 hover:underline">
           Events
         </Link>
       </p>

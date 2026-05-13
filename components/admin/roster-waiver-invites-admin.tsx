@@ -5,7 +5,21 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import type { WaiverInviteWithProgress } from '@/lib/rentals/waiver-invites-server'
-import { RENTAL_FIELD_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
+import {
+  FIELD_RENTAL_DEFAULT_DURATION_MINUTES,
+  FIELD_RENTAL_DURATION_OPTIONS_MINUTES,
+  FIELD_RENTAL_SLOT_STARTS,
+  FIELD_RENTAL_WINDOW_CLOSE_MINUTES,
+  RENTAL_FIELD_OPTIONS,
+  formatFieldRentalDurationLabel,
+} from '@/lib/rentals/field-rental-picker-constants'
+import {
+  encodeRentalWindow,
+  formatMinutesAsUsTime,
+  isValidFieldRentalWindow,
+  parseRentalTimeSlot,
+  parseUsTimeToMinutesFromMidnight,
+} from '@/lib/rentals/rental-time-window'
 import { formatCheckoutAmount, formatRosterInviteBookingSummary } from '@/lib/rentals/field-rental-agreement-admin-display'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 import { Button } from '@/components/ui/button'
@@ -97,6 +111,48 @@ function fromDatetimeLocalToIso(v: string): string {
   return d.toISOString()
 }
 
+function rentalDurationsForStartLabel(startLabel: string): readonly number[] {
+  const startM = parseUsTimeToMinutesFromMidnight(startLabel)
+  if (startM == null) return FIELD_RENTAL_DURATION_OPTIONS_MINUTES
+  return FIELD_RENTAL_DURATION_OPTIONS_MINUTES.filter(d => startM + d <= FIELD_RENTAL_WINDOW_CLOSE_MINUTES)
+}
+
+function clampDurationForStart(startLabel: string, durationMinutes: number): number {
+  const allowed = rentalDurationsForStartLabel(startLabel)
+  if (allowed.includes(durationMinutes)) return durationMinutes
+  return allowed[allowed.length - 1] ?? FIELD_RENTAL_DEFAULT_DURATION_MINUTES
+}
+
+/** Map stored invite window into picker state; surfaces non-checkout values for staff to replace. */
+function coerceInviteWindowToPicker(raw: string | null | undefined): {
+  start: string
+  duration: number
+  invalidStoredRaw: string | null
+} {
+  const w = raw?.trim() ?? ''
+  if (!w) {
+    return { start: '', duration: FIELD_RENTAL_DEFAULT_DURATION_MINUTES, invalidStoredRaw: null }
+  }
+  if (isValidFieldRentalWindow(w)) {
+    const p = parseRentalTimeSlot(w)
+    if (!p) return { start: '', duration: FIELD_RENTAL_DEFAULT_DURATION_MINUTES, invalidStoredRaw: w }
+    return {
+      start: formatMinutesAsUsTime(p.startMinutes),
+      duration: p.durationMinutes,
+      invalidStoredRaw: null,
+    }
+  }
+  const p = parseRentalTimeSlot(w)
+  if (p) {
+    const startLabel = formatMinutesAsUsTime(p.startMinutes)
+    const encoded = encodeRentalWindow(startLabel, p.durationMinutes)
+    if (isValidFieldRentalWindow(encoded)) {
+      return { start: startLabel, duration: p.durationMinutes, invalidStoredRaw: null }
+    }
+  }
+  return { start: '', duration: FIELD_RENTAL_DEFAULT_DURATION_MINUTES, invalidStoredRaw: w }
+}
+
 function InviteDeleteButton({ invite }: { invite: WaiverInviteWithProgress }) {
   const router = useRouter()
   const [busy, setBusy] = React.useState(false)
@@ -154,7 +210,10 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
   const [currency, setCurrency] = React.useState((invite.checkout_currency ?? 'usd').toLowerCase())
   const [paidAtLocal, setPaidAtLocal] = React.useState(() => toDatetimeLocalInput(invite.checkout_completed_at ?? null))
   const [field, setField] = React.useState(invite.booking_rental_field ?? '')
-  const [windowStr, setWindowStr] = React.useState(invite.booking_rental_window ?? '')
+  const [rwInit] = React.useState(() => coerceInviteWindowToPicker(invite.booking_rental_window))
+  const [rentalWinStart, setRentalWinStart] = React.useState(rwInit.start)
+  const [rentalWinDuration, setRentalWinDuration] = React.useState(rwInit.duration)
+  const [invalidStoredWindow, setInvalidStoredWindow] = React.useState<string | null>(rwInit.invalidStoredRaw)
   const [anchorDate, setAnchorDate] = React.useState(invite.booking_rental_date ?? '')
   const [datesCompact, setDatesCompact] = React.useState(invite.booking_rental_dates_compact ?? '')
   const [weeks, setWeeks] = React.useState(
@@ -168,7 +227,10 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
     setCurrency((invite.checkout_currency ?? 'usd').toLowerCase())
     setPaidAtLocal(toDatetimeLocalInput(invite.checkout_completed_at ?? null))
     setField(invite.booking_rental_field ?? '')
-    setWindowStr(invite.booking_rental_window ?? '')
+    const win = coerceInviteWindowToPicker(invite.booking_rental_window)
+    setRentalWinStart(win.start)
+    setRentalWinDuration(win.duration)
+    setInvalidStoredWindow(win.invalidStoredRaw)
     setAnchorDate(invite.booking_rental_date ?? '')
     setDatesCompact(invite.booking_rental_dates_compact ?? '')
     setWeeks(invite.booking_session_weeks != null ? String(invite.booking_session_weeks) : '')
@@ -183,6 +245,11 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
     invite.booking_rental_dates_compact,
     invite.booking_session_weeks,
   ])
+
+  const windowStr = rentalWinStart.trim() ? encodeRentalWindow(rentalWinStart, rentalWinDuration) : ''
+  const durationOptions = rentalWinStart.trim()
+    ? rentalDurationsForStartLabel(rentalWinStart)
+    : FIELD_RENTAL_DURATION_OPTIONS_MINUTES
 
   const preview = formatRosterInviteBookingSummary({
     booking_rental_field: field || null,
@@ -292,15 +359,60 @@ function InviteSnapshotEditor({ invite }: { invite: WaiverInviteWithProgress }) 
             ))}
           </select>
         </label>
-        <label className="block font-mono text-[10px] text-formula-mist sm:col-span-2">
-          Time window (e.g. <code className="text-formula-volt/90">6:00 AM|120</code> = start + minutes)
-          <input
-            className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/50 px-2 py-1.5 font-mono text-[11px] text-formula-paper"
-            value={windowStr}
-            onChange={e => setWindowStr(e.target.value)}
-            placeholder="6:00 AM|120"
-          />
-        </label>
+        <div className="sm:col-span-2">
+          <span className="block font-mono text-[10px] text-formula-mist">Time window</span>
+          <p className="mt-0.5 font-mono text-[9px] leading-snug text-formula-mist/80">
+            Same rules as field checkout: start time on the half hour through 9:30 PM, length in 30-minute steps (booking ends by 10:00 PM).
+          </p>
+          {invalidStoredWindow ? (
+            <p className="mt-1.5 font-mono text-[9px] leading-snug text-amber-200/90">
+              Stored value is not an allowed checkout window:{' '}
+              <code className="break-all text-formula-volt/85">{invalidStoredWindow}</code>. Choose start and length below to replace it on save.
+            </p>
+          ) : null}
+          <div className="mt-1.5 flex flex-wrap items-end gap-3">
+            <label className="block min-w-[10rem] font-mono text-[10px] text-formula-mist">
+              Start
+              <select
+                className="mt-0.5 w-full min-w-0 border border-formula-frost/14 bg-formula-base/50 px-2 py-1.5 text-[12px] text-formula-paper"
+                value={rentalWinStart}
+                onChange={e => {
+                  const next = e.target.value
+                  setRentalWinStart(next)
+                  setInvalidStoredWindow(null)
+                  if (next.trim()) {
+                    setRentalWinDuration(d => clampDurationForStart(next, d))
+                  }
+                }}
+              >
+                <option value="">— None —</option>
+                {FIELD_RENTAL_SLOT_STARTS.map(label => (
+                  <option key={label} value={label}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block min-w-[9rem] font-mono text-[10px] text-formula-mist">
+              Length
+              <select
+                className="mt-0.5 w-full min-w-0 border border-formula-frost/14 bg-formula-base/50 px-2 py-1.5 text-[12px] text-formula-paper"
+                value={rentalWinDuration}
+                disabled={!rentalWinStart.trim()}
+                onChange={e => {
+                  setRentalWinDuration(parseInt(e.target.value, 10))
+                  setInvalidStoredWindow(null)
+                }}
+              >
+                {(rentalWinStart.trim() ? durationOptions : FIELD_RENTAL_DURATION_OPTIONS_MINUTES).map(mins => (
+                  <option key={mins} value={mins}>
+                    {formatFieldRentalDurationLabel(mins)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
         <label className="block font-mono text-[10px] text-formula-mist">
           First session date (YYYY-MM-DD)
           <input

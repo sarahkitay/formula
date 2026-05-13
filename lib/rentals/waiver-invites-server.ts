@@ -347,7 +347,7 @@ export async function createManualWaiverInvite(params: {
   rentalType?: string | null
   rentalRef?: string | null
   notes?: string | null
-}): Promise<{ ok: true; token: string } | { ok: false; message: string }> {
+}): Promise<{ ok: true; token: string; id: string } | { ok: false; message: string }> {
   const n = Math.floor(params.expectedWaiverCount)
   if (!Number.isFinite(n) || n < 1 || n > 500) {
     return { ok: false, message: 'Expected waiver count must be between 1 and 500.' }
@@ -357,19 +357,23 @@ export async function createManualWaiverInvite(params: {
     return { ok: false, message: 'Database not configured.' }
   }
   const token = newInviteToken()
-  const { error } = await supabase.from('field_rental_waiver_invites').insert({
-    token,
-    expected_waiver_count: n,
-    rental_ref: params.rentalRef?.trim() || null,
-    rental_type: params.rentalType?.trim() || null,
-    notes: params.notes?.trim() || null,
-    stripe_checkout_session_id: null,
-  })
-  if (error) {
-    console.error('[waiver-invites] manual insert:', error.message)
+  const { data, error } = await supabase
+    .from('field_rental_waiver_invites')
+    .insert({
+      token,
+      expected_waiver_count: n,
+      rental_ref: params.rentalRef?.trim() || null,
+      rental_type: params.rentalType?.trim() || null,
+      notes: params.notes?.trim() || null,
+      stripe_checkout_session_id: null,
+    })
+    .select('id')
+    .single()
+  if (error || !data?.id) {
+    console.error('[waiver-invites] manual insert:', error?.message)
     return { ok: false, message: 'Could not create invite.' }
   }
-  return { ok: true, token }
+  return { ok: true, token, id: data.id as string }
 }
 
 const COACH_RENTAL_TYPES = new Set(['club_team_practice', 'private_semi_private', 'general_pickup'])

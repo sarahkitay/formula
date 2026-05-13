@@ -6,7 +6,7 @@ import { FRIDAY_NIGHT_FRIENDLIES_CHECKOUT } from '@/lib/marketing/public-pricing
 import { SITE } from '@/lib/site-config'
 
 const statTiles: { k: string; v: string; sub?: string }[] = [
-  { k: '6–14', v: 'Ages', sub: 'Grades 1–8' },
+  { k: '6–13', v: 'Ages', sub: 'Grades 1–8' },
   { k: '5:30', v: 'Arrival', sub: 'Check-in' },
   { k: '6:00–7:30', v: 'Games', sub: '90 minutes' },
   { k: `$${FRIDAY_NIGHT_FRIENDLIES_CHECKOUT.pricePerPlayerUsd}`, v: 'Per player', sub: 'Walk-ups OK' },

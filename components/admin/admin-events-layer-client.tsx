@@ -37,11 +37,11 @@ export function AdminEventsLayerClient({
     <PageContainer fullWidth>
       <div className="space-y-6">
         <PageHeader
-          title="Camps · tournaments · parties · Footbot"
-          subtitle="Controlled additive layers · Stripe pre-reg for public events (Friday Friendlies) lives on the Sign-ups tab"
+          title="Program layers"
+          subtitle="Camps · tournaments · parties · Footbot KPIs · Stripe pre-reg for Friday Friendlies (Sign-ups tab)"
           breadcrumb={[
             { label: 'Dashboard', href: '/admin/dashboard' },
-            { label: 'Events' },
+            { label: 'Program layers' },
           ]}
         />
 
