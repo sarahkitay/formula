@@ -1,40 +1,8 @@
 import { NextResponse } from 'next/server'
 import { requireStaffRoles } from '@/lib/auth/require-staff-bearer'
-import { checkStripeServerSecretKey, getSiteOrigin, getStripe } from '@/lib/stripe/server'
-import { getServiceSupabase } from '@/lib/supabase/service'
+import { createManualInvoiceCheckoutUrl } from '@/lib/stripe/manual-invoice-checkout'
 
 export const runtime = 'nodejs'
-
-const MIN_USD = 0.5
-const MAX_USD = 100_000
-
-function parseUsdToCents(raw: unknown): { ok: true; cents: number } | { ok: false; message: string } {
-  if (raw == null) return { ok: false, message: 'amount is required' }
-  let n: number
-  if (typeof raw === 'number') {
-    if (!Number.isFinite(raw)) return { ok: false, message: 'amount must be a number' }
-    n = raw
-  } else if (typeof raw === 'string') {
-    const cleaned = raw.replace(/[$,\s]/g, '').trim()
-    if (!cleaned) return { ok: false, message: 'amount is required' }
-    n = parseFloat(cleaned)
-    if (!Number.isFinite(n)) return { ok: false, message: 'amount must be a valid number' }
-  } else {
-    return { ok: false, message: 'amount must be a string or number' }
-  }
-
-  if (n < MIN_USD) return { ok: false, message: `Minimum charge is $${MIN_USD} USD` }
-  if (n > MAX_USD) return { ok: false, message: `Maximum charge is $${MAX_USD.toLocaleString()} USD` }
-
-  const cents = Math.round(n * 100)
-  if (cents < Math.round(MIN_USD * 100)) return { ok: false, message: `Minimum charge is $${MIN_USD} USD` }
-  return { ok: true, cents }
-}
-
-function trimMeta(s: string, max: number): string {
-  const t = s.trim()
-  return t.length <= max ? t : t.slice(0, max)
-}
 
 /**
  * Admin: create a one-off Stripe Checkout URL for a custom invoice amount (server-validated; never trust client-only).
@@ -42,15 +10,6 @@ function trimMeta(s: string, max: number): string {
 export async function POST(req: Request) {
   const gate = await requireStaffRoles(req, ['admin', 'staff'])
   if (gate instanceof NextResponse) return gate
-
-  const keyCheck = checkStripeServerSecretKey()
-  if (!keyCheck.ok) {
-    return NextResponse.json({ error: keyCheck.message }, { status: 503 })
-  }
-  const stripe = getStripe()
-  if (!stripe) {
-    return NextResponse.json({ error: 'Stripe is not configured.' }, { status: 503 })
-  }
 
   let body: unknown
   try {
@@ -64,85 +23,37 @@ export async function POST(req: Request) {
   const memo = typeof b.memo === 'string' ? b.memo.trim() : ''
   const customerEmail = typeof b.customerEmail === 'string' ? b.customerEmail.trim().toLowerCase() : ''
   const waiverInviteIdRaw = typeof b.waiverInviteId === 'string' ? b.waiverInviteId.trim() : ''
-  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-  let waiverInviteId = ''
-  if (waiverInviteIdRaw) {
-    if (!uuidRe.test(waiverInviteIdRaw)) {
-      return NextResponse.json({ error: 'Invalid roster invite id.' }, { status: 400 })
-    }
-    const sb = getServiceSupabase()
-    if (!sb) {
-      return NextResponse.json({ error: 'Server cannot verify roster invite (database unavailable).' }, { status: 503 })
-    }
-    const { data: invRow, error: invErr } = await sb
-      .from('field_rental_waiver_invites')
-      .select('id')
-      .eq('id', waiverInviteIdRaw)
-      .maybeSingle()
-    if (invErr || !invRow) {
-      return NextResponse.json({ error: 'Roster invite not found.' }, { status: 404 })
-    }
-    waiverInviteId = waiverInviteIdRaw
+
+  const amountUsdRaw = b.amountUsd ?? b.amount
+  const amountUsd: string | number =
+    typeof amountUsdRaw === 'string' || typeof amountUsdRaw === 'number' ? amountUsdRaw : ''
+
+  const result = await createManualInvoiceCheckoutUrl({
+    payeeName,
+    amountUsd,
+    memo,
+    customerEmail,
+    waiverInviteId: waiverInviteIdRaw || undefined,
+  })
+
+  if (!result.ok) {
+    const status =
+      result.message.includes('not configured') || result.message.includes('verify roster')
+        ? 503
+        : result.message.includes('Roster invite not found')
+          ? 404
+          : result.message.includes('Invalid roster')
+            ? 400
+            : result.message.includes('Bill-to')
+              ? 400
+              : result.message.includes('amount')
+                ? 400
+                : 502
+    return NextResponse.json({ error: result.message }, { status })
   }
 
-  if (payeeName.length < 2) {
-    return NextResponse.json({ error: 'Bill-to name must be at least 2 characters.' }, { status: 400 })
-  }
-
-  const amount = parseUsdToCents(b.amountUsd ?? b.amount)
-  if (!amount.ok) {
-    return NextResponse.json({ error: amount.message }, { status: 400 })
-  }
-
-  const origin = getSiteOrigin()
-  const productName = trimMeta(
-    waiverInviteId ? `Field rental payment · ${payeeName}` : `Formula invoice · ${payeeName}`,
-    120
-  )
-  const description = memo ? trimMeta(memo, 450) : 'Custom invoice - Formula Soccer Center'
-
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: 'usd',
-            tax_behavior: 'exclusive',
-            unit_amount: amount.cents,
-            product_data: {
-              name: productName,
-              description,
-            },
-          },
-        },
-      ],
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout/cancel`,
-      metadata: {
-        type: 'manual-invoice',
-        invoice_payee: trimMeta(payeeName, 200),
-        invoice_memo: trimMeta(memo, 450),
-        ...(waiverInviteId ? { waiver_invite_id: waiverInviteId } : {}),
-      },
-      ...(customerEmail.includes('@') && customerEmail.includes('.')
-        ? { customer_email: customerEmail, customer_creation: 'always' as const }
-        : { customer_creation: 'always' as const }),
-      billing_address_collection: 'auto',
-    })
-
-    if (!session.url) {
-      return NextResponse.json({ error: 'Stripe did not return a checkout URL.' }, { status: 502 })
-    }
-
-    return NextResponse.json({
-      url: session.url,
-      session_id: session.id,
-    })
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Stripe error'
-    console.error('[invoice-checkout]', msg)
-    return NextResponse.json({ error: msg }, { status: 502 })
-  }
+  return NextResponse.json({
+    url: result.url,
+    session_id: result.session_id,
+  })
 }

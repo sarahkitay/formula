@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
-import { useActionState, useMemo, useState, useTransition } from 'react'
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { Calendar, Check, Copy, CreditCard, FileSignature, Search } from 'lucide-react'
 import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
@@ -71,6 +71,27 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
   const [payBusyId, setPayBusyId] = useState<string | null>(null)
   const [payFlash, setPayFlash] = useState<{ eventId: string; url: string } | null>(null)
   const [payError, setPayError] = useState<{ eventId: string; message: string } | null>(null)
+
+  const bookWasPending = useRef(false)
+  const scrollTargetEventId = useRef<string | null>(null)
+  useEffect(() => {
+    if (bookWasPending.current && !bookPending && bookState.ok) {
+      if (bookState.createdEventId) {
+        scrollTargetEventId.current = bookState.createdEventId
+      }
+      router.refresh()
+    }
+    bookWasPending.current = bookPending
+  }, [bookPending, bookState.ok, bookState.createdEventId, router])
+
+  useEffect(() => {
+    const tid = scrollTargetEventId.current
+    if (!tid || !events.some(e => e.id === tid)) return
+    requestAnimationFrame(() => {
+      document.getElementById(`facility-event-${tid}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
+    scrollTargetEventId.current = null
+  }, [events])
 
   const filtered = useMemo(() => events.filter(ev => eventMatchesSearch(ev, search)), [events, search])
 
@@ -251,6 +272,61 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
                   <span className="text-formula-mist">Notes</span>
                   <textarea name="notes" rows={2} maxLength={1000} className="border border-formula-frost/16 bg-formula-paper/[0.04] px-3 py-2 text-formula-paper" />
                 </label>
+
+                <fieldset className="md:col-span-2 space-y-3 rounded border border-formula-frost/12 bg-formula-base/25 p-3">
+                  <legend className="text-[10px] font-bold uppercase tracking-[0.14em] text-formula-mist">
+                    Links for this event (optional on save)
+                  </legend>
+                  <p className="text-[10px] leading-relaxed text-formula-frost/80">
+                    Creates the same roster waiver and Stripe checkout used in the event list. Payment checkout can include the waiver invite in Stripe metadata when both run in one save (waiver first).
+                  </p>
+                  <label className="flex cursor-pointer items-start gap-2 text-formula-paper">
+                    <input type="checkbox" name="bookCreateWaiver" value="on" className="mt-0.5 border-formula-frost/30" />
+                    <span>
+                      <span className="block font-medium">Create attendee waiver link</span>
+                      <span className="mt-1 block text-[10px] text-formula-mist">Roster link for signers; stored on this event.</span>
+                    </span>
+                  </label>
+                  <label className="block pl-6 text-[10px] text-formula-mist">
+                    Expected signers
+                    <input
+                      name="bookExpectedWaiverCount"
+                      type="number"
+                      min={1}
+                      max={500}
+                      defaultValue={30}
+                      className="mt-0.5 w-full max-w-[8rem] border border-formula-frost/16 bg-formula-paper/[0.04] px-2 py-1 text-formula-paper"
+                    />
+                  </label>
+                  <label className="flex cursor-pointer items-start gap-2 text-formula-paper">
+                    <input type="checkbox" name="bookCreatePayment" value="on" className="mt-0.5 border-formula-frost/30" />
+                    <span>
+                      <span className="block font-medium">Create Stripe payment link</span>
+                      <span className="mt-1 block text-[10px] text-formula-mist">Requires bill-to (organizer name or title) and amount.</span>
+                    </span>
+                  </label>
+                  <div className="grid gap-2 pl-6 md:grid-cols-2">
+                    <label className="block text-[10px] text-formula-mist">
+                      Amount (USD) *
+                      <input
+                        name="bookAmountUsd"
+                        inputMode="decimal"
+                        placeholder="e.g. 500"
+                        className="mt-0.5 w-full border border-formula-frost/16 bg-formula-paper/[0.04] px-2 py-1 text-formula-paper"
+                      />
+                    </label>
+                    <label className="block text-[10px] text-formula-mist md:col-span-2">
+                      Checkout memo (optional)
+                      <textarea
+                        name="bookPaymentMemo"
+                        rows={2}
+                        placeholder="Defaults to event title, date, and id."
+                        className="mt-0.5 w-full border border-formula-frost/16 bg-formula-paper/[0.04] px-2 py-1 text-[11px] text-formula-paper"
+                      />
+                    </label>
+                  </div>
+                </fieldset>
+
                 <div className="md:col-span-2">
                   <Button type="submit" variant="primary" size="sm" loading={bookPending}>
                     Save event
@@ -259,6 +335,47 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
               </form>
               {bookState.message ? (
                 <p className={cn('mt-2 font-mono text-[11px]', bookState.ok ? 'text-formula-volt/90' : 'text-amber-200/90')}>{bookState.message}</p>
+              ) : null}
+              {bookState.ok && (bookState.waiverUrl || bookState.paymentUrl) ? (
+                <div className="mt-3 space-y-3 rounded border border-formula-frost/12 bg-formula-base/40 p-3 font-mono text-[10px] text-formula-paper">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-formula-mist">New links from this save</p>
+                  {bookState.waiverUrl ? (
+                    <div>
+                      <span className="text-formula-mist">Waiver</span>
+                      <code className="mt-1 block break-all rounded border border-formula-frost/12 bg-black/25 px-2 py-1.5 text-formula-frost/90">{bookState.waiverUrl}</code>
+                      <button
+                        type="button"
+                        className="mt-1 text-formula-volt underline-offset-2 hover:underline"
+                        onClick={() => void navigator.clipboard.writeText(bookState.waiverUrl!)}
+                      >
+                        Copy waiver URL
+                      </button>
+                    </div>
+                  ) : null}
+                  {bookState.paymentUrl ? (
+                    <div>
+                      <span className="text-formula-mist">Stripe checkout</span>
+                      <code className="mt-1 block break-all rounded border border-formula-frost/12 bg-black/25 px-2 py-1.5 text-formula-frost/90">{bookState.paymentUrl}</code>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        <a
+                          href={bookState.paymentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-formula-volt underline-offset-2 hover:underline"
+                        >
+                          Open checkout
+                        </a>
+                        <button
+                          type="button"
+                          className="text-formula-mist underline-offset-2 hover:underline"
+                          onClick={() => void navigator.clipboard.writeText(bookState.paymentUrl!)}
+                        >
+                          Copy payment URL
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
               ) : null}
             </AdminPanel>
 
@@ -287,7 +404,11 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
                     const defaultPayee = ev.organizer_name?.trim() || 'Event customer'
                     const defaultMemo = [`Event: ${ev.title}`, `Date: ${ev.event_date}`, `${formatMinuteClock(ev.start_minute)} · ${ev.duration_minutes} min`, FIELD_LABELS[ev.field_scope], `${siteOrigin}/admin/events`].join(' · ')
                     return (
-                      <div key={ev.id} className="rounded-md border border-formula-frost/12 bg-formula-base/35 p-3 font-mono text-[11px]">
+                      <div
+                        id={`facility-event-${ev.id}`}
+                        key={ev.id}
+                        className="rounded-md border border-formula-frost/12 bg-formula-base/35 p-3 font-mono text-[11px] scroll-mt-24"
+                      >
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div>
                             <p className="font-semibold text-formula-paper">{ev.title}</p>
@@ -327,6 +448,12 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
                         </div>
 
                         <div className="mt-3 grid gap-3 border-t border-formula-frost/10 pt-3 md:grid-cols-2">
+                          <div className="md:col-span-2">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-formula-mist">Links for this event</p>
+                            <p className="mt-1 text-[10px] leading-relaxed text-formula-frost/75">
+                              Waiver is stored on this event row. Checkout can attach the same roster invite to Stripe metadata when a waiver exists — create waiver first if you need both.
+                            </p>
+                          </div>
                           <div>
                             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-formula-mist">Attendee waiver</p>
                             {waiverUrl ? (
@@ -367,6 +494,11 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
 
                           <div>
                             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-formula-mist">Stripe payment link</p>
+                            <p className="mt-1 text-[10px] text-formula-frost/70">
+                              {ev.waiver_invite_id
+                                ? "Checkout metadata includes this event's waiver invite."
+                                : 'No waiver on this event yet — link is invoice-only unless you create a waiver first.'}
+                            </p>
                             <form className="mt-2 space-y-2" onSubmit={onPaymentSubmit}>
                               <input type="hidden" name="eventId" value={ev.id} />
                               <input type="hidden" name="waiverInviteId" value={ev.waiver_invite_id ?? ''} />
