@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useId } from 'react'
+import { useActionState, useEffect, useId, useRef } from 'react'
 import { createManualWaiverInviteAction } from '@/app/(admin)/admin/rentals/waiver-invite-actions'
 import { FIELD_RENTAL_ROSTER_HEADCOUNT_OPTIONS } from '@/lib/rentals/field-rental-picker-constants'
 
@@ -21,9 +21,17 @@ async function runAction(_prev: State, formData: FormData): Promise<State> {
   return { status: 'error', message: r.message }
 }
 
-export function ManualWaiverInviteForm() {
+export function ManualWaiverInviteForm({ onInviteCreated }: { onInviteCreated?: () => void }) {
   const [state, action, pending] = useActionState(runAction, INITIAL)
   const rosterHeadcountPresetsId = useId()
+  const lastSuccessUrl = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (state.status === 'success' && state.waiver_url !== lastSuccessUrl.current) {
+      lastSuccessUrl.current = state.waiver_url
+      onInviteCreated?.()
+    }
+  }, [state, onInviteCreated])
 
   return (
     <div className="space-y-4">

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { staffApiFetch } from '@/lib/auth/staff-api-fetch'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
+import { toISODateLocal } from '@/lib/schedule/generator'
 import type { FacilityEventFieldScope, FacilityEventRow, FacilityEventStatus } from '@/lib/events/facility-events-server'
 import { BOOK_INITIAL } from '@/app/(admin)/admin/events/book-state'
 import {
@@ -26,6 +27,14 @@ const FIELD_LABELS: Record<FacilityEventFieldScope, string> = {
   field_2: 'Field 2',
   field_3: 'Field 3',
   full_facility: 'Full facility',
+}
+
+/** Sunday YYYY-MM-DD of the week containing this event (local browser calendar; matches schedule week picker). */
+function weekStartSundayForFacilityYmd(ymd: string): string {
+  const d = new Date(`${ymd}T12:00:00`)
+  const dow = d.getDay()
+  d.setDate(d.getDate() - dow)
+  return toISODateLocal(d)
 }
 
 function formatMinuteClock(totalMinutes: number): string {
@@ -91,6 +100,19 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
       document.getElementById(`facility-event-${tid}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     })
     scrollTargetEventId.current = null
+  }, [events])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const hash = window.location.hash
+    const prefix = '#facility-event-'
+    if (!hash.startsWith(prefix)) return
+    const id = decodeURIComponent(hash.slice(prefix.length)).trim()
+    if (!id || !events.some(e => e.id === id)) return
+    setTab('booked')
+    requestAnimationFrame(() => {
+      document.getElementById(`facility-event-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
   }, [events])
 
   const filtered = useMemo(() => events.filter(ev => eventMatchesSearch(ev, search)), [events, search])
@@ -175,7 +197,7 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
       <div className="space-y-6">
         <PageHeader
           title="Events"
-          subtitle="Book or confirm facility events, attach attendee waivers, and send Stripe payment links. Calendar blocks are added on Admin → Schedule."
+          subtitle="Book facility events (tournaments, rentals-as-events). Confirmed dates appear on Admin → Schedule in the week of the event; click a violet block to open waivers and payment links. Calendar blocks on Schedule are still added from published program + overrides — event rows drive the staff overlay."
           breadcrumb={[
             { label: 'Dashboard', href: '/admin/dashboard' },
             { label: 'Events' },
@@ -438,11 +460,11 @@ export function AdminFacilityEventsClient({ events, waiverUrlByEventId, siteOrig
                               </select>
                             </label>
                             <Link
-                              href="/admin/schedule"
+                              href={`/admin/schedule?weekStart=${encodeURIComponent(weekStartSundayForFacilityYmd(ev.event_date))}`}
                               className="inline-flex items-center gap-1 rounded border border-formula-frost/20 px-2 py-1 text-[10px] uppercase tracking-wide text-formula-volt hover:border-formula-volt/40"
                             >
                               <Calendar className="h-3 w-3" aria-hidden />
-                              Schedule
+                              On schedule
                             </Link>
                           </div>
                         </div>

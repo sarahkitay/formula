@@ -80,6 +80,8 @@ function kindGuessFromBlock(block: CalendarFeedBlock): ScheduleProgramKind {
       return 'field_rental_premium'
     case 'friday_friendlies':
       return 'open_gym'
+    case 'facility_event':
+      return 'flex_ops'
     default:
       return 'flex_ops'
   }

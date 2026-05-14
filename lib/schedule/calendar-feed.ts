@@ -8,6 +8,7 @@ import { parseRentalTimeSlot } from '@/lib/rentals/rental-time-window'
 import { decodeRentalDatesCompact, weeklyOccurrenceDatesIso } from '@/lib/rentals/rental-weekly-dates'
 import { rentalFieldLabel } from '@/lib/rentals/field-rental-agreement-admin-display'
 import { holidaysBetweenYmdInclusive } from '@/lib/schedule/us-major-holidays'
+import { listFacilityEventsInDateRange } from '@/lib/events/facility-events-server'
 
 const LA = 'America/Los_Angeles'
 
@@ -18,6 +19,7 @@ export type CalendarFeedCategory =
   | 'assessment'
   | 'rental_booking'
   | 'friday_friendlies'
+  | 'facility_event'
   | 'other_program'
 
 export type CalendarFeedBlock = {
@@ -42,6 +44,8 @@ export type CalendarFeedBlock = {
   assessmentBookingCount?: number
   /** `party_bookings.id` when this block is a paid party hold from the DB. */
   partyBookingId?: string
+  /** `facility_events.id` when this block is an admin-booked facility event. */
+  facilityEventId?: string
   /** Roster invite row when the block is driven by `field_rental_waiver_invites` session snapshot (desk / unpaid / comp). */
   waiverInviteId?: string
 }
@@ -189,6 +193,10 @@ export function waiverInviteSessionDatesInWeek(
 export function calendarBlockVisibleInBookingsOnlyView(b: CalendarFeedBlock): boolean {
   if (b.category === 'rental_booking') return true
   if (b.category === 'friday_friendlies') return true
+  if (b.category === 'facility_event') return true
+  /** Admin publish overrides replace generated program slots — show as a concrete hold. */
+  if (b.id.startsWith('slot-ov-')) return true
+  if (b.programSlotIds?.some(id => id.startsWith('ov-'))) return true
   if (b.category === 'assessment') return (b.assessmentBookingCount ?? 0) > 0
   if (b.category === 'youth_program') return (b.parentEnrollmentCount ?? 0) > 0
   if (b.category === 'party') return !!(b.partyBookingId && b.templateSurface === false)
@@ -218,6 +226,22 @@ function appendFridayNightFriendliesStaffBlocks(
     endMinute: FNF_END_MINUTE,
     templateSurface: false,
   })
+}
+
+/** Admin → Events rows: show on staff calendar in LA wall time. */
+function facilityEventFieldScopeLabel(scope: string): string {
+  switch (scope) {
+    case 'field_1':
+      return 'Field 1'
+    case 'field_2':
+      return 'Field 2'
+    case 'field_3':
+      return 'Field 3 (outdoor)'
+    case 'full_facility':
+      return 'Full facility'
+    default:
+      return scope
+  }
 }
 
 export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
@@ -457,6 +481,36 @@ export async function buildFacilityCalendarFeed(weekAnchor: Date): Promise<{
         }
       }
     }
+  }
+
+  const facilityRows = await listFacilityEventsInDateRange(week.weekStart, week.weekEnd)
+  for (const ev of facilityRows) {
+    const sd = ev.event_date
+    let dayIndex: DayIndex | null = null
+    for (let d = 0; d < 7; d++) {
+      if (isoDateForWeekDay(week.weekStart, d as DayIndex) === sd) {
+        dayIndex = d as DayIndex
+        break
+      }
+    }
+    if (dayIndex == null) continue
+    const startMinute = Math.max(0, Math.min(24 * 60 - 1, ev.start_minute))
+    const endRaw = startMinute + ev.duration_minutes
+    const endMinute = Math.max(startMinute + 15, Math.min(24 * 60, endRaw))
+    const fieldHuman = facilityEventFieldScopeLabel(ev.field_scope)
+    const wid = ev.waiver_invite_id?.trim()
+    blocks.push({
+      id: `facility-ev-${ev.id}`,
+      category: 'facility_event',
+      label: `Event · ${ev.title}`,
+      sublabel: `${fieldHuman} · ${ev.status}`,
+      dayIndex,
+      startMinute,
+      endMinute,
+      templateSurface: false,
+      facilityEventId: ev.id,
+      ...(wid && /^[0-9a-f-]{36}$/i.test(wid) ? { waiverInviteId: wid } : {}),
+    })
   }
 
   appendFridayNightFriendliesStaffBlocks(week, config, blocks)

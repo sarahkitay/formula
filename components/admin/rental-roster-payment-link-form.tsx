@@ -98,11 +98,23 @@ const btnClass =
 type Props = {
   invites: WaiverInviteWithProgress[]
   siteOrigin: string
+  /** Called after a successful paid-in-person (desk) invite create. */
+  onDeskInviteCreated?: () => void
+  /** Called after Stripe Checkout URL is created for an invite. */
+  onStripePaymentLinkCreated?: () => void
 }
 
-export function RentalRosterPaymentLinkForm({ invites, siteOrigin }: Props) {
+export function RentalRosterPaymentLinkForm({ invites, siteOrigin, onDeskInviteCreated, onStripePaymentLinkCreated }: Props) {
+  const orderedInvites = useMemo(() => {
+    const copy = [...invites]
+    const unassigned = (i: WaiverInviteWithProgress) =>
+      !i.booking_rental_field?.trim() || !i.booking_rental_window?.trim()
+    copy.sort((a, b) => Number(unassigned(b)) - Number(unassigned(a)))
+    return copy
+  }, [invites])
+
   const [paymentPath, setPaymentPath] = useState<PaymentPath>(() => (invites.length > 0 ? 'stripe' : 'desk'))
-  const [inviteId, setInviteId] = useState(() => invites[0]?.id ?? '')
+  const [inviteId, setInviteId] = useState(() => orderedInvites[0]?.id ?? '')
   const [payeeName, setPayeeName] = useState('')
   const [amount, setAmount] = useState('')
   const [memo, setMemo] = useState('')
@@ -114,17 +126,17 @@ export function RentalRosterPaymentLinkForm({ invites, siteOrigin }: Props) {
   const [copied, setCopied] = useState(false)
   const [copiedPayUrl, setCopiedPayUrl] = useState(false)
 
-  const selected = useMemo(() => invites.find(i => i.id === inviteId) ?? null, [invites, inviteId])
+  const selected = useMemo(() => orderedInvites.find(i => i.id === inviteId) ?? null, [orderedInvites, inviteId])
 
   useEffect(() => {
     if (invites.length === 0) {
       setPaymentPath('desk')
       return
     }
-    if (!inviteId || !invites.some(i => i.id === inviteId)) {
-      setInviteId(invites[0]!.id)
+    if (!inviteId || !orderedInvites.some(i => i.id === inviteId)) {
+      setInviteId(orderedInvites[0]!.id)
     }
-  }, [invites, inviteId])
+  }, [invites, inviteId, orderedInvites])
 
   useEffect(() => {
     if (!selected) return
@@ -191,13 +203,14 @@ export function RentalRosterPaymentLinkForm({ invites, siteOrigin }: Props) {
         return
       }
       setPaymentUrl(data.url)
+      onStripePaymentLinkCreated?.()
     } catch {
       setLinkError('Network error - try again')
       setPaymentUrl(null)
     } finally {
       setLinkLoading(false)
     }
-  }, [selected, payeeName, amount, memo, emailTo])
+  }, [selected, payeeName, amount, memo, emailTo, onStripePaymentLinkCreated])
 
   const copyBody = useCallback(async () => {
     try {
@@ -260,7 +273,7 @@ export function RentalRosterPaymentLinkForm({ invites, siteOrigin }: Props) {
 
       {paymentPath === 'desk' ? (
         <div className="rounded-md border border-formula-frost/14 bg-formula-base/35 p-3">
-          <PaidInPersonFieldRentalInviteForm />
+          <PaidInPersonFieldRentalInviteForm onInviteCreated={onDeskInviteCreated} />
         </div>
       ) : invites.length === 0 ? (
         <p className="font-mono text-[11px] text-formula-mist">
@@ -287,7 +300,7 @@ export function RentalRosterPaymentLinkForm({ invites, siteOrigin }: Props) {
                 clearPaymentLink()
               }}
             >
-              {invites.map(inv => {
+              {orderedInvites.map(inv => {
                 const org = defaultPayeeName(inv)
                 return (
                   <option key={inv.id} value={inv.id}>

@@ -41,6 +41,8 @@ function categoryStyle(cat: CalendarFeedCategory): string {
       return 'border-blue-400/30 bg-blue-950/40 text-blue-100'
     case 'friday_friendlies':
       return 'border-formula-volt/45 bg-formula-volt/[0.14] text-formula-base'
+    case 'facility_event':
+      return 'border-violet-400/40 bg-violet-950/45 text-violet-100'
     default:
       return 'border-formula-frost/20 bg-formula-paper/[0.08] text-formula-frost/90'
   }

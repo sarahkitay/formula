@@ -74,6 +74,7 @@ export function AdminCalendarFeedModal({
       setRentalDetail(null)
       setInviteDetail(null)
       setLoadError(null)
+      setLoading(false)
       return
     }
 
@@ -87,11 +88,21 @@ export function AdminCalendarFeedModal({
 
     const inviteId = waiverInviteIdFromBlock(block)
     const isSlotBooking = block.id.startsWith('rent-')
+    const isFacilityEvent = block.category === 'facility_event'
 
-    if (!isSlotBooking && !inviteId) {
+    if (!isSlotBooking && !inviteId && !isFacilityEvent) {
       setRentalDetail(null)
       setInviteDetail(null)
       setLoadError(null)
+      setLoading(false)
+      return
+    }
+
+    if (isFacilityEvent && !inviteId) {
+      setRentalDetail(null)
+      setInviteDetail(null)
+      setLoadError(null)
+      setLoading(false)
       return
     }
 
@@ -202,8 +213,19 @@ export function AdminCalendarFeedModal({
   const day = DAY_LABELS[block.dayIndex]
   const isFnf = block.category === 'friday_friendlies'
   const isRentalSlot = block.id.startsWith('rent-')
+  const isFacilityEvent = block.category === 'facility_event'
   const isWaiverInviteBlock = Boolean(waiverInviteIdFromBlock(block))
-  const modalTitle = isRentalSlot ? 'Field rental hold' : isWaiverInviteBlock ? 'Roster rental' : isFnf ? 'Friday Night Friendlies' : 'Calendar entry'
+  const modalTitle = isRentalSlot
+    ? 'Field rental hold'
+    : isFnf
+      ? 'Friday Night Friendlies'
+      : isFacilityEvent
+        ? isWaiverInviteBlock
+          ? 'Facility event · roster'
+          : 'Facility event'
+        : isWaiverInviteBlock
+          ? 'Roster rental'
+          : 'Calendar entry'
   const checkedInCount = rentalDetail ? rentalDetail.checkins.length : 0
   const waiverCount = rentalDetail?.agreements.length ?? 0
 
@@ -225,6 +247,32 @@ export function AdminCalendarFeedModal({
             </p>
           ) : null}
         </div>
+
+        {isFacilityEvent && block.facilityEventId ? (
+          <div className="space-y-2 rounded border border-violet-500/30 bg-violet-950/30 px-3 py-2 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
+            <p>
+              Booked under <strong className="text-text-primary">Admin → Events</strong>. Manage Stripe payment links and attendee waivers there; this calendar
+              mirrors the event date, wall time, and field scope.
+            </p>
+            {!isWaiverInviteBlock ? (
+              <p className="text-text-muted">No roster invite is linked yet — add a waiver link on the event row.</p>
+            ) : null}
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Link
+                href={`/admin/events#facility-event-${block.facilityEventId}`}
+                className="inline-flex h-8 items-center rounded-control border border-border bg-muted px-3 text-[12px] font-medium text-text-primary no-underline hover:border-border-bright hover:bg-elevated"
+              >
+                Events &amp; payments
+              </Link>
+              <Link
+                href={`/admin/schedule?weekStart=${encodeURIComponent(weekStart)}`}
+                className="inline-flex h-8 items-center rounded-control border border-border bg-muted px-3 text-[12px] font-medium text-text-primary no-underline hover:border-border-bright hover:bg-elevated"
+              >
+                Full calendar (this week)
+              </Link>
+            </div>
+          </div>
+        ) : null}
 
         {isFnf ? (
           <div className="space-y-3 rounded border border-formula-volt/25 bg-formula-volt/[0.08] px-3 py-3 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
@@ -376,21 +424,21 @@ export function AdminCalendarFeedModal({
               </>
             ) : null}
           </div>
-        ) : (
+        ) : !isFacilityEvent ? (
           <p className="rounded border border-formula-frost/12 bg-formula-paper/[0.05] px-3 py-2 text-xs text-text-secondary shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.04)]">
             This block is not a generated program slot (assessment, rental, agreement, etc.). Edit underlying records in
             admin tools, or add a <strong className="text-text-primary">schedule override</strong> on the Publish tab to
             reshape generated programs.
           </p>
-        )}
+        ) : null}
       </ModalBody>
       <ModalFooter className="flex flex-wrap gap-2">
-        {isRentalSlot || isWaiverInviteBlock ? (
+        {isRentalSlot || isWaiverInviteBlock || isFacilityEvent ? (
           <Link
-            href="/admin/rentals"
+            href={isFacilityEvent ? `/admin/events#facility-event-${block.facilityEventId ?? ''}` : '/admin/rentals'}
             className="inline-flex h-9 items-center rounded-control border border-border bg-muted px-3.5 text-[13px] font-medium text-text-primary no-underline hover:border-border-bright hover:bg-elevated"
           >
-            Rentals admin
+            {isFacilityEvent ? 'Events admin' : 'Rentals admin'}
           </Link>
         ) : null}
         <Button type="button" variant="secondary" size="sm" onClick={onOpenPublishTab}>

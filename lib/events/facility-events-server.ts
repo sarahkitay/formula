@@ -142,6 +142,33 @@ export async function buildWaiverUrlsByEventId(
   return out
 }
 
+/** Events whose `event_date` falls in [weekStartYmd, weekEndYmd] inclusive. Excludes cancelled. */
+export async function listFacilityEventsInDateRange(weekStartYmd: string, weekEndYmd: string): Promise<FacilityEventRow[]> {
+  const sb = getServiceSupabase()
+  if (!sb) return []
+  const { data, error } = await sb
+    .from('facility_events')
+    .select('*')
+    .gte('event_date', weekStartYmd)
+    .lte('event_date', weekEndYmd)
+    .order('event_date', { ascending: true })
+    .order('start_minute', { ascending: true })
+    .limit(500)
+  if (error || !data) {
+    if (error?.code !== '42P01') {
+      console.warn('[facility-events] list in range:', error?.message)
+    }
+    return []
+  }
+  const out: FacilityEventRow[] = []
+  for (const item of data) {
+    if (!item || typeof item !== 'object') continue
+    const row = normalizeFacilityEventRow(item as Record<string, unknown>)
+    if (row && row.status !== 'cancelled') out.push(row)
+  }
+  return out
+}
+
 export async function getFacilityEventById(id: string): Promise<FacilityEventRow | null> {
   const tid = id.trim()
   if (!UUID.test(tid)) return null

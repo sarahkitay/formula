@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useId } from 'react'
+import { useActionState, useEffect, useId, useRef } from 'react'
 import Link from 'next/link'
 import { createPaidInPersonFieldRentalInviteAction } from '@/app/(admin)/admin/rentals/waiver-invite-actions'
 import {
@@ -31,9 +31,17 @@ async function runAction(_prev: State, formData: FormData): Promise<State> {
   return { status: 'error', message: r.message }
 }
 
-export function PaidInPersonFieldRentalInviteForm() {
+export function PaidInPersonFieldRentalInviteForm({ onInviteCreated }: { onInviteCreated?: () => void }) {
   const [state, action, pending] = useActionState(runAction, INITIAL)
   const rosterHeadcountPresetsId = useId()
+  const lastSuccessUrl = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (state.status === 'success' && state.waiver_url !== lastSuccessUrl.current) {
+      lastSuccessUrl.current = state.waiver_url
+      onInviteCreated?.()
+    }
+  }, [state, onInviteCreated])
 
   return (
     <div className="space-y-4 pt-1">

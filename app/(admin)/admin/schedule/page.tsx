@@ -34,6 +34,8 @@ import { facilityAssets } from '@/lib/mock-data/admin-operating-system'
 import { defaultIdleFacilityAssets } from '@/lib/facility/default-facility-assets'
 import { SITE } from '@/lib/site-config'
 
+const WEEK_START_PARAM = /^\d{4}-\d{2}-\d{2}$/
+
 export default function SchedulePage() {
   const facilityConfigRef = React.useRef<FacilitySchedulePublishedConfig | null>(null)
 
@@ -48,6 +50,17 @@ export default function SchedulePage() {
 
   const mapAssets = facilityAssets.length > 0 ? facilityAssets : defaultIdleFacilityAssets()
   const [mapSelectedId, setMapSelectedId] = useState<string | null>(() => mapAssets[0]?.id ?? null)
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    const ws = new URLSearchParams(window.location.search).get('weekStart')?.trim()
+    if (!ws || !WEEK_START_PARAM.test(ws)) return
+    const d = new Date(`${ws}T12:00:00`)
+    if (!Number.isFinite(d.getTime())) return
+    setBaseDate(d)
+    setDayIndex(d.getDay() as DayIndex)
+    setActiveTab('calendar')
+  }, [])
 
   const [facilityConfig, setFacilityConfig] = useState<FacilitySchedulePublishedConfig | null>(null)
 
@@ -195,6 +208,7 @@ export default function SchedulePage() {
       if (r.ok) {
         setSaveState('ok')
         setSaveMessage('Added to the live calendar and published. Parent portal and this calendar refresh on reload.')
+        setBookedOnly(true)
         await loadCalendarFeed()
       } else {
         setSaveState('err')
@@ -325,7 +339,8 @@ export default function SchedulePage() {
                   </div>
                   <span className="max-w-md font-mono text-[10px] text-formula-frost/70">
                     Default shows paid party holds, field rentals, the Friday Night Friendlies staff block (every open Friday),
-                    assessments with bookings, and youth blocks with parent enrollments. Full schedule adds open templates.
+                    assessments with bookings, youth blocks with parent enrollments, facility events from Admin → Events, and
+                    published schedule overrides (quick-book / Publish). Full schedule adds open templates.
                   </span>
                 </div>
                 <p className="font-mono text-[10px] text-formula-mist/85">
@@ -348,6 +363,10 @@ export default function SchedulePage() {
                     setDetailSlot(null)
                     setDetailRelatedSlots([])
                     if (b.category === 'friday_friendlies') {
+                      setFeedDetailBlock(b)
+                      return
+                    }
+                    if (b.category === 'facility_event') {
                       setFeedDetailBlock(b)
                       return
                     }

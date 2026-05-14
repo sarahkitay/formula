@@ -3,15 +3,14 @@ import { PageContainer } from '@/components/layout/app-shell'
 import { PageHeader } from '@/components/ui/page-header'
 import { Button } from '@/components/ui/button'
 import { AdminPanel, AdminMonoTable } from '@/components/admin/admin-panel'
+import { FieldRentalRosterQuickPanel } from '@/components/admin/field-rental-roster-quick-panel'
 import { rentalPackages } from '@/lib/mock-data/admin-operating-system'
-import { RentalRosterPaymentLinkForm } from '@/components/admin/rental-roster-payment-link-form'
-import { RosterLinkCreationPicker } from '@/components/admin/roster-link-creation-picker'
 import { RosterWaiverInvitesAdmin } from '@/components/admin/roster-waiver-invites-admin'
 import { SignedRentalWaiversLinkTable, type RosterInvitePickOption } from '@/components/admin/signed-rental-waivers-link-table'
 import { listFieldRentalAgreementsRecent } from '@/lib/rentals/field-rental-agreements-server'
 import { listWaiverInvitesWithProgress } from '@/lib/rentals/waiver-invites-server'
 import { BOOKING_HUB_PUBLIC } from '@/lib/marketing/book-assessment-paths'
-import { getSiteOrigin } from '@/lib/stripe/server'
+import { getSiteOrigin } from '@/lib/site-origin'
 import { FACILITY_TIMEZONE } from '@/lib/facility/facility-day'
 import { formatFacilityDateTimeShort } from '@/lib/facility/format-facility-datetime'
 import { listPartyBookingsRecent } from '@/lib/party/party-bookings-server'
@@ -45,7 +44,7 @@ function rosterInvitePickOptions(
 export default async function RentalsPage() {
   const waiverRows = await listFieldRentalAgreementsRecent(100)
   const partyRows = await listPartyBookingsRecent(80)
-  const waiverInvites = await listWaiverInvitesWithProgress(50)
+  const waiverInvites = await listWaiverInvitesWithProgress(80)
   const waiverInviteSelectOptions = rosterInvitePickOptions(waiverInvites)
   const siteOrigin = getSiteOrigin()
   const serviceConfigured = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim())
@@ -124,29 +123,22 @@ export default async function RentalsPage() {
           ) : (
             <>
               <p className="mb-4 font-mono text-[11px] text-formula-mist">
-                After online checkout, the purchaser gets a roster link. Below: who paid, session summary, waiver progress, and each signer.{' '}
-                <strong className="text-formula-paper/90">Add roster link</strong> is the quick comp / internal path (no payment row).{' '}
-                <strong className="text-formula-paper/90">Payment</strong> covers paid in person (desk + ledger) and Stripe Checkout links for an existing invite
-                (same engine as Invoices).
+                After online checkout, the purchaser gets a roster link. Below: who paid, session summary, waiver progress, and each signer. Use the{' '}
+                <strong className="text-formula-paper/90">Book roster &amp; payment</strong> block for comp links, desk deposits, and Stripe Checkout in one place.
+                Online checkout still uses the public field rental flow.
               </p>
-              <details className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
+              <details open className="rounded-md border border-formula-frost/14 bg-formula-paper/[0.02] p-3">
                 <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-                  <span className="text-formula-volt">▸</span> Add roster link (quick · comp / internal)
+                  <span className="text-formula-volt">▸</span> Book roster &amp; payment (complimentary or paid)
                 </summary>
-                <RosterLinkCreationPicker />
-              </details>
-              <details className="rounded-md border border-formula-volt/20 bg-formula-volt/[0.04] p-3 mt-3">
-                <summary className="cursor-pointer list-none font-mono text-[11px] font-bold text-formula-paper marker:hidden [&::-webkit-details-marker]:hidden">
-                  <span className="text-formula-volt">▸</span> Payment: paid in person or Stripe link
-                </summary>
-                <div className="mt-3 border-t border-formula-frost/10 pt-3">
-                  <RentalRosterPaymentLinkForm invites={waiverInvites} siteOrigin={siteOrigin} />
-                </div>
+                <FieldRentalRosterQuickPanel invites={waiverInvites} siteOrigin={siteOrigin} />
               </details>
               {waiverInvites.length === 0 ? (
                 <p className="mt-6 font-mono text-[11px] text-formula-mist">No roster links yet.</p>
               ) : (
-                <RosterWaiverInvitesAdmin invites={waiverInvites} siteOrigin={siteOrigin} />
+                <div id="roster-invites-progress" className="mt-6 scroll-mt-24">
+                  <RosterWaiverInvitesAdmin invites={waiverInvites} siteOrigin={siteOrigin} />
+                </div>
               )}
             </>
           )}
