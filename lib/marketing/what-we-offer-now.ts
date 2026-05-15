@@ -1,5 +1,5 @@
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT, SUMMER_CAMP_2026_WEEK_CHECKOUT } from '@/lib/marketing/public-pricing'
+import { summerCamp2026PublicPriceLine } from '@/lib/marketing/public-pricing'
 import { SUMMER_CAMP_2026 } from '@/lib/marketing/summer-camp-2026-data'
 
 /**
@@ -24,7 +24,9 @@ export const WHAT_WE_OFFER_NOW = [
   },
   {
     title: 'Summer Camp 2026',
-    body: `${SUMMER_CAMP_2026.ageRange} · Mon–Fri ${SUMMER_CAMP_2026.dayHours} · eight themed weeks. $${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}/week or $${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd} for a four-week bundle. Pre-pay signup.`,
+    get body() {
+      return `${SUMMER_CAMP_2026.ageRange} · Mon–Fri ${SUMMER_CAMP_2026.dayHours} · eight themed weeks. ${summerCamp2026PublicPriceLine()} Pre-pay signup.`
+    },
     href: MARKETING_HREF.summerCamp2026,
   },
   {
@@ -37,4 +39,4 @@ export const WHAT_WE_OFFER_NOW = [
     body: 'Coach-run pickup for ages 6-14. Pre-register online; walk-ups OK. Schedule and checkout on the event page.',
     href: MARKETING_HREF.fridayNightFriendlies,
   },
-] as const
+] as const satisfies readonly { title: string; body: string; href: string }[]

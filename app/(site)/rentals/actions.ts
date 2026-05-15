@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { escapeHtml, sendAdminNotification } from '@/lib/email/send-admin-notification'
 import {
   loadFieldRentalCheckoutSnapshot,
   mergeWaiverInviteIntoCheckoutSnapshot,
@@ -206,7 +205,8 @@ export async function submitFieldRentalAgreement(
     revalidatePath(`/rentals/waiver/${rosterTokenForRevalidate}`)
   }
 
-  // Roster link: do not email ops on each signer. One digest the first time signed count reaches expected; extras allowed without blocking.
+  // Staff / admin: no email on individual waiver submissions (Friday Friendlies, coach booking, public, or roster link).
+  // Ops still get paid checkout notices (Stripe webhook) and one digest when a roster invite reaches expected waiver count.
   if (waiverInviteId && rosterExpected != null && rosterInvite) {
     const signed = await countWaiversForInviteId(waiverInviteId)
     if (signed === rosterExpected) {
@@ -222,32 +222,6 @@ export async function submitFieldRentalAgreement(
         rosterWaiverUrl: `${getSiteOrigin()}/rentals/waiver/${rosterInvite.token}`,
       })
     }
-  } else {
-    await sendAdminNotification({
-      subject: isFnf
-        ? `[Formula] Friday Friendlies waiver · ${participantName}`
-        : `[Formula] Field rental agreement · ${participantName}`,
-      html: `
-      <p><strong>${isFnf ? 'Friday Friendlies waiver submitted' : 'Field rental waiver submitted'}</strong></p>
-      <ul>
-        <li><strong>Agreement id</strong>: ${escapeHtml(saved.id)}</li>
-        <li><strong>Rental type</strong>: ${escapeHtml(rentalType)}</li>
-        <li><strong>Participant</strong>: ${escapeHtml(participantName)}</li>
-        <li><strong>Email</strong>: ${escapeHtml(participantEmail)}</li>
-        <li><strong>Phone</strong>: ${escapeHtml(participantPhone)}</li>
-        <li><strong>Address</strong>: ${escapeHtml(participantAddress)}</li>
-        <li><strong>Emergency contact</strong>: ${escapeHtml(emergencyContact)}</li>
-        <li><strong>Team / org</strong>: ${escapeHtml(organizationName)}</li>
-        <li><strong>DOB</strong>: ${escapeHtml(participantDob)}</li>
-        <li><strong>Printed signer</strong>: ${escapeHtml(signatureName)}</li>
-        <li><strong>Headcount</strong>: ${participant_count != null ? escapeHtml(String(participant_count)) : '-'}</li>
-      </ul>
-      <p>Signature image is stored securely with this waiver for staff review.</p>
-    `,
-      text: isFnf
-        ? `Friday Friendlies waiver saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`
-        : `Field rental agreement saved\nid: ${saved.id}\n${participantName} <${participantEmail}>`,
-    })
   }
 
   let rosterSuccessMsg =

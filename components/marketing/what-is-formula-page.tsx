@@ -3,33 +3,34 @@ import { FormulaPositioningBackground } from '@/components/marketing/formula-pos
 import { marketingDisplayH1ClassName } from '@/lib/marketing/display-typography'
 import { ScrollFadeIn } from '@/components/marketing/scroll-fade-in'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { SUMMER_CAMP_2026_WEEK_CHECKOUT } from '@/lib/marketing/public-pricing'
+import { summerCamp2026WeekCheckoutPriceUsd } from '@/lib/marketing/public-pricing'
 import { cn } from '@/lib/utils'
 
-const WHAT_FORMULA_LIVE_NOW = [
-  {
-    title: 'Assessments + personalized plans',
-    body: '$150/5 sessions',
-    href: MARKETING_HREF.bookAssessmentPortal,
-  },
-  {
-    title: 'Field rentals',
-    body: 'Book structured field time for your group.',
-    href: MARKETING_HREF.rentals,
-  },
-  {
-    title: 'Summer camps',
-    body: `$${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}/wk`,
-    href: MARKETING_HREF.summerCamp2026,
-  },
-  {
-    title: 'Friday friendlies + parties',
-    body: 'Pre-register for friendlies and hosted party windows from the events hub.',
-    href: MARKETING_HREF.events,
-  },
-] as const
-
 export function WhatIsFormulaPageContent() {
+  const campWeekUsd = summerCamp2026WeekCheckoutPriceUsd()
+  const WHAT_FORMULA_LIVE_NOW = [
+    {
+      title: 'Assessments + personalized plans',
+      body: '$150/5 sessions',
+      href: MARKETING_HREF.bookAssessmentPortal,
+    },
+    {
+      title: 'Field rentals',
+      body: 'Book structured field time for your group.',
+      href: MARKETING_HREF.rentals,
+    },
+    {
+      title: 'Summer camps',
+      body: `$${campWeekUsd}/wk`,
+      href: MARKETING_HREF.summerCamp2026,
+    },
+    {
+      title: 'Friday friendlies + parties',
+      body: 'Pre-register for friendlies and hosted party windows from the events hub.',
+      href: MARKETING_HREF.events,
+    },
+  ] as const
+
   return (
     <div className="relative min-h-[100dvh] overflow-x-hidden bg-[#0a0d0c] text-[#e9ece8]">
       <FormulaPositioningBackground />

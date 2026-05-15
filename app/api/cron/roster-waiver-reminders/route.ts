@@ -19,16 +19,23 @@ function authorizeCron(req: Request): boolean {
 }
 
 /**
- * Hourly: email ops when a roster link still has missing waivers and the first booked session
- * starts in about one hour (facility-local `booking_rental_date` + window start).
- *
- * Configure `CRON_SECRET` on Vercel. On **Vercel Hobby**, hourly crons cannot be declared in `vercel.json`;
- * use `.github/workflows/roster-waiver-reminders-cron.yml` (PRODUCTION_SITE_URL + CRON_SECRET in GitHub Actions secrets)
- * or upgrade to Pro and add this path back under `vercel.json` crons.
+ * Hourly: (optional) email ops when a roster link still has missing waivers ~1h before first session.
+ * Disabled by default: staff policy is payment / completed-checkout notices plus one email when all roster waivers are in,
+ * not waiver-adjacent digests. Re-enable only with explicit product approval.
  */
+const SEND_PREMEETING_ROSTER_INCOMPLETE_ADMIN_EMAIL = false
+
 export async function GET(req: Request) {
   if (!authorizeCron(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  if (!SEND_PREMEETING_ROSTER_INCOMPLETE_ADMIN_EMAIL) {
+    return NextResponse.json({
+      ok: true,
+      remindersSent: 0,
+      skipped: 'premeeting_incomplete_roster_admin_email_disabled',
+    })
   }
 
   const now = Date.now()

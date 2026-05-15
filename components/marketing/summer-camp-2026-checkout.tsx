@@ -3,7 +3,14 @@
 import { useMemo, useState } from 'react'
 import { CheckoutLaunchButton } from '@/components/marketing/checkout-launch-button'
 import type { CheckoutType } from '@/lib/stripe/checkout-types'
-import { SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT, SUMMER_CAMP_2026_WEEK_CHECKOUT } from '@/lib/marketing/public-pricing'
+import {
+  isSummerCampEarlyRegistrationActive,
+  summerCamp2026MonthBundleCheckoutPriceUsd,
+  summerCamp2026WeekCheckoutPriceUsd,
+  SUMMER_CAMP_2026_EARLY_DISCOUNT_USD,
+  SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT,
+  SUMMER_CAMP_2026_WEEK_CHECKOUT,
+} from '@/lib/marketing/public-pricing'
 import {
   SUMMER_CAMP_2026_WEEKS,
   type SummerCampMonthBundleId,
@@ -38,12 +45,18 @@ export function SummerCamp2026Checkout() {
 
   const namesOk = guardianName.trim().length >= 2 && athleteNames.trim().length >= 2
 
+  const { weekPrice, bundlePrice, early } = useMemo(() => {
+    const t = new Date()
+    return {
+      weekPrice: summerCamp2026WeekCheckoutPriceUsd(t),
+      bundlePrice: summerCamp2026MonthBundleCheckoutPriceUsd(t),
+      early: isSummerCampEarlyRegistrationActive(t),
+    }
+  }, [])
+
   const checkoutType: CheckoutType = purchaseKind === 'week' ? 'summer-camp-week-495' : 'summer-camp-month-1780'
   const metadata = purchaseKind === 'week' ? weekMetadata : monthMetadata
-  const priceLabel =
-    purchaseKind === 'week'
-      ? `$${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}`
-      : `$${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd}`
+  const priceLabel = purchaseKind === 'week' ? `$${weekPrice}` : `$${bundlePrice}`
 
   const ready = namesOk
 
@@ -55,8 +68,17 @@ export function SummerCamp2026Checkout() {
       <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-formula-volt/90">Registration</p>
       <h2 className="mt-2 font-mono text-sm font-semibold uppercase tracking-[0.14em] text-formula-paper">Pre-pay · secure checkout</h2>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-formula-frost/80">
-        Staff confirms age group, roster, and week placement after payment. Use the same guardian email you check most often - Stripe sends the receipt there.
+        Staff confirms age group, roster, and week placement after payment. Use the same guardian email you check most often - Stripe sends the receipt there, and
+        Formula sends a confirmation with camp details right after payment succeeds.
       </p>
+
+      {early ? (
+        <div className="mt-4 rounded-lg border border-formula-volt/30 bg-formula-volt/[0.08] px-3 py-2.5 font-mono text-[11px] leading-relaxed text-formula-paper sm:mt-5">
+          <strong className="text-formula-volt">Early registration through May 29</strong> (Los Angeles date):{' '}
+          <strong>${SUMMER_CAMP_2026_EARLY_DISCOUNT_USD} off</strong> the listed week (${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd} → ${weekPrice}) or bundle (
+          ${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd} → ${bundlePrice}). Checkout uses the lower total automatically.
+        </div>
+      ) : null}
 
       <fieldset className="mt-5 flex flex-col gap-2 sm:mt-6 sm:flex-row sm:flex-wrap sm:gap-3">
         <legend className="sr-only">Purchase type</legend>
@@ -68,7 +90,7 @@ export function SummerCamp2026Checkout() {
             onChange={() => setPurchaseKind('week')}
             className="h-4 w-4 shrink-0 accent-formula-volt"
           />
-          One week · ${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}
+          One week · ${early ? `$${weekPrice} (was $${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd})` : `$${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}`}
         </label>
         <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-md border border-formula-frost/18 bg-formula-base/60 px-4 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-formula-paper has-[:checked]:border-formula-volt/50 has-[:checked]:bg-formula-volt/[0.08] sm:min-h-0 sm:flex-1 sm:px-3 sm:py-2 sm:text-[10px]">
           <input
@@ -78,7 +100,7 @@ export function SummerCamp2026Checkout() {
             onChange={() => setPurchaseKind('month')}
             className="h-4 w-4 shrink-0 accent-formula-volt"
           />
-          Four-week bundle · ${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd}
+          Four-week bundle · ${early ? `$${bundlePrice} (was $${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd})` : `$${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd}`}
         </label>
       </fieldset>
 

@@ -8,6 +8,9 @@ import {
   FRIDAY_NIGHT_FRIENDLIES_CHECKOUT,
   SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT,
   SUMMER_CAMP_2026_WEEK_CHECKOUT,
+  isSummerCampEarlyRegistrationActive,
+  summerCamp2026MonthBundleCheckoutPriceUsd,
+  summerCamp2026WeekCheckoutPriceUsd,
   PARTY_BOOKING_1K_CHECKOUT,
   SESSION_PACKAGE_5,
   SESSION_PACKAGE_10,
@@ -140,6 +143,12 @@ export function lineItemsForCheckoutType(
   }
 
   if (type === 'summer-camp-week-495') {
+    const now = new Date()
+    const priceUsd = summerCamp2026WeekCheckoutPriceUsd(now)
+    const early = isSummerCampEarlyRegistrationActive(now)
+    const description = early
+      ? `${SUMMER_CAMP_2026_WEEK_CHECKOUT.summary} Early registration through May 29, 2026 (Los Angeles date): $${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd - priceUsd} off standard week tuition.`
+      : SUMMER_CAMP_2026_WEEK_CHECKOUT.summary
     return [
       {
         quantity: 1,
@@ -147,16 +156,24 @@ export function lineItemsForCheckoutType(
           currency: 'usd',
           tax_behavior: 'exclusive',
           product_data: {
-            name: SUMMER_CAMP_2026_WEEK_CHECKOUT.productName,
-            description: SUMMER_CAMP_2026_WEEK_CHECKOUT.summary,
+            name: early
+              ? `${SUMMER_CAMP_2026_WEEK_CHECKOUT.productName} · early registration`
+              : SUMMER_CAMP_2026_WEEK_CHECKOUT.productName,
+            description,
           },
-          unit_amount: Math.round(SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd * 100),
+          unit_amount: Math.round(priceUsd * 100),
         },
       },
     ]
   }
 
   if (type === 'summer-camp-month-1780') {
+    const now = new Date()
+    const priceUsd = summerCamp2026MonthBundleCheckoutPriceUsd(now)
+    const early = isSummerCampEarlyRegistrationActive(now)
+    const description = early
+      ? `${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.summary} Early registration through May 29, 2026 (Los Angeles date): $${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd - priceUsd} off standard bundle tuition.`
+      : SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.summary
     return [
       {
         quantity: 1,
@@ -164,10 +181,12 @@ export function lineItemsForCheckoutType(
           currency: 'usd',
           tax_behavior: 'exclusive',
           product_data: {
-            name: SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.productName,
-            description: SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.summary,
+            name: early
+              ? `${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.productName} · early registration`
+              : SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.productName,
+            description,
           },
-          unit_amount: Math.round(SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd * 100),
+          unit_amount: Math.round(priceUsd * 100),
         },
       },
     ]

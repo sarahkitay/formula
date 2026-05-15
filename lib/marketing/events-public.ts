@@ -4,7 +4,7 @@
  */
 
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT, SUMMER_CAMP_2026_WEEK_CHECKOUT } from '@/lib/marketing/public-pricing'
+import { summerCamp2026PublicPriceLine } from '@/lib/marketing/public-pricing'
 import { SUMMER_CAMP_2026 } from '@/lib/marketing/summer-camp-2026-data'
 
 export type PublicUpcomingEvent = {
@@ -32,7 +32,7 @@ export const UPCOMING_PUBLIC_EVENTS: PublicUpcomingEvent[] = [
   {
     id: 'summer-camp-2026',
     title: 'Summer Camp 2026',
-    summary: `${SUMMER_CAMP_2026.ageRange} · Mon–Fri 9:00 AM–2:30 PM · eight themed weeks. $${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}/week or $${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd} for a four-week bundle (weeks 1–4 or 5–8).`,
+    summary: `${SUMMER_CAMP_2026.ageRange} · Mon–Fri 9:00 AM–2:30 PM · eight themed weeks. ${summerCamp2026PublicPriceLine()}`,
     href: MARKETING_HREF.summerCamp2026,
     ctaLabel: 'See themes & register',
     subLinks: [

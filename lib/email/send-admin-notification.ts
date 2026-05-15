@@ -72,7 +72,7 @@ function fromAddress(): string {
  * Server-only: notify operations inbox via Resend.
  *
  * **All** of these call this helper (same `ADMIN_NOTIFY_EMAIL` / aliases + `FROM` + API key):
- * - Field rental waiver (`app/(site)/rentals/actions`) - roster links skip per-signer admin email; one digest when the roster fills, plus optional hourly cron for incomplete rosters before first session (`app/api/cron/roster-waiver-reminders`). Non-roster public waivers still notify each submit.
+ * - Field rental waivers (`app/(site)/rentals/actions`) - no admin email per signer; one digest when a roster invite reaches its expected waiver count (`lib/email/roster-invite-admin-notify`). Individual Friday Friendlies / coach / public waiver submits do not notify staff. Optional pre-meeting incomplete-roster cron is off by default (`app/api/cron/roster-waiver-reminders`).
  * - Paid Stripe checkout - assessment, field rental deposit, other types (`lib/email/stripe-checkout-paid-email` from webhook)
  * - Party deposit paid (`lib/email/party-booking-email`)
  * - Event request form (`app/(site)/events/actions`)

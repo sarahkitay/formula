@@ -3,7 +3,13 @@ import { SummerCamp2026Checkout } from '@/components/marketing/summer-camp-2026-
 import { SummerCamp2026WeeksTable } from '@/components/marketing/summer-camp-2026-weeks-table'
 import { SectionLabel } from '@/components/marketing/marketing-inner'
 import { MARKETING_HREF } from '@/lib/marketing/nav'
-import { SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT, SUMMER_CAMP_2026_WEEK_CHECKOUT } from '@/lib/marketing/public-pricing'
+import {
+  isSummerCampEarlyRegistrationActive,
+  summerCamp2026MonthBundleCheckoutPriceUsd,
+  summerCamp2026WeekCheckoutPriceUsd,
+  SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT,
+  SUMMER_CAMP_2026_WEEK_CHECKOUT,
+} from '@/lib/marketing/public-pricing'
 import { SITE, FACILITY_APPLE_MAPS_URL } from '@/lib/site-config'
 import { SUMMER_CAMP_2026 } from '@/lib/marketing/summer-camp-2026-data'
 
@@ -26,6 +32,13 @@ const scheduleRows: [string, string][] = [
 ]
 
 export function SummerCamp2026Landing() {
+  const now = new Date()
+  const weekCheckout = summerCamp2026WeekCheckoutPriceUsd(now)
+  const bundleCheckout = summerCamp2026MonthBundleCheckoutPriceUsd(now)
+  const early = isSummerCampEarlyRegistrationActive(now)
+  const listWeek = SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd
+  const listBundle = SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd
+
   return (
     <div className="not-prose min-w-0 space-y-8 sm:space-y-10 md:space-y-12">
       <header className="space-y-2.5 sm:space-y-3">
@@ -109,7 +122,19 @@ export function SummerCamp2026Landing() {
             className="block rounded-xl border border-formula-frost/14 bg-formula-paper/[0.04] p-4 no-underline transition-colors active:bg-formula-paper/[0.06] sm:p-5 sm:hover:border-formula-volt/35 sm:hover:bg-formula-paper/[0.07]"
           >
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt">One week</p>
-            <p className="mt-2 font-mono text-2xl font-semibold text-formula-paper">${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd}</p>
+            {early ? (
+              <>
+                <p className="mt-2 font-mono text-2xl font-semibold text-formula-paper">
+                  <span className="text-formula-frost/45 line-through decoration-formula-frost/50">${listWeek}</span>{' '}
+                  <span className="text-formula-paper">${weekCheckout}</span>
+                </p>
+                <p className="mt-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-volt/90">
+                  Early registration through May 29 (Los Angeles date) · $25 off
+                </p>
+              </>
+            ) : (
+              <p className="mt-2 font-mono text-2xl font-semibold text-formula-paper">${listWeek}</p>
+            )}
             <p className="mt-2 text-sm text-formula-frost/80">Mon–Fri · {SUMMER_CAMP_2026.dayHours}</p>
             <p className="mt-2 text-[12px] text-formula-mist/90">Pick any of the eight themed weeks at registration.</p>
             <p className="mt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-formula-volt">Continue to checkout →</p>
@@ -119,7 +144,19 @@ export function SummerCamp2026Landing() {
             className="block rounded-xl border border-formula-volt/25 bg-formula-volt/[0.06] p-4 no-underline transition-colors active:bg-formula-volt/[0.12] sm:p-5 sm:hover:border-formula-volt/50 sm:hover:bg-formula-volt/[0.1]"
           >
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-formula-volt">Four-week bundle</p>
-            <p className="mt-2 font-mono text-2xl font-semibold text-formula-paper">${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd}</p>
+            {early ? (
+              <>
+                <p className="mt-2 font-mono text-2xl font-semibold text-formula-paper">
+                  <span className="text-formula-frost/45 line-through decoration-formula-frost/50">${listBundle}</span>{' '}
+                  <span className="text-formula-paper">${bundleCheckout}</span>
+                </p>
+                <p className="mt-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-formula-volt/90">
+                  Early registration through May 29 (Los Angeles date) · $25 off
+                </p>
+              </>
+            ) : (
+              <p className="mt-2 font-mono text-2xl font-semibold text-formula-paper">${listBundle}</p>
+            )}
             <p className="mt-2 text-sm text-formula-frost/90">
               Full four-week block: <strong className="text-formula-paper">weeks 1–4</strong> (June) or <strong className="text-formula-paper">weeks 5–8</strong>{' '}
               (July–August).

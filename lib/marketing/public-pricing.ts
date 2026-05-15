@@ -156,6 +156,7 @@ export const FRIDAY_NIGHT_FRIENDLIES_CHECKOUT = {
 
 /** Summer Camp 2026 · Mon–Fri weekly day camp (ages 6–13, 9:00 AM–2:30 PM). */
 export const SUMMER_CAMP_2026_WEEK_CHECKOUT = {
+  /** Standard week price after early registration ends. */
   priceUsd: 495,
   productName: 'Summer Camp 2026 · one week (Mon–Fri)',
   summary:
@@ -164,8 +165,48 @@ export const SUMMER_CAMP_2026_WEEK_CHECKOUT = {
 
 /** Four consecutive weeks within the published 8-week season (bundled month blocks). */
 export const SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT = {
+  /** Standard bundle price after early registration ends. */
   priceUsd: 1780,
   productName: 'Summer Camp 2026 · four-week bundle',
   summary:
     'Four-week bundle (weeks 1–4 or weeks 5–8) · Formula Soccer Center summer camp 2026. Ages 6–13 · Mon–Fri · 9:00 AM–2:30 PM. Staff confirms placement and week continuity after payment.',
 } as const
+
+/** Facility wall calendar for early-registration cutoff (matches camp operations). */
+export const SUMMER_CAMP_2026_FACILITY_TZ = 'America/Los_Angeles' as const
+
+/** Inclusive last Los Angeles **calendar date** for $25 early registration discount (through end of May 29). */
+export const SUMMER_CAMP_2026_EARLY_REGISTRATION_END_LA_YMD = '2026-05-29' as const
+
+export const SUMMER_CAMP_2026_EARLY_DISCOUNT_USD = 25 as const
+
+export function formatYmdInTimeZone(d: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
+}
+
+export function isSummerCampEarlyRegistrationActive(now: Date = new Date()): boolean {
+  const ymd = formatYmdInTimeZone(now, SUMMER_CAMP_2026_FACILITY_TZ)
+  return ymd <= SUMMER_CAMP_2026_EARLY_REGISTRATION_END_LA_YMD
+}
+
+/** Stripe + UI: week checkout total in USD (early discount applied automatically until cutoff). */
+export function summerCamp2026WeekCheckoutPriceUsd(now: Date = new Date()): number {
+  const base = SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd
+  return isSummerCampEarlyRegistrationActive(now) ? base - SUMMER_CAMP_2026_EARLY_DISCOUNT_USD : base
+}
+
+/** Stripe + UI: four-week bundle total in USD (early discount applied until cutoff). */
+export function summerCamp2026MonthBundleCheckoutPriceUsd(now: Date = new Date()): number {
+  const base = SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd
+  return isSummerCampEarlyRegistrationActive(now) ? base - SUMMER_CAMP_2026_EARLY_DISCOUNT_USD : base
+}
+
+/** One-line price blurb for events hub / homepage cards (reflects early discount when active). */
+export function summerCamp2026PublicPriceLine(now: Date = new Date()): string {
+  const w = summerCamp2026WeekCheckoutPriceUsd(now)
+  const b = summerCamp2026MonthBundleCheckoutPriceUsd(now)
+  if (isSummerCampEarlyRegistrationActive(now)) {
+    return `$${w}/week or $${b} for a four-week bundle (early registration through May 29, Los Angeles time — $${SUMMER_CAMP_2026_EARLY_DISCOUNT_USD} off); standard tuition is $${SUMMER_CAMP_2026_WEEK_CHECKOUT.priceUsd} / $${SUMMER_CAMP_2026_MONTH_BUNDLE_CHECKOUT.priceUsd}.`
+  }
+  return `$${w}/week or $${b} for a four-week bundle (weeks 1–4 or 5–8).`
+}

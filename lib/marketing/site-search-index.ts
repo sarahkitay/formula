@@ -1,4 +1,5 @@
 import { MARKETING_HREF, getHeaderMoreNav, getSiteHeaderPrimaryNav } from '@/lib/marketing/nav'
+import { summerCamp2026PublicPriceLine } from '@/lib/marketing/public-pricing'
 
 export type SiteSearchItem = {
   id: string
@@ -61,9 +62,26 @@ const EXTRA: SiteSearchItem[] = [
   {
     id: 'summer-camp-2026',
     label: 'Summer Camp 2026',
-    description: 'Day camp ages 6–13 · Mon–Fri 9–2:30 · $495/week or $1780 four-week bundle',
+    description: `Day camp ages 6–13 · Mon–Fri 9–2:30 · ${summerCamp2026PublicPriceLine()}`,
     href: MARKETING_HREF.summerCamp2026,
-    keywords: ['summer', 'camp', '2026', 'june', 'july', 'august', 'footbot', 'speed brain', 'kids', 'youth', '495', '1780'],
+    keywords: [
+      'summer',
+      'camp',
+      '2026',
+      'june',
+      'july',
+      'august',
+      'footbot',
+      'speed brain',
+      'kids',
+      'youth',
+      '495',
+      '1780',
+      '470',
+      '1755',
+      'early registration',
+      'may 29',
+    ],
   },
 ]
 

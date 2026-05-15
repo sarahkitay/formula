@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 import { sendStripeCheckoutPaidAdminEmail } from '@/lib/email/stripe-checkout-paid-email'
+import { sendSummerCampCheckoutConfirmationEmail } from '@/lib/email/summer-camp-checkout-confirmation-email'
 import { confirmSlotFromPaidCheckout } from '@/lib/rentals/rental-slots'
 import { ensureWaiverInviteForPaidFieldRental } from '@/lib/rentals/waiver-invites-server'
 import { recordAssessmentBookingFromCheckout } from '@/lib/stripe/record-assessment-booking'
@@ -56,6 +57,14 @@ export async function POST(req: Request) {
         }
         if (session.metadata?.type !== 'party-booking-1k') {
           await sendStripeCheckoutPaidAdminEmail(session)
+        }
+        const t = session.metadata?.type
+        if (t === 'summer-camp-week-495' || t === 'summer-camp-month-1780') {
+          try {
+            await sendSummerCampCheckoutConfirmationEmail(session)
+          } catch (e) {
+            console.error('[stripe webhook] summer camp confirmation email:', e)
+          }
         }
       } catch {
         return NextResponse.json({ error: 'Failed to persist purchase' }, { status: 500 })
