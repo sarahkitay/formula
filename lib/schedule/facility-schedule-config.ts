@@ -154,6 +154,8 @@ export function normalizeFacilityScheduleConfig(raw: unknown): FacilityScheduleP
       if (typeof r.youthBlockId === 'string' && r.youthBlockId.trim()) {
         ov.youthBlockId = r.youthBlockId.trim().slice(0, 120)
       }
+      const wid = typeof r.waiverInviteId === 'string' ? r.waiverInviteId.trim() : ''
+      if (wid && /^[0-9a-f-]{36}$/i.test(wid)) ov.waiverInviteId = wid
       overrides.push(ov)
     }
   }

@@ -101,6 +101,7 @@ function singleProgramBlock(
     templateSurface: true,
     youthBlockId: yid,
     parentEnrollmentCount: enroll,
+    ...(s.waiverInviteId && /^[0-9a-f-]{36}$/i.test(s.waiverInviteId) ? { waiverInviteId: s.waiverInviteId } : {}),
   }
 }
 
@@ -145,6 +146,7 @@ function programBlocksFromWeekCollapsed(
     const rotationNote = group.length > 1 ? ` · ${group.length} rotations` : ''
     const shortHead = rep.label.split('//')[0]?.trim() || rep.label
     const enroll = youthEnrollment(enrollmentBySlotRef, youthBlockId)
+    const wid = group.find(x => x.waiverInviteId && /^[0-9a-f-]{36}$/i.test(x.waiverInviteId))?.waiverInviteId
     out.push({
       id: `slot-group-${safeGroupId(youthBlockId)}`,
       category: 'youth_program',
@@ -157,6 +159,7 @@ function programBlocksFromWeekCollapsed(
       templateSurface: true,
       youthBlockId,
       parentEnrollmentCount: enroll,
+      ...(wid ? { waiverInviteId: wid.trim() } : {}),
     })
   }
 
@@ -165,6 +168,14 @@ function programBlocksFromWeekCollapsed(
 }
 
 const YMD = /^\d{4}-\d{2}-\d{2}$/
+
+/** Resolve `ScheduleOverride.id` from a calendar block produced by `programBlocksFromWeekCollapsed` (single `ov-*` slot or grouped youth row). */
+export function scheduleOverrideIdFromFeedBlock(b: CalendarFeedBlock): string | null {
+  if (b.id.startsWith('slot-ov-')) return b.id.slice('slot-ov-'.length)
+  const firstOv = (b.programSlotIds ?? []).find(id => id.startsWith('ov-'))
+  if (!firstOv) return null
+  return firstOv.slice('ov-'.length)
+}
 
 /** Session dates for a roster invite that fall inside [weekStart, weekEnd] (inclusive, YYYY-MM-DD). */
 export function waiverInviteSessionDatesInWeek(
@@ -194,6 +205,7 @@ export function calendarBlockVisibleInBookingsOnlyView(b: CalendarFeedBlock): bo
   if (b.category === 'rental_booking') return true
   if (b.category === 'friday_friendlies') return true
   if (b.category === 'facility_event') return true
+  if (b.waiverInviteId && /^[0-9a-f-]{36}$/i.test(b.waiverInviteId)) return true
   /** Admin publish overrides replace generated program slots — show as a concrete hold. */
   if (b.id.startsWith('slot-ov-')) return true
   if (b.programSlotIds?.some(id => id.startsWith('ov-'))) return true

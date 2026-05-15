@@ -12,7 +12,7 @@ import { AdminSlotDetailModal } from '@/components/schedule/admin-slot-detail-mo
 import { buildPublishedWeek } from '@/lib/schedule/published-week'
 import { startOfScheduleWeek, toISODateLocal } from '@/lib/schedule/generator'
 import type { DayIndex, ScheduleOverride, ScheduleSlot } from '@/types/schedule'
-import { calendarBlockVisibleInBookingsOnlyView, type CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
+import { calendarBlockVisibleInBookingsOnlyView, scheduleOverrideIdFromFeedBlock, type CalendarFeedBlock } from '@/lib/schedule/calendar-feed'
 import {
   buildAdminBlockMap,
   getAdminBlockKey,
@@ -194,11 +194,13 @@ export default function SchedulePage() {
   }, [facilityConfig, week])
 
   const commitQuickBookOverride = useCallback(
-    async (row: ScheduleOverride | null, opts: { autoPublish: boolean }) => {
+    async (row: ScheduleOverride | null, opts: { autoPublish: boolean; replaceOverrideId?: string }) => {
       if (!row) return
       const prev = facilityConfigRef.current
       if (!prev) return
-      const next = { ...prev, overrides: [...prev.overrides, row] }
+      const next = opts.replaceOverrideId
+        ? { ...prev, overrides: prev.overrides.map(o => (o.id === opts.replaceOverrideId ? row : o)) }
+        : { ...prev, overrides: [...prev.overrides, row] }
       facilityConfigRef.current = next
       setFacilityConfig(next)
       if (!opts.autoPublish) return
@@ -207,7 +209,35 @@ export default function SchedulePage() {
       const r = await saveFacilityScheduleConfigAction(next)
       if (r.ok) {
         setSaveState('ok')
-        setSaveMessage('Added to the live calendar and published. Parent portal and this calendar refresh on reload.')
+        setSaveMessage(
+          opts.replaceOverrideId
+            ? 'Published updates to this calendar hold (parent portal and feeds refresh on next load).'
+            : 'Added to the live calendar and published. Parent portal and this calendar refresh on reload.'
+        )
+        setBookedOnly(true)
+        await loadCalendarFeed()
+      } else {
+        setSaveState('err')
+        setSaveMessage(r.error)
+        await reloadConfig()
+      }
+    },
+    [loadCalendarFeed, reloadConfig]
+  )
+
+  const removeOverrideAndPublish = useCallback(
+    async (id: string) => {
+      const prev = facilityConfigRef.current
+      if (!prev) return
+      const next = { ...prev, overrides: prev.overrides.filter(o => o.id !== id) }
+      facilityConfigRef.current = next
+      setFacilityConfig(next)
+      setSaveState('saving')
+      setSaveMessage(null)
+      const r = await saveFacilityScheduleConfigAction(next)
+      if (r.ok) {
+        setSaveState('ok')
+        setSaveMessage('Removed the calendar hold and published.')
         setBookedOnly(true)
         await loadCalendarFeed()
       } else {
@@ -369,6 +399,16 @@ export default function SchedulePage() {
                     if (b.category === 'facility_event') {
                       setFeedDetailBlock(b)
                       return
+                    }
+                    const cfg = facilityConfigRef.current
+                    const ovId = cfg ? scheduleOverrideIdFromFeedBlock(b) : null
+                    if (ovId) {
+                      const ov = cfg?.overrides.find(o => o.id === ovId)
+                      if (ov) {
+                        setFeedDetailBlock(null)
+                        setQuickBookDraft({ source: 'edit_override', override: ov })
+                        return
+                      }
                     }
                     setFeedDetailBlock(null)
                     openQuickBookFromFeedBlock(b)
@@ -544,6 +584,19 @@ export default function SchedulePage() {
               draft={quickBookDraft}
               week={week}
               onSave={(row, opts) => void commitQuickBookOverride(row, opts)}
+              onRemoveOverride={id => void removeOverrideAndPublish(id)}
+              onViewLinkedRoster={inviteId => {
+                setQuickBookDraft(null)
+                setFeedDetailBlock({
+                  id: `waiver-inv-${inviteId}-schedule`,
+                  category: 'field_rental',
+                  label: 'Linked roster invite',
+                  dayIndex: 0,
+                  startMinute: 0,
+                  endMinute: 30,
+                  waiverInviteId: inviteId,
+                })
+              }}
               onOpenRentalCheckIn={b => setFeedDetailBlock(b)}
               onOpenRotationRoster={(slot, related) => {
                 setDetailRelatedSlots(related)

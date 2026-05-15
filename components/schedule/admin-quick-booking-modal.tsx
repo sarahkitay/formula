@@ -47,21 +47,53 @@ function snapDurationToGrid(start: number, end: number): { duration: number; end
 export type AdminQuickBookDraft =
   | { source: 'empty'; dayIndex: DayIndex; startMinute: number; endMinute: number }
   | { source: 'block'; block: CalendarFeedBlock }
+  | { source: 'edit_override'; override: ScheduleOverride }
+
+const UUID_RE = /^[0-9a-f-]{36}$/i
 
 function nextOverrideId() {
   return `ov-cal-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
-function draftDayIndex(d: AdminQuickBookDraft): DayIndex {
+function isoDateToDayIndexInWeek(iso: string, weekStart: string): DayIndex {
+  const ws = new Date(`${weekStart}T12:00:00`)
+  const t = new Date(`${iso}T12:00:00`)
+  const di = Math.round((t.getTime() - ws.getTime()) / 86400000)
+  if (di < 0 || di > 6) return 0
+  return di as DayIndex
+}
+
+function formatIsoDateLabel(iso: string) {
+  const d = new Date(`${iso}T12:00:00`)
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function parseOverrideLabelHints(label: string) {
+  const complimentary = /\bComplimentary\b/i.test(label)
+  const mHc = /\bHC\s*(\d{1,4})\b/i.exec(label)
+  const headcount = mHc?.[1] ?? ''
+  const mPaid = /Paid\s*\$?\s*([\d.,]+)/i.exec(label)
+  const paidUsd = mPaid?.[1]?.replace(/,/g, '') ?? ''
+  const mDue = /Due\s*\$?\s*([\d.,]+)/i.exec(label)
+  const dueUsd = mDue?.[1]?.replace(/,/g, '') ?? ''
+  const first = label.split(' · ')[0]?.trim() ?? label
+  return { complimentary, headcount, paidUsd, dueUsd, orgGuess: first }
+}
+
+function draftDayIndex(d: AdminQuickBookDraft, weekStart: string): DayIndex {
+  if (d.source === 'edit_override') return isoDateToDayIndexInWeek(d.override.date, weekStart)
   return d.source === 'empty' ? d.dayIndex : d.block.dayIndex
 }
 
 function draftStartEnd(d: AdminQuickBookDraft): { startMinute: number; endMinute: number } {
   if (d.source === 'empty') return { startMinute: d.startMinute, endMinute: d.endMinute }
+  if (d.source === 'edit_override')
+    return { startMinute: d.override.startMinute, endMinute: d.override.endMinute }
   return { startMinute: d.block.startMinute, endMinute: d.block.endMinute }
 }
 
 function defaultAddOverrideForDraft(d: AdminQuickBookDraft): boolean {
+  if (d.source === 'edit_override') return true
   if (d.source === 'empty') return true
   return d.block.templateSurface === true
 }
@@ -147,7 +179,13 @@ export interface AdminQuickBookingModalProps {
   weekStart: string
   draft: AdminQuickBookDraft | null
   week: GeneratedWeek | null
-  onSave: (override: ScheduleOverride | null, opts: { autoPublish: boolean }) => void | Promise<void>
+  onSave: (
+    override: ScheduleOverride | null,
+    opts: { autoPublish: boolean; replaceOverrideId?: string }
+  ) => void | Promise<void>
+  onRemoveOverride?: (id: string) => void | Promise<void>
+  /** Opens calendar feed roster detail for a linked `field_rental_waiver_invites` row. */
+  onViewLinkedRoster?: (inviteId: string) => void
   onOpenRentalCheckIn?: (block: CalendarFeedBlock) => void
   onOpenRotationRoster?: (slot: ScheduleSlot, relatedSlots: ScheduleSlot[]) => void
 }
@@ -159,6 +197,8 @@ export function AdminQuickBookingModal({
   draft,
   week,
   onSave,
+  onRemoveOverride,
+  onViewLinkedRoster,
   onOpenRentalCheckIn,
   onOpenRotationRoster,
 }: AdminQuickBookingModalProps) {
@@ -179,6 +219,26 @@ export function AdminQuickBookingModal({
   const [ledgerError, setLedgerError] = React.useState<string | null>(null)
   const [submitting, setSubmitting] = React.useState(false)
   const [durationMinutes, setDurationMinutes] = React.useState(60)
+  const [waiverInviteId, setWaiverInviteId] = React.useState('')
+  const [calendarLabel, setCalendarLabel] = React.useState('')
+  const [inviteOptions, setInviteOptions] = React.useState<{ id: string; label: string }[]>([])
+
+  React.useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await staffApiFetch('/api/admin/roster-invite-options')
+        const body = (await res.json()) as { invites?: { id: string; label: string }[] }
+        if (!cancelled && res.ok && Array.isArray(body.invites)) setInviteOptions(body.invites)
+      } catch {
+        if (!cancelled) setInviteOptions([])
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [open])
 
   React.useEffect(() => {
     if (!open || !draft) return
@@ -208,6 +268,22 @@ export function AdminQuickBookingModal({
       setMode('replace')
       setYouthBlockId(b.youthBlockId ?? '')
       setAssetId(assetIdGuessFromBlock(b))
+      setWaiverInviteId(b.waiverInviteId && UUID_RE.test(b.waiverInviteId) ? b.waiverInviteId : '')
+      setCalendarLabel('')
+    } else if (draft.source === 'edit_override') {
+      const o = draft.override
+      setKind(o.kind)
+      setMode(o.mode)
+      setYouthBlockId(o.youthBlockId ?? '')
+      setAssetId(o.assetId)
+      setCalendarLabel(o.label)
+      const hints = parseOverrideLabelHints(o.label)
+      setOrg(hints.orgGuess)
+      setHeadcount(hints.headcount)
+      setPaidUsd(hints.paidUsd)
+      setDueUsd(hints.dueUsd)
+      setComplimentary(hints.complimentary)
+      setWaiverInviteId(o.waiverInviteId && UUID_RE.test(o.waiverInviteId) ? o.waiverInviteId : '')
     } else {
       setOrg('')
       setKind('flex_ops')
@@ -218,10 +294,19 @@ export function AdminQuickBookingModal({
       setMode('replace')
       setAssetId('performance-center')
       setYouthBlockId('')
+      setWaiverInviteId('')
+      setCalendarLabel('')
     }
   }, [open, draft])
 
-  const dateLabel = draft ? isoDateForWeekDay(weekStart, draftDayIndex(draft)) : ''
+  const dateLabel = React.useMemo(() => {
+    if (!draft) return ''
+    if (draft.source === 'edit_override') return formatIsoDateLabel(draft.override.date)
+    return isoDateForWeekDay(weekStart, draftDayIndex(draft, weekStart))
+  }, [draft, weekStart])
+
+  const isEditOverride = draft?.source === 'edit_override'
+  const isEditReplace = Boolean(isEditOverride && mode === 'replace')
 
   const durationOptions = React.useMemo(() => {
     const maxRem = Math.max(30, CAL_DISPLAY_END - startMinute)
@@ -276,10 +361,20 @@ export function AdminQuickBookingModal({
     if (!draft) return null
     const s = Math.max(CAL_DISPLAY_START, Math.min(startMinute, CAL_DISPLAY_END - 30))
     const e = Math.min(CAL_DISPLAY_END, s + durationMinutes)
-    const label = buildOverrideLabel(mode, org, kind, headcount, paidUsd, dueUsd, complimentary)
+    const date =
+      draft.source === 'edit_override'
+        ? draft.override.date
+        : isoDateForWeekDay(weekStart, draftDayIndex(draft, weekStart))
+    const label =
+      mode === 'clear'
+        ? buildOverrideLabel(mode, org, kind, headcount, paidUsd, dueUsd, complimentary)
+        : draft.source === 'edit_override'
+          ? calendarLabel.trim() || '(Hold)'
+          : buildOverrideLabel(mode, org, kind, headcount, paidUsd, dueUsd, complimentary)
+    const wid = waiverInviteId.trim()
     return {
-      id: nextOverrideId(),
-      date: isoDateForWeekDay(weekStart, draftDayIndex(draft)),
+      id: draft.source === 'edit_override' ? draft.override.id : nextOverrideId(),
+      date,
       assetId,
       startMinute: s,
       endMinute: e,
@@ -287,6 +382,7 @@ export function AdminQuickBookingModal({
       label,
       mode,
       youthBlockId: youthBlockId.trim() || undefined,
+      ...(wid && UUID_RE.test(wid) ? { waiverInviteId: wid } : {}),
     }
   }
 
@@ -296,10 +392,11 @@ export function AdminQuickBookingModal({
     return Math.round(paid * 100)
   }, [paidUsd])
 
-  const payeeForLedger = org.trim()
+  const payeeForLedger = (isEditReplace ? calendarLabel.split(' · ')[0] ?? '' : org).trim()
 
   const validOverride =
-    mode === 'clear' || (mode === 'replace' && payeeForLedger.length > 0)
+    mode === 'clear' ||
+    (mode === 'replace' && (isEditReplace ? calendarLabel.trim().length > 0 : payeeForLedger.length > 0))
 
   const canRecordLedger =
     !complimentary && paidCents >= 50 && payeeForLedger.length > 0
@@ -333,7 +430,7 @@ export function AdminQuickBookingModal({
       if (addOverrideToDraft) {
         row = buildRow()
         if (!row) return
-        if (mode === 'replace' && !payeeForLedger) return
+        if (mode === 'replace' && !(isEditReplace ? calendarLabel.trim() : payeeForLedger)) return
       }
 
       if (canRecordLedger) {
@@ -365,7 +462,10 @@ export function AdminQuickBookingModal({
         }
       }
 
-      await onSave(row, { autoPublish: Boolean(row) })
+      await onSave(row, {
+        autoPublish: Boolean(row),
+        replaceOverrideId: draft.source === 'edit_override' ? draft.override.id : undefined,
+      })
       onClose()
     } finally {
       setSubmitting(false)
@@ -373,23 +473,37 @@ export function AdminQuickBookingModal({
   }
 
   const sourceBlock = draft?.source === 'block' ? draft.block : null
+  const modalTitle = sourceBlock ? 'Slot · client & revenue' : isEditOverride ? 'Edit calendar hold' : 'Quick slot'
+
+  const removeHold = async () => {
+    if (draft?.source !== 'edit_override' || !onRemoveOverride) return
+    setSubmitting(true)
+    try {
+      await onRemoveOverride(draft.override.id)
+      onClose()
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
-    <Modal open={open} onClose={onClose} title={sourceBlock ? 'Slot · client & revenue' : 'Quick slot'} size="md">
+    <Modal open={open} onClose={onClose} title={modalTitle} size="md">
       <ModalBody className="space-y-4 font-mono text-[11px] text-text-primary">
         {!draft ? (
           <p className="text-text-muted">No slot selected.</p>
         ) : (
           <>
             <p className="text-sm font-semibold text-text-primary">
-              {DAY_LABELS[draftDayIndex(draft)]} · {dateLabel}
+              {DAY_LABELS[draftDayIndex(draft, weekStart)]} · {dateLabel}
             </p>
             <p className="text-[11px] text-text-muted">
               {sourceBlock
                 ? `Existing · ${sourceBlock.category.replace(/_/g, ' ')}`
-                : draft.source === 'empty'
-                  ? `New booking · ${formatHm(draft.startMinute)}–${formatHm(draft.endMinute)} · change duration (30 min steps) or edit start/end`
-                  : null}
+                : draft.source === 'edit_override'
+                  ? 'Editing a published hold — save updates this calendar row; delete removes it. Link a roster invite to see waiver progress on the block.'
+                  : draft.source === 'empty'
+                    ? `New booking · ${formatHm(draft.startMinute)}–${formatHm(draft.endMinute)} · change duration (30 min steps) or edit start/end`
+                    : null}
             </p>
 
             {sourceBlock?.programSlotIds?.length && week && onOpenRotationRoster ? (
@@ -485,13 +599,23 @@ export function AdminQuickBookingModal({
               <input
                 type="checkbox"
                 checked={addOverrideToDraft}
+                disabled={draft.source === 'edit_override'}
                 onChange={e => setAddOverrideToDraft(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary focus-visible:ring-2 focus-visible:ring-ring/40"
               />
               <span>
-                Adds a <strong className="text-text-primary">live calendar</strong> block when you press{' '}
-                <strong className="text-text-primary">Add</strong> - no separate publish step. Turn off for payment-only (no
-                calendar change).
+                {draft.source === 'edit_override' ? (
+                  <>
+                    This hold is already on the <strong className="text-text-primary">live calendar</strong>. Save publishes
+                    updates; the toggle stays on while you edit an existing row.
+                  </>
+                ) : (
+                  <>
+                    Adds a <strong className="text-text-primary">live calendar</strong> block when you press{' '}
+                    <strong className="text-text-primary">Add</strong> - no separate publish step. Turn off for payment-only (no
+                    calendar change).
+                  </>
+                )}
               </span>
             </label>
 
@@ -531,17 +655,34 @@ export function AdminQuickBookingModal({
 
             {addOverrideToDraft && mode === 'replace' ? (
               <>
-                <label className={FIELD_LABEL}>
-                  <span className="block">Client or organization</span>
-                  <input
-                    className={FIELD_CONTROL}
-                    value={org}
-                    onChange={e => setOrg(e.target.value)}
-                    placeholder="e.g. Smith family, Westside FC"
-                    spellCheck={false}
-                    autoComplete="off"
-                  />
-                </label>
+                {isEditReplace ? (
+                  <label className={FIELD_LABEL}>
+                    <span className="block">Calendar label</span>
+                    <textarea
+                      className={cn(FIELD_CONTROL, 'min-h-[5rem] resize-y')}
+                      value={calendarLabel}
+                      onChange={e => setCalendarLabel(e.target.value)}
+                      rows={3}
+                      spellCheck={false}
+                    />
+                    <span className={FIELD_HINT}>
+                      Shown on the schedule and in ledger notes. Text before the first &quot; · &quot; is used as the Payments payee when you record in-person
+                      cash.
+                    </span>
+                  </label>
+                ) : (
+                  <label className={FIELD_LABEL}>
+                    <span className="block">Client or organization</span>
+                    <input
+                      className={FIELD_CONTROL}
+                      value={org}
+                      onChange={e => setOrg(e.target.value)}
+                      placeholder="e.g. Smith family, Westside FC"
+                      spellCheck={false}
+                      autoComplete="off"
+                    />
+                  </label>
+                )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <label className={FIELD_LABEL}>
                     <span className="block">Session type</span>
@@ -675,6 +816,48 @@ export function AdminQuickBookingModal({
                     autoComplete="off"
                   />
                 </label>
+
+                <label className={FIELD_LABEL}>
+                  <span className="block">Roster · waiver invite (optional)</span>
+                  <select
+                    className={FIELD_CONTROL}
+                    value={waiverInviteId}
+                    onChange={e => setWaiverInviteId(e.target.value)}
+                  >
+                    <option value="">None</option>
+                    {inviteOptions.map(inv => (
+                      <option key={inv.id} value={inv.id}>
+                        {inv.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className={FIELD_HINT}>
+                    Links this calendar block to a desk or Stripe roster from{' '}
+                    <Link
+                      href="/admin/rentals#roster-invites-progress"
+                      className="font-medium text-primary underline-offset-2 hover:underline"
+                    >
+                      Admin → Rentals
+                    </Link>
+                    . Attendee waivers open from the block when linked.
+                  </span>
+                </label>
+
+                {waiverInviteId.trim() && UUID_RE.test(waiverInviteId.trim()) && onViewLinkedRoster ? (
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        onViewLinkedRoster(waiverInviteId.trim())
+                        onClose()
+                      }}
+                    >
+                      Who&apos;s attending / waivers
+                    </Button>
+                  </div>
+                ) : null}
               </>
             ) : null}
 
@@ -707,12 +890,19 @@ export function AdminQuickBookingModal({
         )}
       </ModalBody>
       <ModalFooter className="flex-wrap justify-between gap-2 sm:flex-nowrap">
-        <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-          Cancel
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {draft?.source === 'edit_override' && onRemoveOverride ? (
+            <Button type="button" variant="danger" size="sm" disabled={submitting} onClick={() => void removeHold()}>
+              Delete hold
+            </Button>
+          ) : null}
+          <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
+            Cancel
+          </Button>
+        </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="primary" size="sm" disabled={!canSubmit} onClick={() => void submit()}>
-            {addOverrideToDraft ? 'Add' : 'Record payment'}
+            {addOverrideToDraft ? (draft?.source === 'edit_override' ? 'Save changes' : 'Add') : 'Record payment'}
           </Button>
         </div>
       </ModalFooter>

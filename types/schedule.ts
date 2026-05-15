@@ -48,6 +48,8 @@ export interface ScheduleSlot {
   ageBand?: ScheduleAgeBand
   /** Links rotation rows for the same youth block */
   youthBlockId?: string
+  /** Optional `field_rental_waiver_invites.id` — roster / attendance from schedule. */
+  waiverInviteId?: string
   stationIndex?: 1 | 2 | 3 | 4
 }
 
@@ -64,6 +66,8 @@ export interface ScheduleOverride {
   mode: 'replace' | 'clear'
   ageBand?: ScheduleAgeBand
   youthBlockId?: string
+  /** Links this hold to a desk / Stripe roster invite for waiver progress on the calendar. */
+  waiverInviteId?: string
 }
 
 export interface GeneratedWeek {

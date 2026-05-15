@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import { isoDateForWeekDay, startOfScheduleWeek } from '@/lib/schedule/generator'
 import { PROGRAM_UI } from '@/lib/schedule/rules'
 import { SCHEDULE_ASSETS } from '@/lib/schedule/assets'
@@ -338,6 +339,32 @@ export function FacilityScheduleEditor({ config, onChange, weekStart, baseDate }
                   />
                   <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
                     Match an existing anchor id so parent bookings stay attached when you replace a window.
+                  </span>
+                </label>
+                <label className="text-formula-mist md:col-span-2">
+                  <span className="block">Waiver invite id (optional, roster on schedule)</span>
+                  <input
+                    key={`wi-${o.id}-${o.waiverInviteId ?? 'x'}`}
+                    className="mt-0.5 w-full border border-formula-frost/14 bg-formula-base/40 px-1.5 py-1 font-mono text-[10px] text-formula-paper"
+                    defaultValue={o.waiverInviteId ?? ''}
+                    placeholder="UUID from field_rental_waiver_invites"
+                    onBlur={e => {
+                      const v = e.target.value.trim()
+                      onChange(
+                        patchOverride(config, o.id, {
+                          waiverInviteId: v && /^[0-9a-f-]{36}$/i.test(v) ? v : undefined,
+                        })
+                      )
+                    }}
+                    spellCheck={false}
+                    autoComplete="off"
+                  />
+                  <span className="mt-0.5 block text-[9px] font-normal text-formula-frost/70">
+                    Paste a roster invite id from{' '}
+                    <Link href="/admin/rentals#roster-invites-progress" className="text-formula-volt hover:underline">
+                      Admin → Rentals
+                    </Link>{' '}
+                    (blur to apply). The calendar block can open waiver progress when valid.
                   </span>
                 </label>
                 <p className="font-mono text-[9px] text-formula-frost/55 md:col-span-4">

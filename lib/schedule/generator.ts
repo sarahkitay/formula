@@ -355,6 +355,9 @@ function applyOverrides(slots: ScheduleSlot[], overrides: ScheduleOverride[]): S
       id: `ov-${o.id}`,
       ageBand: o.ageBand,
       youthBlockId: o.youthBlockId,
+      ...(o.waiverInviteId && /^[0-9a-f-]{36}$/i.test(o.waiverInviteId.trim())
+        ? { waiverInviteId: o.waiverInviteId.trim() }
+        : {}),
     })
   }
   return next
